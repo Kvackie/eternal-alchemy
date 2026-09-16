@@ -224,6 +224,28 @@ footer p{max-width:68ch; margin:0}
       raise it in the cave, cut it from the shaft, or send someone braver to fetch it — then match
       essences in the cauldron, bring it to temperature, seal it well, and price it
       right. No debt, no deadline, no gems.</p>
+    <div class="card" style="border-color:var(--amber);margin:1rem 0">
+      <p class="eyebrow">Status &nbsp;·&nbsp; where this differs from the build</p>
+      <p>This is the design record, not a description of the shipped game. It is kept because the
+        reasoning in it is still the reasoning, but four things in it no longer match
+        <code>src/</code>. <strong>The README is the accurate account of what is built.</strong></p>
+      <ul>
+        <li><strong>The alembic wheel is gone.</strong> Brewing is ingredients, then a temperature
+          and a method (stirred or simmered), then an outcome you accept or pour back. The save
+          migration that replaced it is <code>v2&nbsp;&rarr;&nbsp;v3</code>. Every passage below
+          describing the wheel, and the dexterity it asked for, describes something that was cut.</li>
+        <li><strong>Discovery replaced it.</strong> Two recipes are known at the start and the other
+          194 are found by brewing them; the book shows the temperature bounds you have established
+          rather than the band itself.</li>
+        <li><strong>The counts have moved.</strong> The changelog entry for draft 6 records 314
+          ingredients and 71 recipes, which is what that draft did. The data now holds
+          <strong>385 ingredients</strong> and <strong>196 recipes</strong> besides the Murk
+          fallback.</li>
+        <li><strong>The screen model is eight screens</strong> — Shop, Board, Market, Grounds,
+          Cauldron, Roster, Ledger, Settings — with the brewing station as an overlay rather than a
+          screen of its own.</li>
+      </ul>
+    </div>
     <dl class="facts">
       <div class="fact"><dt>Engine</dt><dd>Phaser 4.2.1 · TypeScript</dd></div>
       <div class="fact"><dt>Platform</dt><dd>Web &amp; mobile · no Steam</dd></div>

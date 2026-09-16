@@ -14,8 +14,10 @@ expeditions; and a contract board.
 **M3 — depth.** Face-to-face haggling; the greenhouse and crossbreeding; the full bottling range
 (10 forms, 8 vessels, 7 seals); ranks V–X; and the Long Distillation with its Mastery Codex.
 
-Design document: `docs/design.html` (open it in a browser). It still describes the alembic wheel
-that M1's rework replaced — see **Brewing** below for what is actually built.
+Design document: `docs/design.html` (open it in a browser). It is the design record rather than a
+description of the build — it still describes the alembic wheel that M1's rework replaced, among
+other things. It opens with a status panel listing exactly where it and the code have parted company;
+this README is the accurate account.
 
 ## Running it
 
@@ -30,7 +32,12 @@ npm run dev        # http://localhost:5173
 | `npm run build` | Type check, then production bundle into `dist/` |
 | `npm run preview` | Serve the production bundle |
 | `npm test` | Run the simulation test suite |
+| `npm run test:watch` | The same suite, watching |
 | `npm run typecheck` | Type check without building |
+| `npm run android:sync` | Build, then copy `dist/` into the native project |
+| `npm run android:apk` | Sync, then Gradle a debug APK (Windows — see `ANDROID.md`) |
+| `npm run android:open` | Open the native project in Android Studio |
+| `npm run android:run` | Sync, then launch on a device or emulator |
 
 ## How it's put together
 
@@ -43,9 +50,10 @@ src/
   i18n/       Every user-facing string, keyed. No literals in game code.
   ui/
     phaser/   The world: garden, pot, shelves, day/night lighting.
-    dom/      The panels: five screens of lists, forms and prices.
+    dom/      The panels: eight screens of lists, forms and prices, plus the
+              brewing station and the overlays a tile opens.
   platform/   Save adapters (localStorage now, Capacitor Preferences on mobile).
-  debug/      The time panel. Dev builds only.
+  debug/      The time panel. Dev builds, or `?debug=1` on a built copy.
 ```
 
 Eight screens: **Shop** (shelves and bottled inventory) · **Board** (contracts) · **Market**
@@ -78,7 +86,7 @@ their cycle lands on, and their goods come from an RNG seeded on `(merchant, day
 visit is stored except what you have already bought, so offline catch-up needs no special handling
 and a reload cannot reshuffle the shelves.
 
-Bramm and Vessa keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his
+Bramm, Vessa and Hesk keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his
 prices are sealed potions of a minimum grade, and he spends your cheapest qualifying bottles first.
 
 ## Heroes and contracts
@@ -111,12 +119,12 @@ and the seed lives in the save.
 
 A shop management game is mostly text and lists. DOM gives us text layout, scrolling, screen readers,
 and the 85–150% text scaling setting for free — each of those would be a week of work on canvas. The
-canvas gets what it's good at: the garden, the pot, the wheel, the lighting. The two halves never call
+canvas gets what it's good at: the garden, the pot, the shelves, the lighting. The two halves never call
 each other; they talk to the simulation and to `ui/bus.ts`.
 
 ## Recipe discovery
 
-Two recipes are known at the start; the other six are found by brewing them. Accepting a pot whose
+Two recipes are known at the start; the other 194 are found by brewing them. Accepting a pot whose
 ratio and method match an unknown recipe puts it in the book — and then you have to find its
 temperature.
 
@@ -163,7 +171,10 @@ ingredients.
 
 ## Debug panel
 
-Dev builds only; tree-shaken from production. A crop takes eighteen hours and a contract runs eight
+On by default in `npm run dev`. A built copy leaves it out — it grants gold and skips days, so it is
+not something every visitor to the deployed site should find — but `?debug=1` opts a browser in and
+is remembered, and `?debug=0` opts back out. It is imported dynamically either way, so a build
+nobody has asked it for never downloads it. A crop takes eighteen hours and a contract runs eight
 in-game days, so this is not optional tooling.
 
 Time scale ×1–×600 · jump to dawn/dusk/night · skip a day · **simulate being away** (runs the real
@@ -256,27 +267,40 @@ web build uses `localStorage`, a native build uses Capacitor Preferences — whi
 clear that would wipe `localStorage`. For a local-only save that difference is the difference between
 keeping a forty-hour game and losing it.
 
-The plugin is imported through a variable specifier so **Capacitor is not a dependency of the web
-build** and TypeScript never tries to resolve it. To make native builds:
+The plugin is reached through the **injected `Capacitor.Plugins.Preferences` global**, not an
+`import`, so Capacitor never enters the web bundle and TypeScript never tries to resolve a bare
+specifier a browser could not load either. The packages are already in `package.json` — `cap sync`
+reads them to install the native half — so a native build is:
 
 ```
-npm i -D @capacitor/cli
-npm i @capacitor/core @capacitor/preferences
-npx cap add ios        # and/or android
-npm run build && npx cap sync
+npx cap add android    # and/or ios; the generated project is gitignored
+npm run android:sync   # build, then copy dist/ into the native project
 ```
 
-Verified at 150% text across all eight screens on both layouts: no horizontal page scroll, no clipped
-text, no tap target under 44px, and an essence glyph on every coloured mark.
+`ANDROID.md` has the toolchain, the APK path and what is still untested.
+
+Checked across all eight screens on both layouts, at 85, 100 and 150% text, on a 412x883 viewport:
+**no horizontal page scroll, and no text clipped or broken mid-word.** Both are swept by measurement
+rather than by eye — every leaf element's longest word against the box it has — so a regression shows
+up as a number.
+
+Tap targets are tiered rather than uniform, and the honest version is worth stating: the primary
+controls carry a 44px floor through `--tap` — the nav, `.btn`, tiles, options, and the tavern's
+filter chips on a touch pointer. `.btn.small`, the secondary action inside a row, is 36px.
+`.view-button` is 32px. The info badge in the corner of a tile is 18px and sits *inside* a tile that
+is itself the 44px target, so it is an extra rather than the only way in. A sweep at 100% text counts
+22 controls under 44px in one dimension, all of them from those three classes.
 
 Below the 960px breakpoint the screens that draw no scene — Roster, Board, Settings — are full-stage
 pages rather than bottom sheets, and they are the only scroller on the page: a section that scrolls
 inside a panel that scrolls inside a phone is a section that takes the flick and gives nothing back.
-The three screens that *do* draw a scene carry a **Full view** toggle in the view controls, because
-412x883 is not enough for a shop and the managing of it at once.
+The three screens that *do* draw a scene — Shop, Grounds, Market — take turns instead, because
+412x883 is not enough for a shop and the managing of it at once. The toggle in the view controls
+names the screen rather than the mechanism (**View Shop** / **Manage Shop**), and each half gets the
+whole stage: managing hides the scene entirely, and the zoom and recentre buttons go with it. Nothing
+is lost by hiding it — nothing in the world is clickable, so the scene is a picture.
 
-The debug panel is a dev build only. `?debug=1` turns it on in a built copy and is remembered per
-browser; `?debug=0` turns it off again.
+Above the breakpoint the toggle is hidden: the panel and the scene already fit side by side.
 
 ## What's not here yet
 

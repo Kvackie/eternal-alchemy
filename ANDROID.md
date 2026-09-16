@@ -7,8 +7,10 @@ For private use — sideloaded, not through the Play Store. No signing key, no s
 - `capacitor.config.json` is configured (app id `com.eternalalchemy.shop`, dark background to match
   the game so there is no white flash on launch).
 - `@capacitor/core`, `@capacitor/preferences` and `@capacitor/android` are installed.
-- `npx cap add android` has been run, so the `android/` project exists. It is generated, and
-  gitignored — `cap sync` recreates it.
+- `@capacitor/cli` is a dev dependency, so `npx cap` works after `npm install`.
+- The `android/` project is **not** in the repository: it is generated and gitignored. It was created
+  once with `npx cap add android`, and anyone starting from a fresh clone runs that once themselves.
+  `cap sync` updates an existing project; it does not create one.
 - The save system already switches to Capacitor Preferences on device. See the note below.
 
 ## What you need installed
@@ -34,7 +36,17 @@ Open a fresh terminal afterwards so they take effect.
 npm run android:apk
 ```
 
-That builds the web bundle, copies it into the native project, and runs Gradle. The debug APK lands at:
+That builds the web bundle, copies it into the native project, and runs Gradle.
+
+**This script is Windows-only.** It ends in `gradlew.bat`, which is the Windows wrapper — on macOS
+or Linux run the sync and the wrapper separately:
+
+```
+npm run android:sync
+cd android && ./gradlew assembleDebug
+```
+
+The debug APK lands at:
 
 ```
 android/app/build/outputs/apk/debug/app-debug.apk
