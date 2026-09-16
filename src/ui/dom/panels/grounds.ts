@@ -154,12 +154,24 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
         time: formatDuration(growMs),
         soil: t(`soil.${crop.soil}`),
       })}${essences ? `\n${essences}` : ''}`,
-      // What the seed will actually yield, which is the thing worth knowing
-      // before spending a plot on it for half an hour.
-      onInspect: () => showIngredientInfo(sim, crop.yields),
+      /*
+       * The tile opens what it grows into; the panel picks it up.
+       *
+       * What a seed yields is the thing worth knowing before spending a plot on
+       * it for half an hour, and it used to live behind a dot in the corner of
+       * the tile — 18px, and the only route to it. The tap now means the same
+       * thing here as everywhere else, and choosing the seed is a button inside.
+       */
       onActivate: () => {
-        selectedCrop = selectedCrop === id ? null : id;
-        changed();
+        const chosen = selectedCrop === id;
+        showIngredientInfo(sim, crop.yields, {
+          label: chosen ? t('garden.seed.deselect') : t('garden.seed.select'),
+          max: 1,
+          run: () => {
+            selectedCrop = chosen ? null : id;
+            changed();
+          },
+        });
       },
     });
   });
@@ -415,11 +427,17 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
         count,
         caption: t(`cave.light.${species.light}`),
         selected: selectedSpecies === species.id,
-        onInspect: () => showIngredientInfo(sim, species.id),
         onActivate: () => {
-          selectedSpecies = selectedSpecies === species.id ? null : species.id;
-          caveTool = 'seed';
-          changed();
+          const chosen = selectedSpecies === species.id;
+          showIngredientInfo(sim, species.id, {
+            label: chosen ? t('garden.seed.deselect') : t('cave.spore.select'),
+            max: 1,
+            run: () => {
+              selectedSpecies = chosen ? null : species.id;
+              caveTool = 'seed';
+              changed();
+            },
+          });
         },
       }),
     );

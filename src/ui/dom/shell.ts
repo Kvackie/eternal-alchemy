@@ -25,6 +25,7 @@ import { formatDuration, formatGold, formatLongDuration, formatNumber, t } from 
 import { dayStateAt } from '@/sim/clock';
 import { config } from '@/sim/config';
 import { bus, changed, type ConfirmRequest, type ScreenId } from '@/ui/bus';
+import { debugEnabled } from '@/platform/debugFlag';
 import type { AwaySummary, Simulation } from '@/sim/sim';
 import type { SaveManager } from '@/platform/save';
 import type { World } from '@/sim/types';
@@ -49,8 +50,13 @@ export interface ShellDeps {
  * The Cauldron left this set when brewing moved into its own station: the bench
  * is a list of pots you own and the station covers the stage, so a painted row
  * of cauldrons behind both was a picture nothing ever looked at.
+ *
+ * The Market left it for a plainer reason: it had no scene of its own. It
+ * borrowed the Shop's, so standing in the market drew your own shelves behind
+ * another trader's stock — one picture claiming to be two places. The market is
+ * the merchants and what they are selling, which is a list.
  */
-const SCENE_SCREENS = new Set<ScreenId>(['grounds', 'shop', 'market']);
+const SCENE_SCREENS = new Set<ScreenId>(['grounds', 'shop']);
 
 const SCREENS: Array<{ id: ScreenId; icon: string }> = [
   { id: 'shop', icon: '🏪' },
@@ -107,12 +113,7 @@ export class Shell {
     this.uiScale = readStoredScale();
     document.documentElement.style.setProperty('--ui-scale', String(this.uiScale));
 
-    if (import.meta.env.DEV || debugRequested()) {
-      void import('@/debug/timePanel').then((module) => {
-        this.renderDebug = module.renderDebugPanel;
-        this.renderPanels();
-      });
-    }
+    if (debugEnabled()) this.loadDebugPanel();
 
     bus.on((event) => {
       switch (event.type) {
@@ -133,6 +134,17 @@ export class Shell {
           this.confirming = event.request;
           this.renderPanels();
           break;
+        case 'debug':
+          // Switched on from Settings. Turning it off leaves the module loaded
+          // — it is already downloaded, and a reload is not worth forcing — but
+          // the toggle and the panel both go.
+          if (event.enabled) this.loadDebugPanel();
+          else {
+            this.renderDebug = null;
+            this.debugOpen = false;
+            this.renderPanels();
+          }
+          break;
         case 'toast':
           this.showToast(event.message);
           break;
@@ -142,6 +154,14 @@ export class Shell {
     });
 
     this.render();
+  }
+
+  /** Fetched on demand, so a build nobody asked it for never downloads it. */
+  private loadDebugPanel(): void {
+    void import('@/debug/timePanel').then((module) => {
+      this.renderDebug = module.renderDebugPanel;
+      this.renderPanels();
+    });
   }
 
   showAway(summary: AwaySummary): void {
@@ -704,29 +724,5 @@ function readStoredScale(): number {
   }
 }
 
-const DEBUG_KEY = 'eternal-alchemy/debug';
 
-/**
- * Whether this browser has asked for the debug panel.
- *
- * The panel is a dev tool — it grants gold, skips days and rerolls the seed —
- * so a built copy of the game does not carry it for everyone who opens the
- * link. It is reachable on a real device, which is where the timing bugs are:
- * `?debug=1` turns it on and sticks, `?debug=0` turns it off again. The flag is
- * remembered because a phone is a bad place to retype a query string, and the
- * dynamic import means the module is still only fetched once it is wanted.
- */
-function debugRequested(): boolean {
-  try {
-    const asked = new URLSearchParams(location.search).get('debug');
-    if (asked !== null) {
-      const on = asked !== '0' && asked !== 'false';
-      localStorage.setItem(DEBUG_KEY, on ? '1' : '0');
-      return on;
-    }
-    return localStorage.getItem(DEBUG_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
 

@@ -13,6 +13,8 @@ export type GameEvent =
   /** Time was caught up after an absence — real or simulated by the debug panel. */
   | { type: 'away'; summary: AwaySummary }
   | { type: 'confirm'; request: ConfirmRequest }
+  /** The debug switch in Settings moved. */
+  | { type: 'debug'; enabled: boolean }
   | { type: 'toast'; message: string };
 
 /**

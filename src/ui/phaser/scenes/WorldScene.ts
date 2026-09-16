@@ -298,7 +298,7 @@ export class WorldScene extends Phaser.Scene {
         for (const unit of pot.contents.units) ingredientIds.push(unit.ingredientId);
       }
     }
-    if (screen === 'shop' || screen === 'market') {
+    if (screen === 'shop') {
       for (const slot of this.sim.world.shelf) {
         if (slot.item) potionIds.push(slot.item.recipeId);
       }
@@ -356,13 +356,15 @@ export class WorldScene extends Phaser.Scene {
         this.drawShop(area);
         break;
       case 'market':
-        // The market's own stall art arrives with the merchants' portraits;
-        // until then the shop interior stands in.
-        this.drawShop(area);
-        break;
       case 'ledger':
       case 'settings':
-        // Both are full-width documents; the canvas stays out of their way.
+        /*
+         * No scene. The market used to borrow `drawShop` as a stand-in until
+         * stall art arrived, which meant the Market drew your own shop behind a
+         * list of other people's stock — the same picture as the Shop screen,
+         * saying something untrue about where you were. The market is the
+         * merchants and what they have; it is a document like the other two.
+         */
         break;
     }
 

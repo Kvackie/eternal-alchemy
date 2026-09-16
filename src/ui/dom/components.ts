@@ -401,15 +401,6 @@ export interface SlotSpec {
   /** Tooltip / accessible description. */
   title?: string;
   onActivate?: () => void;
-  /**
-   * Opens the tile's details.
-   *
-   * A separate affordance rather than the tile's own click, because the click
-   * is the fast path — adding eight ingredients to a pot should stay eight taps.
-   * The dot is small but always visible, so the information is discoverable
-   * without being in the way.
-   */
-  onInspect?: () => void;
   /** Set to make the tile draggable with this payload type. */
   dragType?: string;
 }
@@ -463,28 +454,73 @@ export function slot(spec: SlotSpec): HTMLElement {
     node.addEventListener('dragend', () => delete node.dataset.dragging);
   }
 
-  if (!spec.onInspect) return node;
+  return node;
+}
 
-  /*
-   * Wrapped, because a button cannot legally contain another button.
-   *
-   * The tile keeps its own click; the dot is a sibling laid over its corner, so
-   * the fast path is untouched and the details are one deliberate tap away. The
-   * wrapper becomes the grid item, which is why it carries the positioning.
-   */
-  const info = el('button', {
-    class: 'slot-info',
-    type: 'button',
-    'aria-label': t('common.details'),
-    title: t('common.details'),
-    text: 'i',
-  });
-  info.addEventListener('click', (event) => {
-    event.stopPropagation();
-    spec.onInspect!();
+export interface QuantityActionSpec {
+  /** The verb, e.g. "Buy" or "Plant". */
+  label: string;
+  /** The largest number the player may take. A max of 1 hides the stepper. */
+  max: number;
+  /** Per-unit cost, when there is one. Shown as a running total. */
+  unitPrice?: number;
+  /** Why the action cannot be taken, if it cannot. */
+  blocked?: string;
+  run: (quantity: number) => void;
+}
+
+/**
+ * The foot of a details panel: how many, and the verb.
+ *
+ * Buying used to be the tile's own click, one unit per tap, which made a stack
+ * of twelve a drum solo and gave you no way to see what a thing was before you
+ * owned one. The count lives here instead, next to the total it costs and the
+ * description it belongs to.
+ */
+export function quantityAction(spec: QuantityActionSpec): HTMLElement {
+  let quantity = 1;
+  const row = el('div', { class: 'quantity-action' });
+
+  const total = el('span', { class: 'quantity-total' });
+  const count = el('span', { class: 'quantity-count num' });
+
+  const step = (glyph: string, delta: number, label: string) => {
+    const b = el('button', { class: 'quantity-step', type: 'button', 'aria-label': label, text: glyph });
+    b.addEventListener('click', () => {
+      quantity = Math.min(spec.max, Math.max(1, quantity + delta));
+      draw();
+    });
+    return b;
+  };
+
+  const minus = step('−', -1, t('quantity.fewer'));
+  const plus = step('+', 1, t('quantity.more'));
+  const go = button(spec.label, () => spec.run(quantity), {
+    variant: 'gold',
+    disabled: Boolean(spec.blocked),
   });
 
-  return el('div', { class: 'slot-wrap' }, [node, info]);
+  function draw(): void {
+    count.textContent = String(quantity);
+    minus.disabled = quantity <= 1;
+    plus.disabled = quantity >= spec.max;
+    total.textContent =
+      spec.unitPrice === undefined ? '' : formatGold(spec.unitPrice * quantity);
+    go.textContent = spec.label;
+  }
+
+  if (spec.blocked) {
+    row.append(el('span', { class: 'quantity-blocked', text: spec.blocked }), go);
+    draw();
+    return row;
+  }
+
+  // One of a thing is not a quantity, so it gets no stepper to say so.
+  if (spec.max > 1) row.append(el('div', { class: 'quantity-steps' }, [minus, count, plus]));
+  if (spec.unitPrice !== undefined) row.append(total);
+  row.append(go);
+  draw();
+  return row;
 }
 
 export function slotGrid(slots: HTMLElement[], emptyMessage?: string): HTMLElement {

@@ -106,8 +106,20 @@ function boardRow(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
   return el('div', { class: 'board-row' }, [
     ...(art ? [el('img', { class: 'board-thumb', src: art, alt: '', width: '46', height: '12' })] : []),
     el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
+    /*
+     * What the board does, said rather than badged.
+     *
+     * "Appeal +8%" in green reads as a rosette the shelf has been awarded. The
+     * number is the same; the sentence is about the goods standing on it, which
+     * is the thing the player is actually deciding about.
+     */
     ...(current.appealBonus > 0
-      ? [chip(t('shop.board.appeal', { percent: Math.round(current.appealBonus * 100) }), 'good')]
+      ? [
+          el('span', {
+            class: 'field-note',
+            text: t('shop.board.appealNote', { percent: Math.round(current.appealBonus * 100) }),
+          }),
+        ]
       : []),
     ...fits,
   ]);
