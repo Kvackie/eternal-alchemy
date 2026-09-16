@@ -936,9 +936,18 @@ input[type='range'] {
   cursor: default;
 }
 
+/*
+ * The same reading as a picked hero, for the same reason.
+ *
+ * A destination tile's only mark was a 1px amber border over a near-black
+ * wash — against `--sunken` that is a few points of lightness, and on a phone
+ * it is no mark at all. The ring adds no layout, so a tile does not shift when
+ * it is chosen.
+ */
 .slot[data-selected='true'] {
   border-color: var(--amber);
   background: var(--amber-soft);
+  box-shadow: 0 0 0 2px var(--amber);
 }
 
 .slot[data-dragging='true'] {
@@ -1449,9 +1458,20 @@ input[type='range'] {
   border-radius: var(--radius);
 }
 
+/*
+ * Picked, and obviously so.
+ *
+ * A 1px border and a 2px rule were the whole of it, which on a phone held at
+ * arm's length is a card that still reads as grey. The ring is drawn with
+ * `box-shadow` so nothing reflows when it appears, and the amber wash gives the
+ * state a body rather than an edge.
+ */
 .hero[data-selected='true'] {
   border-color: var(--amber);
-  box-shadow: inset 2px 0 0 var(--amber);
+  background: var(--amber-soft);
+  box-shadow:
+    inset 4px 0 0 var(--amber),
+    0 0 0 1px var(--amber);
 }
 
 /* A card that answers to a tap should say so before it is tapped. */
@@ -3391,10 +3411,20 @@ input[type='range'] {
   color: var(--muted);
 }
 
+/*
+ * A rank name is a value too, and it has to be allowed to break.
+ *
+ * The grid puts three cards on a phone, which leaves each value about 97px.
+ * "Arch-Alchemist" wants 108 at this size and would not wrap, so the last
+ * characters were simply cut off the card — a rank you cannot read is a rank
+ * the screen is not reporting. Breaking inside the word is the lesser loss, and
+ * the numbers this class usually holds are far too short to reach it.
+ */
 .stat-card-value {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .log-rows {
@@ -3585,6 +3615,127 @@ input[type='range'] {
 /* -------------------------------------------------------------- wide view */
 
 /*
+ * Below the desktop breakpoint, a roomy panel is a page too.
+ *
+ * `.panel-roomy` was only ever defined inside the desktop query, so the Roster,
+ * the Board and Settings fell back to the default docked panel — a bottom sheet
+ * capped at 68% of the stage. On a 412x883 phone that put Settings in the lower
+ * 522px with 245px of bare ground above it and 1,801px of content inside, and
+ * it left the Roster with three scrollers nested in a 678px window: a flick on
+ * the hero list moved the hero list, `overscroll-behavior` stopped it carrying
+ * into the panel, and the Send button sat below a fold no gesture could reach.
+ *
+ * These three screens draw no scene, so there is nothing behind them worth
+ * keeping a card shape for. They become the full-stage page the Cauldron
+ * already is above — one scroller, the whole height, nothing nested.
+ */
+@media (max-width: 959.98px) {
+  .panel-roomy {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .panel-roomy > .panel-body {
+    overflow: visible;
+  }
+
+  /* A folded section inside a scrolling page must not scroll on its own. */
+  .panel-roomy .collapsible-body {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /*
+   * The Roster's two windows stack into one page here.
+   *
+   * `.panel-pair` is desktop-only as well, so below the breakpoint it was an
+   * unstyled div that simply grew to hold both panels at their full height and
+   * took the stage's scroll away with it. Stacked, the pair is the scroller and
+   * the panels inside it are plain blocks — two scrolling windows sharing 767px
+   * is the nesting this whole block exists to undo.
+   */
+  .panel-pair {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .panel-pair > .panel {
+    flex: none;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  /*
+   * "Go" stays on the screen.
+   *
+   * Un-nesting the scrollers put the whole Roster on one page, which leaves 45
+   * heroes between the top of it and the Send button. Sticking the last step to
+   * the foot of the page keeps the end of the sequence in reach from anywhere
+   * in it — which is what capping each section was trying to buy, at the price
+   * of a panel that could not be scrolled by the thumb holding the phone.
+   */
+  .panel-roomy .send {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    padding-block: 0.5rem;
+    background: var(--surface);
+    border-top: 1px solid var(--rule);
+  }
+
+  /*
+   * The readout goes on one line, so the footer stays a footer.
+   *
+   * Stacked, the estimate and the button together held 310px of a 767px screen
+   * for the whole time you were choosing. The odds are worth having under your
+   * thumb while you pick; they are not worth two fifths of the list you are
+   * picking from.
+   */
+  .panel-roomy .send .outcome {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .panel-roomy .send .outcome .stat-line {
+    gap: 0.3rem;
+  }
+
+  .panel-roomy .send .send-action .btn {
+    min-height: 2.75rem;
+  }
+
+  /*
+   * The scene with the panel out of the way.
+   *
+   * `display: none` rather than a transform or an opacity: a panel that is off
+   * the point of showing the scene should not still be catching the taps meant
+   * for it, and the point of the toggle is the room, not the animation.
+   */
+  #panels[data-scene-only='true'] > .panel,
+  #panels[data-scene-only='true'] > .panel-pair {
+    display: none;
+  }
+}
+
+/*
  * Desktop shows more panels at once; it never shows anything mobile can't reach.
  * That is the whole responsive strategy.
  */
@@ -3664,6 +3815,11 @@ input[type='range'] {
   .panel-roomy {
     margin-inline: auto;
     max-width: 52rem;
+  }
+
+  /* Both fit at this size, so there is nothing to take turns over. */
+  .view-peek {
+    display: none;
   }
 
   /* Given room, a full-stage page still reads better bounded and centred. */
