@@ -12,7 +12,7 @@ import { formatGold, t } from '@/i18n';
 import { config } from '@/sim/config';
 import { contractSummary } from '@/sim/contracts';
 import type { Simulation } from '@/sim/sim';
-import { changed, toast } from '@/ui/bus';
+import { changed, confirm, toast } from '@/ui/bus';
 
 export function renderBoard(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
@@ -95,9 +95,33 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
       button(
         t('board.abandon'),
         () => {
-          sim.abandonContract(contract.id);
-          toast(t('board.abandoned'));
-          changed();
+          /*
+           * Asked first, because there is no way back.
+           *
+           * Abandoning forfeits the contract and whatever has already been
+           * delivered against it, and the button sits next to Deliver on a row
+           * that is thumb-sized on a phone. A mis-tap used to cost the whole
+           * standing order and report it with a toast.
+           */
+          confirm({
+            title: t('board.abandon.title'),
+            // Nothing delivered yet is the common case, and "and the 0 already
+            // delivered are not returned" is a sentence about nothing.
+            body: t(
+              contract.delivered > 0 ? 'board.abandon.bodyDelivered' : 'board.abandon.body',
+              {
+                count: contract.quantity,
+                recipe: t(`recipe.${template.recipeId}`),
+                delivered: contract.delivered,
+              },
+            ),
+            confirm: t('board.abandon'),
+            onConfirm: () => {
+              sim.abandonContract(contract.id);
+              toast(t('board.abandoned'));
+              changed();
+            },
+          });
         },
         { variant: 'quiet', small: true },
       ),
