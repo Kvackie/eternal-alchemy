@@ -296,6 +296,18 @@ function goodsNotes(entry: StockEntry): string[] {
     if (def.shelfStack && def.shelfStack > 1) notes.push(t('goods.shelfStack', { count: def.shelfStack }));
   }
 
+  if (entry.kind === 'decor') {
+    const { effect } = getDecor(entry.id);
+    if (effect.appealBonus) notes.push(t('goods.decorAppeal', { percent: pct(effect.appealBonus) }));
+    if (effect.footfallBonus) notes.push(t('goods.footfall', { percent: pct(effect.footfallBonus) }));
+    if (effect.nightFootfallBonus) {
+      notes.push(t('goods.nightFootfall', { percent: pct(effect.nightFootfallBonus) }));
+    }
+    if (effect.haggleCeilingBonus) {
+      notes.push(t('goods.haggleCeiling', { percent: pct(effect.haggleCeilingBonus) }));
+    }
+  }
+
   if (entry.kind === 'seal') {
     const def = getSeal(entry.id);
     if (def.umbraOnly) notes.push(t('goods.umbraOnly'));
