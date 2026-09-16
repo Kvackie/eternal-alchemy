@@ -11,7 +11,8 @@
  * "does" whatever it steers the pot toward.
  */
 
-import { button, chip, el, ingredientIcon } from './components';
+import { button, chip, el, ingredientIcon, quantityAction } from './components';
+import type { QuantityActionSpec } from './components';
 import { t } from '@/i18n';
 import { config, getIngredient, realRecipes } from '@/sim/config';
 import { agingRateFor, angleBetween, applyFreshness, totalEssence } from '@/sim/essences';
@@ -153,7 +154,19 @@ function essenceRows(essence: EssenceVector): HTMLElement {
  * Built as a plain overlay so it sits over whichever screen asked for it, and
  * dismisses on backdrop click or Escape like the other dialogs.
  */
-export function showIngredientInfo(sim: Simulation, ingredientId: string): void {
+/**
+ * Show what an ingredient does, and optionally offer to act on it.
+ *
+ * The action is what the tile's click used to be. Moving it in here is what
+ * lets a tap on a tile mean "tell me about this" everywhere, instead of meaning
+ * "buy one" in the market and "select" in the garden and "tell me" only on a
+ * dot in the corner too small to aim at.
+ */
+export function showIngredientInfo(
+  sim: Simulation,
+  ingredientId: string,
+  action?: Omit<QuantityActionSpec, 'run'> & { run: (quantity: number) => void },
+): void {
   const def = getIngredient(ingredientId);
   const total = totalEssence(def.essence);
   const dominant = dominantEssence(def.essence);
@@ -247,7 +260,22 @@ export function showIngredientInfo(sim: Simulation, ingredientId: string): void 
           ]),
         ]),
 
-    el('div', { class: 'dialog-actions' }, [button(t('common.close'), dismiss, { variant: 'quiet' })]),
+    el('div', { class: 'dialog-actions' }, [
+      button(t('common.close'), dismiss, { variant: 'quiet' }),
+      ...(action
+        ? [
+            quantityAction({
+              ...action,
+              // The panel closes on the way out, so the result lands on the
+              // screen behind it rather than under a dialog nobody dismissed.
+              run: (quantity) => {
+                dismiss();
+                action.run(quantity);
+              },
+            }),
+          ]
+        : []),
+    ]),
   ]);
 
   overlay.append(el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [body]));

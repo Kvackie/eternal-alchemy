@@ -809,6 +809,64 @@ input[type='range'] {
   margin-top: 0.875rem;
 }
 
+/*
+ * How many, what it costs, and the verb — the foot of a details panel.
+ *
+ * Sits in the dialog's action row beside Close, and wraps ahead of it on a
+ * phone rather than squeezing the count into whatever gap is left over.
+ */
+.quantity-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.quantity-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.quantity-step {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.quantity-step:hover:not(:disabled) {
+  border-color: var(--verd);
+}
+
+.quantity-step:disabled {
+  opacity: 0.35;
+}
+
+/* Wide enough for three figures, so the row does not shuffle as it counts. */
+.quantity-count {
+  min-width: 2.25rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.quantity-total {
+  color: var(--amber);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.quantity-blocked {
+  color: var(--amber);
+  font-size: 0.75rem;
+}
+
 /* ------------------------------------------------------------------ steps */
 
 .step {
@@ -897,50 +955,6 @@ input[type='range'] {
   font-size: 0.75rem;
   border: 1px dashed var(--rule);
   border-radius: var(--radius);
-}
-
-/*
- * A tile that carries a details dot.
- *
- * The wrapper is the grid item so the dot can sit over the tile's corner
- * without a button ending up inside a button.
- */
-.slot-wrap {
-  position: relative;
-  display: flex;
-}
-
-.slot-wrap > .slot {
-  flex: 1;
-}
-
-.slot-info {
-  position: absolute;
-  top: 0.125rem;
-  right: 0.125rem;
-  width: 1.125rem;
-  height: 1.125rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 0.625rem;
-  font-style: italic;
-  font-weight: 700;
-  line-height: 1;
-  /* Quiet until wanted: present enough to find, faint enough to ignore. */
-  opacity: 0.55;
-}
-
-.slot-info:hover,
-.slot-info:focus-visible {
-  opacity: 1;
-  color: var(--ink);
-  border-color: var(--verd);
 }
 
 .slot {

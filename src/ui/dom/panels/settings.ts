@@ -6,7 +6,9 @@
  * this can be a control panel.
  */
 
-import { VALUE_MARK, button, clear, el, panelHeader, splitOnValue } from '../components';
+import { VALUE_MARK, button, clear, el, optionGroup, panelHeader, splitOnValue } from '../components';
+import { debugEnabled, setDebugEnabled } from '@/platform/debugFlag';
+import { bus } from '@/ui/bus';
 import { formatGold, formatNumber, t } from '@/i18n';
 import { prestigeConfig } from '@/sim/config';
 import type { CodexNodeDef, TownDef } from '@/sim/config';
@@ -82,6 +84,38 @@ export function renderSettings(deps: SettingsDeps): HTMLElement {
   );
 
   body.append(renderCodex(deps));
+
+  /*
+   * The debug panel, reachable without a query string.
+   *
+   * `?debug=1` still works and is how you turn it on when there is no settings
+   * screen in front of you, but a flag you have to know about is not a way in.
+   * Both write the same preference, so they cannot disagree.
+   */
+  body.append(
+    el('section', { class: 'setting' }, [
+      el('span', { class: 'field-label', text: t('settings.debug') }),
+      el('span', { class: 'field-note', text: t('settings.debug.hint') }),
+      optionGroup([
+        {
+          label: t('settings.debug.off'),
+          selected: !debugEnabled(),
+          onSelect: () => {
+            setDebugEnabled(false);
+            bus.emit({ type: 'debug', enabled: false });
+          },
+        },
+        {
+          label: t('settings.debug.on'),
+          selected: debugEnabled(),
+          onSelect: () => {
+            setDebugEnabled(true);
+            bus.emit({ type: 'debug', enabled: true });
+          },
+        },
+      ]),
+    ]),
+  );
 
   body.append(
     el('section', { class: 'setting' }, [

@@ -65,6 +65,23 @@ The rest are documents. The Market was among them until it wasn't: it had no art
 borrowed the Shop's, which drew your own shelves behind another trader's stock — one picture
 claiming to be two places.
 
+## What a tap on a tile means
+
+The same thing everywhere: **it tells you what the thing is.**
+
+It used to depend on where you were standing. In the market a tap spent money — one unit, at once,
+so a stack of twelve was twelve taps and you could not look before you leapt. In the garden it
+selected a seed. The only route to what something actually *did* was an 18px dot in the corner of the
+tile, which is a hard thing to hit and an easy thing never to notice.
+
+So the tile opens the details, and the details carry the verb: **Buy** with a count beside it and the
+total it will cost, **Plant this** for a seed, **Seed this** for a spore. The count is bounded by the
+stock and by the purse, so the stepper cannot offer a number the button behind it would refuse.
+
+A vessel or a seal says what it does in sentences rather than badges — what potency it will hold,
+what it does to appeal and to value, what it is worth to a hero or to the Ashwalker — each line read
+off the definition, so it cannot drift from the arithmetic.
+
 ## The four ways ingredients arrive
 
 Each source gets a different *verb*, or they are four timer farms wearing different art.
@@ -176,11 +193,14 @@ ingredients.
 
 ## Debug panel
 
-On by default in `npm run dev`. A built copy leaves it out — it grants gold and skips days, so it is
-not something every visitor to the deployed site should find — but `?debug=1` opts a browser in and
-is remembered, and `?debug=0` opts back out. It is imported dynamically either way, so a build
-nobody has asked it for never downloads it. A crop takes eighteen hours and a contract runs eight
-in-game days, so this is not optional tooling.
+On by default in `npm run dev`, off by default in a built copy — it grants gold and skips days, so it
+is not something every visitor to the deployed site should find. Two ways to change that, writing the
+same preference so they cannot disagree: **Settings → Debug menu**, and `?debug=1` in the URL
+(`?debug=0` to undo) for when there is no settings screen in front of you yet. Whichever is used
+wins in either build, so turning it off in `npm run dev` turns it off. It is imported dynamically, so
+a build nobody has asked it for never downloads it.
+
+A crop takes eighteen hours and a contract runs eight in-game days, so this is not optional tooling.
 
 Time scale ×1–×600 · jump to dawn/dusk/night · skip a day · **simulate being away** (runs the real
 resume path) · finish all timers · grant gold, renown and ingredients · pin the RNG seed so a bug
