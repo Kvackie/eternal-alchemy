@@ -594,10 +594,22 @@ export class Shell {
      * them. Hidden above the desktop breakpoint, where they already fit
      * together and swapping would only take something away.
      */
+    /*
+     * The label names the screen, not the mechanism.
+     *
+     * "Full view" and "Manage" describe what the button does to the layout,
+     * which is the one thing a player has no reason to care about. Naming the
+     * place — View Shop, Manage Grounds — says what you will be looking at, and
+     * it stays true on all three: a single hardcoded word would be wrong on two
+     * of them.
+     */
+    const place = t(`nav.${this.screen}`);
     const peek = el('button', {
       class: 'view-button view-peek',
       type: 'button',
-      text: this.sceneOnly ? t('world.showPanel') : t('world.hidePanel'),
+      text: this.sceneOnly
+        ? t('world.manageScreen', { screen: place })
+        : t('world.viewScreen', { screen: place }),
     });
     peek.setAttribute('aria-pressed', String(this.sceneOnly));
     peek.addEventListener('click', () => {
