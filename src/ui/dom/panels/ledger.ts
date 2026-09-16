@@ -74,9 +74,16 @@ function renderSummary(sim: Simulation): HTMLElement {
 
   // Third field names a currency, so the figure is drawn in that currency's
   // colour — the same three colours these numbers carry in the HUD.
-  const cards: Array<[string, string, string?]> = [
+  /*
+   * Every figure here is a number except one: the rank is a name.
+   *
+   * It is marked so, because a name wants none of what a figure wants — not the
+   * monospace of `num`, which made "Arch-Alchemist" 169px wide in a 97px card
+   * and had it broken after "Arch-Alchemis", and not a third of a row either.
+   */
+  const cards: Array<[string, string, string?, 'word'?]> = [
     [t('ledger.stats.gold'), formatGold(sim.world.gold), 'gold'],
-    [t('ledger.stats.rank'), t(`rank.${sim.rankId}`)],
+    [t('ledger.stats.rank'), t(`rank.${sim.rankId}`), undefined, 'word'],
     [t('ledger.stats.renown'), formatNumber(Math.round(sim.world.renown)), 'renown'],
     [t('ledger.stats.sold'), formatNumber(s.itemsSold)],
     [t('ledger.stats.earned'), formatGold(s.goldEarned), 'gold'],
@@ -98,11 +105,11 @@ function renderSummary(sim: Simulation): HTMLElement {
     el(
       'div',
       { class: 'stat-grid' },
-      cards.map(([label, value, tone]) =>
-        el('div', { class: 'stat-card' }, [
+      cards.map(([label, value, tone, kind]) =>
+        el('div', { class: `stat-card${kind === 'word' ? ' stat-card-word' : ''}` }, [
           el('span', { class: 'stat-card-label', text: label }),
           el('span', {
-            class: `stat-card-value num${tone ? ` ${tone}` : ''}`,
+            class: `stat-card-value${kind === 'word' ? '' : ' num'}${tone ? ` ${tone}` : ''}`,
             text: value,
           }),
         ]),

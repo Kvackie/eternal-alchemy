@@ -1478,16 +1478,34 @@ input[type='range'] {
   gap: 0.375rem;
 }
 
+/*
+ * These rows wrap rather than squeeze.
+ *
+ * A hero row is a portrait, a name with its chips, and a button whose width is
+ * deliberately fixed so the card does not twitch when the word inside it
+ * changes. At 150% text those three no longer fit across a phone, and since the
+ * name was the only part able to give, it was squeezed to 47px — "Karrin" needs
+ * 69 — and ran out over the button beside it. With a floor under the name the
+ * button drops to its own line instead. The commitment is 150% with nothing
+ * clipped, on every screen.
+ */
 .hero,
 .mission,
 .contract {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
   background: var(--surface-2);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
+}
+
+.hero > .plot-main,
+.mission > .plot-main,
+.contract > .plot-main {
+  flex: 1 1 9rem;
 }
 
 /*
@@ -3525,20 +3543,30 @@ input[type='range'] {
   color: var(--muted);
 }
 
-/*
- * A rank name is a value too, and it has to be allowed to break.
- *
- * The grid puts three cards on a phone, which leaves each value about 97px.
- * "Arch-Alchemist" wants 108 at this size and would not wrap, so the last
- * characters were simply cut off the card — a rank you cannot read is a rank
- * the screen is not reporting. Breaking inside the word is the lesser loss, and
- * the numbers this class usually holds are far too short to reach it.
- */
 .stat-card-value {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.15;
+  /* Last resort only: nothing here should reach it, and a clipped value is
+     worse than an ugly one. The card below asks for a better break first. */
   overflow-wrap: anywhere;
+}
+
+/*
+ * The one card holding a name rather than a figure.
+ *
+ * "Arch-Alchemist" in the monospace of `num` wanted 169px of a 97px card, so it
+ * was first clipped outright and then, once it was allowed to wrap, broken
+ * after "Arch-Alchemis". A name is not a figure: it drops the monospace, takes
+ * two of the three columns, and asks to be hyphenated before it is split.
+ */
+.stat-card-word {
+  grid-column: span 2;
+}
+
+.stat-card-word .stat-card-value {
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .log-rows {
