@@ -1,0 +1,57 @@
+# Publish the web build to GitHub Pages.
+#
+# The game is entirely client-side — Phaser plus DOM panels, saves in
+# localStorage, no server of any kind — so the `dist/` folder Vite produces is
+# the whole deployable site. Vite's `base: './'` keeps every asset reference
+# relative, which is what lets the same build work at the project-page subpath
+# (/eternal-alchemy/) as well as at a domain root.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it; a half-applied Pages
+# deployment is worse than a slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # `npm run build` type-checks before bundling, so a type error fails the
+      # deploy instead of shipping.
+      - run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
