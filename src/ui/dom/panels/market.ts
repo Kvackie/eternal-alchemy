@@ -44,7 +44,10 @@ export function renderMarket(sim: Simulation): HTMLElement {
   for (const visit of present) body.append(renderVisit(sim, visit));
   body.append(renderUpcoming(sim));
 
-  return el('div', { class: 'panel' }, [
+  // `panel-roomy`, like the Board and Settings: no scene behind it, so it is a
+  // full-stage page on a phone and a centred card given room, rather than a
+  // sheet docked to one side of a picture that is no longer drawn.
+  return el('div', { class: 'panel panel-roomy' }, [
     panelHeader(t('market.title'), t('market.subtitle')),
     body,
   ]);

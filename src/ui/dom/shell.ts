@@ -49,8 +49,13 @@ export interface ShellDeps {
  * The Cauldron left this set when brewing moved into its own station: the bench
  * is a list of pots you own and the station covers the stage, so a painted row
  * of cauldrons behind both was a picture nothing ever looked at.
+ *
+ * The Market left it for a plainer reason: it had no scene of its own. It
+ * borrowed the Shop's, so standing in the market drew your own shelves behind
+ * another trader's stock — one picture claiming to be two places. The market is
+ * the merchants and what they are selling, which is a list.
  */
-const SCENE_SCREENS = new Set<ScreenId>(['grounds', 'shop', 'market']);
+const SCENE_SCREENS = new Set<ScreenId>(['grounds', 'shop']);
 
 const SCREENS: Array<{ id: ScreenId; icon: string }> = [
   { id: 'shop', icon: '🏪' },

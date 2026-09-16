@@ -60,6 +60,11 @@ Eight screens: **Shop** (shelves and bottled inventory) · **Board** (contracts)
 (merchants) · **Grounds** (garden, cave and shaft as sub-tabs) · **Cauldron** (all alchemy) ·
 **Roster** (heroes and missions) · **Ledger** (statistics and a paginated event log) · **Settings**.
 
+Two of them draw a world behind the panel and can be panned and zoomed: **Shop** and **Grounds**.
+The rest are documents. The Market was among them until it wasn't: it had no art of its own and
+borrowed the Shop's, which drew your own shelves behind another trader's stock — one picture
+claiming to be two places.
+
 ## The four ways ingredients arrive
 
 Each source gets a different *verb*, or they are four timer farms wearing different art.
@@ -291,11 +296,11 @@ filter chips on a touch pointer. `.btn.small`, the secondary action inside a row
 is itself the 44px target, so it is an extra rather than the only way in. A sweep at 100% text counts
 22 controls under 44px in one dimension, all of them from those three classes.
 
-Below the 960px breakpoint the screens that draw no scene — Roster, Board, Settings — are full-stage
-pages rather than bottom sheets, and they are the only scroller on the page: a section that scrolls
-inside a panel that scrolls inside a phone is a section that takes the flick and gives nothing back.
-The three screens that *do* draw a scene — Shop, Grounds, Market — take turns instead, because
-412x883 is not enough for a shop and the managing of it at once. The toggle in the view controls
+Below the 960px breakpoint the screens that draw no scene — Market, Roster, Board, Settings — are
+full-stage pages rather than bottom sheets, and they are the only scroller on the page: a section
+that scrolls inside a panel that scrolls inside a phone is a section that takes the flick and gives
+nothing back. The two that *do* draw one — Shop and Grounds — take turns instead, because 412x883 is
+not enough for a shop and the managing of it at once. The toggle in the view controls
 names the screen rather than the mechanism (**View Shop** / **Manage Shop**), and each half gets the
 whole stage: managing hides the scene entirely, and the zoom and recentre buttons go with it. Nothing
 is lost by hiding it — nothing in the world is clickable, so the scene is a picture.
