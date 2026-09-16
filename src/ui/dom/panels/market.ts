@@ -109,6 +109,20 @@ function entryLabel(entry: StockEntry): string {
   }
 }
 
+/**
+ * How long this merchant is still here, ticking in place.
+ *
+ * The shell retextes anything carrying `data-countdown-at` every frame, which
+ * is what lets the Market stop rebuilding itself sixty times a second to move
+ * one number. See `needsLiveRedraw` in the shell for what that was costing.
+ */
+function leavingChip(leavesAt: number, leaving: number): HTMLElement {
+  const node = chip(t('market.leaves', { time: formatDuration(leaving) }));
+  node.dataset.countdownAt = String(leavesAt);
+  node.dataset.countdownKey = 'market.leaves';
+  return node;
+}
+
 function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
   const def = getMerchant(visit.merchantId);
   const leaving = Math.max(0, visit.leavesAt - sim.now);
@@ -121,7 +135,7 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
       chip(t(`merchant.${visit.merchantId}.tag`)),
     ]),
     el('div', { class: 'row-sub' }, [
-      chip(t('market.leaves', { time: formatDuration(leaving) })),
+      leavingChip(visit.leavesAt, leaving),
       chip(t('market.tier', { tier: visit.tier + 1 })),
       ...(visit.discount > 0
         ? [chip(t('market.discount', { percent: Math.round(visit.discount * 100) }), 'good')]
@@ -278,14 +292,21 @@ function buildEntry(
   });
 }
 
+/** When a merchant who is not here yet is due, ticking in place. */
+function whenDue(at: number, now: number): HTMLElement {
+  const node = el('span', {
+    class: 'num upcoming-when',
+    text: formatDuration(Math.max(0, at - now)),
+  });
+  node.dataset.countdownAt = String(at);
+  return node;
+}
+
 function renderUpcoming(sim: Simulation): HTMLElement {
   const rows = sim.upcoming().map((entry) =>
     el('div', { class: 'upcoming-row' }, [
       el('span', { class: 'upcoming-name', text: t(`merchant.${entry.merchantId}`) }),
-      el('span', {
-        class: 'num upcoming-when',
-        text: formatDuration(Math.max(0, entry.at - sim.now)),
-      }),
+      whenDue(entry.at, sim.now),
     ]),
   );
 
