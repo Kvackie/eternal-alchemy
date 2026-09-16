@@ -1603,8 +1603,8 @@
   "trait.stable": "Stable",
   "trait.pure": "Pure",
   "world.recenter": "Recenter",
-  "world.hidePanel": "Full view",
-  "world.showPanel": "Manage",
+  "world.viewScreen": "View {screen}",
+  "world.manageScreen": "Manage {screen}",
   "world.zoomIn": "Zoom in",
   "world.zoomOut": "Zoom out",
   "toast.harvestKinds": "{kinds} kinds"
