@@ -227,6 +227,28 @@ each time.
 
 Prestige is always optional. The top rank with no reset is a complete game.
 
+## Playing it in a browser
+
+The game is a static site. Nothing runs on a server — the simulation, the save and every asset live
+in the page — so `dist/` can be dropped onto any static host as-is.
+
+`.github/workflows/pages.yml` builds it and publishes it to GitHub Pages on every push to `main`. It
+needs Pages switched on once, under **Settings → Pages → Build and deployment → Source: GitHub
+Actions**; after that the site lands at:
+
+```
+https://kvackie.github.io/eternal-alchemy/
+```
+
+That subpath is why `vite.config.ts` sets `base: './'` and why `ui/art.ts` returns relative paths
+like `art/potion/x.png`: every reference resolves against the document, so the same build works at a
+repo subpath, at a domain root, and inside the Capacitor WebView without a rebuild.
+
+Two things follow from the save living in `localStorage`. It is **per-browser and per-origin** — the
+Pages save and a local `npm run dev` save are different games, and a browser that clears site data
+clears the shop. And the site is public: anyone with the link plays their own copy, starting from
+day one.
+
 ## Mobile
 
 `capacitor.config.json` is in place, and `platform/storage.ts` picks the save backend at runtime: the
