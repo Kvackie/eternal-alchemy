@@ -88,6 +88,9 @@ export class Shell {
    */
   private sceneOnly = false;
 
+  /** The market's cast as it was last drawn — see `marketCastChanged`. */
+  private marketCast = '';
+
   private hud = el('div', { class: 'hud' });
   private panels = el('div', { id: 'panels' });
   private nav = el('nav', { class: 'nav' });
@@ -227,7 +230,11 @@ export class Shell {
       if (!Number.isFinite(at)) continue;
       const time = formatDuration(Math.max(0, at - sim.now));
       const key = node.dataset.countdownKey;
-      node.textContent = key ? t(key, { time }) : time;
+      const next = key ? t(key, { time }) : time;
+      // Only when it actually reads differently. These run at frame rate and
+      // the text changes about once a second, so writing unconditionally threw
+      // away a text node per clock per frame for nothing.
+      if (node.textContent !== next) node.textContent = next;
     }
 
     for (const node of this.panels.querySelectorAll<HTMLElement>('[data-progress-from]')) {
@@ -244,8 +251,23 @@ export class Shell {
     if (this.screen === 'cauldron') {
       return this.deps.sim.burner !== null || this.deps.sim.brewing !== null;
     }
-    // The market counts down to a merchant leaving, which is worth watching.
-    if (this.screen === 'market') return true;
+    /*
+     * The market redraws when its cast changes, not when its clock moves.
+     *
+     * This used to return `true` outright, so the panel was torn down and
+     * rebuilt every frame to move one number: 366 childList mutations a second,
+     * against zero on a screen that does not do this. A click needs mousedown
+     * and mouseup to land on the same element, and that element was replaced
+     * between them — one tap in six reached a button on this screen.
+     *
+     * It is the same bug the roster note below describes, and it takes the same
+     * cure: the countdowns carry `data-countdown-at` and are retexted in place,
+     * so the only thing left worth a rebuild is a merchant arriving or leaving.
+     * That still has to be watched from here, because the simulation does not
+     * announce it — nothing emits `world:changed` as time passes, so without
+     * this check a merchant would sit on the screen after they had gone.
+     */
+    if (this.screen === 'market') return this.marketCastChanged();
 
     /*
      * The roster is NOT redrawn live.
@@ -256,6 +278,26 @@ export class Shell {
      * out. See the note there.
      */
     return false;
+  }
+
+  /**
+   * Who is at the market, and who is due — as one comparable string.
+   *
+   * Both halves are needed: a merchant leaving drops out of `merchants()` and
+   * reappears in `upcoming()`, and the panel has to follow them across. The
+   * timestamps are fixed points rather than remaining durations, so this is
+   * stable between frames and only differs when the cast actually changes.
+   */
+  private marketCastChanged(): boolean {
+    const { sim } = this.deps;
+    const cast = [
+      ...sim.merchants().map((visit) => `${visit.merchantId}@${visit.leavesAt}`),
+      ...sim.upcoming().map((entry) => `${entry.merchantId}>${entry.at}`),
+    ].join('|');
+
+    if (cast === this.marketCast) return false;
+    this.marketCast = cast;
+    return true;
   }
 
   render(): void {
