@@ -11,7 +11,7 @@
  * elsewhere on the tile.
  */
 
-import { button, chip, el, gradeBadge, potionIcon, stat } from './components';
+import { button, chip, el, gradeBadge, modal, potionIcon, stat } from './components';
 import { formatGold, formatNumber, t } from '@/i18n';
 import { getForm, getHeroDef, getSeal, getVessel } from '@/sim/config';
 import type { Simulation } from '@/sim/sim';
@@ -54,18 +54,6 @@ export function showPotionInfo(sim: Simulation, item: BottledItem, count = 1): v
   const vessel = getVessel(item.vesselId);
   const seal = getSeal(item.sealId);
 
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => {
-    overlay.remove();
-    document.removeEventListener('keydown', onKey);
-  };
-  function onKey(event: KeyboardEvent) {
-    if (event.key === 'Escape') dismiss();
-  }
-  document.addEventListener('keydown', onKey);
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) dismiss();
-  });
 
   /*
    * The two bonuses a bottle can carry into an expedition.
@@ -93,8 +81,9 @@ export function showPotionInfo(sim: Simulation, item: BottledItem, count = 1): v
     facts.push(stat(t('potionInfo.supplyBonus'), `+${supplyBonus}`, 'good'));
   }
 
-  overlay.append(
-    el('div', { class: 'dialog potion-info', role: 'dialog', 'aria-modal': 'true' }, [
+  modal({
+    className: 'potion-info',
+    content: (dismiss) => [
       el('div', { class: 'ingredient-info-head' }, [
         el('span', { class: 'ingredient-info-art' }, [potionIcon(item.recipeId, 44)]),
         el('div', {}, [
@@ -116,8 +105,6 @@ export function showPotionInfo(sim: Simulation, item: BottledItem, count = 1): v
       el('div', { class: 'dialog-actions' }, [
         button(t('common.close'), dismiss, { variant: 'quiet' }),
       ]),
-    ]),
-  );
-
-  document.getElementById('panels')?.append(overlay);
+    ],
+  });
 }

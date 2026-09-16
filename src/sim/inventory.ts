@@ -8,7 +8,7 @@
 
 import { getIngredient } from './config';
 import { freshnessOf } from './essences';
-import type { Freshness, IngredientStack, World } from './types';
+import type { Freshness, World } from './types';
 
 /** Stacks harvested within this window of each other merge, to stop stack sprawl. */
 const MERGE_WINDOW_MS = 60_000;

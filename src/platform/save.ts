@@ -9,16 +9,7 @@
  * above this file knows the difference.
  */
 
-import {
-  baseCauldronTier,
-  baseShelfTier,
-  caveConfig,
-  config,
-  decorPieces,
-  findDecor,
-  realRecipes,
-  shaftConfig,
-} from '@/sim/config';
+import { baseCauldronTier, baseShelfTier, caveConfig, config, findDecor, realRecipes, shaftConfig } from '@/sim/config';
 import { makeCaveTiles } from '@/sim/cave';
 import { emptySpots } from '@/sim/decor';
 import { rankIndexFor } from '@/sim/progression';

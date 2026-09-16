@@ -13,12 +13,24 @@
 
 const KEY = 'eternal-alchemy/debug';
 
-/** Read the query flag once, at module load, before anything can navigate away. */
-const asked = (() => {
+/**
+ * The query flag is applied once, at module load, and then forgotten.
+ *
+ * It used to be re-read on every call, which meant `?debug=1` outranked storage
+ * for the whole life of the page: pressing Off in Settings wrote '0', and the
+ * next render read the flag again, returned true and wrote '1' back. The switch
+ * snapped to On while the panel was gone, and a reload without the query string
+ * still came up with debug on. Writing it once makes the preference the only
+ * thing anyone reads afterwards, which is what lets the switch be authoritative.
+ */
+(() => {
   try {
-    return new URLSearchParams(location.search).get('debug');
+    const asked = new URLSearchParams(location.search).get('debug');
+    if (asked === null) return;
+    localStorage.setItem(KEY, asked !== '0' && asked !== 'false' ? '1' : '0');
   } catch {
-    return null;
+    // No query string to read, or no storage to write it to. Either way the
+    // stored preference below is the answer.
   }
 })();
 
@@ -31,11 +43,6 @@ const asked = (() => {
  */
 export function debugEnabled(): boolean {
   try {
-    if (asked !== null) {
-      const on = asked !== '0' && asked !== 'false';
-      localStorage.setItem(KEY, on ? '1' : '0');
-      return on;
-    }
     const stored = localStorage.getItem(KEY);
     if (stored !== null) return stored === '1';
     return import.meta.env.DEV;

@@ -6,23 +6,13 @@
  * works with taps alone — drag is the accelerator, not the requirement.
  */
 
-import {
-  button,
-  chip,
-  el,
-  goldText,
-  gradeBadge,
-  makeDropTarget,
-  panelHeader,
-  potionIcon,
-  slot,
-  slotGrid,
-} from '../components';
+import { button, chip, el, goldText, gradeBadge, makeDropTarget, panelHeader, potionIcon, slot, slotGrid } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
 import { artUrlIf } from '@/ui/art';
-import { dominantEssence } from '@/ui/phaser/placeholders';
+import { goodsNotes } from '../goods';
+
 import { renderHaggle } from './haggle';
 import type { BottledItem, ShelfSlot } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
@@ -219,8 +209,17 @@ function renderDecor(sim: Simulation): HTMLElement {
           variant: placed ? undefined : 'quiet',
           small: true,
           disabled: !option.owned,
+          /*
+           * The flavour and the figures, which is what a choice needs.
+           *
+           * The numbers used to be in the detail string and were taken out when
+           * they moved into generated prose — which left this picker, the one
+           * screen where you decide between a banner worth +10% footfall and one
+           * worth +44%, with nothing to decide on. Same source as the Market's
+           * panel, so the two can never drift apart.
+           */
           title: option.owned
-            ? t(`decor.${option.def.id}.detail`)
+            ? [t(`decor.${option.def.id}.detail`), ...goodsNotes('decor', option.def.id)].join('\n')
             : t('decor.notOwned', { cost: formatGold(option.def.cost) }),
         },
       );

@@ -6,7 +6,16 @@
  * this can be a control panel.
  */
 
-import { VALUE_MARK, button, clear, el, optionGroup, panelHeader, splitOnValue } from '../components';
+import {
+  VALUE_MARK,
+  button,
+  clear,
+  el,
+  modal,
+  optionGroup,
+  panelHeader,
+  splitOnValue,
+} from '../components';
 import { debugEnabled, setDebugEnabled } from '@/platform/debugFlag';
 import { bus } from '@/ui/bus';
 import { formatGold, formatNumber, t } from '@/i18n';
@@ -306,21 +315,17 @@ function codexStars(tier: number, total: number): HTMLElement {
  */
 function openCodex(deps: SettingsDeps, node: CodexNodeDef): void {
   const { sim } = deps;
-  const overlay = el('div', { class: 'overlay' });
-  const dialog = el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' });
+  const dialog = el('div', { class: 'codex-card' });
 
   /*
    * Closing is what tells the board to redraw.
    *
-   * `changed()` rebuilds every panel, and this overlay lives inside the panel
-   * container — so calling it while the dialog is open would delete the dialog
-   * mid-purchase. The HUD's Mastery still counts down live, because the shell
-   * redraws that every frame regardless.
+   * The modal lives on the stage now rather than inside the panel container, so
+   * a redraw can no longer delete it mid-purchase — but the board behind it
+   * still only needs repainting once, on the way out. The HUD's Mastery counts
+   * down live regardless, because the shell redraws that every frame.
    */
-  const dismiss = () => {
-    overlay.remove();
-    changed();
-  };
+  const dismiss = modal({ content: () => [dialog], onClose: changed });
 
   const paint = () => {
     const tier = codexTier(sim.world, node.id);
@@ -375,9 +380,9 @@ function openCodex(deps: SettingsDeps, node: CodexNodeDef): void {
     );
   };
 
+  // `modal` has already mounted the card; this fills it, and every later
+  // purchase repaints the same node in place.
   paint();
-  overlay.append(dialog);
-  document.getElementById('panels')?.append(overlay);
 }
 
 /**
@@ -498,11 +503,8 @@ let chosenTown: string | null = null;
 
 function confirmRetire(deps: SettingsDeps, townId: string | null): void {
   if (!townId) return;
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => overlay.remove();
-
-  overlay.append(
-    el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [
+  modal({
+    content: (dismiss) => [
       el('h2', { text: t('prestige.confirmTitle') }),
       el('p', { text: t('prestige.confirmBody', { town: t(`town.${townId}`) }) }),
       el('div', { class: 'dialog-actions' }, [
@@ -513,10 +515,8 @@ function confirmRetire(deps: SettingsDeps, townId: string | null): void {
           if (result) deps.onImport(result.world);
         }, { variant: 'warm' }),
       ]),
-    ]),
-  );
-
-  document.getElementById('panels')?.append(overlay);
+    ],
+  });
 }
 
 /**
@@ -524,21 +524,16 @@ function confirmRetire(deps: SettingsDeps, townId: string | null): void {
  * rather than through `confirm()`, which blocks the whole tab.
  */
 function confirmNewGame(onConfirm: () => void): void {
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => overlay.remove();
-
-  overlay.append(
-    el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [
+  modal({
+    content: (dismiss) => [
       el('h2', { text: t('settings.newGame.confirmTitle') }),
       el('p', { text: t('settings.newGame.confirmBody') }),
       el('div', { class: 'dialog-actions' }, [
         button(t('common.cancel'), dismiss, { variant: 'quiet' }),
         button(t('settings.newGame.action'), onConfirm, { variant: 'warm' }),
       ]),
-    ]),
-  );
-
-  document.getElementById('panels')?.append(overlay);
+    ],
+  });
 }
 
 /**

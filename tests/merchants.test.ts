@@ -422,3 +422,72 @@ describe('equipment', () => {
     expect(sim.setCauldronStored(spare.id, true)).toBe(false);
   });
 });
+
+describe('buying several at once', () => {
+  /**
+   * The bug this pins down.
+   *
+   * Buying N by calling `buy` N times re-derived every merchant's stock on each
+   * unit, and a purchase that pushes a relationship past a tier boundary
+   * regenerates that list — so the same index pointed at different goods half
+   * way through. On day 1, with Vessa at 380 of a 400 threshold, asking for
+   * three Glass Flasks at 10g bought two flasks and a Moonpetal, and charged
+   * 47g for a basket the panel had priced at 30.
+   */
+  it('buys the entry that was chosen, not whatever lands at that index later', () => {
+    const world = createWorld();
+    world.now = midday(1);
+    world.gold = 1_000_000;
+    world.merchantRelations = { ...world.merchantRelations, vessa: 380 };
+    const sim = new Simulation(world);
+
+    const visit = sim.merchants().find((v) => v.merchantId === 'vessa')!;
+    const index = 1;
+    const chosen = visit.entries[index]!;
+    expect(chosen.id).toBe('glassFlask');
+
+    const unit = chosen.price ?? 0;
+    const before = sim.world.gold;
+    // The shop opens with some glassware already on the shelf, so count the
+    // change rather than the total.
+    const heldBefore = sim.world.vessels.glassFlask ?? 0;
+    const { bought } = sim.buyQuantity('vessa', index, 3);
+
+    expect(bought).toBe(3);
+    // Charged for what was shown, at the price that was shown.
+    expect(before - sim.world.gold).toBe(unit * 3);
+    // And three of the thing itself arrived, not two and something else.
+    expect((sim.world.vessels.glassFlask ?? 0) - heldBefore).toBe(3);
+  });
+
+  it('stops at the stock and reports nothing bought when it cannot start', () => {
+    const world = createWorld();
+    world.now = midday(4);
+    world.gold = 1_000_000;
+    const sim = new Simulation(world);
+    const visit = sim.merchants().find((v) => v.merchantId === 'bramm')!;
+    const index = visit.entries.findIndex((e) => !e.barter);
+    const stock = visit.entries[index]!.remaining;
+
+    expect(sim.buyQuantity('bramm', index, stock + 5).bought).toBe(stock);
+    expect(sim.buyQuantity('bramm', index, 1)).toEqual({
+      bought: 0,
+      reasonKey: 'market.error.soldOut',
+    });
+  });
+
+  it('will not spend gold the purse does not have', () => {
+    const world = createWorld();
+    world.now = midday(4);
+    world.gold = 0;
+    const sim = new Simulation(world);
+    const visit = sim.merchants().find((v) => v.merchantId === 'bramm')!;
+    const index = visit.entries.findIndex((e) => !e.barter && (e.price ?? 0) > 0);
+
+    expect(sim.buyQuantity('bramm', index, 3)).toEqual({
+      bought: 0,
+      reasonKey: 'market.error.gold',
+    });
+    expect(sim.world.gold).toBe(0);
+  });
+});

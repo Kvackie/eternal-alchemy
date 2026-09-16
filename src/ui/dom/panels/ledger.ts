@@ -7,15 +7,7 @@
  * my text" has nothing to do with "what did I earn last week".
  */
 
-import {
-  VALUE_MARK,
-  button,
-  chip,
-  el,
-  gradeBadge,
-  panelHeader,
-  splitOnValue,
-} from '../components';
+import { VALUE_MARK, button, el, gradeBadge, panelHeader, splitOnValue } from '../components';
 import { formatGold, formatNumber, has, t } from '@/i18n';
 import { dayStateAt } from '@/sim/clock';
 import { logPage } from '@/sim/log';

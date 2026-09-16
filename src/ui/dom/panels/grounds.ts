@@ -165,11 +165,16 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
       onActivate: () => {
         const chosen = selectedCrop === id;
         showIngredientInfo(sim, crop.yields, {
-          label: chosen ? t('garden.seed.deselect') : t('garden.seed.select'),
-          max: 1,
-          run: () => {
-            selectedCrop = chosen ? null : id;
-            changed();
+          // A bred strain carries its own vector, not the wild plant's.
+          essence: strain?.essence,
+          title: strain ? label : undefined,
+          action: {
+            label: chosen ? t('garden.seed.deselect') : t('garden.seed.select'),
+            max: 1,
+            run: () => {
+              selectedCrop = chosen ? null : id;
+              changed();
+            },
           },
         });
       },
@@ -430,12 +435,14 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
         onActivate: () => {
           const chosen = selectedSpecies === species.id;
           showIngredientInfo(sim, species.id, {
-            label: chosen ? t('garden.seed.deselect') : t('cave.spore.select'),
-            max: 1,
-            run: () => {
-              selectedSpecies = chosen ? null : species.id;
-              caveTool = 'seed';
-              changed();
+            action: {
+              label: chosen ? t('garden.seed.deselect') : t('cave.spore.select'),
+              max: 1,
+              run: () => {
+                selectedSpecies = chosen ? null : species.id;
+                caveTool = 'seed';
+                changed();
+              },
             },
           });
         },

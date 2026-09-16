@@ -771,6 +771,14 @@ input[type='range'] {
 
 /* ---------------------------------------------------------------- overlay */
 
+/*
+ * Above everything, because it now sits beside the panels rather than inside.
+ *
+ * Mounted on the stage so a panel rebuild cannot tear it out, which makes it a
+ * sibling of `#panels` — and the floating view and debug controls in there
+ * carry z-indexes of their own (16, 17, 20). A modal that a zoom button paints
+ * over is not a modal.
+ */
 .overlay {
   position: absolute;
   inset: 0;
@@ -778,7 +786,7 @@ input[type='range'] {
   display: grid;
   place-items: center;
   padding: 1rem;
-  z-index: 10;
+  z-index: 30;
 }
 
 .dialog {
@@ -865,6 +873,13 @@ input[type='range'] {
 .quantity-blocked {
   color: var(--amber);
   font-size: 0.75rem;
+}
+
+/* A price that is not in coins, said where the coins would have been. */
+.quantity-note {
+  color: var(--amber);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 /* ------------------------------------------------------------------ steps */
@@ -980,6 +995,17 @@ input[type='range'] {
 .slot:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+/*
+ * Unavailable, but still worth opening.
+ *
+ * Wears `disabled`'s clothes without its behaviour: a sold-out or rank-locked
+ * tile is precisely the one a player wants to read, and a real `disabled` drops
+ * the click that opens it.
+ */
+.slot[data-dimmed='true'] {
+  opacity: 0.4;
 }
 
 /*
