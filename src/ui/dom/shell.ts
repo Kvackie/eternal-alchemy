@@ -24,7 +24,7 @@ import { renderOnboarding } from './panels/onboarding';
 import { formatDuration, formatGold, formatLongDuration, formatNumber, t } from '@/i18n';
 import { dayStateAt } from '@/sim/clock';
 import { config } from '@/sim/config';
-import { bus, changed, type ScreenId } from '@/ui/bus';
+import { bus, changed, type ConfirmRequest, type ScreenId } from '@/ui/bus';
 import type { AwaySummary, Simulation } from '@/sim/sim';
 import type { SaveManager } from '@/platform/save';
 import type { World } from '@/sim/types';
@@ -67,16 +67,26 @@ export class Shell {
   private screen: ScreenId = 'ledger';
   private debugOpen = false;
   private away: AwaySummary | null = null;
+  private confirming: ConfirmRequest | null = null;
   private uiScale = 1;
 
   /**
-   * Loaded lazily in dev builds only.
+   * Loaded lazily, and only where it has been asked for.
    *
    * A static import would keep the debug panel in the production graph even
    * behind an `import.meta.env.DEV` branch — the dead code goes, the module
    * doesn't. Importing it dynamically is what actually keeps it out.
    */
   private renderDebug: typeof import('@/debug/timePanel').renderDebugPanel | null = null;
+
+  /**
+   * The scene, with the panel out of the way.
+   *
+   * Only meaningful on the three screens that draw a world, and only below the
+   * desktop breakpoint — above it the panel and the scene already fit side by
+   * side and the toggle is hidden.
+   */
+  private sceneOnly = false;
 
   private hud = el('div', { class: 'hud' });
   private panels = el('div', { id: 'panels' });
@@ -94,7 +104,7 @@ export class Shell {
     this.uiScale = readStoredScale();
     document.documentElement.style.setProperty('--ui-scale', String(this.uiScale));
 
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV || debugRequested()) {
       void import('@/debug/timePanel').then((module) => {
         this.renderDebug = module.renderDebugPanel;
         this.renderPanels();
@@ -115,6 +125,10 @@ export class Shell {
         case 'away':
           this.debugOpen = false;
           this.showAway(event.summary);
+          break;
+        case 'confirm':
+          this.confirming = event.request;
+          this.renderPanels();
           break;
         case 'toast':
           this.showToast(event.message);
@@ -140,6 +154,9 @@ export class Shell {
     // Leaving the Cauldron leaves the pot: coming back to a station you did not
     // remember opening, on a screen you reached by another route, is a trap.
     if (this.screen === 'cauldron' && screen !== 'cauldron' && isStationOpen()) closeStation();
+    // Arriving somewhere with the panel already hidden is arriving at a screen
+    // that looks empty, so the scene-only view lasts only as long as the screen.
+    if (screen !== this.screen) this.sceneOnly = false;
     this.screen = screen;
     this.deps.onScreenChange(screen);
     this.render();
@@ -343,8 +360,14 @@ export class Shell {
      * Every body, not the first one. The Roster is two panels side by side, and
      * restoring only `querySelector('.panel-body')` meant the tavern — 45 cards
      * deep — jumped to the top whenever anything in the world ticked.
+     *
+     * The pair counts as well. Below the desktop breakpoint its two panels stack
+     * into one page and the pair itself is the scroller, so tracking only the
+     * bodies meant picking a hero half way down the Roster threw the page back
+     * to the top — on the one screen where choosing is the whole activity.
      */
-    const scrolls = [...this.panels.querySelectorAll('.panel-body')].map((node) => node.scrollTop);
+    const SCROLLERS = '.panel-body, .panel-pair';
+    const scrolls = [...this.panels.querySelectorAll(SCROLLERS)].map((node) => node.scrollTop);
 
     /*
      * Anything that scrolls and is not a panel body keeps its place by name.
@@ -374,7 +397,7 @@ export class Shell {
 
     // Positional: the same screen rebuilds to the same shape, and a screen that
     // has changed shape has no position worth restoring anyway.
-    this.panels.querySelectorAll('.panel-body').forEach((node, index) => {
+    this.panels.querySelectorAll(SCROLLERS).forEach((node, index) => {
       const scroll = scrolls[index] ?? 0;
       if (scroll > 0) node.scrollTop = scroll;
     });
@@ -391,6 +414,12 @@ export class Shell {
       this.panels.append(this.buildViewControls());
     }
 
+    // CSS decides whether this means anything: above the desktop breakpoint the
+    // panel and the scene both fit, so the flag is ignored and the toggle hidden.
+    this.panels.dataset.sceneOnly = String(
+      this.sceneOnly && SCENE_SCREENS.has(this.screen) && !isStationOpen(),
+    );
+
     if (this.renderDebug) {
       this.panels.append(this.buildDebugToggle());
       if (this.debugOpen) {
@@ -406,6 +435,7 @@ export class Shell {
     }
 
     if (this.away) this.panels.append(this.buildAwayDialog(this.away));
+    if (this.confirming) this.panels.append(this.buildConfirmDialog(this.confirming));
   }
 
   private buildPanel(): HTMLElement {
@@ -497,6 +527,42 @@ export class Shell {
    * already lost is one you have to discover at the worst moment, and a scene
    * you cannot see all of is exactly when you want the zoom.
    */
+  /**
+   * A question with a way out of it.
+   *
+   * "Cancel" comes first and carries the quiet styling, because the dangerous
+   * answer should not be the one your thumb is already resting on — and the
+   * dialog closes itself either way, so a mis-tap on the backdrop is not a
+   * decision.
+   */
+  private buildConfirmDialog(request: ConfirmRequest): HTMLElement {
+    const close = () => {
+      this.confirming = null;
+      this.renderPanels();
+    };
+
+    const overlay = el('div', { class: 'overlay' }, [
+      el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [
+        el('h2', { text: request.title }),
+        el('p', { text: request.body }),
+        el('div', { class: 'dialog-actions' }, [
+          button(t('common.cancel'), close, { variant: 'quiet' }),
+          button(request.confirm, () => {
+            close();
+            request.onConfirm();
+          }, { variant: 'warm' }),
+        ]),
+      ]),
+    ]);
+
+    // A tap on the ground around the card is a way out, not a way through.
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) close();
+    });
+
+    return overlay;
+  }
+
   private buildViewControls(): HTMLElement {
     const zoom = (label: string, factor: number, title: string) => {
       const node = el('button', { class: 'view-button', type: 'button', title, text: label });
@@ -512,10 +578,32 @@ export class Shell {
     });
     reset.addEventListener('click', () => this.deps.onRecenter());
 
+    /*
+     * The scene and the panel, taking turns.
+     *
+     * A phone is not tall enough to show a shop and manage it at the same time:
+     * the panel is docked over the lower two thirds, which leaves the scene a
+     * strip too short to see what you own and the panel a window too short to
+     * work in. Rather than shrink both, this hands the whole stage to one of
+     * them. Hidden above the desktop breakpoint, where they already fit
+     * together and swapping would only take something away.
+     */
+    const peek = el('button', {
+      class: 'view-button view-peek',
+      type: 'button',
+      text: this.sceneOnly ? t('world.showPanel') : t('world.hidePanel'),
+    });
+    peek.setAttribute('aria-pressed', String(this.sceneOnly));
+    peek.addEventListener('click', () => {
+      this.sceneOnly = !this.sceneOnly;
+      this.renderPanels();
+    });
+
     return el('div', { class: 'view-controls' }, [
       zoom('−', 1 / 1.25, t('world.zoomOut')),
       zoom('+', 1.25, t('world.zoomIn')),
       reset,
+      peek,
     ]);
   }
 
@@ -553,6 +641,32 @@ function readStoredScale(): number {
     return Number.isFinite(value) && value >= 0.85 && value <= 1.5 ? value : 1;
   } catch {
     return 1;
+  }
+}
+
+const DEBUG_KEY = 'eternal-alchemy/debug';
+
+/**
+ * Whether this browser has asked for the debug panel.
+ *
+ * The panel is a dev tool — it grants gold, skips days and rerolls the seed —
+ * so a built copy of the game does not carry it for everyone who opens the
+ * link. It is reachable on a real device, which is where the timing bugs are:
+ * `?debug=1` turns it on and sticks, `?debug=0` turns it off again. The flag is
+ * remembered because a phone is a bad place to retype a query string, and the
+ * dynamic import means the module is still only fetched once it is wanted.
+ */
+function debugRequested(): boolean {
+  try {
+    const asked = new URLSearchParams(location.search).get('debug');
+    if (asked !== null) {
+      const on = asked !== '0' && asked !== 'false';
+      localStorage.setItem(DEBUG_KEY, on ? '1' : '0');
+      return on;
+    }
+    return localStorage.getItem(DEBUG_KEY) === '1';
+  } catch {
+    return false;
   }
 }
 

@@ -12,7 +12,25 @@ export type GameEvent =
   | { type: 'brew:ready' }
   /** Time was caught up after an absence — real or simulated by the debug panel. */
   | { type: 'away'; summary: AwaySummary }
+  | { type: 'confirm'; request: ConfirmRequest }
   | { type: 'toast'; message: string };
+
+/**
+ * A question the shell asks before something is undone.
+ *
+ * It goes through the bus rather than being built where it is needed, because
+ * the panels are torn down and rebuilt on every world change — a dialog
+ * appended next to the button that raised it would vanish on the first tick.
+ * The shell owns it, as it already owns the away dialog, and outlives the
+ * render that asked for it.
+ */
+export interface ConfirmRequest {
+  title: string;
+  body: string;
+  /** The label on the button that goes through with it. */
+  confirm: string;
+  onConfirm: () => void;
+}
 
 import type { AwaySummary } from '@/sim/sim';
 
@@ -51,4 +69,9 @@ export function changed(): void {
 
 export function toast(message: string): void {
   bus.emit({ type: 'toast', message });
+}
+
+/** Ask before doing something that cannot be taken back. */
+export function confirm(request: ConfirmRequest): void {
+  bus.emit({ type: 'confirm', request });
 }

@@ -269,6 +269,15 @@ npm run build && npx cap sync
 Verified at 150% text across all eight screens on both layouts: no horizontal page scroll, no clipped
 text, no tap target under 44px, and an essence glyph on every coloured mark.
 
+Below the 960px breakpoint the screens that draw no scene — Roster, Board, Settings — are full-stage
+pages rather than bottom sheets, and they are the only scroller on the page: a section that scrolls
+inside a panel that scrolls inside a phone is a section that takes the flick and gives nothing back.
+The three screens that *do* draw a scene carry a **Full view** toggle in the view controls, because
+412x883 is not enough for a shop and the managing of it at once.
+
+The debug panel is a dev build only. `?debug=1` turns it on in a built copy and is remembered per
+browser; `?debug=0` turns it off again.
+
 ## What's not here yet
 
 Audio is out of scope behind a silent bus stub. Saves are local only. The **art pipeline** is

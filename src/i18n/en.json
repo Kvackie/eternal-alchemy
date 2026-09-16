@@ -264,6 +264,9 @@
   "board.daysLeft": "{days} days",
   "board.deliver": "Deliver",
   "board.abandon": "Abandon",
+  "board.abandon.title": "Abandon this contract?",
+  "board.abandon.body": "The order for {count} × {recipe} is forfeit.",
+  "board.abandon.bodyDelivered": "The order for {count} × {recipe} is forfeit, and the {delivered} already delivered against it are not returned.",
   "board.abandoned": "Contract abandoned",
   "board.completed": "Contract met · {gold}",
   "board.partial": "Delivered {count} · {gold}",
@@ -1600,6 +1603,8 @@
   "trait.stable": "Stable",
   "trait.pure": "Pure",
   "world.recenter": "Recenter",
+  "world.hidePanel": "Full view",
+  "world.showPanel": "Manage",
   "world.zoomIn": "Zoom in",
   "world.zoomOut": "Zoom out",
   "toast.harvestKinds": "{kinds} kinds"
