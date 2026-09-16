@@ -1,0 +1,193 @@
+{
+  "$comment": "The cave's verb is TEND, not plant. You seed a tile and mycelium spreads on its own; light is how you steer which species wins.",
+  "$rateComment": "Spread is a branching process: every mature bed can colonise, so the rate compounds hard. At a 5-minute tick and 0.16 it filled the whole grid from one bed in a single night, which made the cave a replacement for the garden rather than a companion to it. A 15-minute tick with lower chances keeps the 'come back to a harvest of something' feel while leaving the grid worth tending.",
+  "width": 6,
+  "height": 6,
+  "startingTiles": 12,
+  "spreadTickMs": 900000,
+  "yieldPerTile": 2,
+  "species": [
+    {
+      "id": "dewcap",
+      "growMs": 1800000,
+      "spreadChance": 0.075,
+      "light": "any"
+    },
+    {
+      "id": "chalkgill",
+      "growMs": 2700000,
+      "spreadChance": 0.06,
+      "light": "lit"
+    },
+    {
+      "id": "gravecrown",
+      "growMs": 5400000,
+      "spreadChance": 0.045,
+      "light": "dark"
+    },
+    {
+      "id": "ambercap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "azurecap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "bubblecap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "buttercap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "cellarcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "coalcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "crimsoncap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "eyecap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "flamefan",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "goldcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "honeycap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "loamcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "mosscap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "palecap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "poffpuffBall",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "poisonCap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "puffnest",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "russetcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "stoutcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "any"
+    },
+    {
+      "id": "sunfungus",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "tieredcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "toadstool",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "trumpetgill",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "tubefungus",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "verdigriscap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    },
+    {
+      "id": "violetcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "dark"
+    },
+    {
+      "id": "witchCap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "lit"
+    }
+  ],
+  "$lightComment": "A species out of its preferred light still grows, just spreads far more slowly. Nothing dies; the cave simply drifts toward whatever suits the lanterns you placed.",
+  "wrongLightSpreadMultiplier": 0.25
+}

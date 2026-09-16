@@ -1,0 +1,35 @@
+{
+  "$comment": "Boards, worst to best. A shelf's quality raises the appeal of everything standing on it, and boards are fitted one shelf at a time — so a shop with one good board puts its best work on that shelf and everything else on the salvage. Every shop starts on salvaged boards, which is why the first tier is free: it is what you already have, not something to buy.",
+  "tiers": [
+    {
+      "id": "salvagedBoard",
+      "cost": 0,
+      "requiresRank": 0,
+      "appealBonus": 0
+    },
+    {
+      "id": "roughPine",
+      "cost": 90,
+      "requiresRank": 0,
+      "appealBonus": 0.06
+    },
+    {
+      "id": "weatheredOak",
+      "cost": 220,
+      "requiresRank": 1,
+      "appealBonus": 0.12
+    },
+    {
+      "id": "planedBoard",
+      "cost": 480,
+      "requiresRank": 2,
+      "appealBonus": 0.2
+    },
+    {
+      "id": "lacqueredShelf",
+      "cost": 900,
+      "requiresRank": 3,
+      "appealBonus": 0.3
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "$comment": "Furnishings for the shop floor. Unlike equipment, décor must be PLACED to do anything, and there are only five spots — so a full collection is still a choice about which five are out. Spots are listed back-to-front, which is also the order the world view draws them in. Every piece here has painted art; the set is built around what the art actually is, which is why the wall is banners and the floor is the things that sit on one.",
+  "spots": ["wall", "window", "counter", "nook", "floor"],
+  "pieces": [
+    {
+      "$comment": "Seven banners, one wall. The cheap ones are colour on cloth; the gold one is a statement, and priced like one.",
+      "id": "verdantBanner",
+      "spot": "wall",
+      "cost": 160,
+      "requiresRank": 0,
+      "effect": { "footfallBonus": 0.1 }
+    },
+    {
+      "id": "crimsonBanner",
+      "spot": "wall",
+      "cost": 240,
+      "requiresRank": 1,
+      "effect": { "footfallBonus": 0.16 }
+    },
+    {
+      "id": "tealBanner",
+      "spot": "wall",
+      "cost": 320,
+      "requiresRank": 2,
+      "effect": { "footfallBonus": 0.22 }
+    },
+    {
+      "id": "azureBanner",
+      "spot": "wall",
+      "cost": 420,
+      "requiresRank": 2,
+      "effect": { "footfallBonus": 0.27 }
+    },
+    {
+      "id": "roseBanner",
+      "spot": "wall",
+      "cost": 560,
+      "requiresRank": 3,
+      "effect": { "footfallBonus": 0.32 }
+    },
+    {
+      "id": "violetBanner",
+      "spot": "wall",
+      "cost": 820,
+      "requiresRank": 4,
+      "effect": { "footfallBonus": 0.36 }
+    },
+    {
+      "id": "goldBanner",
+      "spot": "wall",
+      "cost": 1500,
+      "requiresRank": 5,
+      "effect": { "footfallBonus": 0.44 }
+    },
+
+    {
+      "$comment": "The window is the one spot with a real side-grade: green things sell by day, a lit urn sells after dark.",
+      "id": "pottedFern",
+      "spot": "window",
+      "cost": 280,
+      "requiresRank": 1,
+      "effect": { "appealBonus": 0.14 }
+    },
+    {
+      "id": "sproutingUrn",
+      "spot": "window",
+      "cost": 340,
+      "requiresRank": 2,
+      "effect": { "nightFootfallBonus": 0.4 }
+    },
+
+    {
+      "id": "mortarAndPestle",
+      "spot": "counter",
+      "cost": 190,
+      "requiresRank": 0,
+      "effect": { "appealBonus": 0.08 }
+    },
+    {
+      "id": "hourglass",
+      "spot": "counter",
+      "cost": 380,
+      "requiresRank": 2,
+      "effect": { "appealBonus": 0.14 }
+    },
+    {
+      "id": "goldGoblet",
+      "spot": "counter",
+      "cost": 640,
+      "requiresRank": 3,
+      "effect": { "appealBonus": 0.2 }
+    },
+
+    {
+      "$comment": "The nook trades passive appeal against the haggle ceiling — shelf trade or counter trade, not both. A skull on the counter does not make anyone browse longer, but it does make them stop arguing.",
+      "id": "cutDiamond",
+      "spot": "nook",
+      "cost": 700,
+      "requiresRank": 3,
+      "effect": { "appealBonus": 0.18 }
+    },
+    {
+      "id": "boneChalice",
+      "spot": "nook",
+      "cost": 460,
+      "requiresRank": 2,
+      "effect": { "haggleCeilingBonus": 0.08 }
+    },
+    {
+      "id": "skullChalice",
+      "spot": "nook",
+      "cost": 880,
+      "requiresRank": 4,
+      "effect": { "haggleCeilingBonus": 0.14 }
+    },
+
+    {
+      "id": "ironPot",
+      "spot": "floor",
+      "cost": 150,
+      "requiresRank": 0,
+      "effect": { "footfallBonus": 0.08 }
+    },
+    {
+      "id": "coinSacks",
+      "spot": "floor",
+      "cost": 400,
+      "requiresRank": 2,
+      "effect": { "appealBonus": 0.12 }
+    },
+    {
+      "id": "lockedChest",
+      "spot": "floor",
+      "cost": 620,
+      "requiresRank": 3,
+      "effect": { "haggleCeilingBonus": 0.1 }
+    },
+    {
+      "id": "coinStack",
+      "spot": "floor",
+      "cost": 960,
+      "requiresRank": 4,
+      "effect": { "appealBonus": 0.24 }
+    }
+  ]
+}

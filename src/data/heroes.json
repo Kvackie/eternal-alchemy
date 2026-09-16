@@ -1,0 +1,1123 @@
+{
+  "$comment": "Heroes are characters, not stat blocks — but there is no gift system and no romance. Favour is raised by taking care of them.",
+  "$recruitComment": "Per level, not flat: a level 5 veteran is worth five times a level 1 hopeful, and a flat fee made the good ones free by comparison. Favour is not priced in — you buy the hero, you earn the loyalty.",
+  "recruitCostPerLevel": 100,
+  "$partyComment": "Per expedition, not per shop. Any number of parties can be out at once — the roster is the only thing that limits how many, and the roster is bought.",
+  "partySize": 3,
+  "startingSlots": 1,
+  "restMsPerInjury": 7200000,
+  "favourBands": [
+    {
+      "id": "wary",
+      "min": 0,
+      "levelBonus": 0,
+      "injuryModifier": 0,
+      "rareFindBonus": 0
+    },
+    {
+      "id": "cordial",
+      "min": 20,
+      "levelBonus": 1,
+      "injuryModifier": -0.05,
+      "rareFindBonus": 0
+    },
+    {
+      "id": "warm",
+      "min": 45,
+      "levelBonus": 2,
+      "injuryModifier": -0.1,
+      "rareFindBonus": 0.05
+    },
+    {
+      "id": "devoted",
+      "min": 70,
+      "levelBonus": 3,
+      "injuryModifier": -0.18,
+      "rareFindBonus": 0.12
+    },
+    {
+      "id": "sworn",
+      "min": 90,
+      "levelBonus": 4,
+      "injuryModifier": -0.25,
+      "rareFindBonus": 0.2
+    }
+  ],
+  "$favourComment": "sentUnsupplied must stay smaller than perReturn. Bringing someone home safely always earns something, so a player who never supplies still climbs — just far more slowly than one who does. A net loss would mean the only way to keep a hero's favour was to spend potions on them, which is a toll, not a relationship.",
+  "favour": {
+    "perReturn": 3,
+    "perSupplySlotFilled": 2,
+    "perFavouritePotion": 8,
+    "perHealed": 10,
+    "sentUnsupplied": -2
+  },
+  "roster": [
+    {
+      "id": "ilse",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "shadowPhiltre",
+      "baseLevel": 3
+    },
+    {
+      "id": "corin",
+      "affinity": "emberwaste",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "emberDraught",
+      "baseLevel": 2
+    },
+    {
+      "id": "maren",
+      "affinity": "mirefen",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "healthTonic",
+      "baseLevel": 2
+    },
+    {
+      "id": "tobrin",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "lucky",
+        "fragile"
+      ],
+      "favourite": "windDraught",
+      "baseLevel": 4
+    },
+    {
+      "id": "sela",
+      "affinity": "mirefen",
+      "traits": [
+        "forager",
+        "lucky"
+      ],
+      "favourite": "healthTonic",
+      "baseLevel": 2
+    },
+    {
+      "id": "hark",
+      "affinity": "emberwaste",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "emberDraught",
+      "baseLevel": 3
+    },
+    {
+      "id": "orlin",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "windDraught",
+      "baseLevel": 3
+    },
+    {
+      "id": "wren",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "forager",
+        "fragile"
+      ],
+      "favourite": "shadowPhiltre",
+      "baseLevel": 2
+    },
+    {
+      "id": "bexley",
+      "affinity": "emberwaste",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "emberDraught",
+      "baseLevel": 1
+    },
+    {
+      "id": "corvin",
+      "affinity": "mirefen",
+      "traits": [
+        "hunter",
+        "lucky"
+      ],
+      "favourite": "mirebloomElixir",
+      "baseLevel": 2
+    },
+    {
+      "id": "dalla",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "forager",
+        "fragile"
+      ],
+      "favourite": "embershadeCordial",
+      "baseLevel": 3
+    },
+    {
+      "id": "emrick",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "stormfireFlask",
+      "baseLevel": 4
+    },
+    {
+      "id": "fenna",
+      "affinity": "emberwaste",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "pyrebarkExtract",
+      "baseLevel": 5
+    },
+    {
+      "id": "garrow",
+      "affinity": "mirefen",
+      "traits": [
+        "forager",
+        "lucky"
+      ],
+      "favourite": "healthTonic",
+      "baseLevel": 1
+    },
+    {
+      "id": "hesper",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "nightGlass",
+      "baseLevel": 2
+    },
+    {
+      "id": "ivo",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "hunter",
+        "fragile"
+      ],
+      "favourite": "featherstoneDraught",
+      "baseLevel": 3
+    },
+    {
+      "id": "jorun",
+      "affinity": "emberwaste",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "cinderveilBomb",
+      "baseLevel": 4
+    },
+    {
+      "id": "kestrel",
+      "affinity": "mirefen",
+      "traits": [
+        "delver",
+        "lucky"
+      ],
+      "favourite": "mireveilExtract",
+      "baseLevel": 5
+    },
+    {
+      "id": "lomax",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "shadowPhiltre",
+      "baseLevel": 1
+    },
+    {
+      "id": "mirren",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "skysalt",
+      "baseLevel": 2
+    },
+    {
+      "id": "nessa",
+      "affinity": "emberwaste",
+      "traits": [
+        "delver",
+        "fragile"
+      ],
+      "favourite": "scaldPhiltre",
+      "baseLevel": 3
+    },
+    {
+      "id": "oswin",
+      "affinity": "mirefen",
+      "traits": [
+        "hunter",
+        "lucky"
+      ],
+      "favourite": "verdantAether",
+      "baseLevel": 4
+    },
+    {
+      "id": "perrin",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "wraithwindVial",
+      "baseLevel": 5
+    },
+    {
+      "id": "quill",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "windDraught",
+      "baseLevel": 1
+    },
+    {
+      "id": "rhosyn",
+      "affinity": "emberwaste",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "sunfireTincture",
+      "baseLevel": 2
+    },
+    {
+      "id": "sable",
+      "affinity": "mirefen",
+      "traits": [
+        "forager",
+        "lucky"
+      ],
+      "favourite": "deepwaterCordial",
+      "baseLevel": 3
+    },
+    {
+      "id": "tarn",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "veilmireCordial",
+      "baseLevel": 4
+    },
+    {
+      "id": "ulla",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "galeshadeTonic",
+      "baseLevel": 5
+    },
+    {
+      "id": "verity",
+      "affinity": "emberwaste",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "emberDraught",
+      "baseLevel": 1
+    },
+    {
+      "id": "wick",
+      "affinity": "mirefen",
+      "traits": [
+        "delver",
+        "lucky"
+      ],
+      "favourite": "mirebloomElixir",
+      "baseLevel": 2
+    },
+    {
+      "id": "yarrow",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "hunter",
+        "fragile"
+      ],
+      "favourite": "embershadeCordial",
+      "baseLevel": 3
+    },
+    {
+      "id": "zeph",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "stormfireFlask",
+      "baseLevel": 4
+    },
+    {
+      "id": "alder",
+      "affinity": "emberwaste",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "pyrebarkExtract",
+      "baseLevel": 5
+    },
+    {
+      "id": "briar",
+      "affinity": "mirefen",
+      "traits": [
+        "hunter",
+        "lucky"
+      ],
+      "favourite": "healthTonic",
+      "baseLevel": 1
+    },
+    {
+      "id": "calla",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "nightGlass",
+      "baseLevel": 2
+    },
+    {
+      "id": "dunn",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "delver",
+        "fragile"
+      ],
+      "favourite": "featherstoneDraught",
+      "baseLevel": 3
+    },
+    {
+      "id": "elowen",
+      "affinity": "emberwaste",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "cinderveilBomb",
+      "baseLevel": 4
+    },
+    {
+      "id": "fitch",
+      "affinity": "mirefen",
+      "traits": [
+        "forager",
+        "lucky"
+      ],
+      "favourite": "mireveilExtract",
+      "baseLevel": 5
+    },
+    {
+      "id": "greer",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "shadowPhiltre",
+      "baseLevel": 1
+    },
+    {
+      "id": "halla",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "skysalt",
+      "baseLevel": 2
+    },
+    {
+      "id": "ines",
+      "affinity": "emberwaste",
+      "traits": [
+        "forager",
+        "fragile"
+      ],
+      "favourite": "scaldPhiltre",
+      "baseLevel": 3
+    },
+    {
+      "id": "joss",
+      "affinity": "mirefen",
+      "traits": [
+        "delver",
+        "lucky"
+      ],
+      "favourite": "verdantAether",
+      "baseLevel": 4
+    },
+    {
+      "id": "karrin",
+      "affinity": "sunkenBarrow",
+      "traits": [
+        "hunter"
+      ],
+      "favourite": "wraithwindVial",
+      "baseLevel": 5
+    },
+    {
+      "id": "linnet",
+      "affinity": "skyreachSpires",
+      "traits": [
+        "forager"
+      ],
+      "favourite": "windDraught",
+      "baseLevel": 1
+    },
+    {
+      "id": "marlow",
+      "affinity": "emberwaste",
+      "traits": [
+        "delver"
+      ],
+      "favourite": "sunfireTincture",
+      "baseLevel": 2
+    }
+  ],
+  "biomes": [
+    {
+      "id": "emberwaste",
+      "durationMs": 3600000,
+      "baseSuccess": 0.7,
+      "baseInjury": 0.16,
+      "baseRareFind": 0.12,
+      "requiresRank": 0,
+      "loot": [
+        {
+          "ingredientId": "salamanderScale",
+          "min": 1,
+          "max": 3,
+          "weight": 5
+        },
+        {
+          "ingredientId": "emberroot",
+          "min": 2,
+          "max": 4,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberstone",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "autumnmaple",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "blossombranch",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "budsprig",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "cinderleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "coilbulb",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "commonWeed",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "curlflame",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "driftbranch",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flamefrond",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "goldleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "hairroot",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "ivyleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "podleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "sawgrass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "scarletmaple",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "scrollleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "sunribbon",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "thornbranch",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "tussock",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "witherleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "cinderwraithAsh",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 1,
+          "weight": 1
+        },
+        {
+          "ingredientId": "bloodRose",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "bloodgrass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "bonefang",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "dragonFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "dragonFruit",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "monsterMeat",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "monsterRoot",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "uniqueFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "vampirRose",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "mirefen",
+      "durationMs": 5400000,
+      "baseSuccess": 0.68,
+      "baseInjury": 0.14,
+      "baseRareFind": 0.12,
+      "requiresRank": 0,
+      "loot": [
+        {
+          "ingredientId": "mirefenPearl",
+          "min": 1,
+          "max": 3,
+          "weight": 5
+        },
+        {
+          "ingredientId": "dewcap",
+          "min": 2,
+          "max": 5,
+          "weight": 4
+        },
+        {
+          "ingredientId": "sunleaf",
+          "min": 2,
+          "max": 4,
+          "weight": 3
+        },
+        {
+          "ingredientId": "ashblade",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "bluecoral",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "broadleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cleftleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "coralFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "fiddlehead",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "fourleafClover",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "goldcoral",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "grassmandrake",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "hollysprig",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "jellyfishCoral",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "scaleleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "seagrass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "thornvine",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "wispcoil",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 1,
+          "weight": 1
+        },
+        {
+          "ingredientId": "anglerPlant",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "magicRoot",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "magmaFish",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "monsterEgg",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "shrimp",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "uniqueRoot",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "voideel",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "sunkenBarrow",
+      "durationMs": 9000000,
+      "baseSuccess": 0.6,
+      "baseInjury": 0.22,
+      "baseRareFind": 0.16,
+      "requiresRank": 1,
+      "loot": [
+        {
+          "ingredientId": "barrowAsh",
+          "min": 1,
+          "max": 3,
+          "weight": 5
+        },
+        {
+          "ingredientId": "gravecrown",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "chalkNodule",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "ashsprig",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "broomgrass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "coinleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewblade",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flameWeed",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "goldspike",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "greensprig",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "plumeleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "snarlgrass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "thicketleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "toothvine",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "uncommonWeed",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "willowleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "deepglass",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "spectralRoot",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "skyreachSpires",
+      "durationMs": 12600000,
+      "baseSuccess": 0.56,
+      "baseInjury": 0.2,
+      "baseRareFind": 0.18,
+      "requiresRank": 2,
+      "loot": [
+        {
+          "ingredientId": "skyreachFeather",
+          "min": 1,
+          "max": 3,
+          "weight": 5
+        },
+        {
+          "ingredientId": "galeThistle",
+          "min": 2,
+          "max": 4,
+          "weight": 4
+        },
+        {
+          "ingredientId": "antlerbranch",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "bladegrass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "curlwhorl",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "fanleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "goldfrond",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "grass",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "heartleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "magentaleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "oakmoss",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "sawleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 4
+        },
+        {
+          "ingredientId": "shadefern",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "springcurl",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "sunspike",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "vinestaff",
+          "min": 1,
+          "max": 2,
+          "weight": 3
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "bonefrond",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "manaFruit",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "monsterBones",
+          "min": 1,
+          "max": 2,
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "supplies": {
+    "slots": 3,
+    "successPerGradePoint": 0.035,
+    "rareFindPerGradePoint": 0.02,
+    "injuryPerGradePoint": -0.02
+  }
+}

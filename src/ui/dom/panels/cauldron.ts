@@ -1,0 +1,197 @@
+/**
+ * The bench: every pot you own, and a way to buy another.
+ *
+ * Brewing itself is not here. It used to be — ingredients, heat, method, the
+ * outcome and the recipe book all stacked in a docked panel beside a painted
+ * bench — which meant the two halves of one act, choosing an ingredient and
+ * watching what it did to the blend, were a scroll apart from each other.
+ *
+ * So this page answers one question, "which pot?", and hands the whole screen to
+ * the station once you have picked one. See `station.ts`.
+ */
+
+import { button, chip, collapsible, el, panelHeader } from '../components';
+import { formatGold, t } from '@/i18n';
+import { artUrlIf } from '@/ui/art';
+import { atCauldronLimit, activityOf, buyableTiers } from '@/sim/cauldrons';
+import { findCauldronTier } from '@/sim/config';
+import type { Cauldron } from '@/sim/types';
+import type { Simulation } from '@/sim/sim';
+import { changed, toast } from '@/ui/bus';
+import { isStationOpen, openStation, renderStation } from './station';
+
+export { INGREDIENT_DRAG } from './station';
+
+/** Which sections are folded shut. Shut is the exception, so this starts empty. */
+const folded = new Set<string>();
+
+function foldable(id: string, section: HTMLElement): HTMLElement {
+  const [head, ...rest] = [...section.children] as HTMLElement[];
+  if (!head) return section;
+
+  return collapsible({
+    className: section.className,
+    head: [head],
+    body: rest,
+    open: !folded.has(id),
+    onToggle: () => {
+      if (folded.has(id)) folded.delete(id);
+      else folded.add(id);
+      changed();
+    },
+  });
+}
+
+export function renderCauldron(sim: Simulation): HTMLElement {
+  // One pot at a time has the screen; the workshop is what you come back to.
+  if (isStationOpen()) return renderStation(sim);
+
+  const body = el('div', { class: 'panel-body' }, [
+    renderWorkshop(sim),
+    foldable('storage', renderStorage(sim)),
+  ]);
+
+  // Full rather than docked: there is no scene behind this screen any more, so
+  // nothing to leave room for — and a docked panel is capped at 68% of a stage
+  // that is already short on a small window.
+  const panel = el('div', { class: 'panel panel-full' }, [panelHeader(t('cauldron.title')), body]);
+
+  /*
+   * The page is the scroller here, and the page is rebuilt on every click.
+   *
+   * The shell's other restore path keys on `.panel-body`, which on this screen
+   * scrolls nothing — so without a key of its own, putting a pot away threw the
+   * page back to the top and you lost your place among seven of them.
+   */
+  panel.dataset.keepScroll = 'cauldron-page';
+  return panel;
+}
+
+/**
+ * One pot card: a face that opens it, and a control that puts it away.
+ *
+ * The card cannot hold the button — a button may not contain a button — so the
+ * pair sits in a wrapper, the same shape the supply tiles use.
+ */
+function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
+  const activity = activityOf(pot);
+  const art = artUrlIf('scene', pot.tierId);
+  const tier = findCauldronTier(pot.tierId);
+
+  const face = el('button', { class: 'bench-card', type: 'button' }, [
+    art
+      ? el('img', { class: 'bench-art', src: art, alt: '', loading: 'lazy', decoding: 'async' })
+      : el('span', { class: 'slot-glyph', text: '⚗️' }),
+    el('span', { class: 'bench-name', text: t(`cauldronTier.${pot.tierId}`) }),
+    stored
+      ? chip(t('cauldron.buy.capacity', { capacity: tier?.capacity ?? 0 }))
+      : chip(t(`cauldron.state.${activity}`), activity === 'ready' ? 'good' : 'plain'),
+  ]);
+  face.dataset.activity = activity;
+  face.dataset.stored = String(stored);
+
+  if (stored) {
+    // A stored pot has nothing to open — its only move is back onto the bench.
+    face.disabled = true;
+  } else {
+    face.addEventListener('click', () => openStation(sim, pot.id));
+  }
+
+  /*
+   * Busy pots stay where they are.
+   *
+   * A pot mid-brew holds a timer and a result, so storing it would either lose
+   * them or leave a brew finishing in a cupboard — and the last pot out cannot
+   * go away either, or the workshop becomes a screen with nothing on it.
+   */
+  const canStore = !stored && activity === 'idle' && sim.cauldrons.length > 1;
+  const move = button(
+    stored ? t('cauldron.storage.place') : t('cauldron.storage.store'),
+    () => {
+      if (sim.setCauldronStored(pot.id, !stored)) changed();
+    },
+    { small: true, variant: stored ? 'ghost' : 'quiet', disabled: !stored && !canStore },
+  );
+
+  return el('div', { class: 'bench-tile' }, [face, move]);
+}
+
+/**
+ * The pots you are working with.
+ *
+ * A card each rather than a strip of tabs: the reason to look at this page is to
+ * notice that the second cauldron has finished and is waiting, and a tab strip
+ * says that in the same small grey text it says everything else in.
+ */
+function renderWorkshop(sim: Simulation): HTMLElement {
+  return el('section', { class: 'bench' }, [
+    el('span', { class: 'field-label', text: t('cauldron.workshop') }),
+    el(
+      'div',
+      { class: 'bench-grid' },
+      sim.cauldrons.map((pot) => potCard(sim, pot, false)),
+    ),
+  ]);
+}
+
+/**
+ * Pots put away, and the pots you could still buy.
+ *
+ * One section, because both answer the same question — what else could be on
+ * the bench? A bought pot lands here rather than in the workshop, so acquiring
+ * one and deciding to use it stay two separate acts a moment apart.
+ */
+function renderStorage(sim: Simulation): HTMLElement {
+  const section = el('section', { class: 'storage' }, [
+    el('span', { class: 'field-label', text: t('cauldron.storage') }),
+  ]);
+
+  const stored = sim.storedCauldrons;
+  section.append(
+    stored.length > 0
+      ? el(
+          'div',
+          { class: 'bench-grid' },
+          stored.map((pot) => potCard(sim, pot, true)),
+        )
+      : el('p', { class: 'grid-empty', text: t('cauldron.storage.empty') }),
+  );
+
+  if (atCauldronLimit(sim.world)) {
+    section.append(el('p', { class: 'grid-empty', text: t('cauldron.buy.full') }));
+    return section;
+  }
+
+  const offers = buyableTiers(sim.world);
+  if (offers.length === 0) {
+    section.append(el('p', { class: 'grid-empty', text: t('cauldron.buy.locked') }));
+    return section;
+  }
+
+  section.append(el('span', { class: 'field-label', text: t('cauldron.buy.title') }));
+  for (const tier of offers) {
+    section.append(
+      el('div', { class: 'plot-row' }, [
+        el('div', { class: 'plot-main' }, [
+          el('span', { class: 'plot-title', text: t(`cauldronTier.${tier.id}`) }),
+          el('div', { class: 'row-sub' }, [
+            chip(t('cauldron.buy.capacity', { capacity: tier.capacity })),
+            chip(t('cauldron.buy.slots', { count: tier.maxIngredients })),
+          ]),
+        ]),
+        button(
+          t('cauldron.buy.action', { gold: formatGold(tier.cost) }),
+          () => {
+            if (sim.buyCauldron(tier.id)) {
+              toast(t('toast.cauldronBought', { tier: t(`cauldronTier.${tier.id}`) }));
+              changed();
+            }
+          },
+          { small: true, disabled: sim.world.gold < tier.cost },
+        ),
+      ]),
+    );
+  }
+
+  return section;
+}

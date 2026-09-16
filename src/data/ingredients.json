@@ -1,0 +1,5761 @@
+[
+  {
+    "id": "emberroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 6,
+    "glyph": "root"
+  },
+  {
+    "id": "sunleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 6,
+      "aqua": 6,
+      "terra": 0,
+      "aer": 3,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 4,
+    "glyph": "leaf"
+  },
+  {
+    "id": "galeThistle",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 0,
+      "aer": 15,
+      "umbra": 0
+    },
+    "traits": [
+      "volatile"
+    ],
+    "baseValue": 11,
+    "glyph": "leaf"
+  },
+  {
+    "$comment": "Aqua carrying shadow. The only garden route to Umbra, which is what stops the cave being the sole supplier.",
+    "id": "moonpetal",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 14,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 8
+    },
+    "traits": [],
+    "baseValue": 12,
+    "glyph": "leaf"
+  },
+  {
+    "$comment": "Ignis and Aer with no Terra between them — the pairing no mineral offers.",
+    "id": "ashfern",
+    "category": "herb",
+    "essence": {
+      "ignis": 9,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 11,
+      "umbra": 0
+    },
+    "traits": [
+      "volatile"
+    ],
+    "baseValue": 13,
+    "glyph": "leaf"
+  },
+  {
+    "id": "dewcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 11,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 5,
+    "glyph": "fungus"
+  },
+  {
+    "id": "gravecrown",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 4,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 18
+    },
+    "traits": [
+      "volatile"
+    ],
+    "baseValue": 16,
+    "glyph": "fungus"
+  },
+  {
+    "id": "chalkgill",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 9,
+    "glyph": "fungus"
+  },
+  {
+    "id": "chalkNodule",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 26,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 14,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberstone",
+    "category": "mineral",
+    "essence": {
+      "ignis": 34,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 26,
+    "glyph": "mineral"
+  },
+  {
+    "id": "deepglass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 20,
+      "umbra": 16
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 42,
+    "glyph": "mineral"
+  },
+  {
+    "$comment": "Umbra with nothing else in it. Only at the bottom of the shaft, because a clean single essence is what makes the hardest ratios hittable at all.",
+    "id": "nullstone",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 24
+    },
+    "traits": [
+      "stable",
+      "pure"
+    ],
+    "baseValue": 46,
+    "glyph": "mineral"
+  },
+  {
+    "id": "salamanderScale",
+    "category": "reagent",
+    "essence": {
+      "ignis": 22,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 24,
+    "glyph": "beast"
+  },
+  {
+    "id": "mirefenPearl",
+    "category": "reagent",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 24,
+    "glyph": "beast"
+  },
+  {
+    "id": "barrowAsh",
+    "category": "reagent",
+    "essence": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 9,
+      "aer": 0,
+      "umbra": 12
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 22,
+    "glyph": "mineral"
+  },
+  {
+    "id": "skyreachFeather",
+    "category": "reagent",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 26,
+      "umbra": 0
+    },
+    "traits": [
+      "volatile"
+    ],
+    "baseValue": 28,
+    "glyph": "beast"
+  },
+  {
+    "$comment": "The Cinderveil Bomb's signature reagent. Every recipe needs one thing that points at it, or it is a recipe for something nobody can gather.",
+    "id": "cinderwraithAsh",
+    "category": "reagent",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 2,
+      "aer": 0,
+      "umbra": 14
+    },
+    "traits": [
+      "volatile"
+    ],
+    "baseValue": 38,
+    "glyph": "mineral"
+  },
+  {
+    "id": "quicksilverTear",
+    "category": "exotic",
+    "essence": {
+      "ignis": 8,
+      "aqua": 8,
+      "terra": 8,
+      "aer": 8,
+      "umbra": 8
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 90,
+    "glyph": "mineral"
+  },
+  {
+    "id": "acorn",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "aetherGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 26,
+      "umbra": 12
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "aetherJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 14,
+      "terra": 0,
+      "aer": 14,
+      "umbra": 10
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "aetherShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 29,
+      "umbra": 10
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "agilityFruit",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 4,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "algae",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 14,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "amberTuber",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "ambercap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 18,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "anglerPlant",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 22,
+      "terra": 0,
+      "aer": 12,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "antlerbranch",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "ashblade",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 5
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "ashsprig",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 4,
+      "terra": 8,
+      "aer": 4,
+      "umbra": 8
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "autumnmaple",
+    "category": "herb",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "azureberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "azurecap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 17,
+      "terra": 0,
+      "aer": 7,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "azurefan",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 18,
+      "terra": 0,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "barkAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 25,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "barkOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 12,
+      "umbra": 12
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "barkQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 8,
+      "aqua": 8,
+      "terra": 21,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "barkShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 27,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "barkStone",
+    "category": "mineral",
+    "essence": {
+      "ignis": 7,
+      "aqua": 9,
+      "terra": 22,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "barkchip",
+    "category": "herb",
+    "essence": {
+      "ignis": 7,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "barkslab",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "beetMandragora",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 11
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "bilberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 16,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "blackBerry",
+    "category": "herb",
+    "essence": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 4,
+      "umbra": 5
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "bladegrass",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "bloodRose",
+    "category": "exotic",
+    "essence": {
+      "ignis": 34,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "bloodgrass",
+    "category": "exotic",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 3
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "blossombranch",
+    "category": "herb",
+    "essence": {
+      "ignis": 15,
+      "aqua": 0,
+      "terra": 9,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "blueBerry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 9,
+      "aer": 2,
+      "umbra": 2
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "blueBud",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 21,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "blueberryThistle",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 16,
+      "terra": 4,
+      "aer": 5,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "bluecone",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "bluecoral",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "bluepetal",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "bonefang",
+    "category": "exotic",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 5
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "bonefrond",
+    "category": "exotic",
+    "essence": {
+      "ignis": 15,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "brineGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 32,
+      "terra": 0,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "brineGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 17,
+      "terra": 17,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "brineJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 19,
+      "terra": 13,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "brineOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 23,
+      "terra": 8,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "brineShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 32,
+      "terra": 0,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "brineStone",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 23,
+      "terra": 8,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "brineTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "broadleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "broomgrass",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "bubblecap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "budsprig",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 7,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "buttercap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "cellarcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "chalkGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 38,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "chalkGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 38,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "chalkJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 26,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "chalkShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 25,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "chrystaLily",
+    "category": "herb",
+    "essence": {
+      "ignis": 7,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 6
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "cinderGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "cinderGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 17
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "cinderOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "cinderQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "cinderTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "cinderleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "clawroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "clayGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 14,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "clayQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 30,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "clayShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 38,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "cleftleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "cloudJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 19,
+      "umbra": 19
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "coalAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 29,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "coalGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 26,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 12,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "coalGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "coalQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 27,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "coalShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "coalcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "coilbulb",
+    "category": "herb",
+    "essence": {
+      "ignis": 18,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "coinleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "commonFlower",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "commonWeed",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 7,
+      "terra": 9,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "coralFlower",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 6,
+      "terra": 6,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "cornflower",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 7,
+      "aer": 5,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "cottonFluff",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 19,
+      "terra": 5,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "cottonSky",
+    "category": "herb",
+    "essence": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 4,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "crimsonbloom",
+    "category": "herb",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "crimsoncap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 5,
+      "aer": 0,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "crimsontop",
+    "category": "herb",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 5,
+      "aer": 0,
+      "umbra": 5
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "curlflame",
+    "category": "herb",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 3,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "curlwhorl",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "cyanFlower",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "dandelion",
+    "category": "herb",
+    "essence": {
+      "ignis": 5,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "deepCrystal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "deepJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "deepOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 21,
+      "terra": 6,
+      "aer": 6,
+      "umbra": 6
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "deepShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 19,
+      "terra": 11,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "deepTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 28,
+      "terra": 4,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 30,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 30,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 30,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "dewblade",
+    "category": "herb",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "dragonFlower",
+    "category": "exotic",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "dragonFruit",
+    "category": "exotic",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 7
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "driftGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 8,
+      "terra": 0,
+      "aer": 27,
+      "umbra": 4
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "driftGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 0,
+      "aer": 26,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "driftbranch",
+    "category": "herb",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "dryroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "duskPrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 17,
+      "umbra": 21
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "duskberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "duskplum",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 9,
+      "terra": 0,
+      "aer": 11,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "emberAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 22,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 16
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberCrystal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberFruit",
+    "category": "herb",
+    "essence": {
+      "ignis": 9,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "emberGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 32,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 6
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 27,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 18
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 30,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 13
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberSpar",
+    "category": "mineral",
+    "essence": {
+      "ignis": 27,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 28,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 10
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "emberbundle",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "emberconch",
+    "category": "herb",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "eyecap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 7,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 6
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "fanFlower",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 7,
+      "aer": 5,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "fanfungus",
+    "category": "herb",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "fanleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "fiddlehead",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "flameWeed",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "flamefan",
+    "category": "fungus",
+    "essence": {
+      "ignis": 24,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "flamefrond",
+    "category": "herb",
+    "essence": {
+      "ignis": 18,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "flamepetal",
+    "category": "herb",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "flareGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flareGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 27,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 11
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flareJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 13
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flareOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flareQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 17
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flareShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 32,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flareTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flintAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 21,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flintBeryl",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 38,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flintCrystal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 27,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flintGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 27,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flintQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 11,
+      "terra": 27,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "flintShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 22,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "forgeBeryl",
+    "category": "mineral",
+    "essence": {
+      "ignis": 28,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 10
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "forgeGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 27,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "forgeJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 13
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "forgeOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 19,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "forgeQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 13
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "forgeSpar",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "fourleafClover",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "frostAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 29,
+      "terra": 0,
+      "aer": 10,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 21,
+      "terra": 8,
+      "aer": 10,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 19,
+      "terra": 8,
+      "aer": 11,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostPrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 28,
+      "terra": 0,
+      "aer": 10,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostSpar",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 25,
+      "terra": 6,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "frostfan",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "frostrosette",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "galeGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 25,
+      "umbra": 13
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "galeQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 11,
+      "terra": 0,
+      "aer": 17,
+      "umbra": 10
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "ghostroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "goldbeet",
+    "category": "herb",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "goldcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "goldcoral",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "goldfrond",
+    "category": "herb",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "goldiris",
+    "category": "herb",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "goldleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "goldspike",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "goldyarrow",
+    "category": "herb",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "grass",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "grassmandrake",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "greenBerry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "greenclover",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 7,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "greenhook",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 5,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "greenolive",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "greensprig",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 8,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "hairroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "heartleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "heatBerry",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 3
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "hollysprig",
+    "category": "herb",
+    "essence": {
+      "ignis": 4,
+      "aqua": 3,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "honeycap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "honeycombFlower",
+    "category": "herb",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "honeydewPlant",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 6
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "husknut",
+    "category": "herb",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "ice",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 19,
+      "terra": 0,
+      "aer": 5,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "inkcap",
+    "category": "herb",
+    "essence": {
+      "ignis": 5,
+      "aqua": 6,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "ironAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 25,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "ironGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 25,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "ironGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 26,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "ivyleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "jadeberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "jellyfishCoral",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 16,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "lacewort",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "lighbulbLantern",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "lilypad",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 21,
+      "aer": 3,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "loamGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 38,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "loamQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 16,
+      "terra": 18,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "loamShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 14,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "loamcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "magentaleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 9,
+      "umbra": 7
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "magicRoot",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 34,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "magmaFish",
+    "category": "exotic",
+    "essence": {
+      "ignis": 26,
+      "aqua": 9,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "manaFruit",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 19,
+      "umbra": 15
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "mandragora",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "mireBeryl",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 21,
+      "terra": 8,
+      "aer": 10,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mireGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mireGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 29,
+      "terra": 0,
+      "aer": 10,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mireJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mirePrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 25,
+      "terra": 0,
+      "aer": 13,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mireQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 32,
+      "terra": 0,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mireShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 17,
+      "terra": 15,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "mireTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "monsterBones",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 15
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "monsterEgg",
+    "category": "exotic",
+    "essence": {
+      "ignis": 15,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "monsterMeat",
+    "category": "exotic",
+    "essence": {
+      "ignis": 19,
+      "aqua": 0,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 9
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "monsterRoot",
+    "category": "exotic",
+    "essence": {
+      "ignis": 22,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "mosscap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 4,
+      "aqua": 0,
+      "terra": 20,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "nightPrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 11,
+      "umbra": 21
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "nightQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 10,
+      "umbra": 16
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "nightbloom",
+    "category": "herb",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 7
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "oakmast",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "oakmoss",
+    "category": "herb",
+    "essence": {
+      "ignis": 5,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "oldMandragora",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "paleLeek",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "palecap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "peapod",
+    "category": "herb",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "pepper",
+    "category": "herb",
+    "essence": {
+      "ignis": 24,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "pepperBerry",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 2,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "pinkPuff",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 4,
+      "terra": 4,
+      "aer": 10,
+      "umbra": 7
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "pinkclover",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 6,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "pinklotus",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 3,
+      "aer": 15,
+      "umbra": 7
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "plumeleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "podleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "poffpuffBall",
+    "category": "fungus",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 6
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "poisonCap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "pomegranate",
+    "category": "herb",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 7
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "puffnest",
+    "category": "fungus",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "puffpod",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "purpleBerry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 3
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "purplethistle",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 21,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "pyreGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 25,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "pyreGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 17
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "pyreQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 18
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "pyreShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 21,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "redSpices",
+    "category": "herb",
+    "essence": {
+      "ignis": 24,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "redcurrant",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "rillCrystal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 29,
+      "terra": 0,
+      "aer": 10,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "rillGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 27,
+      "terra": 6,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "rillGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "rillJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "rillOpal",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 23,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "rillQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 25,
+      "terra": 0,
+      "aer": 13,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "rillShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "roots",
+    "category": "herb",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "roseSalt",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 16
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "roseberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 3,
+      "aqua": 3,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "rowanberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 2,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "russetcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "sawgrass",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "sawleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "scaldAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scaldGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scaldGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 23,
+      "aqua": 0,
+      "terra": 15,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scaldJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scaldPrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 10
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scaldQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scaldTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 38,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "scalebark",
+    "category": "herb",
+    "essence": {
+      "ignis": 5,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "scaleleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 8,
+      "terra": 4,
+      "aer": 3,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "scarletbud",
+    "category": "herb",
+    "essence": {
+      "ignis": 7,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "scarletmaple",
+    "category": "herb",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "scrollleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "seagrass",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 10,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "shadeJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 15,
+      "umbra": 23
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "shadefern",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "shalecap",
+    "category": "herb",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "shrimp",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 24,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "skyGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 8,
+      "terra": 0,
+      "aer": 15,
+      "umbra": 15
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "skyGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 10,
+      "terra": 0,
+      "aer": 15,
+      "umbra": 13
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "skyPrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 24,
+      "umbra": 14
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "slateBeryl",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 11,
+      "umbra": 8
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "slateGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 25,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "slateGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 19,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "slateJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "slateQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 22,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "slateTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 38,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "sloeberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "snapmaw",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "snarlgrass",
+    "category": "herb",
+    "essence": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "spectralRoot",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 10,
+      "umbra": 24
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "spiderbloom",
+    "category": "herb",
+    "essence": {
+      "ignis": 4,
+      "aqua": 0,
+      "terra": 20,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "springcurl",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "stoutcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 10,
+      "aqua": 0,
+      "terra": 14,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "sunberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 8,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "sunflower",
+    "category": "herb",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "sunfungus",
+    "category": "fungus",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "sunribbon",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "sunspike",
+    "category": "herb",
+    "essence": {
+      "ignis": 5,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "sweetHoney",
+    "category": "herb",
+    "essence": {
+      "ignis": 13,
+      "aqua": 0,
+      "terra": 11,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "tealberry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 4,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "thicketleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "thornbranch",
+    "category": "herb",
+    "essence": {
+      "ignis": 11,
+      "aqua": 0,
+      "terra": 13,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "thornspiral",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "thornvine",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "tideBeryl",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 27,
+      "terra": 0,
+      "aer": 11,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tideGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 34,
+      "terra": 0,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tideGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tideJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tidePrism",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 34,
+      "terra": 0,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tideShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 32,
+      "terra": 0,
+      "aer": 6,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tideTopaz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 38,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "tidebulb",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 20,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "tidecluster",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 16,
+      "terra": 3,
+      "aer": 5,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "tieredcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 13,
+      "aqua": 4,
+      "terra": 7,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "toadstool",
+    "category": "fungus",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 11
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "toothvine",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 8,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "trumpetgill",
+    "category": "fungus",
+    "essence": {
+      "ignis": 15,
+      "aqua": 0,
+      "terra": 9,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "tubefungus",
+    "category": "fungus",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "tulipsCharge",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 0,
+      "aer": 12,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "tussock",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "twistroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 5,
+      "aqua": 0,
+      "terra": 19,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "uncommonFlower",
+    "category": "herb",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 6
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "uncommonRoot",
+    "category": "herb",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "uncommonWeed",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 6,
+      "terra": 10,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "uniqueFlower",
+    "category": "exotic",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "uniqueRoot",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 34,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "vampirRose",
+    "category": "exotic",
+    "essence": {
+      "ignis": 17,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "veilGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 18,
+      "umbra": 20
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "veilGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 13,
+      "umbra": 25
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "veilJasper",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 10,
+      "terra": 8,
+      "aer": 6,
+      "umbra": 15
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "verdigriscap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 4,
+      "aqua": 10,
+      "terra": 6,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "vinestaff",
+    "category": "herb",
+    "essence": {
+      "ignis": 7,
+      "aqua": 0,
+      "terra": 17,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "violetBeet",
+    "category": "herb",
+    "essence": {
+      "ignis": 4,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 4,
+      "umbra": 16
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetSpices",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 13,
+      "umbra": 11
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetSwarm",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 9,
+      "aer": 8,
+      "umbra": 8
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetUmbrella",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 7,
+      "aer": 17,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 5,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 11
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "violetgarlic",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 7,
+      "umbra": 11
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetpod",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 5,
+      "aer": 12,
+      "umbra": 7
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 8,
+      "umbra": 16
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "violetshroom",
+    "category": "herb",
+    "essence": {
+      "ignis": 14,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 10
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "voidGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 19,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 11,
+      "umbra": 24
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 76,
+    "glyph": "mineral"
+  },
+  {
+    "id": "voidGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 17,
+      "terra": 0,
+      "aer": 14,
+      "umbra": 23
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 76,
+    "glyph": "mineral"
+  },
+  {
+    "id": "voidQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 19,
+      "umbra": 35
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 76,
+    "glyph": "mineral"
+  },
+  {
+    "id": "voideel",
+    "category": "exotic",
+    "essence": {
+      "ignis": 0,
+      "aqua": 12,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 22
+    },
+    "traits": [
+      "pure"
+    ],
+    "baseValue": 48,
+    "glyph": "root"
+  },
+  {
+    "id": "waneGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 15,
+      "umbra": 23
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "waneGeode",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 13,
+      "umbra": 25
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "waneOnyx",
+    "category": "mineral",
+    "essence": {
+      "ignis": 6,
+      "aqua": 0,
+      "terra": 6,
+      "aer": 0,
+      "umbra": 27
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "waneQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 13,
+      "umbra": 25
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "whitedaisy",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 20,
+      "terra": 5,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "willowleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 16,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "wintercherry",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 6,
+      "terra": 18,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "wispAgate",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 19,
+      "umbra": 19
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "wispGarnet",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 38,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "wispShard",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 13,
+      "terra": 6,
+      "aer": 13,
+      "umbra": 6
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "wispcoil",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 20,
+      "terra": 0,
+      "aer": 4,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "root"
+  },
+  {
+    "id": "witchCap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 16,
+      "aqua": 0,
+      "terra": 8,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "id": "witherleaf",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 4,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "id": "yellowTulip",
+    "category": "herb",
+    "essence": {
+      "ignis": 12,
+      "aqua": 0,
+      "terra": 12,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "youngRose",
+    "category": "herb",
+    "essence": {
+      "ignis": 20,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 4
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "youngtree",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 24,
+      "aer": 0,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "id": "zephyrGlass",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 27,
+      "umbra": 11
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "id": "zephyrQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 38,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  }
+]

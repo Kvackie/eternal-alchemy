@@ -1,0 +1,3865 @@
+/*
+ * Panel styling.
+ *
+ * Everything here is sized in rem against a root font size the player can scale
+ * 85%-150%, which is the practical reason the panels are DOM rather than canvas.
+ * Touch targets are 44px minimum; nothing depends on hover; nothing depends on
+ * colour alone.
+ */
+
+:root {
+  --ui-scale: 1;
+
+  --ground: #0f1412;
+  --surface: #161d1a;
+  --surface-2: #1e2723;
+  --sunken: #0b0f0e;
+  --ink: #e2e7e0;
+  --ink-2: #b4bfb8;
+  --muted: #87938c;
+  --rule: #2b3632;
+  --verd: #5cb3a0;
+  --verd-ink: #8fd4c3;
+  --verd-soft: #15302a;
+  --amber: #d9a441;
+  --amber-soft: #302614;
+  --danger: #ee7250;
+  /* Affinity, and nothing else — see .favour-bar. */
+  --favour: #d98cb0;
+  /* Coin, and nothing else — see .gold. */
+  --gold: #e5b755;
+  /* The currency that survives a branch. Deliberately not gold: it isn't money. */
+  --mastery: #b48ce0;
+  /* Standing, not coin. Deeper than --favour, which is a hero's regard for you. */
+  --renown: #c4658f;
+
+  /*
+   * Seven grades, seven colours.
+   *
+   * These were shades of one another — two greys for D and E, two greens for A
+   * and B — which meant telling a C from a D took reading the letter, and the
+   * colour was decoration rather than information. Now each grade owns a hue no
+   * other grade is near, so the badge is legible at a glance and at a distance.
+   */
+  --grade-s: #f2c14e;
+  --grade-a: #5fd07a;
+  --grade-b: #3fc0c8;
+  --grade-c: #6f9ee8;
+  --grade-d: #a98ae0;
+  --grade-e: #e0913f;
+  --grade-f: #e05c4a;
+
+  --ignis: #ee7250;
+  --aqua: #5ca9e8;
+  --terra: #c7ac3c;
+  --aer: #ac9bf0;
+  --umbra: #9f92b4;
+
+  --tap: 2.75rem;
+  --radius: 3px;
+
+  font-size: calc(16px * var(--ui-scale));
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.mono,
+.num {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ layout */
+
+#app {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+#stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The Phaser canvas renders the world; panels float above it. */
+#stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+
+#panels {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+#panels > * {
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------- hud */
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  min-height: var(--tap);
+  flex-wrap: wrap;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.hud-stat dt {
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.hud-stat dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-clock {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  /* Tight, because the middot is now doing the separating. */
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+
+.phase-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  /* It reads as part of the line, so it keeps the line's spacing, not the flex gap. */
+  flex: none;
+  margin-right: 0.1rem;
+}
+
+.hud-sep {
+  color: var(--muted);
+}
+
+.phase-dot[data-phase='dawn'] {
+  background: #f0a860;
+}
+.phase-dot[data-phase='day'] {
+  background: #f4e8c8;
+}
+.phase-dot[data-phase='dusk'] {
+  background: #d4703c;
+}
+.phase-dot[data-phase='night'] {
+  background: #2a3f6b;
+}
+
+/* ------------------------------------------------------------------- panel */
+
+.panel {
+  margin: auto 0 0;
+  width: 100%;
+  max-height: 68%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem 0.5rem;
+  flex-wrap: wrap;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.panel-head p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.panel-body {
+  overflow-y: auto;
+  padding: 0 0.875rem 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.empty-state {
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-state strong {
+  display: block;
+  color: var(--ink-2);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+/* -------------------------------------------------------------------- nav */
+
+/*
+ * Eight destinations do not fit a phone at a comfortable tap size, so the bar
+ * scrolls rather than squeezing every label into four characters. Each item
+ * keeps its full 44px target; the row simply runs off the edge.
+ */
+.nav {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(3.75rem, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav button {
+  position: relative;
+  background: none;
+  border: 0;
+  border-top: 2px solid transparent;
+  padding: 0.5rem 0.25rem;
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.nav button[aria-current='true'] {
+  color: var(--verd-ink);
+  border-top-color: var(--verd);
+  background: var(--verd-soft);
+}
+
+.nav .badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.5rem;
+  background: var(--amber);
+  color: var(--ground);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  min-width: 1rem;
+  height: 1rem;
+  border-radius: 0.5rem;
+  display: grid;
+  place-items: center;
+  padding: 0 0.2rem;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  min-height: var(--tap);
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.row-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* For the one button a section exists for, rather than one option among several. */
+.row-actions.center {
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+/*
+ * Under the text they belong to, not against the far margin.
+ *
+ * The default flush-right suits a row where the buttons act on something to
+ * their left. A settings section is a paragraph, and its controls read as part
+ * of it — so they start where the sentence above them started.
+ */
+.row-actions.left {
+  justify-content: flex-start;
+}
+
+.row.is-ready {
+  border-color: var(--verd);
+  box-shadow: inset 2px 0 0 var(--verd);
+}
+
+.row.is-blocked {
+  opacity: 0.55;
+}
+
+.row[data-selected='true'] {
+  border-color: var(--amber);
+  box-shadow: inset 2px 0 0 var(--amber);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn {
+  background: var(--verd);
+  color: var(--ground);
+  border: 1px solid var(--verd);
+  border-radius: var(--radius);
+  padding: 0 0.75rem;
+  min-height: var(--tap);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--verd-ink);
+  border-color: var(--verd-ink);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--verd-ink);
+}
+
+.btn.ghost:hover:not(:disabled) {
+  background: var(--verd-soft);
+  color: var(--verd-ink);
+}
+
+/*
+ * The undo of a choice, in the colour of the choice.
+ *
+ * A control that reverses something already done was styled `quiet` — muted
+ * grey on a muted border — which is the same thing a disabled button looks
+ * like. It read as inert, so "Leave behind" looked like an explanation of the
+ * state rather than the way out of it. Amber is what marks the selection
+ * elsewhere, so the button now matches the card it undoes.
+ */
+.btn.amber {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+.btn.amber:hover:not(:disabled) {
+  background: var(--amber);
+  color: var(--ground);
+}
+
+/*
+ * Gold, for the one action a screen is built toward.
+ *
+ * Solid rather than outlined, because it is not one option among several — it
+ * is the end of the sequence. Used sparingly enough that seeing it means the
+ * same thing everywhere.
+ */
+.btn.gold {
+  background: var(--amber);
+  color: var(--ground);
+  border-color: var(--amber);
+  font-weight: 700;
+}
+
+.btn.gold:hover:not(:disabled) {
+  background: var(--amber-ink, #ecbc63);
+  border-color: var(--amber-ink, #ecbc63);
+}
+
+.btn.gold:disabled {
+  background: var(--amber-soft);
+  color: var(--muted);
+  border-color: var(--rule);
+}
+
+.btn.quiet {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--rule);
+}
+
+.btn.quiet:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--muted);
+}
+
+.btn.warm {
+  background: transparent;
+  color: var(--ignis);
+  border-color: var(--ignis);
+}
+
+.btn.warm:hover:not(:disabled) {
+  background: var(--ignis);
+  color: var(--ground);
+}
+
+.btn.cool {
+  background: transparent;
+  color: var(--aqua);
+  border-color: var(--aqua);
+}
+
+.btn.cool:hover:not(:disabled) {
+  background: var(--aqua);
+  color: var(--ground);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.btn.small {
+  min-height: 2.25rem;
+  padding: 0 0.5rem;
+  font-size: 0.6875rem;
+}
+
+/* ------------------------------------------------------------------ chips */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.375rem;
+  border-radius: var(--radius);
+  background: var(--sunken);
+  font-size: 0.6875rem;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.chip svg {
+  flex: none;
+}
+
+.chip.ignis {
+  color: var(--ignis);
+}
+.chip.aqua {
+  color: var(--aqua);
+}
+.chip.terra {
+  color: var(--terra);
+}
+.chip.aer {
+  color: var(--aer);
+}
+.chip.umbra {
+  color: var(--umbra);
+}
+
+.chip.plain {
+  color: var(--ink-2);
+}
+
+.chip.warn {
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.grade {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  background: var(--sunken);
+  border: 1px solid currentColor;
+  flex: none;
+}
+
+.grade[data-grade='S'] { color: var(--grade-s); }
+.grade[data-grade='A'] { color: var(--grade-a); }
+.grade[data-grade='B'] { color: var(--grade-b); }
+.grade[data-grade='C'] { color: var(--grade-c); }
+.grade[data-grade='D'] { color: var(--grade-d); }
+.grade[data-grade='E'] { color: var(--grade-e); }
+.grade[data-grade='F'] { color: var(--grade-f); }
+
+/*
+ * Coin is always the colour of coin.
+ *
+ * Applied where a price is its own element — including inside a sentence, which
+ * `splitOnValue` arranges by cutting the finished string around the number.
+ */
+.gold {
+  color: var(--gold);
+}
+
+/* Mastery, the same way: its own colour wherever the figure is its own element. */
+.mastery {
+  color: var(--mastery);
+  white-space: nowrap;
+}
+
+.renown {
+  color: var(--renown);
+}
+
+/* Placeholder for the medal; sized to sit on the text baseline, not above it. */
+.mastery-mark {
+  margin-right: 0.2em;
+  font-size: 0.9em;
+}
+
+.prestige-earns {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+/* A grade sitting beside the name it grades. */
+.inline-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* ------------------------------------------------------------------ meter */
+
+.meter {
+  height: 0.375rem;
+  border-radius: 3px;
+  background: var(--sunken);
+  overflow: hidden;
+  border: 1px solid var(--rule);
+}
+
+.meter-fill {
+  height: 100%;
+  background: var(--verd);
+  transition: width 0.25s ease;
+}
+
+.meter-fill.over {
+  background: var(--danger);
+}
+
+/* --------------------------------------------------------------- controls */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.field-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/*
+ * Choice strips are sized by their cells, not by their words.
+ *
+ * These used to be a wrapping flex row of shrink-to-fit buttons, so every strip
+ * came out ragged: "Stirred" half the width of "Simmered", six pot tabs falling
+ * into three rows of different lengths with a short one stranded on its own.
+ * The eye reads that as broken rather than as compact.
+ *
+ * A grid of equal columns fixes the shape. `auto-fit` still decides how many
+ * fit — a wide panel gets more per row, a narrow one fewer — but whatever the
+ * count, every button in the strip is the same size.
+ */
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.375rem;
+}
+
+.option {
+  /* A grid cell has a definite width, and a long label must yield to it rather
+     than force the column wider and un-even the row again. */
+  min-width: 0;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 0.375rem 0.625rem;
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.0625rem;
+  text-align: left;
+  color: var(--ink-2);
+  font-size: 0.75rem;
+}
+
+/* The label is one thing on one line; only the column width may change. */
+.option > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Pot names are long — "Jewelled Cauldron" wants a wider floor than a method
+   or a filter does, so the strip settles on two columns rather than three
+   cramped ones. */
+.pot-switcher .options {
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.option[aria-pressed='true'] {
+  border-color: var(--verd);
+  background: var(--verd-soft);
+  color: var(--verd-ink);
+}
+
+.option:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.option small {
+  font-size: 0.625rem;
+  color: var(--muted);
+}
+
+/*
+ * What a town does to a run, on the card you pick it from.
+ *
+ * Wide enough columns that a modifier is one line rather than three: the whole
+ * point is comparing four towns at a glance, and a wrapped list is read, not
+ * scanned.
+ */
+.prestige-towns .options {
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+}
+
+.town-effects {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+}
+
+/* Gain and cost, told apart without reading — the sign is in the wording too. */
+.town-effects small[data-tone='good'] {
+  color: var(--verd);
+}
+
+.town-effects small[data-tone='bad'] {
+  color: var(--amber);
+}
+
+/* Neither gain nor cost — the baseline town, which must not read as the best. */
+.town-effects small[data-tone='flat'] {
+  color: var(--muted);
+}
+
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--verd);
+  min-height: var(--tap);
+}
+
+/* ---------------------------------------------------------------- overlay */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 10, 0.82);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 10;
+}
+
+.dialog {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  max-width: 27rem;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 1rem 1.125rem 1.125rem;
+}
+
+.dialog h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.125rem;
+}
+
+.dialog p {
+  margin: 0 0 0.75rem;
+  color: var(--ink-2);
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.875rem;
+}
+
+/* ------------------------------------------------------------------ steps */
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.step:last-of-type {
+  border-bottom: 0;
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-num {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--verd-soft);
+  color: var(--verd-ink);
+  border: 1px solid var(--verd);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+
+.step-title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.step-hint {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+.field-note {
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------- slot grid */
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+  gap: 0.375rem;
+}
+
+.grid-empty {
+  margin: 0;
+  padding: 0.875rem 0.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius);
+}
+
+/*
+ * A tile that carries a details dot.
+ *
+ * The wrapper is the grid item so the dot can sit over the tile's corner
+ * without a button ending up inside a button.
+ */
+.slot-wrap {
+  position: relative;
+  display: flex;
+}
+
+.slot-wrap > .slot {
+  flex: 1;
+}
+
+.slot-info {
+  position: absolute;
+  top: 0.125rem;
+  right: 0.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  /* Quiet until wanted: present enough to find, faint enough to ignore. */
+  opacity: 0.55;
+}
+
+.slot-info:hover,
+.slot-info:focus-visible {
+  opacity: 1;
+  color: var(--ink);
+  border-color: var(--verd);
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  padding: 0.5rem 0.25rem;
+  min-height: 4.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.slot:hover:not(:disabled) {
+  border-color: var(--verd);
+}
+
+.slot:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.slot[data-selected='true'] {
+  border-color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.slot[data-dragging='true'] {
+  opacity: 0.4;
+}
+
+.slot-icon {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.slot-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.slot-caption {
+  font-size: 0.5625rem;
+  color: var(--muted);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+/* A grade badge in a caption is a caption-sized badge. */
+.slot-caption .grade {
+  min-width: 1rem;
+  height: 1rem;
+  font-size: 0.625rem;
+}
+
+.slot[data-tone='good'] .slot-caption {
+  color: var(--verd-ink);
+}
+
+.slot[data-tone='warn'] .slot-caption {
+  color: var(--amber);
+}
+
+.slot-count {
+  position: absolute;
+  top: 0.1875rem;
+  right: 0.1875rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: 0.625rem;
+  padding: 0 0.25rem;
+  font-size: 0.5625rem;
+  font-family: ui-monospace, monospace;
+  color: var(--ink);
+}
+
+.essence-mark {
+  display: grid;
+  place-items: center;
+}
+
+.essence-mark.ignis {
+  color: var(--ignis);
+}
+.essence-mark.aqua {
+  color: var(--aqua);
+}
+.essence-mark.terra {
+  color: var(--terra);
+}
+.essence-mark.aer {
+  color: var(--aer);
+}
+.essence-mark.umbra {
+  color: var(--umbra);
+}
+
+[data-drop-target='active'] {
+  outline: 2px dashed var(--verd);
+  outline-offset: -2px;
+  background: var(--verd-soft);
+}
+
+/* ------------------------------------------------------------------- pot */
+
+.pot-drop {
+  min-height: 5.5rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius);
+  background: var(--sunken);
+}
+
+.capacity-head,
+.stores-head,
+.log-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.blend-row,
+.capacity,
+.stores,
+.seeds,
+.plots,
+.shelves,
+.inventory,
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* ----------------------------------------------------------------- gauge */
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.gauge[data-in-band='true'] {
+  border-color: var(--verd);
+}
+
+.gauge-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.gauge-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gauge-track {
+  position: relative;
+  height: 0.75rem;
+  border-radius: 0.375rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.gauge-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--verd-soft);
+  border-left: 1px solid var(--verd);
+  border-right: 1px solid var(--verd);
+}
+
+.gauge-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, var(--aqua), var(--amber) 55%, var(--ignis));
+  opacity: 0.55;
+}
+
+.gauge-needle {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--ink);
+  transform: translateX(-1px);
+}
+
+.burner-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.burner {
+  touch-action: none;
+  user-select: none;
+}
+
+.burner[data-held='true'] {
+  filter: brightness(1.35);
+}
+
+/* --------------------------------------------------------------- outcome */
+
+.outcome {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--verd);
+  border-radius: var(--radius);
+}
+
+.outcome[data-tone='warn'] {
+  border-left-color: var(--amber);
+}
+
+.outcome-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.outcome-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.stat-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.stat-label {
+  color: var(--muted);
+}
+
+.stat-value {
+  font-family: ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-line[data-tone='warn'] .stat-value {
+  color: var(--amber);
+}
+
+.stat-line[data-tone='good'] .stat-value {
+  color: var(--verd-ink);
+}
+
+/*
+ * Amber is caution; this is harm.
+ *
+ * A high injury chance was reading in the same colour as a price, on a screen
+ * where gold means "what this costs" — so the one number that says a hero might
+ * come home hurt looked like part of the bill.
+ */
+.stat-line[data-tone='bad'] .stat-value {
+  color: var(--danger);
+}
+
+.problems {
+  margin: 0;
+  padding-left: 1.125rem;
+  font-size: 0.75rem;
+  color: var(--amber);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+.recipes {
+  gap: 0.375rem;
+}
+
+.recipe {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.recipe-name {
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------- garden */
+
+.plot,
+.shelf {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  min-height: var(--tap);
+}
+
+.plot-empty {
+  border-style: dashed;
+}
+
+.plot-ready {
+  border-color: var(--verd);
+  box-shadow: inset 2px 0 0 var(--verd);
+}
+
+.plot-icon {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  flex: none;
+}
+
+.plot-main,
+.shelf-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.plot-title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+/* ---------------------------------------------------------------- shelf */
+
+.shelf {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.375rem;
+}
+
+.shelf-empty {
+  border-style: dashed;
+  align-items: center;
+  text-align: center;
+}
+
+.shelf-empty-label {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.shelf-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.shelf-name {
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+.shelf-price {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.price-gold {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.chip.good {
+  color: var(--verd-ink);
+  background: var(--verd-soft);
+}
+
+/* --------------------------------------------------------------- grounds */
+
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface);
+  padding-bottom: 0.25rem;
+}
+
+.cave-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cave-width, 6), minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.cave-tile {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  min-height: 2.75rem;
+}
+
+.cave-tile:hover {
+  border-color: var(--verd);
+}
+
+/* A lit bed reads warm; the lantern is the steering wheel, so it must be visible. */
+.cave-tile[data-lit='true'] {
+  background: var(--amber-soft);
+  border-color: var(--amber);
+}
+
+.cave-tile[data-ready='true'] {
+  box-shadow: inset 0 0 0 2px var(--verd);
+}
+
+.cave-tile[data-locked='true']::after {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  right: 0.125rem;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 1px;
+  background: var(--aer);
+}
+
+.cave-growth {
+  width: 80%;
+}
+
+.cave-growth .meter {
+  height: 0.1875rem;
+}
+
+.shaft-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.stratum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.vein {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.vein[data-working='true'] {
+  border-color: var(--verd);
+  box-shadow: inset 2px 0 0 var(--verd);
+}
+
+/* --------------------------------------------------------------- roster */
+
+.heroes,
+.missions,
+.destinations,
+.supplies,
+.send,
+.tavern,
+.reputation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.hero,
+.mission,
+.contract {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.hero[data-selected='true'] {
+  border-color: var(--amber);
+  box-shadow: inset 2px 0 0 var(--amber);
+}
+
+/* A card that answers to a tap should say so before it is tapped. */
+.hero[data-pickable='true'] {
+  cursor: pointer;
+  text-align: left;
+}
+
+.hero[data-pickable='true']:hover {
+  border-color: var(--muted);
+}
+
+.hero[data-pickable='true'][data-selected='true']:hover {
+  border-color: var(--amber);
+}
+
+.hero[data-hurt='true'] {
+  border-left: 3px solid var(--ignis);
+}
+
+.mission,
+.contract {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* --------------------------------------------------- collapsible sections */
+
+/*
+ * The whole heading is the switch.
+ *
+ * Reset to look like the label it replaces — a section head that suddenly reads
+ * as a button would be four buttons competing with the real ones underneath it.
+ * The caret is the only thing that says it does anything, and the pointer and
+ * the hover colour do the rest.
+ */
+.collapsible-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  width: 100%;
+  padding: 0.125rem 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+/*
+ * A heading that folds is not the same thing as a label.
+ *
+ * `.field-label` is the muted grey used for every caption on the screen, so a
+ * collapsible head read as one more piece of flavour and nothing said it could
+ * be pressed. Teal marks the ones that do something, and is a colour no grade,
+ * currency or essence already claims.
+ */
+.collapsible-head .field-label {
+  color: var(--verd-ink);
+  font-weight: 700;
+}
+
+.collapsible-head:hover .field-label,
+.collapsible-head:hover .collapsible-caret {
+  color: var(--verd);
+}
+
+.collapsible-head .collapsible-caret {
+  color: var(--verd-ink);
+}
+
+.collapsible-caret {
+  font-size: 0.625rem;
+  color: var(--muted);
+  transition: transform 120ms ease;
+}
+
+/* Shut: the caret points at the heading it is hiding. */
+.collapsible[data-open='false'] .collapsible-caret {
+  transform: rotate(-90deg);
+}
+
+/* A folded section is a single line, so it must not keep a section's gap. */
+.collapsible[data-open='false'] {
+  gap: 0;
+}
+
+/*
+ * Each section scrolls inside itself.
+ *
+ * Three open sections on one panel meant the Roster was one long column and the
+ * Send button lived somewhere below the fold — with 45 heroes and 196 stacks of
+ * potions, a long way below it. Capping each body keeps every step of the
+ * sequence — who, where, what they carry, go — on the screen at once.
+ *
+ * `overscroll-behavior` stops a flick inside a section from carrying on into
+ * the panel behind it once it hits the end.
+ */
+.collapsible-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  max-height: 17rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Room for the scrollbar, so it never sits over a tile's edge. */
+  padding-right: 0.125rem;
+}
+
+/* Portraits make these rows tall; two or three of them is already a list. */
+.heroes .collapsible-body {
+  max-height: 20rem;
+}
+
+/*
+ * The Cauldron's steps keep their own heading inside the toggle.
+ *
+ * A step head is a numbered block with two lines in it, so the caret sits
+ * against the number rather than on the label's baseline, and the head takes
+ * the width it needs rather than the label's own.
+ */
+.collapsible-head .step-head,
+.collapsible-head .stores-head {
+  flex: 1;
+  min-width: 0;
+}
+
+.collapsible-head:has(.step-head) {
+  align-items: center;
+}
+
+/* A step is a taller thing than a roster section; give it room before it scrolls. */
+.step > .collapsible-body,
+.recipes > .collapsible-body {
+  max-height: 26rem;
+}
+
+/* Selected out of a stack, beside the grade and the price. */
+.supply-taken {
+  color: var(--amber);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * A bottle tile and the control that packs it.
+ *
+ * The wrapper is the grid cell, so the stepper sits under the tile rather than
+ * inside it — a button cannot legally contain buttons, and the tile is one.
+ */
+.supply-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  min-width: 0;
+}
+
+.supply-tile > .slot {
+  flex: 1;
+}
+
+.supply-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.1875rem;
+}
+
+.supply-step {
+  flex: 1;
+  min-height: 1.75rem;
+  padding: 0;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.supply-step:hover:not(:disabled) {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* Kept in place rather than hidden: the row must not resize as you pack. */
+.supply-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.supply-step-count {
+  min-width: 1.25rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--amber);
+}
+
+.potion-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--sunken);
+  border-radius: var(--radius);
+}
+
+
+/*
+ * A party in the doorway, marked as waiting on you.
+ *
+ * The green edge is the same signal a ready plot or a finished brew carries: a
+ * card that wants a tap, as opposed to one merely reporting a clock.
+ */
+.mission.is-home {
+  border-color: var(--verd);
+  border-left-width: 3px;
+}
+
+/* ------------------------------------------------------- brewing station */
+
+/*
+ * The station owns the stage.
+ *
+ * It is placed rather than docked, because it is not a panel over a scene — it
+ * replaces the scene for as long as one pot has your attention.
+ */
+.station {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+}
+
+.station-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.station-title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+/* Clear of the debug toggle, which floats in the same corner in dev builds. */
+.station-capacity {
+  margin-left: auto;
+  margin-right: 5rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Three columns, and the pot is the one that must not be squeezed.
+ *
+ * The side columns are given a sane minimum and the middle takes what is left,
+ * so the thing you are actually looking at stays the biggest object on screen.
+ */
+/*
+ * Proportions, not rem widths.
+ *
+ * The columns were capped at 20rem and 22rem, which at 150% text is 480px and
+ * 528px — so on a 1120px stage the two side columns took everything and the pot
+ * was left a 100px slit. Fractions divide whatever there is, so the split holds
+ * at any window size and any text scale.
+ */
+.station-cols {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.15fr);
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+}
+
+.station-col {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  overflow-y: auto;
+  /* The vertical scrollbar eats into the width its children were sized against,
+     which otherwise hands the column a sideways scrollbar for those 17 pixels. */
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.station-middle {
+  align-items: stretch;
+}
+
+.station-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+/*
+ * A list inside a column that already scrolls needs its own bottom.
+ *
+ * `overflow-x: hidden` because a tile grid whose cells do not quite divide the
+ * column will otherwise hand it a sideways scrollbar for the last few pixels,
+ * and a sideways scrollbar on a vertical list is never what was meant.
+ */
+.station-scroll {
+  min-height: 0;
+  /*
+   * Bounded, so a long list cannot push the pot off the page.
+   *
+   * Stacked on a narrow screen the three columns become one, and twenty-eight
+   * ingredient tiles sat between the top of the page and the cauldron. Capping
+   * the list means the thing you are brewing in is always a short scroll away,
+   * whatever is in your stores.
+   */
+  max-height: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+/* -- the inventory ------------------------------------------------------- */
+
+.ingredient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.375rem;
+}
+
+/* The card, with the count and the details dot laid over its top corners. */
+.ingredient-tile {
+  position: relative;
+  min-width: 0;
+}
+
+.ingredient-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0.125rem 0.375rem;
+  width: 100%;
+  padding: 1.25rem 0.375rem 0.375rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ingredient-card:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+
+.ingredient-card:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/*
+ * The blend down the left edge, in the essences' own colours.
+ *
+ * This is what the eye is actually hunting for — "which of these is the Aqua
+ * one" — and it was previously only in a `title`, which a touchscreen never
+ * shows at all.
+ */
+.ingredient-essences {
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.ingredient-essence {
+  display: flex;
+  gap: 0.1875rem;
+  justify-content: space-between;
+  min-width: 2.25rem;
+}
+
+.ingredient-essence.ignis {
+  color: var(--ignis);
+}
+.ingredient-essence.aqua {
+  color: var(--aqua);
+}
+.ingredient-essence.terra {
+  color: var(--terra);
+}
+.ingredient-essence.aer {
+  color: var(--aer);
+}
+.ingredient-essence.umbra {
+  color: var(--umbra);
+}
+
+.ingredient-icon {
+  grid-column: 2;
+  line-height: 0;
+}
+
+.ingredient-name {
+  grid-column: 2;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ingredient-freshness {
+  grid-column: 2;
+  font-size: 0.5625rem;
+  color: var(--muted);
+}
+
+.ingredient-card[data-tone='good'] .ingredient-freshness {
+  color: var(--verd-ink);
+}
+
+.ingredient-card[data-tone='warn'] .ingredient-freshness {
+  color: var(--amber);
+}
+
+/* Top-left: how many you have. Not a target — the card underneath is. */
+.ingredient-count {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  pointer-events: none;
+}
+
+/*
+ * Top-right: what it is.
+ *
+ * `ingredient-details`, not `ingredient-info` — that name already belongs to
+ * the body of the ingredient dialog further down this file, and a button
+ * wearing it inherited a 17rem minimum width and came out as a long oval.
+ */
+.ingredient-details {
+  position: absolute;
+  top: 0.125rem;
+  right: 0.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  padding: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ingredient-details:hover {
+  color: var(--ink);
+  border-color: var(--muted);
+}
+
+/* -- heat and method ------------------------------------------------------ */
+
+/* Fine control under the ramp: hold to travel, tap to land. */
+.burner-fine {
+  gap: 0.375rem;
+}
+
+.burner-step {
+  flex: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.method-row {
+  display: flex;
+  gap: 0.375rem;
+}
+
+/* A binary choice needs a word each, not a cell each. */
+.method-chip {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* -- the pot ------------------------------------------------------------- */
+
+.station-pot {
+  align-items: center;
+}
+
+/*
+ * Sized from the height, not the width.
+ *
+ * A square that filled the column was taller than the column, so the firepit
+ * under the pot and the outcome card beneath it were both below the fold — on
+ * the one screen where the whole point is seeing them together. Driving the
+ * size off the viewport height keeps the pot, its fire and the verdict on
+ * screen at once, and `vh` rather than `rem` so raising the text scale grows
+ * the reading matter without growing the picture past the window.
+ */
+.pot-stage {
+  position: relative;
+  height: min(42vh, 340px);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10%;
+}
+
+/*
+ * The firepit is always lit, and only its strength moves.
+ *
+ * `--heat` runs 0 at the coldest the pot can be to 1 at the hottest, so a cold
+ * pot still stands over embers rather than over nothing — a burner that appears
+ * at some threshold reads as the art failing to load.
+ */
+.pot-fire {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  width: 62%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 60%,
+    rgba(255, 214, 130, calc(0.25 + var(--heat, 0) * 0.6)) 0%,
+    rgba(238, 114, 80, calc(0.18 + var(--heat, 0) * 0.5)) 45%,
+    rgba(120, 40, 20, 0) 72%
+  );
+  filter: blur(calc(2px + var(--heat, 0) * 6px));
+}
+
+.pot-vessel {
+  position: relative;
+  width: 74%;
+  height: 62%;
+  border-radius: 12% 12% 46% 46% / 8% 8% 60% 60%;
+  background: linear-gradient(180deg, #3b3a44 0%, #22212a 62%, #17161d 100%);
+  border: 2px solid #4a4854;
+  box-shadow:
+    inset 0 -14px 26px rgba(0, 0, 0, 0.55),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* The lip, so the contents read as inside rather than on top. */
+.pot-rim {
+  position: absolute;
+  top: -6px;
+  left: -3%;
+  width: 106%;
+  height: 15%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #55525f 0%, #2c2b34 100%);
+  border: 2px solid #5d5a68;
+}
+
+.pot-contents {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 76%;
+  margin-top: 8%;
+}
+
+.pot-unit {
+  padding: 0;
+  background: none;
+  border: 0;
+  line-height: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+}
+
+.pot-unit:hover {
+  transform: translateY(-2px);
+}
+
+.pot-empty {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/*
+ * The surface, only while it is genuinely cooking.
+ *
+ * Filling a pot is not brewing, and a surface that churned from the first
+ * ingredient said it was. It starts when the brew does.
+ */
+.pot-brewing {
+  position: absolute;
+  inset: 14% 10% 20%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 42%, rgba(255, 244, 214, 0.34), transparent 42%),
+    radial-gradient(circle at 66% 56%, rgba(255, 226, 168, 0.26), transparent 38%),
+    radial-gradient(ellipse at 50% 46%, rgba(255, 255, 255, 0.16), transparent 68%);
+  animation: pot-simmer 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pot-simmer {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.95) translateY(2%);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.03) translateY(-2%);
+  }
+}
+
+.pot-blend {
+  justify-content: center;
+}
+
+/* -- the recipe book ----------------------------------------------------- */
+
+.recipe-head {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0;
+  cursor: pointer;
+}
+
+.recipe-head .recipe-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.recipe-pin {
+  padding: 0 0.25rem;
+  background: none;
+  border: 0;
+  color: var(--rule);
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.recipe-pin[aria-pressed='true'] {
+  color: var(--gold);
+}
+
+.recipe[data-pinned='true'] {
+  border-left: 2px solid var(--gold);
+  padding-left: 0.375rem;
+}
+
+.recipe-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0 0 0.5rem 1rem;
+}
+
+.ratio-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+/*
+ * A bar per essence the recipe asks for, filled by proportion.
+ *
+ * The number on the right is the recipe's own share — the 3 and the 1 of a
+ * 3 : 1 — not a target amount, because a recipe is a ratio and any magnitude
+ * that holds it is correct. Every bar full means the blend is on the ratio.
+ */
+.ratio-row {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) 1.25rem;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+}
+
+.ratio-name {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ratio-track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--sunken);
+  overflow: hidden;
+}
+
+.ratio-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 120ms ease;
+}
+
+.ratio-share {
+  text-align: right;
+  color: var(--muted);
+}
+
+/*
+ * The label takes the essence's colour as INK; only the bar takes it as paint.
+ *
+ * Written as one shared rule at first, which set a background on the label too
+ * and turned every essence name into a solid block of its own colour with the
+ * letters invisible inside it.
+ */
+.ratio-name.ignis {
+  color: var(--ignis);
+}
+.ratio-name.aqua {
+  color: var(--aqua);
+}
+.ratio-name.terra {
+  color: var(--terra);
+}
+.ratio-name.aer {
+  color: var(--aer);
+}
+.ratio-name.umbra {
+  color: var(--umbra);
+}
+
+.ratio-fill.ignis {
+  background: var(--ignis);
+}
+.ratio-fill.aqua {
+  background: var(--aqua);
+}
+.ratio-fill.terra {
+  background: var(--terra);
+}
+.ratio-fill.aer {
+  background: var(--aer);
+}
+.ratio-fill.umbra {
+  background: var(--umbra);
+}
+
+/* -- the bench ----------------------------------------------------------- */
+
+.bench-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 0.5rem;
+}
+
+/* The card and the button that moves it, as one cell. */
+.bench-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.bench-tile > .bench-card {
+  flex: 1;
+}
+
+.bench-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/*
+ * A stored pot is a picture of a thing you own, not a door.
+ *
+ * Muted rather than hidden, and without the pointer, so the shelf reads as
+ * stock rather than as controls that have stopped working.
+ */
+.bench-card[data-stored='true'] {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.bench-card[data-stored='true'] .bench-art {
+  filter: grayscale(0.35);
+}
+
+.bench-card:hover {
+  border-color: var(--muted);
+}
+
+.bench-card[data-activity='ready'] {
+  border-color: var(--verd);
+}
+
+.bench-art {
+  width: 100%;
+  max-width: 5rem;
+  height: auto;
+}
+
+.bench-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* One column at a time on a phone: three of these side by side is none of them. */
+@media (max-width: 900px) {
+  .station-cols {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    overflow-y: auto;
+  }
+
+  .station-col {
+    overflow: visible;
+  }
+}
+
+/* ------------------------------------------------------------ mission haul */
+
+.reward {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.reward-quality {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.reward-quality.is-bountiful {
+  color: var(--gold);
+}
+
+.reward-quality.is-successful {
+  color: var(--verd-ink);
+}
+
+.reward-quality.is-meagre {
+  color: var(--muted);
+}
+
+.reward-haul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--sunken);
+  border-radius: var(--radius);
+}
+
+.reward-find {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* The name takes the slack, so every count lines up down the right edge. */
+.reward-find-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.reward-find-count {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.reward-injured {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--danger);
+}
+
+/*
+ * Affinity, in its own colour.
+ *
+ * Favour is not gold, health or essence, and drawing it in the same green as
+ * every other meter made it read as a generic progress bar. Pink is used
+ * nowhere else in the game, so the bar now means one thing on sight — and it is
+ * thinner, because it is a glance, not a readout.
+ */
+.favour-bar {
+  margin-top: 0.25rem;
+  max-width: 11rem;
+}
+
+.favour-bar .meter {
+  height: 0.125rem;
+}
+
+.favour-bar .meter-fill {
+  background: var(--favour);
+}
+
+/* --------------------------------------------------------------- board */
+
+.contract {
+  gap: 0.375rem;
+  border-left: 3px solid var(--verd);
+}
+
+.contract[data-urgent='true'] {
+  border-left-color: var(--amber);
+}
+
+.contract-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.contract-faction {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.contract-want {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------- haggle */
+
+.walkins,
+.haggle,
+.greenhouse,
+.codex {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.codex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+/*
+ * Four fixed rows, not a stack.
+ *
+ * On a stack, "Reputation Precedes You" wrapping to two lines pushed its stars
+ * and its price a line lower than its neighbours', and eight tiles came out
+ * ragged. Giving the name the flexible row instead pins the stars and the cost
+ * to the same baseline across the whole board, whatever the name does.
+ */
+.codex-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.375rem;
+  min-height: var(--tap);
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.codex-card:hover {
+  border-color: var(--muted);
+}
+
+.codex-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+/* Where the glyph was, and big enough to count at a glance without leaning in. */
+.codex-stars {
+  display: flex;
+  gap: 0.0625rem;
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+.codex-stars span[data-filled='true'] {
+  color: var(--mastery);
+}
+
+.codex-stars span[data-filled='false'] {
+  color: var(--rule);
+}
+
+.codex-cost {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.codex-cost.is-maxed {
+  color: var(--muted);
+}
+
+/*
+ * The numbers, laid out as a short table.
+ *
+ * A label/value split earns its keep here in a way it did not for the single
+ * retirement line: there are several rows, they are compared down the column,
+ * and a dotted leader is what makes "now → next" line up between them.
+ */
+.codex-buffs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--sunken);
+  border-radius: var(--radius);
+}
+
+.codex-buff {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.codex-buff-label {
+  color: var(--muted);
+}
+
+.codex-arrow {
+  color: var(--muted);
+}
+
+.codex-tier {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.codex-price {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.codex-price.is-maxed {
+  color: var(--muted);
+}
+
+/* Bigger where they are the subject rather than a summary. */
+.dialog .codex-stars {
+  font-size: 1rem;
+  gap: 0.125rem;
+}
+
+.walkin {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+}
+
+.haggle {
+  padding: 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+}
+
+.haggle-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.haggle-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/*
+ * The stance is the entire read, so it gets its own block and states itself in
+ * words. Colour distinguishes the three, but the label carries the meaning.
+ */
+.stance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius);
+  border-left: 3px solid var(--muted);
+  background: var(--sunken);
+}
+
+.stance[data-stance='sceptical'] {
+  border-left-color: var(--aqua);
+}
+.stance[data-stance='haughty'] {
+  border-left-color: var(--aer);
+}
+.stance[data-stance='impatient'] {
+  border-left-color: var(--ignis);
+}
+
+.stance-label {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+.stance-line {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.pitch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.375rem;
+}
+
+.pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.5rem 0.625rem;
+  min-height: var(--tap);
+  text-align: left;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink-2);
+}
+
+/* How a pitch will land is shown before it is pressed — the system is meant to
+   be reasoned through, not memorised. */
+.pitch[data-result='counter'] {
+  border-color: var(--verd);
+}
+.pitch[data-result='backfire'] {
+  border-color: var(--ignis);
+}
+.pitch[data-result='holdFirm'] {
+  border-color: var(--amber);
+}
+
+.pitch-name {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.pitch-effect {
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+.pitch[data-result='counter'] .pitch-effect {
+  color: var(--verd-ink);
+}
+.pitch[data-result='backfire'] .pitch-effect {
+  color: var(--ignis);
+}
+.pitch[data-result='holdFirm'] .pitch-effect {
+  color: var(--amber);
+}
+
+.haggle-log {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.stepper-value {
+  flex: 1;
+  min-width: 4rem;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ checklist */
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--verd-soft);
+  border: 1px solid var(--verd);
+  border-radius: var(--radius);
+}
+
+.checklist-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.checklist-title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.checklist-count {
+  font-size: 0.75rem;
+  color: var(--verd-ink);
+}
+
+.checklist-next {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.checklist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.checklist-row[data-done='true'] {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* The next thing to do reads as the next thing to do. */
+.checklist-row[data-current='true'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.checklist-mark {
+  width: 1rem;
+  text-align: center;
+  color: var(--verd-ink);
+}
+
+.checklist-text {
+  flex: 1;
+}
+
+/* ------------------------------------------------------------ art icons */
+
+/*
+ * Painted sprites sit where the essence glyph used to. Same box, so a grid of
+ * mixed art and placeholders still lines up while the set is incomplete.
+ */
+.art-icon {
+  display: block;
+  object-fit: contain;
+  image-rendering: auto;
+  /* The art is drawn for a dark ground; a faint lift stops it merging with one. */
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+}
+
+/* ---------------------------------------------------------------- faces */
+
+.portrait {
+  border-radius: var(--radius);
+  object-fit: cover;
+  object-position: top center;
+  flex: none;
+  border: 1px solid var(--rule);
+  background: var(--surface-2);
+}
+
+.portrait-merchant {
+  width: 56px;
+  height: 70px;
+}
+
+/*
+ * Faces are the point of having them.
+ *
+ * 44px was a thumbnail — enough to know a row had a picture, not enough to see
+ * who it was of. The favour bar shrinks to pay for the height, which suits it:
+ * it is a background reading, not something anyone studies.
+ */
+.portrait-hero {
+  width: 68px;
+  height: 85px;
+}
+
+
+/* A row with a face lays out as face-then-text; without one it is unchanged. */
+.merchant-head.has-portrait {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: 0.7rem;
+  align-items: start;
+}
+
+.merchant-head.has-portrait > .portrait {
+  grid-row: 1 / span 3;
+}
+
+.hero.has-portrait {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/*
+ * One width for "Take along" and "Leave behind".
+ *
+ * The two labels differ by about three characters, and a shrink-to-fit button
+ * passed that difference straight into the row: picking someone nudged the
+ * favour bar and every chip beside it. Reserving the wider of the two keeps the
+ * card still while only the word changes.
+ */
+.hero-pick {
+  min-width: 7.5rem;
+}
+
+/* -------------------------------------------------------------- roster */
+
+/*
+ * A row of things a place might yield, each with its odds.
+ *
+ * Wraps rather than scrolls: a hidden find is the same as no find, and the
+ * whole point is being able to compare two destinations at a glance.
+ */
+.find-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.find {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.3rem 0.35rem 0.25rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.find:hover {
+  border-color: var(--verd);
+}
+
+.find-odds {
+  font-size: 0.625rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Grade and price sit on the floor of the tile.
+ *
+ * Potion names run to wildly different lengths — "Skysalt" against "Ember Tide
+ * Gale Sovereign" — so a caption that follows the label lands at a different
+ * height in every tile and the row of grades reads as a scatter. Pushing the
+ * label's slack above the caption puts every grade and every price on the same
+ * line across the grid, which is what makes them comparable at a glance.
+ */
+.supplies .slot {
+  justify-content: flex-start;
+}
+
+.supplies .slot-caption {
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+/* The whole screen builds to this, so it is centred and it is the biggest. */
+.send-action {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.25rem;
+}
+
+.send-action .btn {
+  min-width: 13rem;
+  min-height: 3.25rem;
+  font-size: 0.9375rem;
+}
+
+/* --------------------------------------------------------- tavern board */
+
+/*
+ * Three across, always.
+ *
+ * `auto-fill` gave a different number of faces per row at every panel width,
+ * so the board reflowed as the window moved and never read as a board. Three
+ * fixed columns is the shape it should hold.
+ */
+.tavern-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.tavern-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.375rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  cursor: pointer;
+  min-width: 0;
+}
+
+.tavern-card:hover {
+  border-color: var(--verd);
+}
+
+/* The face is the card; it sets the width and the name sits clear underneath. */
+.tavern-card .portrait-hero {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.tavern-card-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.tavern-card-name {
+  font-size: 0.75rem;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*
+ * No colour of its own, so `.gold` is free to supply one.
+ *
+ * This set `color: var(--muted)` and, being later in the file at equal
+ * specificity, quietly beat the `.gold` class on the very same element — the
+ * price was grey no matter what. Only the "no free place" case, which is not a
+ * price at all, is muted now.
+ */
+.tavern-card-price {
+  flex: none;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tavern-card-price:not(.gold) {
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------- hero dialog */
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hero-info-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+/* The dialog is where the face is worth its space. */
+.hero-info-head .portrait-hero {
+  width: 104px;
+  height: 130px;
+}
+
+.hero-info-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.hero-info-name h2 {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.hero-info-blurb {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.hero-info-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--sunken);
+  border-radius: var(--radius);
+}
+
+.hero-info-facts .stat-value {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* --------------------------------------------------------------- boards */
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+
+.board-thumb {
+  flex: none;
+  object-fit: fill;
+  border-radius: 1px;
+}
+
+/* ---------------------------------------------------------------- décor */
+
+.decor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.decor-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.decor-spot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* The spot's name sits left, what is in it sits right. */
+.decor-spot .field-note {
+  margin-left: auto;
+}
+
+.decor-thumb {
+  flex: none;
+  object-fit: contain;
+}
+
+/* Options wrap rather than scroll: a spot with four choices is still one glance. */
+.decor-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* -------------------------------------------------------- standing order */
+
+.standing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.order-line {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+}
+
+.order-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-count {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------- market */
+
+.standing,
+.merchant,
+.upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.merchant {
+  padding: 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+}
+
+.merchant-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.merchant-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.merchant-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.merchant-blurb {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.slot-glyph {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.upcoming-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+}
+
+.upcoming-name {
+  color: var(--ink-2);
+}
+
+.upcoming-when {
+  color: var(--muted);
+}
+
+/* ----------------------------------------------------- ingredient details */
+
+.ingredient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  min-width: 17rem;
+  max-width: 22rem;
+}
+
+.ingredient-info-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ingredient-info-head h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.0625rem;
+}
+
+.ingredient-info-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.ingredient-info-art img {
+  width: 2.75rem;
+  height: 2.75rem;
+  object-fit: contain;
+}
+
+.essence-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.essence-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.essence-row .essence-name {
+  flex: 1;
+}
+
+.essence-swatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 2px;
+  background: var(--muted);
+}
+
+.essence-swatch.ignis { background: #d4703c; }
+.essence-swatch.aqua { background: #4a8fb8; }
+.essence-swatch.terra { background: #8a7a4e; }
+.essence-swatch.aer { background: #9fb6c4; }
+.essence-swatch.umbra { background: #6b5a86; }
+
+.ingredient-info-recipes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ingredient-info-recipe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.ingredient-info-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/*
+ * The three ages as a table, under the sentence that summarises them.
+ *
+ * Three columns rather than three sentences: the reader is comparing one stage
+ * against another, and a fixed "when" column is what lets them see at a glance
+ * that Dewfresh is twelve hours and Dried is everything after two days.
+ */
+/* The sentence and its numbers as one unit, tighter than the gap between sections. */
+.freshness-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.freshness-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--sunken);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+}
+
+.freshness-row {
+  display: grid;
+  grid-template-columns: 5rem 4.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.freshness-stage {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.freshness-when {
+  color: var(--muted);
+}
+
+.freshness-effect {
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------- ledger */
+
+/*
+ * A screen with no scene behind it takes the whole stage, at every size.
+ *
+ * `.panel-roomy` only exists inside the desktop query, so below that breakpoint
+ * the Cauldron fell back to the default docked panel — a bottom sheet capped at
+ * 68% of the stage. On a short window that left a 63px slot holding 1,379px of
+ * pots: technically scrolling, and useless. Unlike `.panel-wide` this carries no
+ * two-column body, which belongs to the Ledger rather than to filling a page.
+ */
+.panel-full {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  /*
+   * Grows with its content instead of being a fixed box with a scrolling belly.
+   *
+   * `min-height` rather than `height` so a short page still fills the stage —
+   * otherwise the panel's ground stops halfway down and the canvas shows
+   * through under it.
+   */
+  /*
+   * The panel is the scroller, and everything in it scrolls — heading included.
+   *
+   * The body used to be the scroller, which left the heading pinned while a
+   * 63px window of content moved under it. Scrolling `#panels` instead fixed
+   * that and broke something worse: overlays, the away dialog and the debug
+   * panel are absolutely positioned children of `#panels`, so they scrolled
+   * away with the content and sat several hundred pixels above the viewport,
+   * open and invisible. Keeping the scroll one level in means the whole page
+   * still moves while `#panels` stays put as the anchor everything modal is
+   * positioned against.
+   */
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.panel-full > .panel-body {
+  overflow: visible;
+}
+
+/* A folded section inside a scrolling page must not scroll on its own. */
+.panel-full .collapsible-body {
+  max-height: none;
+  overflow: visible;
+}
+
+/* A document fills its page rather than floating as a card over the ground. */
+.panel-wide {
+  max-width: none;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.ledger {
+  gap: 1rem;
+}
+
+.ledger-summary,
+.ledger-log {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.5rem;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.stat-card-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-card-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.log-rows {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-2);
+}
+
+.log-row:last-child {
+  border-bottom: 0;
+}
+
+.log-row[data-kind='sold'] {
+  border-left: 2px solid var(--verd);
+}
+
+.log-row[data-kind='brewReady'],
+.log-row[data-kind='bottled'] {
+  border-left: 2px solid var(--amber);
+}
+
+.log-row[data-kind='seedFound'] {
+  border-left: 2px solid var(--terra);
+}
+
+.log-day {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  min-width: 2.25rem;
+}
+
+.log-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.pager-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------------ toast */
+
+.toasts {
+  position: absolute;
+  top: 0.625rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  align-items: center;
+  z-index: 20;
+  pointer-events: none;
+  width: max-content;
+  max-width: 90%;
+}
+
+.toast {
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--verd);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  animation: toast-in 0.18s ease;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.375rem);
+  }
+}
+
+/* ------------------------------------------------------------------ debug */
+
+/*
+ * Recentre the world.
+ *
+ * Bottom-left, over the canvas rather than the panel — it belongs to the thing
+ * it acts on, and that is the corner the panel never covers on any layout.
+ */
+.view-controls {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 17;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.view-button {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 35%);
+}
+
+.view-recenter {
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  padding: 0 0.75rem;
+}
+
+.view-button:hover {
+  border-color: var(--verd);
+  color: var(--ink);
+}
+
+/* Sits above the debug panel, so the same button that opens it also closes it. */
+.debug-toggle {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 17;
+  min-height: 2rem;
+  padding: 0 0.5rem;
+  font-size: 0.625rem;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  border-radius: var(--radius);
+}
+
+.debug {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(20rem, 88%);
+  background: var(--surface);
+  border-left: 1px solid var(--rule);
+  z-index: 16;
+  overflow-y: auto;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.debug h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.debug-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.debug-group > .options {
+  gap: 0.3125rem;
+}
+
+.debug-group .btn {
+  min-height: 2.25rem;
+  font-size: 0.6875rem;
+}
+
+/* -------------------------------------------------------------- wide view */
+
+/*
+ * Desktop shows more panels at once; it never shows anything mobile can't reach.
+ * That is the whole responsive strategy.
+ */
+/*
+ * The breakpoint is in px, deliberately, not rem.
+ *
+ * The text-size setting scales the root font-size, and this browser resolves
+ * `rem` inside a media query against that — so `60rem` meant turning text up to
+ * 150% flipped a desktop into the phone layout. A breakpoint is a question about
+ * the viewport; text size is a separate question, and bigger text should mean
+ * more scrolling, not a different application.
+ */
+@media (min-width: 960px) {
+  #app {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'nav hud'
+      'nav stage';
+  }
+
+  .hud {
+    grid-area: hud;
+  }
+
+  #stage {
+    grid-area: stage;
+  }
+
+  .nav {
+    grid-area: nav;
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-auto-rows: min-content;
+    border-top: 0;
+    border-right: 1px solid var(--rule);
+    width: 5.5rem;
+    padding-top: 0.5rem;
+    overflow-x: visible;
+    overflow-y: auto;
+  }
+
+  .nav button {
+    border-top: 0;
+    border-left: 2px solid transparent;
+  }
+
+  .nav button[aria-current='true'] {
+    border-top-color: transparent;
+    border-left-color: var(--verd);
+  }
+
+  /*
+   * The panel docks right, leaving the left of the stage for the scene.
+   *
+   * `auto` on the left margin is what pushes it over; `.panel-roomy` below
+   * puts that margin back for the screens that have no scene to make room for.
+   */
+  .panel {
+    margin: 0.875rem 0.875rem 0.875rem auto;
+    max-width: 28rem;
+    max-height: calc(100% - 1.75rem);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+  }
+
+  /*
+   * Screens with nothing behind them.
+   *
+   * The Board and the Roster draw no scene, so docking their panel to the right
+   * left the whole left half of the stage as empty background and squeezed the
+   * content into 28rem for no reason. They sit centred and roomier instead.
+   *
+   * Not `.panel-wide`: these are still cards on a ground, not documents that own
+   * the page, and the rows inside them read better bounded than run edge to edge.
+   */
+  .panel-roomy {
+    margin-inline: auto;
+    max-width: 52rem;
+  }
+
+  /* Given room, a full-stage page still reads better bounded and centred. */
+  .panel-full {
+    margin-inline: auto;
+    max-width: 60rem;
+  }
+
+  /*
+   * Who you have, beside who you could have — as two windows.
+   *
+   * Each keeps its own scroll, which is the whole point: browsing 45 faces in
+   * the tavern used to drag the send button off the screen, because they shared
+   * one scrolling body. Separate panels also let the tavern grid its faces at a
+   * size that suits portraits rather than one sized for the sequence beside it.
+   */
+  .panel-pair {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.875rem;
+    height: 100%;
+    margin-inline: auto;
+    max-width: 74rem;
+  }
+
+  .panel-pair > .panel {
+    margin: 0.875rem 0;
+    max-height: calc(100% - 1.75rem);
+  }
+
+  .panel-pair > .panel-roomy {
+    flex: 1 1 40rem;
+    max-width: 44rem;
+    margin-inline: 0;
+  }
+
+  /*
+ * Sorting controls, sized like what they are.
+ *
+ * These were `.option` cells on a grid — the same weight as picking a
+ * destination or a text size, which made "sort by price" look like a decision
+ * about the run. Small pills that wrap: they are a way of looking at the board,
+ * not a move.
+ */
+.sort-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.sort-chip {
+  padding: 0.1875rem 0.5rem;
+  min-height: 0;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sort-chip:hover {
+  color: var(--ink-2);
+  border-color: var(--muted);
+}
+
+.sort-chip[aria-pressed='true'] {
+  background: var(--amber-soft);
+  border-color: var(--amber);
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* Wide enough that three faces across still have room for a name and a price. */
+  .panel-pair > .tavern-panel {
+    flex: 0 0 26rem;
+    max-width: 26rem;
+  }
+
+  /*
+   * The extra width buys columns, not longer lines.
+   *
+   * Widening the panel alone would only stretch each row; laying independent
+   * cards on a track means a board of three contracts is visible at once
+   * instead of scrolled through.
+   *
+   * Opt-in, and separate from `.panel-roomy`, because it is only right where
+   * the children are peers. The Roster is a sequence — pick heroes, pick a
+   * destination, pick supplies, send — and reflowing that into columns would
+   * scramble the order it has to be read in.
+   */
+  .panel-cards .panel-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    align-content: start;
+    gap: 0.75rem;
+  }
+
+  /* A strip that summarises the whole panel spans it rather than taking a cell. */
+  .panel-cards .panel-body > .reputation,
+  .panel-cards .panel-body > .grid-empty {
+    grid-column: 1 / -1;
+  }
+
+  /*
+   * The Ledger and Settings are documents, not overlays on a scene — so they
+   * take the whole stage rather than sitting in a narrow column beside an empty
+   * background.
+   */
+  .panel-wide {
+    margin: 0;
+    max-width: none;
+    height: 100%;
+    max-height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  /*
+   * Head and body share one left margin.
+   *
+   * The head was widened to 1.5rem and the body was not, so it kept the panel
+   * default of 0.875rem — and the title sat 10px right of the column it was
+   * titling. `padding-inline` sets both sides rather than leaving one of them
+   * to a rule written for a narrower panel.
+   */
+  .panel-wide .panel-body {
+    display: grid;
+    grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+    padding-inline: 1.5rem;
+  }
+
+  .panel-wide .panel-head {
+    padding-inline: 1.5rem;
+  }
+
+  .panel-wide .panel-body > * {
+    min-width: 0;
+  }
+
+  .panel-wide .ledger-summary .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/*
+ * Chrome shrinks before content does.
+ *
+ * At 150% text on a 595 × 417 window the HUD wrapped to two lines — 143px — and
+ * the nav took another 79, leaving the panel 126px to work in. The reading
+ * matter is the point of raising the text scale; the frame around it is not, so
+ * on a small window the frame gives way first.
+ */
+@media (max-width: 720px) {
+  .hud {
+    padding: 0.375rem 0.625rem;
+    gap: 0.5rem;
+    min-height: 0;
+  }
+
+  /*
+   * The labels go, not the figures.
+   *
+   * Each of the three carries its own colour — coin, rose, violet — which is
+   * what the word was there to establish, and the HUD is a fixture you learn
+   * once rather than a list you read.
+   */
+  .hud-stat dt {
+    display: none;
+  }
+
+  .hud-clock {
+    font-size: 0.6875rem;
+    gap: 0.25rem;
+  }
+}
+
+/* A short window is the one that can least afford a tall nav. */
+@media (max-height: 560px) {
+  .nav button {
+    min-height: 44px;
+    padding: 0.25rem 0.375rem;
+    gap: 0.125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

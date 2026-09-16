@@ -1,0 +1,27 @@
+{
+  "$comment": "Which sprite each hand-authored ingredient wears. Chosen by scripts/art-match.js on essence proximity, not by name, because the UI tints and labels everything by dominant essence and art that disagrees with its own vector teaches the wrong thing at a glance. Ingredients with no honest match are absent on purpose and keep their essence badge. NOTE: once a file has been renamed onto its ingredient id the matcher can only ever re-pick it, so re-running --write on a fully adopted folder proposes churn rather than improvement. Edit this map by hand from here on.",
+  "adopted": {
+    "skyreachFeather": "griffinFeather",
+    "sunleaf": "sunleaf",
+    "moonpetal": "moonpetal",
+    "ashfern": "ashfern",
+    "quicksilverTear": "quicksilverTear",
+    "barrowAsh": "barrowAsh",
+    "gravecrown": "gravecrown",
+    "nullstone": "nullstone",
+    "galeThistle": "galeThistle",
+    "deepglass": "deepglass",
+    "dewcap": "dewcap",
+    "cinderwraithAsh": "cinderwraithAsh",
+    "mirefenPearl": "mirefenPearl",
+    "chalkNodule": "chalkNodule",
+    "emberroot": "emberbranch",
+    "salamanderScale": "salamanderScale",
+    "emberstone": "emberstone",
+    "chalkgill": "chalkgill"
+  },
+  "$previous": {
+    "$comment": "The by-name picks this replaced, so the renames can be undone.",
+    "emberroot": "emberQuartz"
+  }
+}

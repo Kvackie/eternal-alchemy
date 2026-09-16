@@ -1,0 +1,3472 @@
+{
+ "acorn": {
+  "vector": {
+   "ignis": 14,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "aetherGarnet": {
+  "vector": {
+   "aer": 13,
+   "umbra": 6
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "aetherJasper": {
+  "vector": {
+   "aer": 7,
+   "aqua": 7,
+   "umbra": 5
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "aetherShard": {
+  "vector": {
+   "aer": 15,
+   "umbra": 5
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "agilityFruit": {
+  "vector": {
+   "ignis": 10,
+   "terra": 6,
+   "aqua": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.27
+ },
+ "algae": {
+  "vector": {
+   "aqua": 12,
+   "terra": 8
+  },
+  "dominant": "aqua",
+  "overridden": true,
+  "lightness": 0.23
+ },
+ "amberTuber": {
+  "vector": {
+   "terra": 10,
+   "ignis": 10
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "ambercap": {
+  "vector": {
+   "ignis": 14,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.53
+ },
+ "anglerPlant": {
+  "vector": {
+   "aqua": 13,
+   "aer": 7
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.53
+ },
+ "antlerbranch": {
+  "vector": {
+   "terra": 13,
+   "ignis": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "ashblade": {
+  "vector": {
+   "terra": 8,
+   "ignis": 6,
+   "umbra": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "ashfern": {
+  "vector": {
+   "aer": 11,
+   "ignis": 5,
+   "terra": 3
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.62
+ },
+ "ashsprig": {
+  "vector": {
+   "umbra": 6,
+   "terra": 6,
+   "aqua": 3,
+   "aer": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "autumnmaple": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "azureberry": {
+  "vector": {
+   "terra": 16,
+   "aqua": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "azurecap": {
+  "vector": {
+   "aqua": 13,
+   "aer": 5
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "azurefan": {
+  "vector": {
+   "aqua": 15,
+   "aer": 5
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "barkAgate": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "barkOpal": {
+  "vector": {
+   "terra": 7,
+   "aer": 6,
+   "umbra": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "barkQuartz": {
+  "vector": {
+   "terra": 10,
+   "aqua": 4,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "barkShard": {
+  "vector": {
+   "terra": 14,
+   "ignis": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "barkStone": {
+  "vector": {
+   "terra": 10,
+   "aqua": 4,
+   "ignis": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "barkchip": {
+  "vector": {
+   "terra": 13,
+   "ignis": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "barkslab": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "barrowAsh": {
+  "vector": {
+   "umbra": 11,
+   "terra": 5,
+   "aer": 2
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.34
+ },
+ "beetMandragora": {
+  "vector": {
+   "ignis": 10,
+   "umbra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "bilberry": {
+  "vector": {
+   "aqua": 17
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "blackBerry": {
+  "vector": {
+   "umbra": 6,
+   "terra": 5,
+   "aer": 4,
+   "ignis": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.2
+ },
+ "bladegrass": {
+  "vector": {
+   "terra": 17,
+   "aqua": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "bloodRose": {
+  "vector": {
+   "ignis": 18
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "bloodgrass": {
+  "vector": {
+   "ignis": 16,
+   "umbra": 4
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "blossombranch": {
+  "vector": {
+   "ignis": 12,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.63
+ },
+ "blueBerry": {
+  "vector": {
+   "terra": 11,
+   "umbra": 3,
+   "aer": 3,
+   "aqua": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.23
+ },
+ "blueBud": {
+  "vector": {
+   "terra": 16,
+   "aqua": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "blueberryThistle": {
+  "vector": {
+   "aqua": 13,
+   "aer": 4,
+   "terra": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "bluecone": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.24
+ },
+ "bluecoral": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "bluepetal": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "bonefang": {
+  "vector": {
+   "terra": 10,
+   "ignis": 6,
+   "umbra": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "bonefrond": {
+  "vector": {
+   "terra": 10,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "brineGarnet": {
+  "vector": {
+   "aqua": 16,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "brineGlass": {
+  "vector": {
+   "aqua": 9,
+   "terra": 9,
+   "aer": 2
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "brineJasper": {
+  "vector": {
+   "aqua": 9,
+   "terra": 6,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.22
+ },
+ "brineOpal": {
+  "vector": {
+   "aqua": 12,
+   "aer": 4,
+   "terra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "brineShard": {
+  "vector": {
+   "aqua": 16,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "brineStone": {
+  "vector": {
+   "aqua": 12,
+   "aer": 4,
+   "terra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "brineTopaz": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "broadleaf": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "broomgrass": {
+  "vector": {
+   "terra": 16
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.32
+ },
+ "bubblecap": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "budsprig": {
+  "vector": {
+   "terra": 14,
+   "aqua": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "buttercap": {
+  "vector": {
+   "ignis": 10,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "cellarcap": {
+  "vector": {
+   "terra": 10,
+   "ignis": 10
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "chalkGeode": {
+  "vector": {
+   "terra": 16
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "chalkGlass": {
+  "vector": {
+   "terra": 19
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "chalkJasper": {
+  "vector": {
+   "terra": 13,
+   "aqua": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "chalkNodule": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.55
+ },
+ "chalkShard": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "chalkgill": {
+  "vector": {
+   "terra": 15,
+   "aqua": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "chrystaLily": {
+  "vector": {
+   "terra": 9,
+   "ignis": 6,
+   "umbra": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "cinderGarnet": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "cinderGlass": {
+  "vector": {
+   "ignis": 11,
+   "umbra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "cinderOpal": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "cinderQuartz": {
+  "vector": {
+   "ignis": 17
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "cinderTopaz": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "cinderleaf": {
+  "vector": {
+   "ignis": 18
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "cinderwraithAsh": {
+  "vector": {
+   "ignis": 9,
+   "umbra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "clawroot": {
+  "vector": {
+   "ignis": 10,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "clayGarnet": {
+  "vector": {
+   "terra": 12,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "clayQuartz": {
+  "vector": {
+   "terra": 16,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.22
+ },
+ "clayShard": {
+  "vector": {
+   "terra": 19
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.67
+ },
+ "cleftleaf": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "cloudJasper": {
+  "vector": {
+   "aer": 10,
+   "umbra": 10
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "coalAgate": {
+  "vector": {
+   "ignis": 15,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "coalGarnet": {
+  "vector": {
+   "ignis": 11,
+   "aer": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.75
+ },
+ "coalGlass": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "coalQuartz": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "coalShard": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "coalcap": {
+  "vector": {
+   "ignis": 17,
+   "terra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "coilbulb": {
+  "vector": {
+   "ignis": 15,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "coinleaf": {
+  "vector": {
+   "terra": 15,
+   "aqua": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.24
+ },
+ "commonFlower": {
+  "vector": {
+   "ignis": 10,
+   "terra": 10
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "commonWeed": {
+  "vector": {
+   "terra": 11,
+   "aqua": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "coralFlower": {
+  "vector": {
+   "ignis": 6,
+   "aqua": 4,
+   "terra": 4,
+   "aer": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "cornflower": {
+  "vector": {
+   "aqua": 10,
+   "terra": 6,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "cottonFluff": {
+  "vector": {
+   "aqua": 16,
+   "terra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "cottonSky": {
+  "vector": {
+   "terra": 11,
+   "umbra": 3,
+   "aer": 3,
+   "ignis": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "crimsonbloom": {
+  "vector": {
+   "ignis": 16,
+   "terra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "crimsoncap": {
+  "vector": {
+   "ignis": 13,
+   "terra": 4,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "crimsontop": {
+  "vector": {
+   "ignis": 12,
+   "terra": 4,
+   "umbra": 4
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.55
+ },
+ "curlflame": {
+  "vector": {
+   "ignis": 17,
+   "terra": 2
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "curlwhorl": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "cyanFlower": {
+  "vector": {
+   "aqua": 10,
+   "terra": 9
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "dandelion": {
+  "vector": {
+   "terra": 14,
+   "ignis": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "deepCrystal": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "deepJasper": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "deepOpal": {
+  "vector": {
+   "aqua": 11,
+   "terra": 3,
+   "umbra": 3,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "deepShard": {
+  "vector": {
+   "aqua": 10,
+   "terra": 6,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "deepTopaz": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "deepglass": {
+  "vector": {
+   "aer": 11,
+   "umbra": 9
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "dewAgate": {
+  "vector": {
+   "aqua": 14,
+   "aer": 3,
+   "terra": 2
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "dewGarnet": {
+  "vector": {
+   "aqua": 15,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "dewGlass": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.62
+ },
+ "dewOpal": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "dewQuartz": {
+  "vector": {
+   "aqua": 16,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "dewShard": {
+  "vector": {
+   "aqua": 16,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.63
+ },
+ "dewblade": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "dewcap": {
+  "vector": {
+   "aqua": 13,
+   "terra": 7
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "dragonFlower": {
+  "vector": {
+   "ignis": 12,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "dragonFruit": {
+  "vector": {
+   "ignis": 10,
+   "terra": 6,
+   "umbra": 4
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "driftGarnet": {
+  "vector": {
+   "aer": 14,
+   "aqua": 4,
+   "umbra": 2
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "driftGlass": {
+  "vector": {
+   "aer": 13,
+   "aqua": 6
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.8
+ },
+ "driftbranch": {
+  "vector": {
+   "terra": 15,
+   "ignis": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "dryroot": {
+  "vector": {
+   "terra": 13,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "duskPrism": {
+  "vector": {
+   "umbra": 11,
+   "aer": 9
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "duskberry": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.25
+ },
+ "duskplum": {
+  "vector": {
+   "aer": 9,
+   "aqua": 7,
+   "umbra": 3
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "emberAgate": {
+  "vector": {
+   "ignis": 11,
+   "umbra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "emberCrystal": {
+  "vector": {
+   "ignis": 19
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.2
+ },
+ "emberFruit": {
+  "vector": {
+   "terra": 12,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "emberGarnet": {
+  "vector": {
+   "ignis": 18
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "emberGeode": {
+  "vector": {
+   "ignis": 17,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "emberGlass": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "emberJasper": {
+  "vector": {
+   "ignis": 10,
+   "umbra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "emberOpal": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "emberQuartz": {
+  "vector": {
+   "ignis": 15,
+   "terra": 4
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.55
+ },
+ "emberShard": {
+  "vector": {
+   "ignis": 13,
+   "umbra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "emberSpar": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "emberTopaz": {
+  "vector": {
+   "ignis": 14,
+   "umbra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "emberbundle": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "emberconch": {
+  "vector": {
+   "ignis": 16,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "emberroot": {
+  "vector": {
+   "ignis": 15,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "emberstone": {
+  "vector": {
+   "ignis": 15,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "eyecap": {
+  "vector": {
+   "terra": 8,
+   "ignis": 5,
+   "umbra": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "fanFlower": {
+  "vector": {
+   "aqua": 10,
+   "terra": 6,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "fanfungus": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "fanleaf": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "fiddlehead": {
+  "vector": {
+   "terra": 19
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.32
+ },
+ "flameWeed": {
+  "vector": {
+   "terra": 17
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "flamefan": {
+  "vector": {
+   "ignis": 17
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "flamefrond": {
+  "vector": {
+   "ignis": 15,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.42
+ },
+ "flamepetal": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "flareGeode": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "flareGlass": {
+  "vector": {
+   "ignis": 14,
+   "umbra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "flareJasper": {
+  "vector": {
+   "ignis": 13,
+   "umbra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "flareOpal": {
+  "vector": {
+   "ignis": 12,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "flareQuartz": {
+  "vector": {
+   "ignis": 11,
+   "umbra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "flareShard": {
+  "vector": {
+   "ignis": 15,
+   "terra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.42
+ },
+ "flareTopaz": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "flintAgate": {
+  "vector": {
+   "terra": 11,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "flintBeryl": {
+  "vector": {
+   "terra": 16
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "flintCrystal": {
+  "vector": {
+   "terra": 12,
+   "ignis": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "flintGarnet": {
+  "vector": {
+   "terra": 14,
+   "ignis": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "flintQuartz": {
+  "vector": {
+   "terra": 13,
+   "aqua": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "flintShard": {
+  "vector": {
+   "terra": 11,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "forgeBeryl": {
+  "vector": {
+   "ignis": 14,
+   "umbra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "forgeGlass": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "forgeJasper": {
+  "vector": {
+   "ignis": 12,
+   "umbra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "forgeOpal": {
+  "vector": {
+   "ignis": 10,
+   "terra": 10
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "forgeQuartz": {
+  "vector": {
+   "ignis": 13,
+   "umbra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "forgeSpar": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "fourleafClover": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "frostAgate": {
+  "vector": {
+   "aqua": 15,
+   "aer": 5
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "frostGarnet": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "frostGlass": {
+  "vector": {
+   "aqua": 11,
+   "aer": 5,
+   "terra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "frostJasper": {
+  "vector": {
+   "aqua": 10,
+   "aer": 6,
+   "terra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.53
+ },
+ "frostPrism": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.42
+ },
+ "frostQuartz": {
+  "vector": {
+   "aqua": 14,
+   "aer": 5
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.66
+ },
+ "frostSpar": {
+  "vector": {
+   "aqua": 13,
+   "aer": 4,
+   "terra": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "frostfan": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "frostrosette": {
+  "vector": {
+   "aqua": 16
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "galeGarnet": {
+  "vector": {
+   "aer": 13,
+   "umbra": 7
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "galeQuartz": {
+  "vector": {
+   "aer": 9,
+   "aqua": 6,
+   "umbra": 5
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "galeThistle": {
+  "vector": {
+   "aer": 17,
+   "aqua": 3
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.69
+ },
+ "ghostroot": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "goldbeet": {
+  "vector": {
+   "terra": 10,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "goldcap": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "goldcoral": {
+  "vector": {
+   "terra": 13,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "goldfrond": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "goldiris": {
+  "vector": {
+   "terra": 11,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "goldleaf": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "goldspike": {
+  "vector": {
+   "terra": 13,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "goldyarrow": {
+  "vector": {
+   "terra": 14,
+   "ignis": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.34
+ },
+ "grass": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "grassmandrake": {
+  "vector": {
+   "terra": 19
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "gravecrown": {
+  "vector": {
+   "umbra": 14,
+   "aer": 4
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "greenBerry": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.32
+ },
+ "greenclover": {
+  "vector": {
+   "terra": 14,
+   "aqua": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "greenhook": {
+  "vector": {
+   "terra": 14,
+   "aqua": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "greenolive": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "greensprig": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "hairroot": {
+  "vector": {
+   "terra": 13,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "heartleaf": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "heatBerry": {
+  "vector": {
+   "ignis": 16,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "hollysprig": {
+  "vector": {
+   "terra": 14,
+   "ignis": 3,
+   "aqua": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "honeycap": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "honeycombFlower": {
+  "vector": {
+   "terra": 11,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "honeydewPlant": {
+  "vector": {
+   "ignis": 10,
+   "umbra": 5,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "husknut": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "ice": {
+  "vector": {
+   "aqua": 16,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": true,
+  "lightness": 0.42
+ },
+ "inkcap": {
+  "vector": {
+   "terra": 10,
+   "aqua": 5,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.25
+ },
+ "ironAgate": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "ironGarnet": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "ironGlass": {
+  "vector": {
+   "terra": 13,
+   "aqua": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.62
+ },
+ "ivyleaf": {
+  "vector": {
+   "terra": 16,
+   "aqua": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "jadeberry": {
+  "vector": {
+   "terra": 12,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "jellyfishCoral": {
+  "vector": {
+   "aqua": 13,
+   "aer": 7
+  },
+  "dominant": "aqua",
+  "overridden": true,
+  "lightness": 0.43
+ },
+ "lacewort": {
+  "vector": {
+   "terra": 17
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "lighbulbLantern": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "lilypad": {
+  "vector": {
+   "terra": 15,
+   "aer": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "loamGlass": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "loamQuartz": {
+  "vector": {
+   "terra": 9,
+   "aqua": 8,
+   "aer": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "loamShard": {
+  "vector": {
+   "terra": 12,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "loamcap": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "magentaleaf": {
+  "vector": {
+   "aer": 11,
+   "umbra": 9
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "magicRoot": {
+  "vector": {
+   "aqua": 17
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "magmaFish": {
+  "vector": {
+   "ignis": 15,
+   "aqua": 5
+  },
+  "dominant": "ignis",
+  "overridden": true,
+  "lightness": 0.4
+ },
+ "manaFruit": {
+  "vector": {
+   "aer": 11,
+   "umbra": 9
+  },
+  "dominant": "aer",
+  "overridden": true,
+  "lightness": 0.32
+ },
+ "mandragora": {
+  "vector": {
+   "terra": 13,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "mireBeryl": {
+  "vector": {
+   "aqua": 11,
+   "aer": 5,
+   "terra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "mireGeode": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.63
+ },
+ "mireGlass": {
+  "vector": {
+   "aqua": 15,
+   "aer": 5
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "mireJasper": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "mirePrism": {
+  "vector": {
+   "aqua": 11,
+   "aer": 6
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.55
+ },
+ "mireQuartz": {
+  "vector": {
+   "aqua": 16,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "mireShard": {
+  "vector": {
+   "aqua": 9,
+   "terra": 8,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "mireTopaz": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.67
+ },
+ "mirefenPearl": {
+  "vector": {
+   "aqua": 17,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "monsterBones": {
+  "vector": {
+   "terra": 11,
+   "umbra": 9
+  },
+  "dominant": "terra",
+  "overridden": true,
+  "lightness": 0.58
+ },
+ "monsterEgg": {
+  "vector": {
+   "terra": 11,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.71
+ },
+ "monsterMeat": {
+  "vector": {
+   "ignis": 11,
+   "umbra": 5,
+   "terra": 4
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "monsterRoot": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "moonpetal": {
+  "vector": {
+   "aqua": 10,
+   "terra": 4,
+   "umbra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "mosscap": {
+  "vector": {
+   "terra": 14,
+   "ignis": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "nightPrism": {
+  "vector": {
+   "umbra": 11,
+   "aer": 6,
+   "ignis": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "nightQuartz": {
+  "vector": {
+   "umbra": 8,
+   "terra": 6,
+   "aer": 5
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "nightbloom": {
+  "vector": {
+   "ignis": 13,
+   "umbra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "nullstone": {
+  "vector": {
+   "umbra": 15,
+   "terra": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.21
+ },
+ "oakmast": {
+  "vector": {
+   "terra": 10,
+   "ignis": 10
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "oakmoss": {
+  "vector": {
+   "terra": 16,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "oldMandragora": {
+  "vector": {
+   "terra": 10,
+   "ignis": 10
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "paleLeek": {
+  "vector": {
+   "terra": 16
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "palecap": {
+  "vector": {
+   "terra": 10,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "peapod": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.22
+ },
+ "pepper": {
+  "vector": {
+   "ignis": 16
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "pepperBerry": {
+  "vector": {
+   "ignis": 10,
+   "terra": 7,
+   "aqua": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.25
+ },
+ "pinkPuff": {
+  "vector": {
+   "aer": 8,
+   "umbra": 6,
+   "terra": 3,
+   "aqua": 3
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "pinkclover": {
+  "vector": {
+   "terra": 12,
+   "aqua": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "pinklotus": {
+  "vector": {
+   "aer": 11,
+   "umbra": 5,
+   "terra": 2
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "plumeleaf": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.23
+ },
+ "podleaf": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "poffpuffBall": {
+  "vector": {
+   "terra": 9,
+   "umbra": 4,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "poisonCap": {
+  "vector": {
+   "ignis": 14,
+   "terra": 3,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.62
+ },
+ "pomegranate": {
+  "vector": {
+   "ignis": 14,
+   "umbra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.23
+ },
+ "puffnest": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "puffpod": {
+  "vector": {
+   "terra": 13,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.21
+ },
+ "purpleBerry": {
+  "vector": {
+   "terra": 13,
+   "umbra": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "purplethistle": {
+  "vector": {
+   "terra": 15,
+   "aqua": 2
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.32
+ },
+ "pyreGarnet": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.62
+ },
+ "pyreGeode": {
+  "vector": {
+   "ignis": 10,
+   "umbra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "pyreQuartz": {
+  "vector": {
+   "ignis": 10,
+   "umbra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "pyreShard": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.61
+ },
+ "quicksilverTear": {
+  "vector": {
+   "aqua": 6,
+   "aer": 5,
+   "terra": 4,
+   "umbra": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "redSpices": {
+  "vector": {
+   "ignis": 20
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "redcurrant": {
+  "vector": {
+   "terra": 15
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "rillCrystal": {
+  "vector": {
+   "aqua": 15,
+   "aer": 5
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "rillGarnet": {
+  "vector": {
+   "aqua": 14,
+   "aer": 3,
+   "terra": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "rillGlass": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "rillJasper": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "rillOpal": {
+  "vector": {
+   "aqua": 11,
+   "terra": 7
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "rillQuartz": {
+  "vector": {
+   "aqua": 13,
+   "aer": 7
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "rillShard": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.59
+ },
+ "roots": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "roseSalt": {
+  "vector": {
+   "umbra": 13,
+   "aer": 7
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "roseberry": {
+  "vector": {
+   "terra": 12,
+   "ignis": 3,
+   "aqua": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.23
+ },
+ "rowanberry": {
+  "vector": {
+   "terra": 17,
+   "ignis": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.27
+ },
+ "russetcap": {
+  "vector": {
+   "ignis": 14,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.53
+ },
+ "salamanderScale": {
+  "vector": {
+   "ignis": 15,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "sawgrass": {
+  "vector": {
+   "terra": 19
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "sawleaf": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "scaldAgate": {
+  "vector": {
+   "ignis": 17
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.62
+ },
+ "scaldGeode": {
+  "vector": {
+   "ignis": 17
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.34
+ },
+ "scaldGlass": {
+  "vector": {
+   "ignis": 12,
+   "terra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "scaldJasper": {
+  "vector": {
+   "ignis": 19
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.5
+ },
+ "scaldPrism": {
+  "vector": {
+   "ignis": 10,
+   "umbra": 5,
+   "terra": 4
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.58
+ },
+ "scaldQuartz": {
+  "vector": {
+   "ignis": 18
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "scaldTopaz": {
+  "vector": {
+   "ignis": 20
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "scalebark": {
+  "vector": {
+   "terra": 16,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "scaleleaf": {
+  "vector": {
+   "aqua": 10,
+   "terra": 5,
+   "aer": 4
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.13
+ },
+ "scarletbud": {
+  "vector": {
+   "terra": 13,
+   "ignis": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "scarletmaple": {
+  "vector": {
+   "ignis": 16,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "scrollleaf": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "seagrass": {
+  "vector": {
+   "aqua": 12,
+   "terra": 8
+  },
+  "dominant": "aqua",
+  "overridden": true,
+  "lightness": 0.25
+ },
+ "shadeJasper": {
+  "vector": {
+   "umbra": 12,
+   "aer": 8
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.6
+ },
+ "shadefern": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.23
+ },
+ "shalecap": {
+  "vector": {
+   "terra": 10,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "shrimp": {
+  "vector": {
+   "aqua": 14,
+   "terra": 6
+  },
+  "dominant": "aqua",
+  "overridden": true,
+  "lightness": 0.46
+ },
+ "skyGarnet": {
+  "vector": {
+   "aer": 8,
+   "umbra": 8,
+   "aqua": 4
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "skyGlass": {
+  "vector": {
+   "aer": 8,
+   "umbra": 7,
+   "aqua": 5
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "skyPrism": {
+  "vector": {
+   "aer": 12,
+   "umbra": 7
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "skyreachFeather": {
+  "vector": {
+   "umbra": 9,
+   "terra": 6,
+   "aer": 4
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "slateBeryl": {
+  "vector": {
+   "terra": 9,
+   "aer": 5,
+   "umbra": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.57
+ },
+ "slateGarnet": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.49
+ },
+ "slateGlass": {
+  "vector": {
+   "terra": 10,
+   "ignis": 10
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.52
+ },
+ "slateJasper": {
+  "vector": {
+   "terra": 12,
+   "ignis": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "slateQuartz": {
+  "vector": {
+   "terra": 11,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "slateTopaz": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.23
+ },
+ "sloeberry": {
+  "vector": {
+   "terra": 10,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.27
+ },
+ "snapmaw": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "snarlgrass": {
+  "vector": {
+   "terra": 16,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.24
+ },
+ "spectralRoot": {
+  "vector": {
+   "umbra": 14,
+   "aer": 6
+  },
+  "dominant": "umbra",
+  "overridden": true,
+  "lightness": 0.49
+ },
+ "spiderbloom": {
+  "vector": {
+   "terra": 17,
+   "ignis": 3
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.34
+ },
+ "springcurl": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.26
+ },
+ "stoutcap": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "sunberry": {
+  "vector": {
+   "terra": 10,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "sunflower": {
+  "vector": {
+   "terra": 11,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "sunfungus": {
+  "vector": {
+   "ignis": 13,
+   "terra": 6
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "sunleaf": {
+  "vector": {
+   "aqua": 8,
+   "ignis": 8,
+   "terra": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "sunribbon": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "sunspike": {
+  "vector": {
+   "terra": 16,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "sweetHoney": {
+  "vector": {
+   "ignis": 11,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "tealberry": {
+  "vector": {
+   "terra": 15,
+   "aqua": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "thicketleaf": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.27
+ },
+ "thornbranch": {
+  "vector": {
+   "terra": 11,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "thornspiral": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.34
+ },
+ "thornvine": {
+  "vector": {
+   "terra": 19
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.3
+ },
+ "tideBeryl": {
+  "vector": {
+   "aqua": 14,
+   "aer": 6
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "tideGarnet": {
+  "vector": {
+   "aqua": 16,
+   "aer": 2
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "tideGlass": {
+  "vector": {
+   "aqua": 19
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "tideJasper": {
+  "vector": {
+   "aqua": 20
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "tidePrism": {
+  "vector": {
+   "aqua": 18,
+   "aer": 2
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.64
+ },
+ "tideShard": {
+  "vector": {
+   "aqua": 17,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "tideTopaz": {
+  "vector": {
+   "aqua": 18
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "tidebulb": {
+  "vector": {
+   "aqua": 15,
+   "terra": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "tidecluster": {
+  "vector": {
+   "aqua": 13,
+   "aer": 4,
+   "terra": 2
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.38
+ },
+ "tieredcap": {
+  "vector": {
+   "ignis": 11,
+   "terra": 6,
+   "aqua": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "toadstool": {
+  "vector": {
+   "ignis": 9,
+   "umbra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "toothvine": {
+  "vector": {
+   "terra": 13,
+   "aqua": 7
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "trumpetgill": {
+  "vector": {
+   "ignis": 12,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.32
+ },
+ "tubefungus": {
+  "vector": {
+   "ignis": 10,
+   "terra": 10
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "tulipsCharge": {
+  "vector": {
+   "aqua": 9,
+   "aer": 9
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.56
+ },
+ "tussock": {
+  "vector": {
+   "terra": 17
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.29
+ },
+ "twistroot": {
+  "vector": {
+   "terra": 16,
+   "ignis": 4
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "uncommonFlower": {
+  "vector": {
+   "ignis": 8,
+   "umbra": 7,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.37
+ },
+ "uncommonRoot": {
+  "vector": {
+   "terra": 12,
+   "ignis": 8
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.34
+ },
+ "uncommonWeed": {
+  "vector": {
+   "terra": 11,
+   "aqua": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.27
+ },
+ "uniqueFlower": {
+  "vector": {
+   "terra": 10,
+   "ignis": 9
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.55
+ },
+ "uniqueRoot": {
+  "vector": {
+   "aqua": 17
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "vampirRose": {
+  "vector": {
+   "ignis": 9,
+   "terra": 9
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "veilGarnet": {
+  "vector": {
+   "umbra": 10,
+   "aer": 9
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.41
+ },
+ "veilGlass": {
+  "vector": {
+   "umbra": 13,
+   "aer": 7
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.36
+ },
+ "veilJasper": {
+  "vector": {
+   "umbra": 8,
+   "aqua": 5,
+   "terra": 4,
+   "aer": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.47
+ },
+ "verdigriscap": {
+  "vector": {
+   "aqua": 8,
+   "terra": 5,
+   "aer": 3,
+   "ignis": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.32
+ },
+ "vinestaff": {
+  "vector": {
+   "terra": 14,
+   "ignis": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.39
+ },
+ "violetBeet": {
+  "vector": {
+   "umbra": 13,
+   "aer": 3,
+   "ignis": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "violetSpices": {
+  "vector": {
+   "aer": 10,
+   "umbra": 8
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.42
+ },
+ "violetSwarm": {
+  "vector": {
+   "terra": 7,
+   "aer": 6,
+   "umbra": 6
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "violetUmbrella": {
+  "vector": {
+   "aer": 12,
+   "terra": 5
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "violetcap": {
+  "vector": {
+   "umbra": 8,
+   "aer": 6,
+   "aqua": 4
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "violetgarlic": {
+  "vector": {
+   "umbra": 8,
+   "aer": 5,
+   "terra": 4
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "violetpod": {
+  "vector": {
+   "aer": 9,
+   "umbra": 5,
+   "terra": 4
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.35
+ },
+ "violetroot": {
+  "vector": {
+   "umbra": 13,
+   "aer": 7
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "violetshroom": {
+  "vector": {
+   "ignis": 11,
+   "umbra": 8
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.48
+ },
+ "voidGarnet": {
+  "vector": {
+   "umbra": 9,
+   "ignis": 7,
+   "aer": 4
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.46
+ },
+ "voidGeode": {
+  "vector": {
+   "umbra": 8,
+   "aqua": 6,
+   "aer": 5
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.42
+ },
+ "voidQuartz": {
+  "vector": {
+   "umbra": 13,
+   "aer": 7
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "voideel": {
+  "vector": {
+   "umbra": 13,
+   "aqua": 7
+  },
+  "dominant": "umbra",
+  "overridden": true,
+  "lightness": 0.37
+ },
+ "waneGarnet": {
+  "vector": {
+   "umbra": 12,
+   "aer": 8
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.4
+ },
+ "waneGeode": {
+  "vector": {
+   "umbra": 13,
+   "aer": 7
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.55
+ },
+ "waneOnyx": {
+  "vector": {
+   "umbra": 14,
+   "ignis": 3,
+   "terra": 3
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.2
+ },
+ "waneQuartz": {
+  "vector": {
+   "umbra": 13,
+   "aer": 7
+  },
+  "dominant": "umbra",
+  "overridden": false,
+  "lightness": 0.51
+ },
+ "whitedaisy": {
+  "vector": {
+   "aqua": 13,
+   "terra": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.76
+ },
+ "willowleaf": {
+  "vector": {
+   "terra": 20
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.33
+ },
+ "wintercherry": {
+  "vector": {
+   "terra": 14,
+   "aqua": 5
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.28
+ },
+ "wispAgate": {
+  "vector": {
+   "aer": 10,
+   "umbra": 10
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.43
+ },
+ "wispGarnet": {
+  "vector": {
+   "aer": 18
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.74
+ },
+ "wispShard": {
+  "vector": {
+   "aer": 7,
+   "aqua": 7,
+   "terra": 3,
+   "umbra": 3
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.7
+ },
+ "wispcoil": {
+  "vector": {
+   "aqua": 16,
+   "aer": 3
+  },
+  "dominant": "aqua",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "witchCap": {
+  "vector": {
+   "ignis": 13,
+   "terra": 7
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "witherleaf": {
+  "vector": {
+   "ignis": 14,
+   "terra": 5
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.44
+ },
+ "yellowTulip": {
+  "vector": {
+   "terra": 10,
+   "ignis": 10
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.54
+ },
+ "youngRose": {
+  "vector": {
+   "ignis": 15,
+   "umbra": 3
+  },
+  "dominant": "ignis",
+  "overridden": false,
+  "lightness": 0.45
+ },
+ "youngtree": {
+  "vector": {
+   "terra": 18
+  },
+  "dominant": "terra",
+  "overridden": false,
+  "lightness": 0.31
+ },
+ "zephyrGlass": {
+  "vector": {
+   "aer": 14,
+   "umbra": 6
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.68
+ },
+ "zephyrQuartz": {
+  "vector": {
+   "aer": 17
+  },
+  "dominant": "aer",
+  "overridden": false,
+  "lightness": 0.51
+ }
+}

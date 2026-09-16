@@ -1,0 +1,1013 @@
+{
+  "$comment": "The shaft's verb is EXTRACT. Veins deplete and you go deeper; depth is bought, not unlocked.",
+  "startingDepth": 20,
+  "depthStep": 20,
+  "batchTickMs": 300000,
+  "$refillComment": "A worked-out vein comes back slowly, so a shallow shaft never becomes dead content while you are busy further down.",
+  "veinRefillMs": 21600000,
+  "strata": [
+    {
+      "id": "chalkSeam",
+      "minDepth": 0,
+      "veins": [
+        {
+          "ingredientId": "chalkNodule",
+          "size": 14,
+          "batch": 2,
+          "weight": 5
+        }
+      ]
+    },
+    {
+      "id": "gemSeam1",
+      "minDepth": 20,
+      "veins": [
+        {
+          "ingredientId": "barkQuartz",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "aetherGarnet",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "aetherJasper",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "barkAgate",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "barkOpal",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "barkShard",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "barkStone",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "brineGarnet",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "brineGlass",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "brineJasper",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "brineShard",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "brineTopaz",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "chalkGeode",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "chalkGlass",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "chalkJasper",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "chalkShard",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cinderGarnet",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cinderGlass",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cinderOpal",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cinderQuartz",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cinderTopaz",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "clayGarnet",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "clayQuartz",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "clayShard",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "cloudJasper",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "coalGarnet",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        }
+      ]
+    },
+    {
+      "id": "emberPocket",
+      "minDepth": 40,
+      "veins": [
+        {
+          "ingredientId": "chalkNodule",
+          "size": 12,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "emberstone",
+          "size": 10,
+          "batch": 2,
+          "weight": 5
+        }
+      ]
+    },
+    {
+      "id": "gemSeam2",
+      "minDepth": 60,
+      "veins": [
+        {
+          "ingredientId": "coalGlass",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "coalQuartz",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "coalShard",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "deepCrystal",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "deepJasper",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "deepShard",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "deepTopaz",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewAgate",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewGarnet",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewGlass",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewOpal",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewQuartz",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "dewShard",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "driftGlass",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "duskPrism",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberAgate",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberCrystal",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberGarnet",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberGeode",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberGlass",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberJasper",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberOpal",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberQuartz",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberShard",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberSpar",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "emberTopaz",
+          "size": 10,
+          "batch": 2,
+          "weight": 4
+        }
+      ]
+    },
+    {
+      "id": "deepglassStratum",
+      "minDepth": 80,
+      "veins": [
+        {
+          "ingredientId": "emberstone",
+          "size": 10,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "deepglass",
+          "size": 8,
+          "batch": 1,
+          "weight": 5
+        },
+        {
+          "$comment": "Small and rare. A clean single essence is what makes the tightest ratios hittable, so it sits in the deepest seam a full set of beams can reach.",
+          "ingredientId": "nullstone",
+          "size": 6,
+          "batch": 1,
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "id": "gemSeam3",
+      "minDepth": 100,
+      "veins": [
+        {
+          "ingredientId": "flareGeode",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flareGlass",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flareJasper",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flareOpal",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flareQuartz",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flareShard",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flareTopaz",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flintAgate",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flintBeryl",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flintCrystal",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flintGarnet",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flintQuartz",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "flintShard",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "forgeBeryl",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "forgeGlass",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "forgeJasper",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "forgeOpal",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "forgeQuartz",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "forgeSpar",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "frostGarnet",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "frostJasper",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "frostPrism",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "frostQuartz",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "galeGarnet",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "galeQuartz",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "ironAgate",
+          "size": 8,
+          "batch": 2,
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "id": "gemSeam4",
+      "minDepth": 140,
+      "veins": [
+        {
+          "ingredientId": "ironGarnet",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "ironGlass",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "loamGlass",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "loamQuartz",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "loamShard",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mireGeode",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mireJasper",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mirePrism",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mireQuartz",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mireShard",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mireTopaz",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "nightPrism",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "nightQuartz",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "pyreGarnet",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "pyreGeode",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "pyreQuartz",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "pyreShard",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "rillGlass",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "rillJasper",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "rillOpal",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "rillQuartz",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "rillShard",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "scaldAgate",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "scaldGeode",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "scaldGlass",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        },
+        {
+          "ingredientId": "scaldJasper",
+          "size": 6,
+          "batch": 2,
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "id": "gemSeam5",
+      "minDepth": 180,
+      "veins": [
+        {
+          "ingredientId": "scaldPrism",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "scaldQuartz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "scaldTopaz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "shadeJasper",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "skyGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "skyGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "skyPrism",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "slateBeryl",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "slateGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "slateGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "slateJasper",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "slateQuartz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "slateTopaz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tideBeryl",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tideGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tideGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tideJasper",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tidePrism",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tideShard",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "tideTopaz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "veilGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "veilGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "waneGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "waneGeode",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "waneQuartz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "wispAgate",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "gemSeam6",
+      "minDepth": 220,
+      "veins": [
+        {
+          "ingredientId": "wispGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "wispShard",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "zephyrGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "zephyrQuartz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "aetherShard",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "brineOpal",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "brineStone",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "coalAgate",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "deepOpal",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "driftGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "frostAgate",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "frostGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "frostSpar",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "mireBeryl",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "mireGlass",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "rillCrystal",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "rillGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "veilJasper",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "waneOnyx",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "voidGarnet",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "voidGeode",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        },
+        {
+          "ingredientId": "voidQuartz",
+          "size": 4,
+          "batch": 2,
+          "weight": 2
+        }
+      ]
+    }
+  ]
+}

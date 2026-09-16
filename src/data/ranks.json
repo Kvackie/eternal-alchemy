@@ -1,0 +1,12 @@
+[
+  { "id": "apprentice", "renown": 0 },
+  { "id": "journeyman", "renown": 60 },
+  { "id": "steeped", "renown": 180 },
+  { "id": "distiller", "renown": 420 },
+  { "id": "chandler", "renown": 850 },
+  { "id": "adept", "renown": 1600 },
+  { "id": "master", "renown": 2800 },
+  { "id": "grandmaster", "renown": 4600 },
+  { "id": "luminary", "renown": 7200 },
+  { "id": "archAlchemist", "renown": 11000 }
+]

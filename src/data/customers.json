@@ -1,0 +1,111 @@
+{
+  "$comment": "Haggling is rock-paper-scissors against a stance the customer telegraphs. Countering forces a stance change, so you are reading a moving target and cannot mash one button.",
+  "rounds": 3,
+  "startingPatience": 100,
+  "startingInterest": 0,
+  "$visitComment": "Chance a given customer turns up on a given day, rolled from a seed derived from (customer, day) so a visit is a fact about the day rather than a re-render.",
+  "visitChance": 0.34,
+  "$budgetComment": "Total width of the purse variation, centred on the customer's budget multiplier — 0.35 means roughly ±17%. Without it every visit offered an identical ceiling and haggling became arithmetic the player had already done once.",
+  "budgetSpread": 0.35,
+
+  "stances": ["sceptical", "haughty", "impatient"],
+
+  "$actionComment": "Each family counters exactly one stance and backfires against exactly one other. The backfires are thematic, not arbitrary — lecturing a noble, flattering someone in a hurry, offering a freebie to a sceptic.",
+  "actions": [
+    {
+      "id": "demonstrate",
+      "family": "proof",
+      "counters": "sceptical",
+      "backfiresAgainst": "haughty"
+    },
+    {
+      "id": "flatter",
+      "family": "deference",
+      "counters": "haughty",
+      "backfiresAgainst": "impatient"
+    },
+    {
+      "id": "citeGuild",
+      "family": "deference",
+      "counters": "haughty",
+      "backfiresAgainst": "impatient"
+    },
+    {
+      "id": "sweeten",
+      "family": "sweeten",
+      "counters": "impatient",
+      "backfiresAgainst": "sceptical"
+    }
+  ],
+
+  "outcomes": {
+    "counter": { "interest": 26, "ceiling": 0.14, "patience": -12 },
+    "neutral": { "interest": 9, "ceiling": 0.03, "patience": -18 },
+    "backfire": { "interest": -6, "ceiling": -0.12, "patience": -34 }
+  },
+
+  "$holdFirmComment": "Outside the triangle. Costs patience heavily and converts accumulated interest straight into ceiling — worthless early, decisive once two counters have landed. Knowing when to stop pitching and close is the skill ceiling of the whole system.",
+  "holdFirm": {
+    "patience": -40,
+    "interestToCeiling": 0.006
+  },
+
+  "$palateComment": "`wants` is what this person always asks for by name. `palate` is their taste, and it is what makes a walk-in interested in a potion nobody wrote them a line for — anything within spreadDeg of the palate is something they would consider. Without it a customer only ever bought from a list of one or two, so brewing anything else had no buyer but the shelf.",
+  "roster": [
+    {
+      "$comment": "Village remedies: clean water and honest earth. The widest taste on the roster, because a villager will try anything that grows nearby — which is also what stops a murky, marginal recipe like the Mirebloom Elixir from having no buyer in the world at all.",
+      "id": "maren",
+      "archetype": "villager",
+      "wants": ["healthTonic"],
+      "palate": { "ignis": 0.1, "aqua": 0.45, "terra": 0.45, "aer": 0, "umbra": 0 },
+      "spreadDeg": 54,
+      "budgetMultiplier": 1.1,
+      "stanceWeights": { "sceptical": 3, "haughty": 1, "impatient": 2 },
+      "requiresRank": 0
+    },
+    {
+      "$comment": "Heat and hardiness — what you drink before a watch.",
+      "id": "hollis",
+      "archetype": "guard",
+      "wants": ["healthTonic", "emberDraught"],
+      "palate": { "ignis": 0.5, "aqua": 0.1, "terra": 0.4, "aer": 0, "umbra": 0 },
+      "spreadDeg": 52,
+      "budgetMultiplier": 1.25,
+      "stanceWeights": { "sceptical": 2, "haughty": 1, "impatient": 4 },
+      "requiresRank": 0
+    },
+    {
+      "id": "sisterAvel",
+      "archetype": "temple",
+      "wants": ["windDraught", "healthTonic"],
+      "palate": { "ignis": 0, "aqua": 0.35, "terra": 0.1, "aer": 0.55, "umbra": 0 },
+      "spreadDeg": 48,
+      "budgetMultiplier": 1.4,
+      "stanceWeights": { "sceptical": 4, "haughty": 2, "impatient": 1 },
+      "requiresRank": 1
+    },
+    {
+      "$comment": "Refinement with a shadow in it. Wide purse, narrow taste.",
+      "id": "lordVallis",
+      "archetype": "noble",
+      "wants": ["shadowPhiltre", "windDraught"],
+      "palate": { "ignis": 0, "aqua": 0.1, "terra": 0, "aer": 0.35, "umbra": 0.55 },
+      "spreadDeg": 46,
+      "budgetMultiplier": 1.9,
+      "stanceWeights": { "sceptical": 1, "haughty": 5, "impatient": 2 },
+      "requiresRank": 3
+    },
+    {
+      "$comment": "Buys only the dark work, and pays not to be asked about it.",
+      "id": "theQuietMan",
+      "archetype": "night",
+      "wants": ["shadowPhiltre"],
+      "palate": { "ignis": 0, "aqua": 0, "terra": 0, "aer": 0.15, "umbra": 0.85 },
+      "spreadDeg": 38,
+      "budgetMultiplier": 2.2,
+      "stanceWeights": { "sceptical": 2, "haughty": 1, "impatient": 3 },
+      "requiresRank": 4,
+      "nightOnly": true
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+[
+  {
+    "id": "plotFive",
+    "tree": "garden",
+    "cost": 90,
+    "requiresRank": 1,
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "plotSix",
+    "tree": "garden",
+    "cost": 150,
+    "requiresRank": 1,
+    "requires": [
+      "plotFive"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "richLoam",
+    "tree": "garden",
+    "cost": 210,
+    "requiresRank": 2,
+    "repeatable": 1,
+    "effect": {
+      "seedDropBonus": 0.1
+    }
+  },
+  {
+    "id": "wideRim",
+    "tree": "cauldron",
+    "cost": 320,
+    "requiresRank": 2,
+    "repeatable": 1,
+    "effect": {
+      "maxIngredients": 12
+    }
+  },
+  {
+    "id": "lagged",
+    "tree": "cauldron",
+    "cost": 180,
+    "requiresRank": 1,
+    "repeatable": 1,
+    "effect": {
+      "driftMultiplier": 0.5
+    }
+  },
+  {
+    "id": "dryingRack",
+    "tree": "garden",
+    "cost": 280,
+    "requiresRank": 3,
+    "repeatable": 1,
+    "effect": {
+      "canForceDry": true
+    }
+  },
+  {
+    "id": "greenhouse",
+    "tree": "garden",
+    "cost": 1400,
+    "requiresRank": 3,
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 2
+    }
+  },
+  {
+    "id": "vesselMoulds",
+    "tree": "bottling",
+    "cost": 900,
+    "requiresRank": 4,
+    "repeatable": 1,
+    "effect": {
+      "craftsVessels": true
+    }
+  },
+  {
+    "id": "sealPress",
+    "tree": "bottling",
+    "cost": 1200,
+    "requiresRank": 5,
+    "repeatable": 1,
+    "effect": {
+      "craftsSeals": true
+    }
+  },
+  {
+    "id": "standingOrders",
+    "tree": "shop",
+    "cost": 480,
+    "requiresRank": 2,
+    "repeatable": 1,
+    "effect": {
+      "standingOrders": true
+    }
+  },
+  {
+    "id": "caveBeds",
+    "tree": "cave",
+    "cost": 200,
+    "requiresRank": 1,
+    "repeatable": 2,
+    "effect": {
+      "addCaveTiles": 6
+    }
+  },
+  {
+    "id": "humidityWard",
+    "tree": "cave",
+    "cost": 300,
+    "requiresRank": 2,
+    "repeatable": 1,
+    "effect": {
+      "caveSpreadBonus": 0.06
+    }
+  },
+  {
+    "id": "steelPick",
+    "tree": "shaft",
+    "cost": 260,
+    "requiresRank": 1,
+    "repeatable": 1,
+    "effect": {
+      "oreBatchBonus": 1
+    }
+  },
+  {
+    "$comment": "Ten tiers, because the gem seams run to 220m and depth is the shaft's whole progression. Each is cheap on its own; the ladder is long rather than steep.",
+    "id": "supportBeams",
+    "tree": "shaft",
+    "cost": 240,
+    "requiresRank": 1,
+    "repeatable": 10,
+    "effect": {
+      "addSupportedDepth": 20
+    }
+  },
+  {
+    "$comment": "Bought over and over, like shelfBoard. Forty-four of these plus the slot you start with is a bunk for every hero in the tavern, so the roster is limited by what you can afford rather than by a ceiling — the alternative was 45 portraits and room for three of them.",
+    "id": "heroSlotTwo",
+    "tree": "roster",
+    "cost": 420,
+    "requiresRank": 2,
+    "repeatable": 44,
+    "effect": {
+      "addHeroSlots": 1
+    }
+  },
+  {
+    "id": "shelfFive",
+    "tree": "shop",
+    "cost": 130,
+    "requiresRank": 1,
+    "repeatable": 1,
+    "effect": {
+      "addShelves": 1
+    }
+  },
+  {
+    "id": "shelfSix",
+    "tree": "shop",
+    "cost": 220,
+    "requiresRank": 2,
+    "requires": [
+      "shelfFive"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addShelves": 1
+    }
+  },
+  {
+    "$comment": "Bought over and over, because a shop that has outgrown six shelves has outgrown them badly. Ninety-four of these takes the wall to a hundred, which the world view lays out as a grid and lets you drag across.",
+    "id": "shelfBoard",
+    "tree": "shop",
+    "cost": 260,
+    "requiresRank": 2,
+    "requires": [
+      "shelfSix"
+    ],
+    "repeatable": 94,
+    "effect": {
+      "addShelves": 1
+    }
+  }
+]

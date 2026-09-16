@@ -1,0 +1,57 @@
+[
+  {
+    "id": "cork",
+    "cost": 0,
+    "appealBonus": 0,
+    "valueMultiplier": 1.0
+  },
+  {
+    "id": "waxRibbon",
+    "cost": 3,
+    "appealBonus": 0.08,
+    "valueMultiplier": 1.0
+  },
+  {
+    "id": "alchemistsMark",
+    "cost": 8,
+    "appealBonus": 0.05,
+    "valueMultiplier": 1.0,
+    "renownPerSale": 2,
+    "requiresRank": 3
+  },
+  {
+    "id": "guildStamp",
+    "cost": 12,
+    "appealBonus": 0,
+    "valueMultiplier": 1.0,
+    "contractPayoutBonus": 0.15,
+    "requiresRank": 2
+  },
+  {
+    "id": "wardingSigil",
+    "cost": 18,
+    "appealBonus": 0,
+    "valueMultiplier": 1.0,
+    "supplyGradeBonus": 1,
+    "requiresRank": 3
+  },
+  {
+    "id": "silverClasp",
+    "cost": 26,
+    "appealBonus": 0.1,
+    "valueMultiplier": 1.1,
+    "haggleCeilingBonus": 0.2,
+    "requiresRank": 4
+  },
+  {
+    "id": "ashwalkerMark",
+    "cost": 0,
+    "appealBonus": 0,
+    "valueMultiplier": 1.0,
+    "$comment": "Umbra brews only. Villagers refuse it, so shelf appeal collapses — its value is entirely in what the Ashwalker will give for it.",
+    "umbraOnly": true,
+    "shelfAppealOverride": 0.15,
+    "barterMultiplier": 2,
+    "requiresRank": 5
+  }
+]

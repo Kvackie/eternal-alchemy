@@ -1,0 +1,147 @@
+{
+  "$comment": "Contracts are the main gold faucet and the reason to plan a supply chain. Failing one costs the payout and some reputation, and nothing else.",
+  "boardSize": 3,
+  "refreshDays": 2,
+  "$deadlineComment": "Deadlines are stored as remaining time and only tick while the player is present, so real life never costs a contract.",
+  "deadlineDaysMin": 4,
+  "deadlineDaysMax": 12,
+  "goldPerUnitValue": 1.55,
+  "renownPerContract": 22,
+  "reputationOnDeliver": 10,
+  "reputationOnFail": -8,
+  "$palateComment": "What a faction actually drinks. Contracts used to be one hand-authored template per recipe, so 63 of 71 recipes were never asked for by anyone and the back half of the recipe book was decoration. A faction now has a PALATE — an essence direction — and commissions whatever discovered recipe sits closest to it, which means every recipe the player finds becomes something somebody wants. spreadDeg is how catholic the taste is: the widest angle from the palate that faction will still commission.",
+  "factions": [
+    {
+      "$comment": "Soldiers on campaign. Hardy, practical, drunk in the field.",
+      "id": "greycloaks",
+      "requiresRank": 0,
+      "palate": { "ignis": 0.35, "aqua": 0.15, "terra": 0.5, "aer": 0, "umbra": 0 },
+      "spreadDeg": 58
+    },
+    {
+      "$comment": "Forge and hearth — the guild buys heat.",
+      "id": "hearthGuild",
+      "requiresRank": 0,
+      "palate": { "ignis": 0.55, "aqua": 0.15, "terra": 0.3, "aer": 0, "umbra": 0 },
+      "spreadDeg": 55
+    },
+    {
+      "$comment": "Stillness, breath and clear water. The temple will not touch shadow.",
+      "id": "templeOfStill",
+      "requiresRank": 1,
+      "palate": { "ignis": 0, "aqua": 0.35, "terra": 0.15, "aer": 0.5, "umbra": 0 },
+      "spreadDeg": 52
+    },
+    {
+      "$comment": "Night work, discreetly paid for. The narrowest palate and the deepest purse.",
+      "id": "houseValen",
+      "requiresRank": 2,
+      "palate": { "ignis": 0, "aqua": 0.15, "terra": 0, "aer": 0.3, "umbra": 0.55 },
+      "spreadDeg": 48
+    }
+  ],
+
+  "$derivedComment": "Commissions generated from a faction's palate rather than from a template. Only DISCOVERED recipes are eligible — a contract you cannot possibly fill is a taunt, not a goal, and the authored templates below already do the job of pointing at recipes you have not met yet. derivedShare is how much of the board is generated; the rest stays hand-authored, so the signature orders keep showing up.",
+  "derived": {
+    "derivedShare": 0.62,
+    "$gradeComment": "The floor rises with rank: an established shop is expected to deliver better work, and this is the only place the difficulty of a contract scales.",
+    "gradeByRank": ["C", "C", "B", "B", "A", "A"],
+    "$quantityComment": "Cheap potions are ordered by the crate, expensive ones by the pair. Scaled off base value so a new recipe slots into the curve without being tuned by hand.",
+    "quantityAtLowValue": 8,
+    "quantityAtHighValue": 2,
+    "lowValue": 22,
+    "highValue": 84,
+    "quantitySpread": 2,
+    "$requirementComment": "How often a derived order carries a vessel or seal condition. Kept low: the constraint is a spike of difficulty, and every order having one turns it into a tax.",
+    "sealChance": 0.18,
+    "vesselChance": 0.14
+  },
+  "templates": [
+    {
+      "id": "barrackTonics",
+      "faction": "greycloaks",
+      "recipeId": "healthTonic",
+      "quantityMin": 3,
+      "quantityMax": 7,
+      "minGrade": "C",
+      "requiresRank": 0
+    },
+    {
+      "id": "guildDraughts",
+      "faction": "hearthGuild",
+      "recipeId": "emberDraught",
+      "quantityMin": 2,
+      "quantityMax": 5,
+      "minGrade": "C",
+      "requiresRank": 0
+    },
+    {
+      "id": "sealedTonics",
+      "faction": "hearthGuild",
+      "recipeId": "healthTonic",
+      "quantityMin": 3,
+      "quantityMax": 6,
+      "minGrade": "B",
+      "requiresSeal": "waxRibbon",
+      "requiresRank": 1
+    },
+    {
+      "id": "templeStillness",
+      "faction": "templeOfStill",
+      "recipeId": "windDraught",
+      "quantityMin": 2,
+      "quantityMax": 4,
+      "minGrade": "B",
+      "requiresRank": 1
+    },
+    {
+      "id": "nobleShadow",
+      "faction": "houseValen",
+      "recipeId": "shadowPhiltre",
+      "quantityMin": 2,
+      "quantityMax": 4,
+      "minGrade": "A",
+      "requiresVessel": "glassFlask",
+      "requiresRank": 2
+    },
+    {
+      "$comment": "Plain water in quantity. A big, undemanding order, which is what a stacking vessel is actually for.",
+      "id": "wellRations",
+      "faction": "greycloaks",
+      "recipeId": "deepwaterCordial",
+      "quantityMin": 4,
+      "quantityMax": 9,
+      "minGrade": "C",
+      "requiresRank": 1
+    },
+    {
+      "id": "pilgrimSupply",
+      "faction": "templeOfStill",
+      "recipeId": "pilgrimsRestorative",
+      "quantityMin": 3,
+      "quantityMax": 6,
+      "minGrade": "B",
+      "requiresRank": 1
+    },
+    {
+      "id": "guildStormfire",
+      "faction": "hearthGuild",
+      "recipeId": "stormfireFlask",
+      "quantityMin": 2,
+      "quantityMax": 5,
+      "minGrade": "B",
+      "requiresRank": 2
+    },
+    {
+      "$comment": "The deepest order in the game: pure Umbra means the shaft is fully beamed, and the amphora keeps the count sane.",
+      "id": "valenNightwork",
+      "faction": "houseValen",
+      "recipeId": "nightGlass",
+      "quantityMin": 3,
+      "quantityMax": 6,
+      "minGrade": "A",
+      "requiresVessel": "sealedAmphora",
+      "requiresRank": 3
+    }
+  ]
+}

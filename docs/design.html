@@ -1,0 +1,1975 @@
+<title>Eternal Alchemy Formulary</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#E7EAE4; --surface:#F3F5F0; --surface-2:#DCE1D9; --sunken:#DFE4DC;
+  --ink:#161D1A; --ink-2:#3D4944; --muted:#6C7772; --rule:#C6CDC4; --rule-soft:#D6DBD2;
+  --verd:#1C6555; --verd-ink:#0F4438; --verd-soft:#D5E4DF;
+  --amber:#9C6410; --amber-soft:#F0E3C9;
+  --ignis:#BE3F22; --aqua:#1F6BAE; --terra:#8A7415; --aer:#7E6DC9; --umbra:#3A3245;
+  --shadow:0 1px 2px rgba(20,30,26,.06), 0 8px 24px -12px rgba(20,30,26,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1412; --surface:#161D1A; --surface-2:#1E2723; --sunken:#0B0F0E;
+    --ink:#E2E7E0; --ink-2:#B4BFB8; --muted:#87938C; --rule:#2B3632; --rule-soft:#222C28;
+    --verd:#5CB3A0; --verd-ink:#8FD4C3; --verd-soft:#15302A;
+    --amber:#D9A441; --amber-soft:#302614;
+    --ignis:#EE7250; --aqua:#5CA9E8; --terra:#C7AC3C; --aer:#AC9BF0; --umbra:#9F92B4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1412; --surface:#161D1A; --surface-2:#1E2723; --sunken:#0B0F0E;
+  --ink:#E2E7E0; --ink-2:#B4BFB8; --muted:#87938C; --rule:#2B3632; --rule-soft:#222C28;
+  --verd:#5CB3A0; --verd-ink:#8FD4C3; --verd-soft:#15302A;
+  --amber:#D9A441; --amber-soft:#302614;
+  --ignis:#EE7250; --aqua:#5CA9E8; --terra:#C7AC3C; --aer:#AC9BF0; --umbra:#9F92B4;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:Archivo,"Segoe UI",system-ui,sans-serif;
+  font-size:16px; line-height:1.62; margin:0; -webkit-text-size-adjust:100%;
+}
+h1,h2,h3,h4{font-family:Fraunces,Georgia,"Times New Roman",serif; text-wrap:balance; margin:0}
+code,kbd,.mono,.chip,.eyebrow,th,.num{font-family:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+a{color:var(--verd-ink); text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--amber); outline-offset:3px; border-radius:2px}
+
+.masthead{border-bottom:1px solid var(--rule); background:linear-gradient(180deg,var(--surface),var(--ground))}
+.masthead-in{max-width:1120px; margin:0 auto; padding:56px 24px 40px}
+.crest{display:flex; align-items:center; gap:12px; margin-bottom:22px}
+.crest svg{flex:none}
+.crest span{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--muted)}
+.masthead h1{font-size:clamp(38px,7vw,66px); font-weight:600; line-height:1.02;
+  letter-spacing:-.02em; margin-bottom:16px}
+.masthead h1 em{font-style:italic; color:var(--verd)}
+.standfirst{font-size:clamp(17px,2.2vw,20px); color:var(--ink-2); max-width:60ch; line-height:1.55}
+.facts{display:flex; flex-wrap:wrap; gap:0 28px; margin-top:30px; padding-top:20px;
+  border-top:1px solid var(--rule-soft)}
+.fact{display:flex; flex-direction:column; gap:2px; padding:6px 0}
+.fact dt{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted)}
+.fact dd{margin:0; font-size:14.5px; font-weight:500}
+
+.shell{max-width:1120px; margin:0 auto; padding:0 24px 96px; display:grid; gap:56px;
+  grid-template-columns:196px minmax(0,1fr)}
+nav.rail{position:sticky; top:0; align-self:start; padding:44px 0; max-height:100vh; overflow-y:auto}
+nav.rail p{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 12px}
+nav.rail ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px}
+nav.rail a{display:block; padding:5px 10px; font-size:13.5px; text-decoration:none;
+  color:var(--ink-2); border-left:2px solid var(--rule-soft); transition:.15s}
+nav.rail a:hover{color:var(--verd-ink); border-left-color:var(--verd); background:var(--surface)}
+.rail-toggle{display:none}
+.rail-static{display:inline}
+
+main{padding:44px 0 0; min-width:0}
+section{margin-bottom:64px; scroll-margin-top:24px}
+.eyebrow{font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--amber);
+  display:block; margin-bottom:8px}
+section > h2{font-size:clamp(25px,3.4vw,33px); font-weight:600; letter-spacing:-.015em; margin-bottom:6px}
+.sub{color:var(--muted); font-size:15px; margin:0 0 26px; max-width:64ch}
+h3{font-size:19px; font-weight:600; margin:34px 0 10px; letter-spacing:-.01em}
+h4{font-size:14.5px; font-weight:600; margin:24px 0 6px}
+p,ul,ol{max-width:68ch}
+main p{margin:0 0 14px}
+main ul,main ol{margin:0 0 16px; padding-left:20px}
+main li{margin-bottom:7px}
+li::marker{color:var(--verd)}
+strong{font-weight:600; color:var(--ink)}
+
+.card{background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:20px 22px; margin:20px 0; box-shadow:var(--shadow)}
+.card > :last-child{margin-bottom:0}
+.card-h{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 12px;
+  padding-bottom:9px; border-bottom:1px solid var(--rule-soft)}
+.grid2{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(238px,1fr));
+  max-width:none; margin:18px 0}
+.grid2 .card{margin:0}
+
+.scroll{overflow-x:auto; margin:18px 0; border:1px solid var(--rule); border-radius:3px;
+  background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px}
+th{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  text-align:left; font-weight:500; padding:11px 14px; background:var(--surface-2);
+  border-bottom:1px solid var(--rule); white-space:nowrap}
+td{padding:10px 14px; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:500; white-space:nowrap}
+.num{text-align:right; font-variant-numeric:tabular-nums; font-size:12.5px}
+.ctr{text-align:center}
+.win{color:var(--verd-ink); font-weight:600}
+.bad{color:var(--ignis); font-weight:600}
+
+.chip{display:inline-flex; align-items:center; gap:6px; font-size:11.5px;
+  padding:3px 8px 3px 6px; border-radius:2px; background:var(--surface-2);
+  color:var(--ink-2); font-variant-numeric:tabular-nums; white-space:nowrap}
+.chip svg{flex:none}
+.chip.ig{--e:var(--ignis)} .chip.aq{--e:var(--aqua)} .chip.te{--e:var(--terra)}
+.chip.ae{--e:var(--aer)} .chip.um{--e:var(--umbra)}
+.chip svg{color:var(--e)}
+.chip b{color:var(--e); font-weight:600}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0}
+
+.slip{border-left:3px solid var(--amber); background:var(--amber-soft);
+  padding:14px 18px; margin:16px 0; border-radius:0 3px 3px 0}
+.slip .lbl{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--amber); display:block; margin-bottom:5px}
+.slip p{margin:0 0 8px; font-size:14.5px; color:var(--ink-2)}
+.slip p:last-child{margin-bottom:0}
+
+.rec{background:var(--sunken); border:1px solid var(--rule); border-radius:3px;
+  padding:16px 18px; margin:18px 0; font-family:"IBM Plex Mono",monospace; font-size:13px;
+  line-height:1.75; overflow-x:auto; color:var(--ink-2); white-space:pre}
+.rec b{color:var(--verd-ink); font-weight:500}
+.rec .c{color:var(--muted)}
+
+/* A shipped milestone reads differently from a planned one. */
+.card[data-done="true"]{border-left:3px solid var(--verd)}
+.card[data-done="true"] .card-h{color:var(--verd-ink)}
+
+.new{display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:9px;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--surface);
+  background:var(--amber); padding:2px 5px; border-radius:2px; vertical-align:2px; margin-left:7px}
+
+.diagram{margin:24px 0; background:var(--surface); border:1px solid var(--rule);
+  border-radius:3px; padding:14px; overflow-x:auto}
+.diagram svg{display:block; margin:0 auto; max-width:100%; height:auto; min-width:480px}
+.diagram .node{fill:var(--surface-2); stroke:var(--rule)}
+.diagram .hub{fill:var(--verd-soft); stroke:var(--verd)}
+.diagram .nlab{fill:var(--ink); font:500 13px Archivo,sans-serif}
+.diagram .hlab{fill:var(--verd-ink); font:600 14px Fraunces,serif}
+.diagram .nsub{fill:var(--muted); font:400 9.5px "IBM Plex Mono",monospace; letter-spacing:.08em}
+.diagram .flow{stroke:var(--rule); stroke-width:1.6; fill:none}
+.diagram .feed{stroke:var(--amber); stroke-width:1.6; fill:none; stroke-dasharray:5 4}
+.diagram .flab{fill:var(--amber); font:400 10px "IBM Plex Mono",monospace; letter-spacing:.06em}
+
+.demo{background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:20px 22px; margin:22px 0; max-width:none}
+.demo-grid{display:grid; gap:26px; grid-template-columns:minmax(0,280px) minmax(0,1fr); align-items:start}
+#wheel{width:100%; max-width:280px; aspect-ratio:1; display:block;
+  touch-action:manipulation; cursor:pointer}
+.demo-side p{font-size:14px; margin:0 0 12px; max-width:none}
+.readout{display:flex; gap:20px; flex-wrap:wrap; margin:14px 0}
+.ro{display:flex; flex-direction:column}
+.ro dt{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--muted)}
+.ro dd{margin:0; font-family:Fraunces,serif; font-size:24px; font-weight:600; line-height:1.2;
+  font-variant-numeric:tabular-nums}
+.btn{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.08em;
+  text-transform:uppercase; background:var(--verd); color:var(--surface);
+  border:1px solid var(--verd); padding:9px 16px; border-radius:2px; cursor:pointer; min-height:42px}
+.btn:hover{background:var(--verd-ink); border-color:var(--verd-ink)}
+.btn.ghost{background:transparent; color:var(--verd-ink)}
+.btn.ghost:hover{background:var(--verd-soft); color:var(--verd-ink)}
+.btn.warm{background:transparent; color:var(--ignis); border-color:var(--ignis)}
+.btn.warm:hover{background:var(--ignis); color:var(--surface)}
+.btn.cool{background:transparent; color:var(--aqua); border-color:var(--aqua)}
+.btn.cool:hover{background:var(--aqua); color:var(--surface)}
+.btn[disabled]{opacity:.35; cursor:default}
+.btn[disabled]:hover{background:transparent}
+.btns{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px}
+.log{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted);
+  margin-top:12px; min-height:3.4em; line-height:1.5}
+
+footer{border-top:1px solid var(--rule); max-width:1120px; margin:0 auto;
+  padding:28px 24px 60px; color:var(--muted); font-size:13px}
+footer p{max-width:68ch; margin:0}
+
+@media (max-width:880px){
+  .shell{grid-template-columns:minmax(0,1fr); gap:0; padding-bottom:64px}
+  nav.rail{position:static; max-height:none; padding:24px 0 0; border-bottom:1px solid var(--rule-soft)}
+  nav.rail p{margin-bottom:0}
+  .rail-toggle{display:block}
+  .rail-static{display:none}
+  nav.rail ol{display:none; padding-bottom:16px}
+  nav.rail.open ol{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px}
+  .demo-grid{grid-template-columns:minmax(0,1fr); justify-items:center}
+  .demo-side{justify-self:stretch}
+  #wheel{max-width:300px}
+  .masthead-in{padding:40px 24px 32px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="g-ig" viewBox="0 0 10 10"><path d="M5 .8 9.3 9.2H.7Z" fill="currentColor"/></symbol>
+  <symbol id="g-aq" viewBox="0 0 10 10"><path d="M5 .8c3.2 4 4.3 6.1 0 8.4C.7 6.9 1.8 4.8 5 .8Z" fill="currentColor"/></symbol>
+  <symbol id="g-te" viewBox="0 0 10 10"><path d="M1.4 1.4h7.2v7.2H1.4Z" fill="currentColor"/></symbol>
+  <symbol id="g-ae" viewBox="0 0 10 10"><path d="M.9 7.4 5 1.6l4.1 5.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="g-um" viewBox="0 0 10 10"><path d="M7.9 1.5a4.2 4.2 0 1 0 0 7 3.3 3.3 0 1 1 0-7Z" fill="currentColor"/></symbol>
+</defs></svg>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="crest">
+      <svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true">
+        <path d="M10 2h6v8.5l6.6 12.2A3.4 3.4 0 0 1 19.6 28H6.4a3.4 3.4 0 0 1-3-5.3L10 10.5V2z"
+              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" style="color:var(--verd)"/>
+        <path d="M6.2 19.5h13.6l2.8 5.2A2.6 2.6 0 0 1 19.6 28H6.4a2.6 2.6 0 0 1-2.3-3.9z" fill="var(--verd)" opacity=".28"/>
+        <circle cx="10.5" cy="23.5" r="1.5" fill="var(--amber)"/>
+        <circle cx="15" cy="25" r="1" fill="var(--amber)"/>
+      </svg>
+      <span>Game design document &nbsp;·&nbsp; draft 6 &nbsp;·&nbsp; as built through M5</span>
+    </div>
+    <h1>Eternal Alchemy<br><em>a potion shop, kept slowly</em></h1>
+    <p class="standfirst">A cozy single-player alchemy shop for mobile and desktop. Grow it in the garden,
+      raise it in the cave, cut it from the shaft, or send someone braver to fetch it — then match
+      essences in the cauldron, bring it to temperature, seal it well, and price it
+      right. No debt, no deadline, no gems.</p>
+    <dl class="facts">
+      <div class="fact"><dt>Engine</dt><dd>Phaser 4.2.1 · TypeScript</dd></div>
+      <div class="fact"><dt>Platform</dt><dd>Web &amp; mobile · no Steam</dd></div>
+      <div class="fact"><dt>Time</dt><dd>Real-time, offline accrual</dd></div>
+      <div class="fact"><dt>Model</dt><dd>Premium · no IAP · no ads</dd></div>
+      <div class="fact"><dt>Shape</dt><dd>Endless, with prestige</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" id="rail">
+    <p><button class="rail-toggle btn ghost" id="railBtn" aria-expanded="false">Contents</button><span class="rail-static">Contents</span></p>
+    <ol>
+      <li><a href="#changes">Changelog</a></li>
+      <li><a href="#pillars">Pillars</a></li>
+      <li><a href="#loop">The loop</a></li>
+      <li><a href="#time">Time &amp; day cycle</a></li>
+      <li><a href="#gathering">Garden · Cave · Mine</a></li>
+      <li><a href="#merchants">Merchants</a></li>
+      <li><a href="#heroes">Heroes &amp; favour</a></li>
+      <li><a href="#brewing">Essences</a></li>
+      <li><a href="#wheel">Brewing</a></li>
+      <li><a href="#vessels">Bottling</a></li>
+      <li><a href="#selling">Selling</a></li>
+      <li><a href="#haggle">The haggle</a></li>
+      <li><a href="#economy">Economy &amp; prestige</a></li>
+      <li><a href="#ux">Input &amp; UX</a></li>
+      <li><a href="#access">Access &amp; language</a></li>
+      <li><a href="#art">Art</a></li>
+      <li><a href="#tech">Architecture</a></li>
+      <li><a href="#plan">Build plan</a></li>
+      <li><a href="#open">Status</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <section id="changes">
+    <span class="eyebrow">Changelog</span>
+    <h2>What changed</h2>
+    <p class="sub">Your answers, applied. Everything marked <span class="new">new</span> further down
+      arrived in draft 2 or 3.</p>
+
+    <h3>Draft 6 — the art arrived, and the game grew to fit it</h3>
+    <p>Roughly six hundred painted sprites landed at once: herbs, fungi, gems, bottles, furnishings and
+      character portraits. Absorbing them turned out to be a content problem rather than an art
+      problem, and the answer was to stop hand-authoring and let the pictures decide.</p>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Essence is read off the sprite</p>
+        <p>The UI already tints and labels everything by dominant essence, so art that disagrees with
+          its own vector teaches the wrong thing at a glance. Each sprite's colour now <em>derives</em>
+          its essence: a red leaf is Ignis because it is red. Three hundred ingredients, none of them
+          hand-typed. <a href="#art">How it works</a>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">314 ingredients, 71 recipes</p>
+        <p>Up from 18 and 16. Every one has a source — a crop, a cave species, a shaft seam, a biome's
+          loot table — because an ingredient nobody can gather is the bug this project keeps
+          re-learning. The recipe book grew until the cone geometry ran out of room.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Gems gave the shaft a reason</p>
+        <p>161 crystals became <strong>minerals</strong>: stable, dense, and the precise instrument for
+          hitting a ratio herbs can only approximate. They also fixed a real weakness — the herb art
+          was overwhelmingly green and red, and Aer and Umbra were barely supplied until the gems
+          arrived in every colour.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Faces, bottles and furnishings</p>
+        <p>Merchants and heroes have portraits. Each recipe has its own painted bottle, matched by the
+          colour of the liquid rather than the glass. Décor was rebuilt around what the art actually
+          is — seven banners for the wall, chests and coin for the floor.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">An atlas was the wrong answer</p>
+        <p>Named as the fix, built, measured, and then not shipped: 2.8&nbsp;MB fetched whole against
+          135&nbsp;KB for the sixteen sprites any screen actually shows. Atlases win when a screen
+          draws most of a set at once, and none here does. <a href="#art">The numbers</a>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">A data file was lost</p>
+        <p>A crashed generator truncated <code>heroes.json</code> to nothing, and this repository has no
+          version control to restore from. Rebuilt by hand; every generator now writes through a temp
+          file and renames, so a crash can no longer destroy what it was rewriting.</p>
+      </div>
+    </div>
+
+    <h3>Draft 5 — M4, and what an audit turned up</h3>
+    <p>The content set is in and the systems the last draft called unbuilt are built. Then a
+      deliberate sweep for declared-but-unwired data found that a good deal of what this document
+      promised was never reachable in play — the most useful thing the project has done for itself.</p>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Discovery and hidden bands shipped</p>
+        <p>Draft 4 called this "the most promising unbuilt idea in the document". It is now the
+          answer to what the alembic wheel took away: a recipe you have not made does not tell you
+          its temperature, and you bisect toward it by brewing. Only <em>accepting</em> teaches, so
+          free rejection stays free. <a href="#wheel">Brewing</a>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Ten upgrades nobody could buy</p>
+        <p>Over half the equipment tree was in no merchant's stock, and a purchase is the only way
+          equipment is ever granted. The support beams were among them, so <strong>the shaft could
+          never leave its first seam</strong> — and the greenhouse, so crossbreeding was dead
+          content. A fourth merchant, Hesk the outfitter, now sells the infrastructure.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Seven of eight town modifiers did nothing</p>
+        <p>Prestige exists so a second run plays differently, and the function returning a town's
+          modifiers was exported and never called once. Choosing a town was very nearly cosmetic.
+          All seven are wired: crop time, ore richness, prices, cave spread, beds, contract payout,
+          footfall. <a href="#economy">The long distillation</a>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Décor is placed, not owned</p>
+        <p>The shop's furnishings moved out of the equipment tree, where owning one was the whole
+          decision. Ten pieces, five spots — so a full collection still leaves you choosing which
+          five are out, and the window is a real trade between day appeal and night trade.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">A recipe has to be brewable</p>
+        <p>The book roughly doubled to sixteen. The old check asked whether some ingredient pointed
+          within 45° of a recipe; the real question is whether a <em>blend</em> can land inside its
+          cone, and three candidates passed the weak test while being impossible. There is no
+          pure-fire recipe because every fire source in the game drags Terra along with it.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">The harness now asks the flat question</p>
+        <p>Five separate times, a data file declared something and the far end was never wired —
+          equipment, half the Codex, five vessel and seal fields, the soil on every crop, the town
+          modifiers. Every one passed the suite. A coverage test now fails when any field in any
+          data file is read by nothing.</p>
+      </div>
+    </div>
+
+    <h3>Draft 4 — brought in line with what shipped</h3>
+    <p>M1, M2 and M3 are built and playable. This draft corrects the document where the code took a
+      different, better road — and marks what the building taught.</p>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">The alembic wheel was cut</p>
+        <p>It read as "a spinning thing" and asked for timing the game never otherwise asks for.
+          Replaced by three legible steps: ingredients, temperature and method, accept or reject.
+          <a href="#wheel">The full account</a>, including what that cost.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Merchants got a screen</p>
+        <p>Planned as an overlay. Four traders on separate cycles plus the upgrade trees needed
+          more surface than a banner. The Workbench went the other way and folded into the Cauldron.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Nothing is scheduled</p>
+        <p>Merchant visits, their stock, cave spread and walk-in customers are all <em>derived from
+          the day counter</em>. Offline catch-up needs no special handling, and a reload cannot
+          reshuffle a shelf.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Ten save migrations so far</p>
+        <p>Every reshaping of the world has been a versioned step that carries an existing shop
+          forward. A save from the alembic era still loads.</p>
+      </div>
+    </div>
+
+    <h3>Draft 3 — the last four calls</h3>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">The Ashwalker walks at night</p>
+        <p>The one merchant exception. Bramm and Vessa keep daylight hours; the Umbra trader appears only
+          after dark, which gives night a trading phase of its own.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Day length stays tunable</p>
+        <p>3 real hours is the shipping default, but it lives in one config value and a
+          <strong>debug time panel</strong> lands in M1 — you cannot develop an offline-progress game
+          while waiting 18 real hours for a crop.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">The wheel grows with the alembic</p>
+        <p>Actions scale <strong>3 → 7</strong> across five bought alembic tiers, plus slot-in modules.
+          Early brews stay teachable; late brews get the full triangle.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Customers show their stance</p>
+        <p>Three portrait poses per customer carry the haggle stance; dialogue carries personality. ~60
+          portraits for a 20-customer roster — budgeted deliberately.</p>
+      </div>
+    </div>
+
+    <h3>Draft 2 — the big additions</h3>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Named &amp; scoped</p>
+        <p><strong>Eternal Alchemy</strong> — the prestige system makes the name literal. Web and mobile
+          only, no Steam. Local saves. No audio in scope; localisation and accessibility are in from
+          day one.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Two new sources</p>
+        <p>A <strong>mushroom cave</strong> and a <strong>mining shaft</strong> join the garden — each with
+          its own verb, not three timer farms with different art.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">The wheel got a triangle</p>
+        <p><strong>Heat</strong> and <strong>Chill</strong> join Stir. The wheel now steers both grading
+          axes: angle is purity, radius is potency. Prototype below is updated.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Haggling is now rock-paper-scissors</p>
+        <p>Customers hold a telegraphed <strong>stance</strong>; your pitch actions counter one and
+          backfire against another. Countering forces them to switch, so it's a moving read.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Renown gates, gold buys</p>
+        <p>Upgrades are no longer free rank rewards. Rank makes equipment <em>appear</em> in a merchant's
+          stock; you still pay for it. Every system got a buyable equipment tree.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">More to make, more to make it in</p>
+        <p>10 forms, 8 vessels, 7 seals. Plus a day/night cycle with merchants closed at night, hero
+          <strong>favour</strong>, and a prestige reset with a permanent Mastery tree.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pillars">
+    <span class="eyebrow">Direction</span>
+    <h2>Four pillars</h2>
+    <p class="sub">Everything below should trace back to one of these. If a feature doesn't, it's cut.</p>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Pillar 01 — Craft, not clicks</p>
+        <p>Every potion is the result of decisions you made: which ingredients, what ratio, how you
+          distilled it, what you sealed it in. Two players' Health Tonics should differ.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Pillar 02 — Time is a rhythm, not a wall</p>
+        <p>Growth and travel take real hours because that gives the shop a heartbeat and makes returning
+          feel like arriving. Nothing is gated behind waiting you can pay to skip — there is nothing to
+          pay with.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Pillar 03 — Three ways to sell, three moods</p>
+        <p>The shelf is passive income you tune. Contracts are planning. Face-to-face haggling is the one
+          place the game asks for your full attention.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Pillar 04 — Nothing is lost</p>
+        <p>No spoilage to zero, no failed harvests, no dead heroes, no debt collector. Setbacks cost
+          renown or gold, never progress. This is the promise that lets someone put it down for a week.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="loop">
+    <span class="eyebrow">Structure</span>
+    <h2>The core loop</h2>
+    <p class="sub">Four sources funnel into one cauldron. Two feedback lines close the system: gold buys
+      stock and equipment, and your own potions supply the heroes who fetch what you can't grow.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 680 500" role="img" aria-label="Flow diagram: garden, cave and mine, merchants and hero missions all feed the cauldron; the cauldron feeds bottling and sealing; bottled goods sell via shelf, contract or haggle; sales produce gold and renown, which flows back to buy stock and equipment; bottled potions also flow back to supply hero missions.">
+        <g>
+          <rect class="node" x="26" y="40" width="128" height="52" rx="3"/>
+          <text class="nsub" x="90" y="60" text-anchor="middle">CULTIVATE</text>
+          <text class="nlab" x="90" y="79" text-anchor="middle">Garden</text>
+
+          <rect class="node" x="192" y="40" width="128" height="52" rx="3"/>
+          <text class="nsub" x="256" y="60" text-anchor="middle">TEND · DIG</text>
+          <text class="nlab" x="256" y="79" text-anchor="middle">Cave &amp; Mine</text>
+
+          <rect class="node" x="358" y="40" width="128" height="52" rx="3"/>
+          <text class="nsub" x="422" y="60" text-anchor="middle">BUY · BY HOURS</text>
+          <text class="nlab" x="422" y="79" text-anchor="middle">Merchants</text>
+
+          <rect class="node" x="524" y="40" width="128" height="52" rx="3"/>
+          <text class="nsub" x="588" y="60" text-anchor="middle">SEND</text>
+          <text class="nlab" x="588" y="79" text-anchor="middle">Hero missions</text>
+        </g>
+
+        <g class="flow">
+          <path d="M90 92 V132"/><path d="M256 92 V132"/><path d="M422 92 V132"/><path d="M588 92 V132"/>
+        </g>
+        <g fill="var(--rule)">
+          <path d="M90 140 l5 -9 h-10z"/><path d="M256 140 l5 -9 h-10z"/>
+          <path d="M422 140 l5 -9 h-10z"/><path d="M588 140 l5 -9 h-10z"/>
+        </g>
+
+        <rect class="hub" x="26" y="146" width="626" height="56" rx="3"/>
+        <text class="nsub" x="339" y="167" text-anchor="middle">MATCH ESSENCES · DISTIL ON THE WHEEL</text>
+        <text class="hlab" x="339" y="188" text-anchor="middle">Cauldron</text>
+
+        <path class="flow" d="M339 202 V240"/>
+        <path d="M339 248 l5 -9 h-10z" fill="var(--rule)"/>
+
+        <rect class="node" x="110" y="250" width="460" height="56" rx="3"/>
+        <text class="nsub" x="339" y="271" text-anchor="middle">FORM · VESSEL · SEAL</text>
+        <text class="nlab" x="339" y="291" text-anchor="middle">Bottle &amp; Seal</text>
+
+        <g class="flow">
+          <path d="M339 306 C339 330 171 326 171 346"/>
+          <path d="M339 306 V346"/>
+          <path d="M339 306 C339 330 509 326 509 346"/>
+        </g>
+        <g fill="var(--rule)">
+          <path d="M171 354 l5 -9 h-10z"/><path d="M339 354 l5 -9 h-10z"/><path d="M509 354 l5 -9 h-10z"/>
+        </g>
+
+        <g>
+          <rect class="node" x="110" y="356" width="122" height="50" rx="3"/>
+          <text class="nsub" x="171" y="375" text-anchor="middle">PASSIVE</text>
+          <text class="nlab" x="171" y="393" text-anchor="middle">Shelf</text>
+
+          <rect class="node" x="278" y="356" width="122" height="50" rx="3"/>
+          <text class="nsub" x="339" y="375" text-anchor="middle">PLANNED</text>
+          <text class="nlab" x="339" y="393" text-anchor="middle">Contract</text>
+
+          <rect class="node" x="446" y="356" width="122" height="50" rx="3"/>
+          <text class="nsub" x="509" y="375" text-anchor="middle">PERSONAL</text>
+          <text class="nlab" x="509" y="393" text-anchor="middle">Haggle</text>
+        </g>
+
+        <g class="flow">
+          <path d="M171 406 C171 424 250 418 250 430"/>
+          <path d="M339 406 V430"/>
+          <path d="M509 406 C509 424 428 418 428 430"/>
+        </g>
+        <g fill="var(--rule)">
+          <path d="M250 438 l5 -9 h-10z"/><path d="M339 438 l5 -9 h-10z"/><path d="M428 438 l5 -9 h-10z"/>
+        </g>
+
+        <rect class="hub" x="170" y="440" width="340" height="48" rx="3"/>
+        <text class="hlab" x="340" y="470" text-anchor="middle">Gold &amp; Renown</text>
+
+        <path class="feed" d="M170 464 H14 V66 H18"/>
+        <path d="M26 66 l-9 -5 v10z" fill="var(--amber)"/>
+        <text class="flab" x="-265" y="10" transform="rotate(-90)" text-anchor="middle">gold → stock &amp; equipment</text>
+
+        <path class="feed" d="M570 278 H666 V66 H660"/>
+        <path d="M652 66 l9 -5 v10z" fill="var(--amber)"/>
+        <text class="flab" x="-172" y="678" transform="rotate(-90)" text-anchor="middle">potions → hero supplies</text>
+      </svg>
+    </div>
+
+    <p>The dashed lines are the ones that matter. <strong>Gold buys equipment</strong>, so income is
+      always convertible into capability rather than just accumulating. And <strong>heroes consume your
+      own potions</strong>, which turns your product into an input, gives you a reason to brew things
+      you'd never sell, and stops the mid-game from becoming a pure export economy.</p>
+  </section>
+
+  <section id="time">
+    <span class="eyebrow">System</span>
+    <h2>Time, the day cycle &amp; offline progress</h2>
+    <p class="sub">One authoritative world clock in milliseconds. Everything that takes time is a scheduled
+      job against it, so a session resume and a live tick run identical code.</p>
+
+    <h3>The day <span class="new">new</span></h3>
+    <p>An in-game day is <strong>3 real hours</strong>, not 24 — this is the decision that makes a day cycle
+      safe. If the game's night were the real world's night, anyone who plays at 11pm would never see a
+      merchant. At three hours, night is a passing weather condition, not a lockout:</p>
+    <div class="rec">
+<b>ONE DAY</b>  =  3h real
+  <span class="c">0:00</span>  Dawn      <span class="c">15 min · merchants opening, warm low light</span>
+  <span class="c">0:15</span>  Day       <span class="c">1h 45m · full trade, peak footfall</span>
+  <span class="c">2:00</span>  Dusk      <span class="c">15 min · merchants packing up, last calls</span>
+  <span class="c">2:15</span>  <b>Night</b>     <span class="c">45 min · merchants gone, Umbra ripens</span>
+
+<b>ONE WEEK</b> =  7 days  =  21h real     <span class="c">weekday customer mix rotates</span>
+    </div>
+    <p>Lighting shifts continuously through the four phases — the shop's window, the garden's sky, the
+      cave's lantern glow. It is <strong>cosmetic plus one rule</strong>: merchants are unavailable at
+      night. Everything else — garden, cave, mine, cauldron, bottling, shelf, contracts, heroes — runs
+      around the clock.</p>
+
+    <h4>Night is content, not downtime</h4>
+    <p>Because merchants close, night needs its own reasons to be there:</p>
+    <ul>
+      <li><strong>Moonlit crops.</strong> A handful of Umbra and Aer ingredients only ripen during night
+        and must be harvested before dawn or they revert to a lesser stage — the one time-pressure
+        element in the game, and it's opt-in.</li>
+      <li><strong>The cave doesn't care.</strong> Mushrooms spread faster in darkness; night is the cave's
+        peak hours.</li>
+      <li><strong>Different customers.</strong> Night walk-ins are a distinct archetype set — nervous
+        buyers, off-duty guards, people who'd rather not be seen. Lower footfall, higher margins.</li>
+      <li><strong>Weekday flavour.</strong> Market Day (day 3) doubles footfall; Temple Day (day 7)
+        shifts demand toward Restoratives.</li>
+    </ul>
+
+    <h4>The Ashwalker is the exception <span class="new">new</span></h4>
+    <p>Bramm and Vessa keep daylight hours. <strong>The Ashwalker only appears at night</strong> — the
+      Umbra trader who deals in sealed potions rather than gold is a worse character with a market stall
+      and a sunny disposition. He is the reason to check the shop after dark, and the rule stays simple to
+      explain because he is the only exception:</p>
+    <div class="rec">
+  Bramm       <b>day</b>    every 2 days     <span class="c">staples, low-tier equipment</span>
+  Vessa       <b>day</b>    every 5 days     <span class="c">exotics, high-tier equipment</span>
+  Ashwalker   <b>night</b>  every 8 days     <span class="c">trades only for sealed potions</span>
+</div>
+
+    <h3>Developing against a real clock <span class="new">new</span></h3>
+    <p>A game where a crop takes 18 hours and a contract runs 56 in-game days cannot be tested by waiting.
+      A <strong>debug time panel</strong> ships in M1, not as an afterthought — it's the difference between
+      verifying offline behaviour in seconds and verifying it never:</p>
+    <ul>
+      <li><strong>Time scale</strong> — ×1, ×10, ×60, ×600, and pause</li>
+      <li><strong>Jump to phase</strong> — next dawn, dusk or night; skip <em>n</em> in-game days</li>
+      <li><strong>Simulate absence</strong> — "I was away 72 hours", running the real resume path so the
+        While-You-Were-Away panel can be tested without leaving</li>
+      <li><strong>Finish all timers</strong> — every crop, vein, spread tile and mission completes now</li>
+      <li><strong>Grant</strong> — gold, renown, rank, ingredients, recipes, equipment</li>
+      <li><strong>Seed control</strong> — fix the RNG seed so a bug reproduces exactly</li>
+    </ul>
+    <p>Dev builds show it as a panel; release builds keep it behind a hidden gesture for QA and strip it
+      from the production bundle. Because every duration in the game is a config value rather than a
+      constant, the panel is also where day length gets tuned — <strong>3 hours is the shipping default,
+      not a decision that's hard to revisit.</strong></p>
+
+    <h3>Offline rules</h3>
+    <ul>
+      <li><strong>No offline cap.</strong> Close it for three weeks, come back, every plot is
+        harvest-ready and every hero is home.</li>
+      <li><strong>Shelf sales accrue offline</strong> at 40% footfall. Being present is rewarded by
+        degree, never by gate.</li>
+      <li><strong>The day cycle runs while you're away</strong> — it's derived from world time, so you
+        might return at night. Contracts and merchant visits do <em>not</em> expire while closed: a
+        contract's clock pauses and caravans queue rather than pass by.</li>
+      <li><strong>Clock protection:</strong> we store <code>lastSeenRealTime</code> and only ever advance
+        by a non-negative delta. Beyond that, in a premium single-player game with no leaderboards, we
+        let cheaters cheat.</li>
+      <li><strong>Return summary.</strong> One "While you were away" panel on resume — harvests, heroes,
+        gold, contracts due. One tap to collect all.</li>
+    </ul>
+
+    <h3>Typical durations</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Activity</th><th>Fast</th><th>Typical</th><th>Long</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Crop growth</td><td class="num">5 min</td><td class="num">45 min – 4 h</td><td class="num">18 h</td><td>Exotics longer; never over one sleep</td></tr>
+          <tr><td>Mushroom spread</td><td class="num">20 min</td><td class="num">1 – 3 h</td><td class="num">8 h</td><td>Per grid tile, faster at night</td></tr>
+          <tr><td>Ore vein</td><td class="num">30 min</td><td class="num">2 – 5 h</td><td class="num">12 h</td><td>Yields in batches until depleted</td></tr>
+          <tr><td>Hero mission</td><td class="num">20 min</td><td class="num">2 – 6 h</td><td class="num">14 h</td><td>Longer = better loot tables</td></tr>
+          <tr><td>Merchant visit</td><td class="num">—</td><td class="num">every 2 – 8 days</td><td class="num">—</td><td>In-game days; daytime only</td></tr>
+          <tr><td>Brewing · bottling</td><td colspan="3" class="num">instant</td><td>Player-driven, never timed</td></tr>
+          <tr><td>Contract deadline</td><td class="num">4 days</td><td class="num">8 – 24 days</td><td class="num">56 days</td><td>In-game days; paused while closed</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The shape to protect: <strong>a 10-minute session should always have something to do.</strong>
+      Short crops, an always-open cave, and instant crafting guarantee a full loop is available in any
+      session, at any hour.</p>
+  </section>
+
+  <section id="gathering">
+    <span class="eyebrow">Sources</span>
+    <h2>Garden, cave &amp; shaft <span class="new">new</span></h2>
+    <p class="sub">Three sites you own. The design rule: each gets a <em>different verb</em>, or they're
+      three timer farms wearing different art.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Garden — you plant</p>
+        <p><strong>Verb: cultivate.</strong> Deliberate, predictable, per-plot. You choose exactly what
+          grows and when. Yields <strong>herbs</strong> — low potency, renewable, freshness-sensitive.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Cave — it spreads</p>
+        <p><strong>Verb: tend.</strong> You seed a substrate and mycelium spreads across a grid on its
+          own. Low-touch, emergent, occasionally surprising. Yields <strong>fungi</strong> — mid potency,
+          Umbra-leaning, dries fast.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Shaft — you dig</p>
+        <p><strong>Verb: extract.</strong> Veins deplete and you go deeper. Equipment-hungry, front-loaded
+          cost, high reward. Yields <strong>minerals</strong> — high potency, stable forever, the only
+          route to Grand and Sovereign brews.</p>
+      </div>
+    </div>
+
+    <h3>The garden</h3>
+    <p>Start with 4 outdoor plots. Each holds one crop and has a <strong>soil type</strong> — Loam,
+      Ash or Silt — and a crop planted in the ground it wants yields <strong>one extra unit</strong>.
+      A bonus rather than a penalty, deliberately: the wrong plot is a missed opportunity, never a
+      punishment, and picking up a seed highlights the plot that suits it.</p>
+    <p><strong>55 crops.</strong> Sunleaf, Emberroot and Dewcap are the staples you start with;
+      <strong>Moonpetal</strong> (the only garden route to Umbra, and slow enough that the cave still
+      matters) and <strong>Ashfern</strong> (fire and air with no earth in it) come from deeper merchant
+      stock, and the rest — berries, roots, flowers, fruit — are seeds bought as your standing with a
+      trader grows. Four plots means the garden is always a choice about what is worth the ground.</p>
+    <p><strong>Care is a bonus, never a requirement.</strong> An untended crop still finishes at 100%
+      yield on schedule; a tended one reaches 130% and one freshness tier higher. Nothing wilts, nothing
+      dies. That's Pillar 04, and it's what makes the garden safe to leave.</p>
+    <p>The <strong>greenhouse</strong> (bought, not granted) adds climate-controlled beds for species that
+      can't survive outside, and enables <strong>crossbreeding</strong>: two mature plants in adjacent beds
+      produce a seed with a blended essence profile and a chance of a trait mutation — Potent, Pure,
+      Twinned, Volatile. This is the long-tail hook; a player who's seen everything else is still breeding
+      a perfect Aqua donor at hour 60.</p>
+
+    <h3>The mushroom cave</h3>
+    <p>A dark 6×6 grid beneath the shop. You don't plant tiles — you place a <strong>spore cluster</strong>
+      and it spreads to adjacent tiles over real time. Each species spreads at its own rate and
+      <strong>competes for tiles</strong>, so an unattended cave slowly converges on whatever grows
+      fastest. Harvesting a tile clears it and opens space.</p>
+    <p>Three levers:</p>
+    <ul>
+      <li><strong>The humidity ward</strong> — an equipment purchase that raises the spread rate
+        everywhere.</li>
+      <li><strong>Lanterns</strong> — light favours Chalkgill and suppresses Gravecrown; darkness does
+        the reverse. Placing light is how you shape which mushrooms win, and it is a free tool rather
+        than a purchase.</li>
+      <li><strong>Substrate trays</strong> — pin a tile to one species so spreading neighbours can't
+        take it, trading flexibility for reliability.</li>
+    </ul>
+    <p><strong>31 species</strong>, and every one's spore cluster is bought — sorted between the traders
+      by essence, so Bramm has the ordinary greens, Vessa the water and air, the Ashwalker the shadow.
+      Without that the cave was stuck on the two Dewcap clusters it starts with, most species
+      unobtainable and the lantern with nothing to steer. Light preference follows essence too: shadow
+      species want dark, air and water want light, everything else does not mind — so a lantern is a
+      real instrument rather than a decoration.</p>
+    <p>The cave rewards checking in without demanding it: leave it a week and you have a full harvest of
+      <em>something</em>, just not necessarily what you wanted. That's a good failure — Pillar 04 holds,
+      because a cave full of the wrong mushroom is still a cave full of mushrooms.</p>
+
+    <h3>The mining shaft</h3>
+    <p>A vertical cross-section, Potion-Craft-ish in feel: strata of rock with visible ore veins. You assign
+      the shaft a target vein and it produces ore in batches over real time until the vein
+      <strong>depletes</strong>. Then you dig deeper.</p>
+    <div class="rec">
+<b>SHAFT</b>  depth 40m  ·  <span class="c">supports rated to 60m</span>
+  Working    Ferrous vein        <span class="c">next batch 12m · 34% depleted</span>
+  Available  Chalk seam          <span class="c">TER 8 · common</span>
+             Emberstone pocket   <span class="c">IGN 16 · uncommon · needs Steel pick</span>
+  Deeper     <span class="c">— reinforce to 80m to open the Deepglass stratum —</span>
+</div>
+    <p>Depth is the progression axis, and it's <strong>bought, not unlocked</strong>: support beams
+      and the steel pick come from Hesk. Ten tiers of beams take the shaft from 20m to 220m, through
+      nine seams — chalk at the top, an ember pocket at 40m, deepglass and <strong>nullstone</strong> at
+      80m, and six gem seams interleaved between and below them, banded so the deeper you go the denser
+      the stone. A depleted vein slowly replenishes while you work another, so a shallow seam never
+      becomes dead content.</p>
+
+    <h3>Minerals, and why the shaft matters <span class="new">new</span></h3>
+    <p>161 gems arrived with the art, and they are not simply more ingredients. Minerals are
+      <strong>stable</strong> — no freshness, no decay — and carry about <strong>1.6× the essence of a
+      herb per unit</strong>. That is the trade the whole gathering design rests on: herbs are cheap and
+      perishable, stone is expensive and eternal, and filling a large cauldron to an exact ratio needs
+      both.</p>
+    <p>They also fixed a genuine weakness nobody had noticed. The herb and fungus art was overwhelmingly
+      green, brown and red, so Aer and Umbra had almost no suppliers and half the essence space was
+      thin. Gems come in every colour, and the balance of the five essences is even for the first
+      time.</p>
+    <p class="sub">A caution the code enforces: <code>strataFor</code> returns a single stratum — the
+      deepest at or above your depth. A gem seam placed at 80m silently shadowed the deepglass stratum
+      and <em>nullstone stopped existing</em>, taking two recipes with it. The seams are offset from the
+      hand-authored ones for that reason.</p>
+    <p>Minerals have <strong>no freshness</strong> — stone doesn't wilt. They stack forever and carry the
+      highest essence-per-unit in the game. That's the trade: herbs are cheap and perishable, minerals are
+      expensive and eternal, and you need both to fill a large cauldron without blowing the ratio.</p>
+  </section>
+
+  <section id="merchants">
+    <span class="eyebrow">Source</span>
+    <h2>Merchants, stock &amp; equipment</h2>
+    <p class="sub">Costs gold, arrives on a schedule, daytime only — and now the only place equipment
+      comes from.</p>
+
+    <p>Four named traders, each on their own cycle, each with a personality and a specialty. When one
+      arrives you get a persistent banner (never a modal, never a timed pop-up) and their stall stays open
+      until they leave. <strong>Merchants are unavailable at night</strong> — a daytime caravan that would
+      have arrived after dark arrives at the following dawn instead — with one exception, below.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Bramm · day · every 2 days · staples</p>
+        <p>Bulk ingredients, seeds, spore clusters, empty vessels, the cheap furnishings and the low
+          tiers of the garden, cauldron and shop trees. Cheap, always useful, never exciting. The
+          reliable floor.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Vessa · day · every 5 days · exotics</p>
+        <p>Rotating rare ingredients, priced steeply, plus the good furnishings and the high tiers of
+          cauldron equipment. The reason to keep a gold reserve.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Hesk · day · every 3 days · infrastructure <span class="new">new</span></p>
+        <p>The outfitter. Beams, beds, moulds, presses, bunk rooms, the order book — nothing you can
+          drink, everything that makes room for more of it. Slow and dear, and the only route to the
+          bottom of the shaft.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">The Ashwalker · <em>night</em> · every 8 days · Umbra</p>
+        <p>Doesn't take gold. Trades only for sealed potions of a specific grade, and carries things
+          nobody else will sell — Gravecrown spores among them. The main sink that isn't money, and
+          the only merchant you'll ever meet after dark.</p>
+      </div>
+    </div>
+
+    <p>A visit's stock is drawn from a seed derived from <em>(merchant, day)</em>, so it is stable
+      across saves, reloads and re-renders without a single item being stored. What you have already
+      bought is the only state — recorded against the <em>item</em> rather than its position in the
+      list, because a positional key silently re-maps onto different goods the moment a merchant's
+      pool is edited, and marked things sold out that nobody had bought.</p>
+
+    <p>Every price also carries the <strong>town's price level</strong>: Hollowreach trades 10% under,
+      Highmarch 35% over. That applies to a standing order's delivery too — an order that quietly
+      billed the untaxed rate would be a way to dodge Highmarch's prices by never walking to the
+      stall.</p>
+
+    <h3>Equipment is bought, not awarded <span class="new">new</span></h3>
+    <p>This is the draft-2 change with the widest reach. Previously renown ranks handed you upgrades.
+      Now <strong>renown makes equipment appear in a merchant's stock, and gold buys it.</strong> Rank is
+      permission; gold is acquisition. Every system has a tree:</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Tree</th><th>Sold by</th><th>What you buy</th></tr></thead>
+        <tbody>
+          <tr><td>Garden</td><td>Bramm · Hesk</td><td>Two more plots, rich loam, the drying rack, the greenhouse</td></tr>
+          <tr><td>Cauldron</td><td>Bramm · Vessa</td><td>Capacity 100 → 180, a wider rim, lagging that halves heat loss</td></tr>
+          <tr><td>Shop</td><td>Bramm · Hesk</td><td>Two more shelves, and the order book that enables standing orders</td></tr>
+          <tr><td>Cave</td><td>Hesk</td><td>Six more beds (×2), a humidity ward</td></tr>
+          <tr><td>Shaft</td><td>Hesk</td><td>A steel pick, and support beams (×3) — the only way down</td></tr>
+          <tr><td>Bottling</td><td>Hesk</td><td>Vessel moulds and the sealing press: craft your own</td></tr>
+          <tr><td>Roster</td><td>Hesk</td><td>Bunk rooms for a second and third hero</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Nineteen pieces in all. This solves a real problem with the draft-1 economy: gold had too few
+      sinks late, and rank-ups dumped capability all at once. Now every gold pile has an obvious next
+      purchase and rank-ups feel like a shop restock rather than a gift.</p>
+
+    <p><strong>Standing orders</strong> (an equipment purchase itself) have a merchant deliver a fixed
+      basket every visit — the anti-tedium valve, so that once you know you need 10 Emberroot a day you
+      stop buying it by hand. An order is priced from the merchant's <em>catalogue</em> rather than
+      from whatever a visit happens to roll, so a basket set in advance always arrives.
+      <strong>Relationship levels</strong> rise as you trade, unlocking deeper stock tiers and a
+      standing discount. They never decay.</p>
+
+    <div class="slip">
+      <span class="lbl">What changed, and why</span>
+      <p>Ten of these nineteen were in no merchant's stock, and a purchase is the only way equipment
+        is ever granted — so over half the tree was unobtainable while looking complete. The support
+        beams were among them, and without beams the shaft can never leave its first seam, which
+        stranded three of the four ores and two recipes behind them. The greenhouse was among them,
+        so crossbreeding was dead content. So was the order book, so standing orders were unreachable.</p>
+      <p>Hesk exists because of that. It also answers a thinness the document had not admitted: three
+        merchants is not many for an endless game, and a fourth whose whole identity is
+        <em>infrastructure</em> gives the upgrade tree a home instead of crowding the staples out of
+        Bramm's draw.</p>
+      <p>A second bug hid underneath: the stock filter hid anything already owned once, ignoring the
+        declared repeat limit. Three tiers of support beams were one tier. Both are now covered — a
+        test asserts every upgrade has a seller, and another that a repeatable one keeps being
+        offered until its limit.</p>
+    </div>
+  </section>
+
+  <section id="heroes">
+    <span class="eyebrow">Source</span>
+    <h2>Heroes, missions &amp; favour</h2>
+    <p class="sub">The risky supply, the only route to the rarest reagents — and the reason you brew things
+      you'd never sell.</p>
+
+    <h3>The roster</h3>
+    <p>Heroes are recruited at the tavern board and live at your shop. Each has a level, a
+      <strong>biome affinity</strong>, one or two traits (Forager, Delver, Hunter, Lucky, Fragile), and a
+      <strong>favoured potion</strong> you discover through their idle chatter.</p>
+
+    <h3>Favour <span class="new">new</span></h3>
+    <p>A 0–100 track per hero, in five bands, raised by taking care of them rather than by spending a gift
+      currency. Care-through-play, not a gift grind — and explicitly not a romance system.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Band</th><th class="num">Favour</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td>Wary</td><td class="num">0 – 19</td><td>Baseline. The floor — favour never drops below this.</td></tr>
+          <tr><td>Cordial</td><td class="num">20 – 44</td><td>+1 effective level · −5% injury risk</td></tr>
+          <tr><td>Warm</td><td class="num">45 – 69</td><td>+2 levels · −10% injury · +5% rare find</td></tr>
+          <tr><td>Devoted</td><td class="num">70 – 89</td><td>+3 levels · −18% injury · +12% rare find · shorter travel</td></tr>
+          <tr><td>Sworn</td><td class="num">90 – 100</td><td>+4 levels · unlocks that hero's unique passive</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4>What raises it</h4>
+    <ul>
+      <li>Bringing them home from a successful mission (+small, every time)</li>
+      <li>Supplying a mission generously — unused supplies still count, so over-packing is kindness</li>
+      <li>Healing an injury with a Restorative instead of leaving them to rest it out (+large)</li>
+      <li>Supplying their favoured potion, discovered through chatter (+large, once per mission)</li>
+      <li>Resting them between missions rather than chaining expeditions</li>
+    </ul>
+    <h4>What lowers it</h4>
+    <ul>
+      <li>Sending them out injured, or repeatedly under-supplied</li>
+      <li>Benching them for many in-game days while others go out</li>
+    </ul>
+    <p>Nobody ever quits, and favour never falls below Wary — Pillar 04. The system's job is to reward
+      attentive play, not to punish a week away.</p>
+
+    <h3>Sending a party</h3>
+    <p>Pick 1–3 heroes, pick a destination, and equip them with your own potions:</p>
+    <div class="rec">
+<b>MISSION</b>  Sunken Barrow  ·  <span class="c">tier 3 · 4h 30m</span>
+
+  Party        Ilse <span class="c">(Delver 4 · Devoted)</span>   Corin <span class="c">(Hunter 3 · Warm)</span>
+  Supplies     2 × Health Tonic <span class="c">grade B</span>       → survivability +34%
+               1 × Elixir of Sight <span class="c">grade A</span>     → rare-find +18%
+               1 × Emberwine <span class="c">— Ilse's favourite</span>  → favour +6
+
+  <b>Success</b>      88%        <b>Rare find</b>  39%
+  <b>Injury risk</b>   7%        <b>Returns</b>    18:42
+</div>
+    <p>A mission never fails outright — outcomes are <em>Bountiful / Successful / Meagre</em>, plus an
+      independent injury roll. An injured hero rests 2–6 hours, or you brew a Restorative and they're back
+      immediately (and think better of you for it). Nobody dies, nobody leaves.</p>
+
+    <h3>Destinations</h3>
+    <p>Biomes map onto the essence system, so choosing a mission is a supply-chain decision: Emberwaste
+      (Ignis), Mirefen (Aqua), Sunken Barrow (Terra/Umbra), Skyreach Spires (Aer). Higher tiers of each
+      biome are bought as mission-board upgrades and carry better loot and longer durations.</p>
+  </section>
+
+  <section id="brewing">
+    <span class="eyebrow">Craft — the heart</span>
+    <h2>Essences &amp; the cauldron</h2>
+    <p class="sub">Five essences, a capacity budget, and a target ratio. Get the ratio right and you've
+      made the potion; get it exactly right and you've made a good one.</p>
+
+    <h3>The five essences</h3>
+    <p>Each essence has a colour <em>and</em> a glyph, used together everywhere in the UI — see
+      <a href="#access">accessibility</a>:</p>
+    <div class="chips">
+      <span class="chip ig"><svg width="11" height="11"><use href="#g-ig"/></svg><b>IGN</b> Ignis · heat, force, offence</span>
+      <span class="chip aq"><svg width="11" height="11"><use href="#g-aq"/></svg><b>AQU</b> Aqua · flow, healing, cleansing</span>
+      <span class="chip te"><svg width="11" height="11"><use href="#g-te"/></svg><b>TER</b> Terra · body, endurance, wards</span>
+      <span class="chip ae"><svg width="11" height="11"><use href="#g-ae"/></svg><b>AER</b> Aer · speed, mind, perception</span>
+      <span class="chip um"><svg width="11" height="11"><use href="#g-um"/></svg><b>UMB</b> Umbra · change, toxin, illusion</span>
+    </div>
+    <p>Every ingredient is a vector across those five, plus optional traits. Nothing else about an
+      ingredient matters mechanically — that's what keeps hundreds of ingredients authorable and hundreds
+      of recipes solvable.</p>
+
+    <h3>Categories give each source a role <span class="new">new</span></h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Category</th><th>Source</th><th>Essence lean</th><th class="num">Potency</th><th>Freshness</th></tr></thead>
+        <tbody>
+          <tr><td>Herb</td><td>Garden</td><td>Aqua · Aer</td><td class="num">low</td><td>Yes — slow</td></tr>
+          <tr><td>Fungus</td><td>Cave</td><td>Umbra · Terra</td><td class="num">mid</td><td>Yes — fast</td></tr>
+          <tr><td>Mineral</td><td>Shaft</td><td>Terra · Ignis</td><td class="num">high</td><td>None — eternal</td></tr>
+          <tr><td>Reagent</td><td>Hero missions</td><td>Ignis · Aer</td><td class="num">spiky</td><td>Varies</td></tr>
+          <tr><td>Exotic</td><td>Merchants</td><td>Any, often balanced</td><td class="num">high</td><td>Varies</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>This is why three gathering sites are worth building: you cannot reach a Grand potion on herbs
+      alone (not enough essence per unit), and you cannot hit a clean ratio on minerals alone (too coarse).
+      A good high-tier brew is minerals for mass and herbs for correction.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Ingredient</th><th class="num">IGN</th><th class="num">AQU</th><th class="num">TER</th><th class="num">AER</th><th class="num">UMB</th><th>Traits</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Emberroot</td><td class="num">14</td><td class="num">0</td><td class="num">4</td><td class="num">0</td><td class="num">0</td><td>—</td><td>Garden · Ash soil</td></tr>
+          <tr><td>Sunleaf</td><td class="num">6</td><td class="num">6</td><td class="num">0</td><td class="num">3</td><td class="num">0</td><td>—</td><td>Garden · Loam</td></tr>
+          <tr><td>Dewcap</td><td class="num">0</td><td class="num">11</td><td class="num">6</td><td class="num">0</td><td class="num">0</td><td>—</td><td>Cave · lit tile</td></tr>
+          <tr><td>Gravecrown</td><td class="num">0</td><td class="num">4</td><td class="num">7</td><td class="num">0</td><td class="num">18</td><td>Volatile</td><td>Cave · dark tile</td></tr>
+          <tr><td>Chalk Nodule</td><td class="num">0</td><td class="num">0</td><td class="num">26</td><td class="num">0</td><td class="num">0</td><td>Stable</td><td>Shaft · 20m</td></tr>
+          <tr><td>Emberstone</td><td class="num">34</td><td class="num">0</td><td class="num">12</td><td class="num">0</td><td class="num">0</td><td>Stable</td><td>Shaft · 40m</td></tr>
+          <tr><td>Gale Thistle</td><td class="num">0</td><td class="num">2</td><td class="num">0</td><td class="num">15</td><td class="num">0</td><td>Volatile</td><td>Merchant · Vessa</td></tr>
+          <tr><td>Quicksilver Tear</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td>Pure</td><td>Mission · rare find</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>How a brew resolves</h3>
+    <ol>
+      <li><strong>Fill the cauldron.</strong> Drop in ingredients; their essence vectors sum. The cauldron
+        has a <strong>capacity</strong> (starts at 60 total essence, buyable to 400+). Exceed it and the
+        brew is <em>Unstable</em> — still usable, just capped at grade D.</li>
+      <li><strong>Identify the potion.</strong> The summed vector is normalised to a direction; whichever
+        known recipe's target direction it falls closest to, that's what you're making. Miss every
+        recipe's tolerance and you get <em>Murk</em> — junk that merchants buy for a pittance and the
+        Ashwalker actually wants.</li>
+      <li><strong>Grade it.</strong> Two independent numbers. <em>Purity</em> is angular closeness to the
+        recipe's ideal ratio, penalised by essences the recipe doesn't want. <em>Potency</em> is total
+        essence, bucketed into tiers.</li>
+      <li><strong>Temperature and method.</strong> See <a href="#wheel">Brewing</a> — the ratio is only
+        one of the three things a recipe asks for.</li>
+    </ol>
+
+    <div class="rec">
+<b>RECIPE</b>  Health Tonic          <span class="c">known · common</span>
+  Target ratio   AQU 2 : TER 1        <span class="c">tolerance ±14°</span>
+  Contaminants   IGN, AER, UMB        <span class="c">−2 purity per point</span>
+
+<b>CAULDRON</b>  <span class="c">cap 60</span>
+  3 × Dewcap            AQU 33  TER 18
+  1 × Sunleaf           IGN  6  AQU  6  AER 3
+  ────────────────────────────────────────
+  Total  57/60   IGN 6 · AQU 39 · TER 18 · AER 3
+  Ratio  AQU 2.17 : TER 1        <span class="c">off-ideal 4.2°</span>
+
+  Purity   71  <span class="c">(−18 contaminants)</span>   Potency  Common
+  → <b>Health Tonic, grade C</b>            <span class="c">distil to improve</span>
+</div>
+
+    <h3>Potency tiers</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Tier</th><th class="num">Total essence</th><th>Unlocks</th><th class="num">Value ×</th></tr></thead>
+        <tbody>
+          <tr><td>Minor</td><td class="num">20 – 44</td><td>Tincture · Powder</td><td class="num">0.6</td></tr>
+          <tr><td>Common</td><td class="num">45 – 99</td><td>Potion · Salve</td><td class="num">1.0</td></tr>
+          <tr><td>Greater</td><td class="num">100 – 179</td><td>Elixir · Draught</td><td class="num">2.2</td></tr>
+          <tr><td>Grand</td><td class="num">180 – 299</td><td>Philtre · Crystal</td><td class="num">4.5</td></tr>
+          <tr><td>Sovereign</td><td class="num">300 +</td><td>Contract-only tier</td><td class="num">9.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Purity maps to letter grades <strong>F → S</strong> in bands of roughly 12 points. Price scales
+      superlinearly with grade, so the gap between a C and an A is the gap between breaking even and
+      profiting — exactly the pressure that makes the wheel matter.</p>
+  </section>
+
+  <section id="wheel">
+    <span class="eyebrow">Craft — built</span>
+    <h2>Brewing, in three steps <span class="new">rebuilt</span></h2>
+    <p class="sub">The alembic wheel is gone. It tested badly — players asked what the spinning thing
+      was — and it has been replaced by something you can read at a glance and reason about: a
+      temperature you hold and a method you choose.</p>
+
+    <div class="slip">
+      <span class="lbl">What changed, and why</span>
+      <p>The wheel was elegant on paper and opaque in the hand. A sweeping pointer asked for timing
+        the game never otherwise asks for, and nothing on it said what it was measuring. The
+        replacement keeps the part that mattered — a brew is graded on more than its ingredients —
+        and drops the dexterity.</p>
+    </div>
+
+    <p>A potion is three things at once, and the cauldron screen is three numbered steps on one page,
+      because they are one continuous act:</p>
+
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Step 1 — Ingredients</p>
+        <p>Tap or drag them into the pot. Essence totals and the capacity meter update as you go.
+          <strong>Nothing is spent yet.</strong></p>
+      </div>
+      <div class="card">
+        <p class="card-h">Step 2 — Prepare</p>
+        <p>Hold Heat or Chill to ramp the temperature, tap for a single step. Left alone the pot
+          drifts slowly back toward the room. Then choose <strong>Stirred</strong> or
+          <strong>Simmered</strong>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Step 3 — Outcome</p>
+        <p>What you would make right now, with the three numbers behind it. <strong>Accept</strong>
+          spends the ingredients and starts a timer; <strong>Pour it back</strong> returns every
+          ingredient unchanged.</p>
+      </div>
+    </div>
+
+    <h3>The three parts fail differently, on purpose</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Part of the recipe</th><th>Miss it and…</th></tr></thead>
+        <tbody>
+          <tr><td>Ratio</td><td>You are making something else. Outside every recipe's tolerance is Murk.</td></tr>
+          <tr><td>Method</td><td>You are making something else entirely — simmering a tonic doesn't make a bad tonic, it makes Murk.</td></tr>
+          <tr><td>Temperature</td><td>You are making the right thing badly. Purity falls in proportion to how far outside the band you finished.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>That asymmetry is the whole design. Two of the three are identity and fail hard; the third is
+      craft and degrades gracefully. It also means the temperature band is the part worth
+      <em>hunting</em> for, which is why recipes state it as numbers rather than words.</p>
+
+    <div class="rec">
+<b>RECIPE</b>  Health Tonic
+  Ratio        AQU 2 : TER 1        <span class="c">tolerance ±14°</span>
+  Temperature  140 – 175°
+  Method       Stirred
+
+<b>THE POT</b>   3 × Dewcap <span class="c">(dewfresh)</span>   <span class="c">56 / 60 essence</span>
+  Ratio        2° off ideal
+  Temperature  <b>160°</b> — in range
+  Method       Stirred
+  → <b>Health Tonic, grade S</b>        <span class="c">Accept · Pour it back</span>
+</div>
+
+    <h3>Why rejecting has to be free</h3>
+    <p>Ingredients stay yours until you press Accept. That single rule is what makes a numeric
+      temperature band fair to hunt for — <strong>nobody experiments when trying costs
+      ingredients.</strong> It is also why the pot keeps its contents, its heat and its method across
+      a reload: bringing a cauldron up to temperature takes real seconds, and losing that to a tab
+      switch would make experimenting expensive, which is exactly what it must not be.</p>
+
+    <h3>Then it brews</h3>
+    <p>Accepting starts a timer scaled to potency — 30 seconds for a Minor, 45 minutes for a
+      Sovereign — and the brew finishes whether you are watching or not. When it is ready, bottling
+      appears as step 4 on the same page. The old separate Workbench screen is gone; form, vessel and
+      seal were never a different activity.</p>
+
+    <h3>What this cost, and what it bought</h3>
+    <ul>
+      <li><strong>Lost:</strong> a skill ceiling. There is no longer a way to be *good* at the
+        minigame beyond knowing the numbers. Heat/chill precision is trivial once you know the band.</li>
+      <li><strong>Gained:</strong> legibility, and a system that survives being explained. Every
+        value on the screen says what it is.</li>
+      <li><strong>Recovered:</strong> the skill, in a better form — see below. Draft 4 left this open;
+        it is built.</li>
+    </ul>
+
+    <h3>Discovery, and the hidden band <span class="new">new</span></h3>
+    <p>This is what replaces the dexterity the wheel took with it. <strong>A recipe you have not made
+      does not tell you its temperature.</strong> You brew, and the pot tells you only which side you
+      were on — too cold, too hot — never by how much and never where the band starts. The book shows
+      the gap between your best two guesses and closes it as you work. Hit the band once and it is
+      yours for good.</p>
+    <p>Two rules keep it honest. <strong>Only accepting teaches</strong> — a rejected pot tells you
+      nothing, because free rejection has to stay strictly worse than committing, or the free option
+      would be the only option. And the bounds stored are the <em>tightest</em> ones: the highest
+      temperature known to be too cold, the lowest known to be too hot, so the gap only ever narrows.</p>
+    <p>The knowledge is per-save rather than per-character — it is the player's, not the alchemist's —
+      which is also why <em>Remembered Recipes</em> in the Codex is worth buying: it carries your
+      three most-brewed lines through a retirement, band and all.</p>
+    <p>Two recipes start known. The other fourteen are found by brewing something and looking at what
+      came out, and <strong>Deft Hands</strong> in the Codex now buys tolerance rather than precision —
+      +8° on every band — which is the honest analogue of skill in a system with no dexterity in it.</p>
+
+    <h3>Tuning found by playing it</h3>
+    <p>Drift started at 4°/s, which emptied a 35-degree band in nine seconds — reading the outcome
+      cost you the temperature, reintroducing exactly the fiddliness the wheel was cut for. It is
+      1.2°/s now: the pot still cools if you wander off, but deliberating is free. A
+      <em>lagged cauldron</em> upgrade halves it again.</p>
+  </section>
+
+
+  <section id="vessels">
+    <span class="eyebrow">Finish</span>
+    <h2>Bottling, containing, sealing</h2>
+    <p class="sub">Three separate choices, all instant, each a real trade-off. Ten forms, eight vessels,
+      seven seals — this is where a good brew becomes a valuable product.</p>
+
+    <h3>1 · Form</h3>
+    <p>Potency and process decide what the brew becomes. Same essence blend, different product:</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Form</th><th>Requires</th><th class="num">Doses</th><th>Character</th></tr></thead>
+        <tbody>
+          <tr><td>Potion</td><td>Any potency</td><td class="num">1</td><td>The baseline. Everyone buys them.</td></tr>
+          <tr><td>Tincture <span class="new">new</span></td><td>Minor+, Aqua ≥ 25%</td><td class="num">2</td><td>Cheap, fast-selling shelf filler; the early-game bread and butter</td></tr>
+          <tr><td>Salve</td><td>Terra ≥ 30%</td><td class="num">3</td><td>Splits into cheap multi-doses; shelf volume</td></tr>
+          <tr><td>Powder <span class="new">new</span></td><td>Dried ingredients only</td><td class="num">4</td><td>Stacks deep, no vessel cost, sold in bulk to contracts</td></tr>
+          <tr><td>Elixir</td><td>Greater+, reduce</td><td class="num">1</td><td>2.2× value; nobles and contracts</td></tr>
+          <tr><td>Draught <span class="new">new</span></td><td>Greater+, Terra ≥ 20%</td><td class="num">1</td><td>Long-duration effect; the hero-supply staple</td></tr>
+          <tr><td>Incense</td><td>Aer ≥ 40%, evaporate</td><td class="num">1</td><td>Area effect; the only form heroes share party-wide</td></tr>
+          <tr><td>Bomb</td><td>Ignis ≥ 50%, Volatile</td><td class="num">1</td><td>Hero supply only, unsellable to civilians</td></tr>
+          <tr><td>Philtre</td><td>Grand+, condense</td><td class="num">1</td><td>Prestige item, renown bonus on sale</td></tr>
+          <tr><td>Crystal <span class="new">new</span></td><td>Grand+, Mineral ≥ 40%</td><td class="num">1</td><td>Needs no seal, never degrades, highest value per unit</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2 · Vessel</h3>
+    <p>Vessels are consumables — bought from merchants, or crafted once you own the mold. They cap potency
+      and multiply value:</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Vessel</th><th class="num">Cost</th><th>Potency cap</th><th class="num">Value ×</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Clay vial</td><td class="num">2g</td><td>Common</td><td class="num">1.00</td><td>Starting vessel</td></tr>
+          <tr><td>Waxed pouch <span class="new">new</span></td><td class="num">1g</td><td>Minor</td><td class="num">0.85</td><td>Powder and Tincture only; stacks ×5 on one shelf slot</td></tr>
+          <tr><td>Horn phial <span class="new">new</span></td><td class="num">6g</td><td>Common</td><td class="num">1.05</td><td>+1 effective grade when supplied to heroes</td></tr>
+          <tr><td>Glass flask</td><td class="num">9g</td><td>Greater</td><td class="num">1.15</td><td>Shows the potion's colour on the shelf — appeal bonus</td></tr>
+          <tr><td>Copper bottle <span class="new">new</span></td><td class="num">16g</td><td>Greater</td><td class="num">1.20</td><td>+1 dose on any multi-dose form</td></tr>
+          <tr><td>Iron-bound jar</td><td class="num">22g</td><td>Grand</td><td class="num">1.10</td><td>Required for Bombs and Volatile brews</td></tr>
+          <tr><td>Sealed amphora <span class="new">new</span></td><td class="num">48g</td><td>Grand</td><td class="num">1.25</td><td>Holds 3 doses; counts as 3 units toward a contract</td></tr>
+          <tr><td>Crystal orb</td><td class="num">70g</td><td>none</td><td class="num">1.40</td><td>Late-game; crafted from Deepglass</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>3 · Seal</h3>
+    <p>The seal is the flourish — where a potion picks up a marketable personality:</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Seal</th><th class="num">Cost</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td>Cork</td><td class="num">0g</td><td>None. Functional.</td></tr>
+          <tr><td>Wax &amp; ribbon</td><td class="num">3g</td><td>+8% shelf appeal — sells faster at the same price</td></tr>
+          <tr><td>Guild stamp</td><td class="num">12g</td><td>+15% contract payout; required by some guild contracts</td></tr>
+          <tr><td>Warding sigil</td><td class="num">18g</td><td>+1 effective grade when supplied to heroes</td></tr>
+          <tr><td>Silver clasp <span class="new">new</span></td><td class="num">26g</td><td>+20% to a noble's haggle ceiling; +10% base value</td></tr>
+          <tr><td>Alchemist's mark <span class="new">new</span></td><td class="num">8g</td><td>Your own shop's sigil. +renown per sale, and marked goods build repeat footfall.</td></tr>
+          <tr><td>Ashwalker mark</td><td class="num">—</td><td>Umbra brews only. Doubles Ashwalker trade value; villagers refuse it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Sealed goods never degrade.</strong> Freshness lives on raw ingredients only. Once it's in a
+      bottle it's inventory forever — Pillar 04, and it means you can stockpile before a big contract
+      without the game punishing the planning.</p>
+  </section>
+
+  <section id="selling">
+    <span class="eyebrow">Market</span>
+    <h2>Two of the three ways to sell</h2>
+    <p class="sub">Passive and planned. The third gets its own section because it became a whole minigame.</p>
+
+    <div class="card">
+      <p class="card-h">A · The shelf — automatic</p>
+      <p>Stock display shelves and set a price per item as a percentage of fair value. Customers arrive on
+        a tick and buy probabilistically:</p>
+      <div class="rec"><b>P(sale)</b> = footfall × appeal × demand(item) × priceCurve(ask / fairValue)</div>
+      <p><strong>Footfall</strong> comes from renown, shop décor, district, weekday and time of day.
+        <strong>Appeal</strong> comes from vessel and seal. <strong>Demand</strong> drifts slowly per item
+        type, so what sells changes week to week. The price curve is steep: at 130% of fair value sales
+        nearly stop, at 80% they fly. Setting prices is the whole game here, and it's one slider per
+        shelf slot.</p>
+      <p>Offline, footfall runs at <strong>40%</strong>. Being present matters; leaving doesn't hurt.</p>
+      <p>A <strong>waxed pouch</strong> stacks: stocking one fills the slot with as many identical
+        pouches as it will hold, and the slot empties one at a time as they sell. That is the whole
+        reason to bottle cheap goods in one — shelf space, not value — and space you have to click for
+        is not space.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-h">Furnishings <span class="new">new</span></p>
+      <p>The shop has five spots — wall, window, counter, nook, floor — and <strong>nineteen</strong>
+        furnishings to fill them, so a complete collection still leaves you choosing which five are
+        out. A piece does nothing while it sits in the back room; <strong>placement is what pays</strong>,
+        which is the entire difference between this and an equipment list.</p>
+      <p>The set was rebuilt around what the painted art actually is, rather than forcing the art onto
+        the names it was designed with. Seven banners compete for the wall, each a step up in footfall
+        and in price. The window is a genuine side-grade: a potted fern sells by day, a lit urn sells
+        after dark. And the nook trades passive appeal against the haggle ceiling — a cut diamond makes
+        people browse, a skull chalice makes them stop arguing.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-h">B · Contracts — planned</p>
+      <p>A board of standing requests from guilds, barracks, temples and noble houses. Each names a
+        quantity, an item, a minimum grade, a deadline and a payout — often with a constraint: a seal
+        type, a specific vessel, all-Dewfresh, no Umbra.</p>
+      <div class="rec">
+<b>CONTRACT</b>  Greycloak Barracks            <span class="c">reputation: cordial</span>
+  Deliver   8 × Health Tonic  ·  grade B or better
+  Require   Guild stamp seal
+  Deadline  16 days  <span class="c">(in-game · paused while away)</span>
+  Payout    <b>1,240g</b>  ·  +40 renown  ·  unlocks Barracks tier 2
+</div>
+      <p>Contracts are the main gold faucet and the reason to plan a supply chain. Failing one costs the
+        payout and some faction reputation — nothing else. You can also <strong>partially deliver</strong>
+        for a prorated payout and no reputation hit: a mercy valve that keeps a bad week from feeling bad.</p>
+      <p>Delivery counts <em>units</em>, not bottles. A sealed amphora settles three of them, so an
+        order for nine tonics can be met with three amphorae — which is the entire reason to buy one.
+        Nine templates across four factions, and a faction may never outrank the contracts it posts.</p>
+    </div>
+  </section>
+
+  <section id="haggle">
+    <span class="eyebrow">Market — the minigame</span>
+    <h2>The haggle <span class="new">reworked</span></h2>
+    <p class="sub">Rock-paper-scissors, played against a customer whose stance you can read but who changes
+      it the moment you land a counter.</p>
+
+    <p>Named customers walk in with a want, a hidden budget, and a <strong>stance</strong> — telegraphed
+      through their portrait, their opening line, and their district. Your pitch actions form the other
+      half of a 3×3: each one <strong>counters</strong> exactly one stance and <strong>backfires</strong>
+      against exactly one other.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>Your action</th>
+          <th class="ctr">vs Sceptical<br><span style="font-weight:400;text-transform:none;letter-spacing:0">"I've heard claims before."</span></th>
+          <th class="ctr">vs Haughty<br><span style="font-weight:400;text-transform:none;letter-spacing:0">"Do you know who I am?"</span></th>
+          <th class="ctr">vs Impatient<br><span style="font-weight:400;text-transform:none;letter-spacing:0">"I haven't got all day."</span></th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>Demonstrate <span style="font-weight:400;color:var(--muted)">— proof</span></td>
+            <td class="ctr win">Counter</td><td class="ctr bad">Backfire</td><td class="ctr">neutral</td>
+          </tr>
+          <tr>
+            <td>Flatter · Cite the guild <span style="font-weight:400;color:var(--muted)">— deference</span></td>
+            <td class="ctr">neutral</td><td class="ctr win">Counter</td><td class="ctr bad">Backfire</td>
+          </tr>
+          <tr>
+            <td>Throw in a Minor <span style="font-weight:400;color:var(--muted)">— sweeten</span></td>
+            <td class="ctr bad">Backfire</td><td class="ctr">neutral</td><td class="ctr win">Counter</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Three hidden values move: their <strong>interest</strong>, their <strong>patience</strong>, and
+      their <strong>ceiling</strong> — the most they'll pay.</p>
+    <ul>
+      <li><strong>Counter</strong> — big interest and ceiling gain, small patience cost. And the customer
+        <em>must change stance</em>; nobody holds a position they've just been beaten in.</li>
+      <li><strong>Neutral</strong> — small interest gain, normal patience cost. Safe, slow.</li>
+      <li><strong>Backfire</strong> — ceiling drops, patience drops hard. Lecturing a noble, flattering
+        someone in a hurry, offering a freebie to a sceptic: each reads as exactly the wrong instinct.</li>
+    </ul>
+
+    <p>Because a counter forces a stance change, you're never reading a static target and you can never
+      just mash the same button. And because backfires are thematic rather than arbitrary, a player can
+      reason their way to the right move the first time instead of memorising a grid.</p>
+
+    <div class="card">
+      <p class="card-h">Hold firm — the fourth action, outside the triangle</p>
+      <p>No stance interaction at all. Costs patience heavily, and converts accumulated
+        <strong>interest directly into ceiling</strong>. It's the cash-out: worthless early, devastating
+        once you've stacked two counters. Knowing when to stop pitching and close is the skill ceiling of
+        the whole system.</p>
+    </div>
+
+    <p>Three rounds, then you name a final price. At or under their ceiling, it sells.
+      <strong>Patience hitting zero ends the haggle at their last standing offer</strong> — you never walk
+      away with nothing, and the worst outcome is a shelf-price sale. An <em>Appraise</em> upgrade, bought
+      from Vessa, reveals their next stance instead of just their current one.</p>
+
+    <p>Five buttons and a price stepper. Touch and mouse identical, no dragging, no timing.</p>
+
+    <h3>Reading the stance <span class="new">new</span></h3>
+    <p><strong>Pose carries the stance; dialogue carries the personality.</strong> Each customer has three
+      portrait poses, and the pose alone is enough to identify the stance — arms crossed and turned
+      slightly away for Sceptical, chin raised and squared-on for Haughty, glancing off-frame with weight
+      on one foot for Impatient. The dialogue line is flavour and character, never the only tell.</p>
+    <p>Two reasons this is worth the art budget. It keeps the minigame <strong>readable without
+      reading</strong>, which matters for accessibility and matters more for localisation — a stance
+      inferred from an English idiom breaks the moment it's translated. And it makes customers feel like
+      people reacting to you rather than a state machine with a label, which is the whole appeal of the
+      face-to-face channel.</p>
+    <div class="rec">
+<b>ROSTER COST</b>
+  ~20 named customers  ×  3 poses     =  <b>60 portraits</b>   <span class="c">512 × 640</span>
+  Shared per customer: one silhouette, one palette, one costume
+  <span class="c">Poses are re-lit crops of one painting, not three paintings.</span>
+</div>
+    <p>The cost is real but bounded, and it's front-loaded into a single art task rather than spread
+      through the codebase. Non-named walk-in customers reuse a small set of generic archetype portraits
+      with the same three poses, so the roster grows without the art budget growing with it.</p>
+  </section>
+
+  <section id="economy">
+    <span class="eyebrow">Economy</span>
+    <h2>Gold, renown &amp; the long distillation</h2>
+
+    <h3>One currency</h3>
+    <p><strong>Gold.</strong> That's it. No gems, no energy, no premium tier — there's nothing to sell, so
+      a second currency would be pure friction. Sinks: ingredients, seeds, spore clusters, vessels, seals,
+      hero wages, and now the seven equipment trees and the shop's furnishings, which together are the
+      deep late-game sink draft 1 was missing.</p>
+
+    <h3>Renown is permission</h3>
+    <p>Earned from sales, contracts, first-time recipe discoveries and prestige items. Never spent — it
+      only rises. Each of ten ranks makes new things <em>available</em>; gold buys them.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Rank</th><th>Puts on sale</th></tr></thead>
+        <tbody>
+          <tr><td>I — Apprentice</td><td>Plots 5–6 · cauldron 100 · shelf 2 · Tinctures</td></tr>
+          <tr><td>II — Journeyman</td><td>The cave · contract board · first hero slot · Salves</td></tr>
+          <tr><td>III — Steeped</td><td>The shaft · glass flasks · standing orders · Vessa · haggling</td></tr>
+          <tr><td>IV — Distiller</td><td>Greenhouse · crossbreeding · cauldron 180 · vessel moulds</td></tr>
+          <tr><td>V — Chandler</td><td>Auto-distil · drying rack · Elixirs &amp; Draughts · guild district</td></tr>
+          <tr><td>VI — Adept</td><td>Deep shaft · Ashwalker · Grand potency · 3rd hero slot</td></tr>
+          <tr><td>VII–IX</td><td>Noble district · Philtres &amp; Crystals · tier-3 biomes · 16 plots · cauldron 400</td></tr>
+          <tr><td>X — Master</td><td>Sovereign contracts · the last biome · <strong>the Long Distillation</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Target curve: Rank V at roughly 8 hours, Rank X somewhere near 40.</p>
+
+    <h3>Prestige — the Long Distillation <span class="new">new</span></h3>
+    <p>At Rank X you may retire the shop and open a new one in a new town. This is what makes the title
+      literal.</p>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">What resets</p>
+        <p>Gold, renown and rank. Plots, cave grid, shaft depth. All equipment. Inventory and recipes
+          known. Hero levels and favour. You start again with four plots and a clay vial.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">What persists</p>
+        <p><strong>Mastery</strong>, a permanent currency earned from lifetime renown at the moment you
+          retire — retire later, earn more — spent in a Codex tree that never resets.</p>
+      </div>
+    </div>
+    <h4>The Mastery Codex</h4>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Node</th><th>Per tier</th></tr></thead>
+        <tbody>
+          <tr><td>Deft Hands</td><td>+8° of temperature tolerance on every recipe</td></tr>
+          <tr><td>Green Thumb</td><td>−10% crop timers</td></tr>
+          <tr><td>Deep Veins</td><td>+1 ore per batch; shaft starts 20m deeper</td></tr>
+          <tr><td>Old Friends</td><td>Merchants begin at relationship tier 2</td></tr>
+          <tr><td>Remembered Recipes</td><td>Carry 3 known recipes through the reset</td></tr>
+          <tr><td>Loyal Companion</td><td>One hero carries over at full favour</td></tr>
+          <tr><td>Full Purse</td><td>Start with 250g and a stocked vessel shelf</td></tr>
+          <tr><td>Reputation Precedes You</td><td>Start at Rank II</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4>New towns, new rules</h4>
+    <p>Each town carries a <strong>terrain modifier</strong>, so a prestige run isn't a replay at speed.
+      Every one of these is a trade — the town that is good at something is worse at something else:</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Town</th><th>Good at</th><th>Pays for it with</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Saltmarsh<br><span class="sub">Water everywhere, stone nowhere</span></td>
+            <td>Crops grow 15% faster</td>
+            <td>Ore batches at 60%; goods cost 15% more</td>
+          </tr>
+          <tr>
+            <td>Cinderhold<br><span class="sub">Rich rock, poor soil</span></td>
+            <td>Ore batches at 135%; the shaft starts 40m down</td>
+            <td>Crops take 40% longer</td>
+          </tr>
+          <tr>
+            <td>Hollowreach<br><span class="sub">Caves for miles, and cheap trade</span></td>
+            <td>Cave spreads half again as fast, six beds included, goods 10% cheaper</td>
+            <td>Nothing outright — the weakest specialisation, and the gentlest</td>
+          </tr>
+          <tr>
+            <td>Highmarch<br><span class="sub">Noble money, noble standards</span></td>
+            <td>Contracts pay 150%; footfall at 130%</td>
+            <td>Everything you buy costs 35% more</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The modifier reshapes which of your three gathering sites carries the run, so the Codex nodes you
+      picked actually get tested differently each time. <strong>Prestige is always optional</strong> —
+      Rank X with no reset is a complete, finished game.</p>
+    <div class="slip">
+      <span class="lbl">What changed, and why</span>
+      <p>For four drafts this section described modifiers that did nothing. The function returning a
+        town's effects was exported and never called by anything, so every town except Cinderhold's
+        starting depth was a label on an empty box — in the one system whose entire purpose is
+        making a second run play differently.</p>
+      <p>The numbers above are the ones the code now reads. A test asserts that a town may not
+        advertise a modifier nothing consumes.</p>
+    </div>
+  </section>
+
+  <section id="ux">
+    <span class="eyebrow">Interface</span>
+    <h2>Input &amp; screen model</h2>
+    <p class="sub">Mouse-only on desktop, touch plus buttons on mobile, one layout serving both.</p>
+
+    <h3>The rule that makes this work</h3>
+    <p><strong>Every drag has a tap equivalent, and every hover has a tap equivalent.</strong> Drag an
+      ingredient into the cauldron, or tap it and press <em>Add</em> — both ship on both platforms, as you
+      asked. We build the tap path first and treat drag and hover as accelerators, so nothing is ever
+      unreachable on either platform and we never write two UIs.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">Desktop · mouse only</p>
+        <ul>
+          <li>Left click everything; right click never required</li>
+          <li>Hover tooltips on all items and stats</li>
+          <li>Wheel scrolls lists and zooms the garden, cave and shaft</li>
+          <li>Drag-and-drop for cauldron, shelves and cave placement</li>
+          <li>Keyboard shortcuts exist but are strictly optional</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="card-h">Mobile · touch + buttons</p>
+        <ul>
+          <li>Portrait-first; landscape supported, never required</li>
+          <li>44px minimum targets, bottom-anchored action bar in thumb reach</li>
+          <li>Both tap-drag and tap-select → tap-action, everywhere</li>
+          <li>No multi-touch gestures, no long-press-only actions</li>
+          <li>System back = up one screen, always</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Screens <span class="new">as built</span></h3>
+    <p>Eight, on a persistent bottom bar (mobile) or left dock (desktop):
+      <strong>Shop</strong> (shelves, inventory, walk-ins and haggling) ·
+      <strong>Board</strong> (contracts) · <strong>Market</strong> (merchants) ·
+      <strong>Grounds</strong> (garden, cave and shaft as sub-tabs) ·
+      <strong>Cauldron</strong> (all alchemy, including bottling) ·
+      <strong>Roster</strong> (heroes, missions, favour) ·
+      <strong>Ledger</strong> (statistics and a paginated event log) ·
+      <strong>Settings</strong> (text size, saves, the Mastery Codex).</p>
+    <p>Two things moved from the plan. Merchants earned a screen rather than an overlay — with four
+      traders on different cycles and the upgrade trees to browse, a banner was not enough surface. And
+      the Workbench folded into the Cauldron, because form/vessel/seal was never a separate activity
+      from the brew it finishes.</p>
+    <p>Eight does not fit a phone at a comfortable tap size, so the bar scrolls rather than squeezing
+      every label into four characters. Each item keeps its full 44px target.</p>
+
+    <h3>Layout strategy</h3>
+    <p>One responsive layout at three breakpoints — phone portrait, tablet, desktop — differing in how many
+      panels are visible at once, never in what's available. On desktop the cauldron screen shows
+      inventory, cauldron and result side by side; on phone those are three tabs of one screen.</p>
+  </section>
+
+  <section id="access">
+    <span class="eyebrow">Commitments</span>
+    <h2>Accessibility &amp; language <span class="new">new</span></h2>
+    <p class="sub">Both cheap now, both painful to retrofit. Committing to them in draft 2 so they can't
+      quietly slip.</p>
+
+    <h3>Colour is never the only signal</h3>
+    <p>The five essences are the game's most colour-dependent system, so each one carries a
+      <strong>glyph</strong> as well as a hue — triangle, droplet, square, chevron, crescent — and the
+      glyph appears everywhere the colour does: chips, ingredient badges, cave beds,
+      potion tints, recipe cards. A player who can't distinguish Ignis from Terra can always distinguish
+      ▲ from ■.</p>
+    <p>The palette itself is chosen for luminance separation as well as hue, so the five read as five
+      distinct greys under deuteranopia and protanopia. Before content lock the shipping palette gets
+      run through a simulator and corrected — the values in this document are the starting point.</p>
+    <ul>
+      <li>Minimum 4.5:1 text contrast, 3:1 for UI boundaries, in both themes</li>
+      <li>No information conveyed by colour alone, anywhere</li>
+      <li><code>prefers-reduced-motion</code> respected — the wheel's sweep becomes a stepped indicator
+        rather than a continuous animation</li>
+      <li>A high-contrast essence palette as an explicit setting, for players who want more separation
+        than the default</li>
+    </ul>
+
+    <h3>Text scaling</h3>
+    <p>All panel UI is DOM (see <a href="#tech">architecture</a>), sized in <code>rem</code>, and honours
+      the device's system text size. An in-game scale setting covers <strong>85%–150%</strong> on top of
+      that. Layouts are tested at 150% with the longest supported language — nothing may clip, truncate or
+      overlap. This is the single strongest practical argument for DOM panels over canvas text.</p>
+
+    <h3>Localisation from day one</h3>
+    <ul>
+      <li>Every user-facing string lives in a keyed table (<code>src/i18n/en.json</code>). No string
+        literals in game code — enforced by a lint rule from the first commit.</li>
+      <li>Keys are semantic (<code>garden.plot.emptyAction</code>), never English text used as a key.</li>
+      <li>Numbers, dates, durations and currency go through <code>Intl</code>, never hand-formatted.</li>
+      <li>Plurals and gendered grammar use ICU message format, so no string is assembled by concatenation.</li>
+      <li>Layouts assume <strong>+40% string length</strong> for German and Finnish; nothing is sized to
+        fit English exactly.</li>
+      <li>RTL isn't in scope now, but the layout uses logical CSS properties
+        (<code>margin-inline-start</code>) throughout so it stays possible.</li>
+      <li>English ships first. The infrastructure means adding a language later is a translation contract,
+        not an engineering project.</li>
+    </ul>
+  </section>
+
+  <section id="art">
+    <span class="eyebrow">Presentation</span>
+    <h2>Art direction &amp; the pipeline</h2>
+    <p class="sub">Painted 2D, sourced from a mix of AI generation and asset packs — which makes a
+      normalisation pass the most important thing in this section.</p>
+
+    <h3>Direction</h3>
+    <p>Warm shop interior lit by glass and coals; cool world outside; the cave lit only by what you put
+      there. The palette this document uses is the game's: aged verdigris and bottle-green as structure,
+      amber and lamplight as highlight, muted pigment tones for the five essences. Hand-lettered labels,
+      ledger paper, brass fittings. Cozy but not saccharine — a working shop, not a cottage.</p>
+
+    <h3>What the pipeline actually became <span class="new">new</span></h3>
+    <p>The plan above was a <em>style bible</em>: recolour everything into one ramp, relight it from one
+      direction, and the collage becomes a game. What arrived was six hundred sprites already painted in
+      a consistent hand, so the recolouring pass was never needed. The problem turned out to be the
+      opposite one — not making the art agree with itself, but making the <em>game</em> agree with the
+      art.</p>
+
+    <h4>Colour decides essence</h4>
+    <p>This is the load-bearing idea. The UI has always tinted ingredients by dominant essence and
+      stamped them with that essence's glyph, so a sprite whose colour disagrees with its own vector is
+      worse than a placeholder: it teaches the wrong thing every time it is seen. Rather than hand-type
+      three hundred vectors and hope they matched, each sprite's own pixels decide:</p>
+    <ul>
+      <li><strong>Hue picks the essence.</strong> Red is Ignis, blue Aqua, green and gold Terra, violet
+        and pale Aer, dark Umbra — with the boundaries tuned against the actual set.</li>
+      <li><strong>Chroma weights the vote,</strong> so a grey stem does not outvote a scarlet cap.</li>
+      <li><strong>Magnitude comes from design, not art.</strong> Direction is the sprite's; how much
+        essence it carries is a tier decision, which is how a common weed and a griffin feather can
+        point the same way and be worth very different things.</li>
+    </ul>
+    <p>Two corrections were needed and both are instructive. Brown read as fire on the first pass,
+      putting 58 of 144 herbs in Ignis — brown is earth, and the fix moved dozens of ingredients to
+      where they belonged. Pale wispy things read as shadow, which made a griffin feather Umbra; they
+      are air.</p>
+
+    <h4>The pictures also choose the source</h4>
+    <p>A mushroom belongs in the cave, a berry in the garden, a gem in the shaft, a monster's bone in a
+      hero's pack. Sorting by what a sprite plainly <em>is</em> gave every one of three hundred
+      ingredients a place to be gathered — and the coverage tests caught the gap when twenty-nine new
+      cave species had no spore to buy.</p>
+
+    <h4>Where the art wins, and where it does not</h4>
+    <p>The hand-authored ingredients kept their ids and their tuned vectors, because recipes, contracts,
+      cave species, shaft strata and four loot tables all point at them. They only gained a picture —
+      and only where an honest one existed. Sprites are matched to them by essence proximity, scarcest
+      first, and <strong>past 25° the match is refused</strong>: five ingredients keep their essence
+      badge because every available sprite would have lied about them. The same rule governs potion
+      bottles, judged on the colour of the liquid rather than the glass around it.</p>
+
+    <h3>Resolutions, as shipped</h3>
+    <p>Source art goes in <code>art/</code> at whatever size it arrives; a build step trims each image to
+      its own opaque bounding box, fits it into the target with a small margin, and centres it — so a
+      tall feather and a squat mushroom occupy the same cell and a grid of them reads evenly.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Asset</th><th class="num">Source</th><th class="num">Shipped</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr><td>Ingredient icons</td><td class="num">256 × 256</td><td class="num">64 × 64</td><td>305</td></tr>
+          <tr><td>Potion bottles</td><td class="num">256 × 256</td><td class="num">64 × 96</td><td>260, one per recipe where the colour agrees</td></tr>
+          <tr><td>Furnishings</td><td class="num">256 × 256</td><td class="num">128 × 128</td><td>19</td></tr>
+          <tr><td>Character portraits</td><td class="num">1000 × 1260</td><td class="num">256 × 320</td><td>55 available, 8 assigned</td></tr>
+          <tr><td>Scene sprites</td><td class="num">varies</td><td class="num">192 × 192</td><td>The cauldron; the plot and shelf are still drawn</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Filenames are the contract: a file named for an id in <code>src/data</code> becomes that thing's
+      picture, and an id with no file keeps its generated placeholder. That is what lets art land a few
+      pieces at a time without anything breaking, and it is why the set can be half-finished — as it is
+      — and still ship.</p>
+
+    <h4>Loading: measured, then decided</h4>
+    <p>Three attempts, and the numbers settled it:</p>
+    <ul>
+      <li><strong>Preload everything.</strong> Phaser held the scene back until the last of six hundred
+        requests landed — the world sat empty for <strong>34 seconds</strong>.</li>
+      <li><strong>An atlas.</strong> Named as the real fix and built, then measured:
+        <strong>2.8&nbsp;MB</strong> fetched whole before anything can draw, against
+        <strong>135&nbsp;KB</strong> for the sixteen sprites the busiest screen shows. An atlas wins when
+        a screen draws most of a set at once; the garden shows sixteen crops of three hundred. Not
+        shipped. The packer is kept for the day an encyclopedia or a recipe book needs it.</li>
+      <li><strong>Lazy, with a prefetch.</strong> Load the two dozen sprites every scene needs, then
+        fetch the rest on demand — and ask for a screen's sprites when the screen is <em>chosen</em>
+        rather than discovering them mid-draw, which is what caused art to pop in one item at a time.
+        <strong>612&nbsp;ms</strong> to first paint, and a screen change costs a single request.</li>
+    </ul>
+    <p>Day/night is <strong>not</strong> four painted backgrounds per room — that's 4× the art budget. It's
+      one painted background plus a lighting layer: a tinted overlay, a warm/cool grade, and swapped
+      light-source sprites. Painted once, lit four ways.</p>
+
+    <h3>Placeholders, for the gaps that remain</h3>
+    <p>Not grey boxes. Generated from the game's own data — an ingredient's badge is tinted by its
+      dominant essence and stamped with that essence's glyph, which is also the colour-blind
+      affordance. The plot and shelf are still drawn rather than painted: the plot as tilled soil with a
+      raised lip, alternating furrows and deterministic grit; the shelf as a board with a lit front
+      edge, a cast shadow and brackets, so bottles stand on it rather than floating over a stripe.</p>
+    <p>Badges are now generated <strong>only where there is no art</strong>. Generating one for every
+      ingredient quietly claimed the texture key, so when the real sprite arrived Phaser found the name
+      taken and dropped it — painted art never appeared in the world no matter how correctly it loaded.
+      That bug cost an hour and is the reason this paragraph exists.</p>
+
+    <div class="slip">
+      <span class="lbl">Flagging, not lecturing</span>
+      <p>Two practical notes on mixed sourcing: the App Store and Play Store are both fine with
+        AI-generated art today, but some <strong>asset-pack licences forbid redistribution</strong> in a
+        form where art can be extracted — which a web build makes trivially easy. Worth checking licences
+        against a web release specifically, since that's our primary platform. I'd also keep a simple
+        provenance column in the asset manifest (generated / pack / commissioned) so this is answerable
+        later without an archaeology dig.</p>
+    </div>
+  </section>
+
+  <section id="tech">
+    <span class="eyebrow">Engineering</span>
+    <h2>Architecture</h2>
+    <p class="sub">Phaser 4.2.1 and TypeScript, with the whole simulation kept out of Phaser entirely.
+      Confirmed in draft 2.</p>
+
+    <h3>The one structural decision</h3>
+    <p>A <strong>headless simulation core</strong> in plain TypeScript — no Phaser import anywhere inside
+      it. It owns world state, the clock, and every rule in this document. The Phaser layer renders that
+      state and sends it intents. Three payoffs:</p>
+    <ul>
+      <li><strong>Offline progress is the same code as online progress.</strong>
+        <code>sim.advanceTo(now)</code> runs on resume and on every frame. No second implementation to
+        drift.</li>
+      <li><strong>The rules are unit-testable</strong> without a renderer. Given this cauldron, assert this
+        grade. Given 72 hours away, assert this gold.</li>
+      <li><strong>The engine is replaceable.</strong> If Phaser turns out wrong for the UI-heavy screens,
+        the game survives.</li>
+    </ul>
+
+    <div class="rec">
+src/
+  <b>sim/</b>          <span class="c">pure TS · no engine imports · 100% of the rules</span>
+    clock.ts        world time, day phase, scheduled jobs, advanceTo()
+    essences.ts     vectors, purity, potency, grading
+    brewing.ts      temperature, method, outcome
+    haggle.ts       the pitch triangle
+    greenhouse.ts   crossing and mutation
+    prestige.ts     mastery codex, town modifiers
+    garden.ts  cave.ts  shaft.ts        <span class="c">three sources, three verbs</span>
+    merchants.ts  equipment.ts  heroes.ts
+    market.ts  contracts.ts  haggle.ts
+    prestige.ts     mastery codex, town modifiers
+    state.ts        the serialisable World
+    rng.ts          seeded, deterministic — offline must replay identically
+  <b>data/</b>         <span class="c">JSON · ingredients, recipes, vessels, seals, equipment, biomes, towns</span>
+  <b>i18n/</b>         <span class="c">en.json — every user-facing string, ICU format</span>
+  <b>ui/</b>           <span class="c">Phaser scenes (world) + DOM overlay (panels)</span>
+  <b>platform/</b>     <span class="c">save adapters: localStorage | Capacitor Preferences</span>
+</div>
+
+    <h3>Phaser for scenes, DOM for panels</h3>
+    <p>Confirmed. The <em>world</em> renders in Phaser — garden, cave, shaft, shop interior, cauldron, the
+      wheel, characters, day/night lighting. The <em>panels</em> are plain DOM overlaid on the canvas —
+      inventory lists, contract board, ledger, equipment shop, tooltips, settings. Management games are
+      60% text and lists, and DOM gives us text layout, scrolling, screen readers, dynamic type and
+      responsive breakpoints for free; each of those would be a week of work in canvas. It's also what
+      makes the 150% text-scaling commitment realistic. The two halves communicate through one intent bus.</p>
+
+    <h3>Saving</h3>
+    <p>One versioned JSON blob with a migration chain, written on every meaningful action and on
+      <code>visibilitychange</code>. Web uses <code>localStorage</code>; mobile uses Capacitor Preferences.
+      <strong>Local only</strong> — no cloud sync. Autosave rotates through three slots so a corrupt write
+      can't end a 40-hour game, and manual export/import of the save as a file ships from M1, because
+      local-only saves make that the player's only backup.</p>
+
+    <h3>Debug tooling is a first-class feature <span class="new">new</span></h3>
+    <p>The headless sim core is what makes the <a href="#time">debug time panel</a> nearly free: since
+      <code>sim.advanceTo(t)</code> is the only way time ever moves, "skip four days" and "simulate 72
+      hours away" are the same one-line call the resume path already makes. The panel is a DOM overlay
+      talking to the same intent bus as the game UI, gated behind <code>import.meta.env.DEV</code> and a
+      hidden gesture in release builds, and tree-shaken out of production.</p>
+    <p>Every duration, cost and rate in this document lives in <code>data/</code> as a config value, never
+      a constant in code — so day length, crop timers and price curves are all tunable at runtime and
+      diffable in git.</p>
+
+    <h3>Audio</h3>
+    <p>Out of scope. A silent audio bus stub sits behind every event that would eventually make a sound
+      (<code>audio.play('cauldron.bubble')</code> resolving to a no-op) so adding sound later is a content
+      task, not a refactor. Costs nothing now.</p>
+
+    <h3>Shipping</h3>
+    <p>Vite builds the web bundle; Capacitor wraps it for iOS and Android; desktop is the same web build in
+      a browser. No Steam, so no achievements API, no cloud saves, no controller support, no launcher —
+      which keeps the whole platform layer to one adapter file. Vitest covers the sim core; the UI gets
+      smoke tests only.</p>
+  </section>
+
+  <section id="plan">
+    <span class="eyebrow">Delivery</span>
+    <h2>Build plan</h2>
+    <p class="sub">Vertical slice first: one of everything, end to end, playable. Content comes after the
+      loop proves fun.</p>
+
+    <div class="grid2">
+      <div class="card" data-done="true">
+        <p class="card-h">M1 · Vertical slice — shipped</p>
+        <p>Scaffold, headless sim core, clock with day/night, versioned saves with export. i18n table
+          and the essence glyph system from the first commit. Garden, cauldron, bottling, and a shelf
+          that sells while you're away. The alembic wheel was built here and cut here.</p>
+      </div>
+      <div class="card" data-done="true">
+        <p class="card-h">M2 · The other sources — shipped</p>
+        <p>The cave and its spread. The shaft and its veins. Merchants with derived stock,
+          relationships and the equipment trees. Heroes, missions, supplies, injuries and favour.
+          The contract board. Ranks I–IV.</p>
+      </div>
+      <div class="card" data-done="true">
+        <p class="card-h">M3 · Depth — shipped</p>
+        <p>Haggling and the customer roster. Greenhouse and crossbreeding, with strains that carry
+          their own essence into the pot. Ten forms, eight vessels, seven seals. Ranks V–X. The Long
+          Distillation and the Mastery Codex.</p>
+      </div>
+      <div class="card" data-done="true">
+        <p class="card-h">M4 · Content &amp; systems — shipped</p>
+        <p>Recipe discovery and hidden temperature bands. Standing orders. Shop décor. The opening
+          checklist. Sixteen recipes, eighteen ingredients, five crops, four merchants, nine
+          contracts. The balance harness, and the audit that followed it.</p>
+      </div>
+      <div class="card" data-done="true">
+        <p class="card-h">M5 · The art — shipped</p>
+        <p>Six hundred sprites ingested, named, and given essences derived from their own colour.
+          314 ingredients across every gathering site, 71 recipes, 31 cave species, nine shaft seams.
+          Portraits, painted bottles, furnishings. The loading path measured three ways and settled.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">M6 · Ship</p>
+        <p>A second locale, to prove the i18n plumbing against a real language. Accessibility audit at
+          150% text on a device. An Android APK — the Capacitor scaffold is in; the build needs a JDK
+          and SDK. Scene art for the plot and shelf, and portraits for the customer roster.</p>
+      </div>
+    </div>
+    <p><strong>317 tests, all green, in about a second.</strong> The simulation core is covered end to
+      end — offline catch-up, save migration, every economy rule — while the UI gets smoke coverage
+      only. That split is deliberate and has caught real bugs: a freshness tile that spent the wrong
+      batch, a text-scale setting that flipped the desktop layout, a rank that could disagree with its
+      own renown.</p>
+    <p>The balance harness briefly took fourteen seconds of that, because the blend search runs 314
+      ingredients against 71 recipes. It was spending its time on overhead rather than arithmetic:
+      allocating a fresh object per candidate and recomputing magnitudes inside the hottest loop. With
+      the pool prepared once into flat typed arrays, incremental updates, and results memoised by
+      target, the same search takes <strong>a fortieth of the time</strong> and returns the same
+      answers.</p>
+    <p>Two suites are not correctness tests at all. The <strong>balance harness</strong> takes
+      measurements — seeds per planting, gold per hour, how far a blend can get from a recipe — and
+      fails when a number drifts outside a range we have decided is sane; when one goes red the
+      right response is usually to look at the number, not the assertion. The <strong>coverage
+      suite</strong> asks the flat question this project kept failing to ask: is this field read by
+      anything at all?</p>
+  </section>
+
+  <section id="open">
+    <span class="eyebrow">Status</span>
+    <h2>What the building taught</h2>
+    <p class="sub">Five milestones in. These are the places the code disagreed with the design, and
+      the questions that only playing it could raise.</p>
+
+    <div class="card">
+      <p class="card-h">Where the code took a different road</p>
+      <ul>
+        <li><strong>The alembic wheel is gone.</strong> Beautiful on paper, opaque in the hand. See
+          <a href="#wheel">Brewing</a> for what replaced it and what that cost.</li>
+        <li><strong>Merchants got a screen; the Workbench lost one.</strong> Four traders and the
+          upgrade trees need browsing; form/vessel/seal never needed its own room.</li>
+        <li><strong>Nothing is scheduled that can be derived.</strong> Merchant visits and stock, cave
+          spread, walk-in customers — all pure functions of the day counter. This is the single
+          decision that has paid off most: offline catch-up needed no special cases anywhere.</li>
+        <li><strong>Décor had to be placed, not owned.</strong> As equipment it was a shopping list
+          with no decision in it. Five spots and nineteen pieces is a decision.</li>
+        <li><strong>The art decides the data, not the other way round.</strong> Three hundred
+          hand-typed essence vectors would have been wrong in ways nobody could check. Derived from
+          the sprite's own colour, they cannot disagree with the picture.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <p class="card-h">Two claims this document made that measurement overturned</p>
+      <ul>
+        <li><strong>"A texture atlas is the real fix."</strong> Built, measured, discarded:
+          2.8&nbsp;MB against 135&nbsp;KB for what a screen actually shows. Right technique, wrong
+          access pattern. Kept for the day a screen draws the whole set.</li>
+        <li><strong>"Four-essence blends all overlap."</strong> Excluded from the recipe space on that
+          reasoning; the overlap check turned out to enforce it far better than the rule of thumb,
+          rejecting the ones that genuinely collide and keeping seventeen that do not.</li>
+      </ul>
+      <p>Both were reasonable guesses. Neither survived a number, which is the argument for the
+        harness existing at all.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-h">The lesson that cost the most</p>
+      <p>Five separate times, a data file declared something and the far end was never wired: five
+        pieces of equipment, half the Mastery Codex, five vessel and seal fields, the soil on every
+        crop, and seven of the eight town modifiers. A sixth kind was worse — ten upgrades that
+        worked perfectly and no merchant sold.</p>
+      <p>Every one of them passed a full green suite, because the tests measured behaviour that was
+        working. None asked whether the thing could be reached at all. Three habits came out of it,
+        and they are the most valuable thing in this document:</p>
+      <ul>
+        <li><strong>Test the far end, not the near one.</strong> Buy the item, then assert that
+          something the game reads actually moved. It is the only check a disconnected field cannot
+          pass.</li>
+        <li><strong>Ask the flat question mechanically.</strong> A coverage test now fails when any
+          field in any data file is read by nothing in <code>src/</code>. Exemptions need a written
+          reason, and the exemption list is itself checked.</li>
+        <li><strong>Reachable is not the same as declared.</strong> A recipe needs a blend that lands
+          inside its cone, not an ingredient pointing vaguely at it. An upgrade needs a seller. An
+          ore needs a depth you can actually dig to.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <p class="card-h">Balance questions the tests can't answer</p>
+      <ul>
+        <li><strong>Nobody has played long enough to know the curve.</strong> The Rank X target of
+          ~40 hours is still a guess, and Mastery's payout has never been tested across a real
+          second run.</li>
+        <li><strong>The towns have never been played, only wired.</strong> Cinderhold's 40% crop
+          penalty against 135% ore is a guess at what makes a run feel different rather than just
+          worse.</li>
+        <li><strong>Contracts may dominate the shelf.</strong> They pay better by design, but nothing
+          yet measures by how much.</li>
+        <li><strong>Seventy-one recipes fills the space; nobody knows if it fills the game.</strong>
+          The cone geometry is saturated at the current tolerance — there is no room for a seventy-second
+          without tightening every cone. Whether that many is <em>interesting</em> or merely large is
+          the open question, and only playing it answers it.</li>
+        <li><strong>Three hundred ingredients may be too many to choose between.</strong> Every one is
+          gatherable and distinct in the maths. Whether a player can hold that in their head, or
+          whether the cauldron needs a filter and a favourites list, is untested.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <p class="card-h">The unguarded risk</p>
+      <p>This repository has <strong>no version control</strong>. A generator crashed mid-write and
+        truncated <code>heroes.json</code> to zero bytes — the roster, the favour bands, four biome loot
+        tables — and there was nothing to restore from. It was rebuilt by hand from what happened to be
+        recoverable, and every generator now writes through a temporary file and renames, which is
+        atomic.</p>
+      <p>That fixes the specific failure and none of the general one. <code>git init</code> is the
+        actual answer and remains undone.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-h">Still to decide</p>
+      <ul>
+        <li><strong>Recipe scrolls.</strong> Discovery works by brewing and observing, so there is no
+          way to buy your way toward a recipe you cannot stumble into. Merchants were always meant to
+          sell them; they don't yet.</li>
+        <li><strong>The art that is still missing.</strong> No painted plot or shelf, so the world view
+          draws those. Four minerals and five herbs had no honest colour match and keep their badges.
+          Customers have no portraits, which the haggle was designed around — three stance poses each
+          is the largest remaining art ask in the game.</li>
+        <li><strong>How long a session should be.</strong> Everything is built for a ten-minute
+          check-in, but the day length, brew timers and mission durations have never been tuned
+          against someone actually playing that way.</li>
+      </ul>
+    </div>
+
+    <p>Next: <strong>M6</strong> — a second locale to prove the i18n plumbing, an accessibility audit at
+      150% text on a real device, customer portraits, and an Android build. The Capacitor scaffold is in
+      place; the APK is waiting on a JDK and an Android SDK rather than on any code. And
+      <code>git init</code>, which should have happened a long time ago.</p>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>Eternal Alchemy — game design document, draft 4, brought in line with the code through M3.
+    Every number in this document is a starting point for tuning, not a decision — and several have
+    already moved because playing it said so.</p>
+</footer>
+
+<script>
+(function(){
+  var railBtn = document.getElementById('railBtn');
+  var rail = document.getElementById('rail');
+  if (railBtn && rail) {
+    railBtn.addEventListener('click', function(){
+      var open = rail.classList.toggle('open');
+      railBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    rail.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        rail.classList.remove('open');
+        railBtn.setAttribute('aria-expanded','false');
+      });
+    });
+  }
+})();
+
+</script>

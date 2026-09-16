@@ -1,0 +1,5368 @@
+[
+  {
+    "id": "healthTonic",
+    "target": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 140,
+      "max": 175
+    },
+    "method": "stirred",
+    "baseValue": 22,
+    "knownFromStart": true,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "emberDraught",
+    "target": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 16,
+    "temperature": {
+      "min": 210,
+      "max": 250
+    },
+    "method": "simmered",
+    "baseValue": 30,
+    "knownFromStart": true,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "shadowPhiltre",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 3
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 15,
+    "temperature": {
+      "min": 225,
+      "max": 265
+    },
+    "method": "simmered",
+    "baseValue": 58,
+    "knownFromStart": false,
+    "essence": {
+      "min": 44,
+      "max": 180
+    }
+  },
+  {
+    "id": "windDraught",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 4,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 15,
+    "temperature": {
+      "min": 75,
+      "max": 110
+    },
+    "method": "stirred",
+    "baseValue": 44,
+    "knownFromStart": false,
+    "essence": {
+      "min": 26,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Pure Terra. Chalk and chalkgill make it; nothing else comes close to a single-essence ratio.",
+    "id": "ironskinSalve",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 13,
+    "temperature": {
+      "min": 180,
+      "max": 215
+    },
+    "method": "simmered",
+    "baseValue": 34,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Equal Ignis and Aqua — the sunleaf recipe, and the only one that wants a plant nothing else does.",
+    "id": "sunfireTincture",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 115,
+      "max": 150
+    },
+    "method": "stirred",
+    "baseValue": 26,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Terra and Aer together — stone and feather, so it needs both the shaft and a hero.",
+    "id": "featherstoneDraught",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 155,
+      "max": 190
+    },
+    "method": "simmered",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Ignis and Umbra, no Terra. Barrow ash and emberstone; volatile by nature, so it bottles as a Bomb.",
+    "id": "cinderveilBomb",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 15,
+    "temperature": {
+      "min": 250,
+      "max": 290
+    },
+    "method": "simmered",
+    "baseValue": 66,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Pure Aqua. Mirefen pearl gets close on its own; the last few degrees want dewcap to pull the Aer out.",
+    "id": "deepwaterCordial",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 15,
+    "temperature": {
+      "min": 95,
+      "max": 130
+    },
+    "method": "simmered",
+    "baseValue": 38,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Pure Aer, and the one recipe a single ingredient nails outright — a skyreach feather is nothing else. The reward is that the feather is a hero's find, never a purchase.",
+    "id": "skysalt",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 13,
+    "temperature": {
+      "min": 60,
+      "max": 95
+    },
+    "method": "simmered",
+    "baseValue": 62,
+    "knownFromStart": false,
+    "essence": {
+      "min": 26,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Pure Umbra. Unbrewable until the shaft reaches nullstone, which is the point — the deep seam has to be worth the beams.",
+    "id": "nightGlass",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 13,
+    "temperature": {
+      "min": 265,
+      "max": 300
+    },
+    "method": "stirred",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Aqua carrying shadow, two to one. Moonpetal is the clean route; pearl and gravecrown will do it the hard way.",
+    "id": "mirebloomElixir",
+    "target": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 120,
+      "max": 155
+    },
+    "method": "stirred",
+    "baseValue": 48,
+    "knownFromStart": false,
+    "essence": {
+      "min": 33,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Aer and Umbra with no stone in them. Nullstone and a feather, and nothing else comes close.",
+    "id": "wraithwindVial",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 195,
+      "max": 230
+    },
+    "method": "simmered",
+    "baseValue": 84,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Fire and air, no earth — the pairing no mineral offers, which is what ashfern is for.",
+    "id": "stormfireFlask",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 175,
+      "max": 210
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 30,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Even thirds of fire, water and earth. Every part is a staple, so the difficulty is all in the balance rather than the shopping.",
+    "id": "pilgrimsRestorative",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 150,
+      "max": 185
+    },
+    "method": "simmered",
+    "baseValue": 46,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "$comment": "Water, earth and air in thirds — the garden and the shaft together, with nothing from the barrow in it.",
+    "id": "verdantAether",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 85,
+      "max": 120
+    },
+    "method": "stirred",
+    "baseValue": 54,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "galeshadeTonic",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 145,
+      "max": 180
+    },
+    "method": "stirred",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "chalkDraught",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 54,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "barkveilElixir",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 195,
+      "max": 230
+    },
+    "method": "stirred",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "id": "flintcloudPhiltre",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 117,
+      "max": 152
+    },
+    "method": "stirred",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "claydriftCordial",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 152,
+      "max": 187
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 38,
+      "max": 180
+    }
+  },
+  {
+    "id": "loamgaleTincture",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 152,
+      "max": 187
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 38,
+      "max": 180
+    }
+  },
+  {
+    "id": "chalkgraveInfusion",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 3,
+      "aer": 0,
+      "umbra": 2
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 189,
+      "max": 224
+    },
+    "method": "simmered",
+    "baseValue": 73,
+    "knownFromStart": false,
+    "essence": {
+      "min": 51,
+      "max": 180
+    }
+  },
+  {
+    "id": "mireveilExtract",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "simmered",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "brinecloudTonic",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 90,
+      "max": 125
+    },
+    "method": "stirred",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "id": "rilldriftDraught",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 90,
+      "max": 125
+    },
+    "method": "simmered",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "id": "tidegaleElixir",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 134,
+      "max": 169
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 57,
+      "max": 180
+    }
+  },
+  {
+    "id": "dewskyPhiltre",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 134,
+      "max": 169
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 57,
+      "max": 180
+    }
+  },
+  {
+    "id": "veilmireCordial",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 3
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 169,
+      "max": 204
+    },
+    "method": "simmered",
+    "baseValue": 68,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "brineflintTincture",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 140,
+      "max": 175
+    },
+    "method": "simmered",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "rillclayInfusion",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "tideloamExtract",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "dewchalkTonic",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 115,
+      "max": 150
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "veilmireDraught",
+    "target": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 3
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 178,
+      "max": 213
+    },
+    "method": "stirred",
+    "baseValue": 73,
+    "knownFromStart": false,
+    "essence": {
+      "min": 51,
+      "max": 180
+    }
+  },
+  {
+    "id": "flintbrineElixir",
+    "target": {
+      "ignis": 0,
+      "aqua": 2,
+      "terra": 3,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 145,
+      "max": 180
+    },
+    "method": "stirred",
+    "baseValue": 73,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "scaldPhiltre",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 247,
+      "max": 282
+    },
+    "method": "stirred",
+    "baseValue": 54,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "embershadeCordial",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 235,
+      "max": 270
+    },
+    "method": "stirred",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "id": "cinderskyTincture",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 157,
+      "max": 192
+    },
+    "method": "simmered",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 30,
+      "max": 180
+    }
+  },
+  {
+    "id": "pyrezephyrInfusion",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "coalcloudExtract",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "scaldclayTonic",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 207,
+      "max": 242
+    },
+    "method": "stirred",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "emberloamDraught",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 212,
+      "max": 247
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "cinderchalkElixir",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 212,
+      "max": 247
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "pyrebarkPhiltre",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 160,
+      "max": 195
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "coalflintCordial",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 160,
+      "max": 195
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "scaldrillTincture",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 180,
+      "max": 215
+    },
+    "method": "simmered",
+    "baseValue": 55,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "embertideInfusion",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 194,
+      "max": 229
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "cinderdewExtract",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 194,
+      "max": 229
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "pyremireTonic",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 142,
+      "max": 177
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "coalbrineDraught",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 142,
+      "max": 177
+    },
+    "method": "simmered",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "scaldrillElixir",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 175,
+      "max": 210
+    },
+    "method": "stirred",
+    "baseValue": 56,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "tideemberPhiltre",
+    "target": {
+      "ignis": 1,
+      "aqua": 3,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 130,
+      "max": 165
+    },
+    "method": "stirred",
+    "baseValue": 68,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "chalkcinderCordial",
+    "target": {
+      "ignis": 2,
+      "aqua": 0,
+      "terra": 3,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 199,
+      "max": 234
+    },
+    "method": "simmered",
+    "baseValue": 73,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "pyrezephyrTincture",
+    "target": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 206,
+      "max": 241
+    },
+    "method": "simmered",
+    "baseValue": 68,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "tideloamTonic",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 142,
+      "max": 177
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "dewchalkDraught",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 142,
+      "max": 177
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "veilmireElixir",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 3
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 169,
+      "max": 204
+    },
+    "method": "stirred",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "cloudbrinePhiltre",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 3,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 117,
+      "max": 152
+    },
+    "method": "simmered",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "clayrillCordial",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 3,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 150,
+      "max": 185
+    },
+    "method": "stirred",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 23,
+      "max": 180
+    }
+  },
+  {
+    "id": "loamtideTincture",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 3,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 150,
+      "max": 185
+    },
+    "method": "simmered",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 23,
+      "max": 180
+    }
+  },
+  {
+    "id": "dewchalkInfusion",
+    "target": {
+      "ignis": 0,
+      "aqua": 3,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 132,
+      "max": 167
+    },
+    "method": "simmered",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 59,
+      "max": 180
+    }
+  },
+  {
+    "id": "pyrebarkExtract",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 176,
+      "max": 211
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "coalflintTonic",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 176,
+      "max": 211
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 24,
+      "max": 180
+    }
+  },
+  {
+    "id": "driftscaldDraught",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 3,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 140,
+      "max": 175
+    },
+    "method": "stirred",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "embertideElixir",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 162,
+      "max": 197
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "cinderdewPhiltre",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 162,
+      "max": 197
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "pyremireCordial",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 187,
+      "max": 222
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "coalbrineTincture",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aer"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 187,
+      "max": 222
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "scaldrillInfusion",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 148,
+      "max": 183
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "id": "embertideExtract",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "umbra"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 148,
+      "max": 183
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "essence": {
+      "min": 36,
+      "max": 180
+    }
+  },
+  {
+    "id": "cinderchalkTonic",
+    "target": {
+      "ignis": 3,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua"
+    ],
+    "toleranceDeg": 14,
+    "temperature": {
+      "min": 200,
+      "max": 235
+    },
+    "method": "stirred",
+    "baseValue": 69,
+    "knownFromStart": false,
+    "essence": {
+      "min": 15,
+      "max": 180
+    }
+  },
+  {
+    "id": "murk",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [],
+    "toleranceDeg": 180,
+    "temperature": {
+      "min": 20,
+      "max": 300
+    },
+    "method": "any",
+    "baseValue": 3,
+    "knownFromStart": true,
+    "isFallback": true
+  },
+  {
+    "id": "emberMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 70,
+      "max": 105
+    },
+    "method": "stirred",
+    "baseValue": 16,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 70,
+      "max": 105
+    },
+    "method": "stirred",
+    "baseValue": 26,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 70,
+      "max": 105
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 70,
+      "max": 105
+    },
+    "method": "stirred",
+    "baseValue": 117,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 70,
+      "max": 105
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 76,
+      "max": 111
+    },
+    "method": "simmered",
+    "baseValue": 16,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 76,
+      "max": 111
+    },
+    "method": "simmered",
+    "baseValue": 26,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 76,
+      "max": 111
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 76,
+      "max": 111
+    },
+    "method": "simmered",
+    "baseValue": 117,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 76,
+      "max": 111
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 82,
+      "max": 117
+    },
+    "method": "stirred",
+    "baseValue": 16,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 82,
+      "max": 117
+    },
+    "method": "stirred",
+    "baseValue": 26,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 82,
+      "max": 117
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 82,
+      "max": 117
+    },
+    "method": "stirred",
+    "baseValue": 117,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 82,
+      "max": 117
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 88,
+      "max": 123
+    },
+    "method": "simmered",
+    "baseValue": 16,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 88,
+      "max": 123
+    },
+    "method": "simmered",
+    "baseValue": 26,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 88,
+      "max": 123
+    },
+    "method": "simmered",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 88,
+      "max": 123
+    },
+    "method": "simmered",
+    "baseValue": 117,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 88,
+      "max": 123
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "shadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 94,
+      "max": 129
+    },
+    "method": "stirred",
+    "baseValue": 16,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "shadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 94,
+      "max": 129
+    },
+    "method": "stirred",
+    "baseValue": 26,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "shadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 94,
+      "max": 129
+    },
+    "method": "stirred",
+    "baseValue": 57,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "shadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 94,
+      "max": 129
+    },
+    "method": "stirred",
+    "baseValue": 117,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "shadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 20,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 94,
+      "max": 129
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 100,
+      "max": 135
+    },
+    "method": "simmered",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 100,
+      "max": 135
+    },
+    "method": "simmered",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 100,
+      "max": 135
+    },
+    "method": "simmered",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 100,
+      "max": 135
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 100,
+      "max": 135
+    },
+    "method": "simmered",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 106,
+      "max": 141
+    },
+    "method": "stirred",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 106,
+      "max": 141
+    },
+    "method": "stirred",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 106,
+      "max": 141
+    },
+    "method": "stirred",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 106,
+      "max": 141
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 106,
+      "max": 141
+    },
+    "method": "stirred",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 112,
+      "max": 147
+    },
+    "method": "simmered",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 112,
+      "max": 147
+    },
+    "method": "simmered",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 112,
+      "max": 147
+    },
+    "method": "simmered",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 112,
+      "max": 147
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 112,
+      "max": 147
+    },
+    "method": "simmered",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberShadeMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 118,
+      "max": 153
+    },
+    "method": "stirred",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberShadeCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 118,
+      "max": 153
+    },
+    "method": "stirred",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberShadeGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 118,
+      "max": 153
+    },
+    "method": "stirred",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberShadeGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 118,
+      "max": 153
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberShadeSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 118,
+      "max": 153
+    },
+    "method": "stirred",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 124,
+      "max": 159
+    },
+    "method": "simmered",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 124,
+      "max": 159
+    },
+    "method": "simmered",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 124,
+      "max": 159
+    },
+    "method": "simmered",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 124,
+      "max": 159
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 124,
+      "max": 159
+    },
+    "method": "simmered",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 130,
+      "max": 165
+    },
+    "method": "stirred",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 130,
+      "max": 165
+    },
+    "method": "stirred",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 130,
+      "max": 165
+    },
+    "method": "stirred",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 130,
+      "max": 165
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 130,
+      "max": 165
+    },
+    "method": "stirred",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideShadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 136,
+      "max": 171
+    },
+    "method": "simmered",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideShadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 136,
+      "max": 171
+    },
+    "method": "simmered",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideShadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 136,
+      "max": 171
+    },
+    "method": "simmered",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideShadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 136,
+      "max": 171
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideShadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 136,
+      "max": 171
+    },
+    "method": "simmered",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 143,
+      "max": 178
+    },
+    "method": "stirred",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 143,
+      "max": 178
+    },
+    "method": "stirred",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 143,
+      "max": 178
+    },
+    "method": "stirred",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 143,
+      "max": 178
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 143,
+      "max": 178
+    },
+    "method": "stirred",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamShadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 149,
+      "max": 184
+    },
+    "method": "simmered",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamShadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 149,
+      "max": 184
+    },
+    "method": "simmered",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamShadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 149,
+      "max": 184
+    },
+    "method": "simmered",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamShadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 149,
+      "max": 184
+    },
+    "method": "simmered",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamShadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 149,
+      "max": 184
+    },
+    "method": "simmered",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeShadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 155,
+      "max": 190
+    },
+    "method": "stirred",
+    "baseValue": 31,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeShadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 155,
+      "max": 190
+    },
+    "method": "stirred",
+    "baseValue": 52,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeShadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 155,
+      "max": 190
+    },
+    "method": "stirred",
+    "baseValue": 114,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeShadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 155,
+      "max": 190
+    },
+    "method": "stirred",
+    "baseValue": 234,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "galeShadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 24,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 155,
+      "max": 190
+    },
+    "method": "stirred",
+    "baseValue": 468,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideLoamMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 161,
+      "max": 196
+    },
+    "method": "simmered",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideLoamCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 161,
+      "max": 196
+    },
+    "method": "simmered",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideLoamGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 161,
+      "max": 196
+    },
+    "method": "simmered",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideLoamGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 161,
+      "max": 196
+    },
+    "method": "simmered",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideLoamSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aer",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 161,
+      "max": 196
+    },
+    "method": "simmered",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGaleMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGaleCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGaleGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGaleGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideGaleSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "terra",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 167,
+      "max": 202
+    },
+    "method": "stirred",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideShadeMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 173,
+      "max": 208
+    },
+    "method": "simmered",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideShadeCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 173,
+      "max": 208
+    },
+    "method": "simmered",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideShadeGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 173,
+      "max": 208
+    },
+    "method": "simmered",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideShadeGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 173,
+      "max": 208
+    },
+    "method": "simmered",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberTideShadeSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "terra",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 173,
+      "max": 208
+    },
+    "method": "simmered",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGaleMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "stirred",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGaleCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "stirred",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGaleGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "stirred",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGaleGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "stirred",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamGaleSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "aqua",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 179,
+      "max": 214
+    },
+    "method": "stirred",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamShadeMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 185,
+      "max": 220
+    },
+    "method": "simmered",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamShadeCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 185,
+      "max": 220
+    },
+    "method": "simmered",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamShadeGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 185,
+      "max": 220
+    },
+    "method": "simmered",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamShadeGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 185,
+      "max": 220
+    },
+    "method": "simmered",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberLoamShadeSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 185,
+      "max": 220
+    },
+    "method": "simmered",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleShadeMinor",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 191,
+      "max": 226
+    },
+    "method": "stirred",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleShadeCommon",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 191,
+      "max": 226
+    },
+    "method": "stirred",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleShadeGreater",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 191,
+      "max": 226
+    },
+    "method": "stirred",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleShadeGrand",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 191,
+      "max": 226
+    },
+    "method": "stirred",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "emberGaleShadeSovereign",
+    "target": {
+      "ignis": 1,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "aqua",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 191,
+      "max": 226
+    },
+    "method": "stirred",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGaleMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 197,
+      "max": 232
+    },
+    "method": "simmered",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGaleCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 197,
+      "max": 232
+    },
+    "method": "simmered",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGaleGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 197,
+      "max": 232
+    },
+    "method": "simmered",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGaleGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 197,
+      "max": 232
+    },
+    "method": "simmered",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamGaleSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 0
+    },
+    "contaminants": [
+      "ignis",
+      "umbra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 197,
+      "max": 232
+    },
+    "method": "simmered",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamShadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 203,
+      "max": 238
+    },
+    "method": "stirred",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamShadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 203,
+      "max": 238
+    },
+    "method": "stirred",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamShadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 203,
+      "max": 238
+    },
+    "method": "stirred",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamShadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 203,
+      "max": 238
+    },
+    "method": "stirred",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideLoamShadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 1,
+      "aer": 0,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aer"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 203,
+      "max": 238
+    },
+    "method": "stirred",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleShadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 209,
+      "max": 244
+    },
+    "method": "simmered",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleShadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 209,
+      "max": 244
+    },
+    "method": "simmered",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleShadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 209,
+      "max": 244
+    },
+    "method": "simmered",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleShadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 209,
+      "max": 244
+    },
+    "method": "simmered",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "tideGaleShadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 1,
+      "terra": 0,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "terra"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 209,
+      "max": 244
+    },
+    "method": "simmered",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleShadeMinor",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 0,
+      "max": 45
+    },
+    "temperature": {
+      "min": 215,
+      "max": 250
+    },
+    "method": "stirred",
+    "baseValue": 47,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleShadeCommon",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 45,
+      "max": 100
+    },
+    "temperature": {
+      "min": 215,
+      "max": 250
+    },
+    "method": "stirred",
+    "baseValue": 78,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleShadeGreater",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 100,
+      "max": 180
+    },
+    "temperature": {
+      "min": 215,
+      "max": 250
+    },
+    "method": "stirred",
+    "baseValue": 172,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleShadeGrand",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 180,
+      "max": 300
+    },
+    "temperature": {
+      "min": 215,
+      "max": 250
+    },
+    "method": "stirred",
+    "baseValue": 351,
+    "knownFromStart": false,
+    "generated": true
+  },
+  {
+    "id": "loamGaleShadeSovereign",
+    "target": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 1,
+      "aer": 1,
+      "umbra": 1
+    },
+    "contaminants": [
+      "ignis",
+      "aqua"
+    ],
+    "toleranceDeg": 11,
+    "essence": {
+      "min": 300,
+      "max": null
+    },
+    "temperature": {
+      "min": 215,
+      "max": 250
+    },
+    "method": "stirred",
+    "baseValue": 702,
+    "knownFromStart": false,
+    "generated": true
+  }
+]

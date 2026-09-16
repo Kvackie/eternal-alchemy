@@ -1,0 +1,60 @@
+{
+  "$comment": "Cauldrons are both a capacity ladder and a parallel-brewing one. A better pot holds a heavier blend; a SECOND pot lets you brew two things at once. Buying one of each is therefore never the obvious move — a cheap second cauldron and an expensive first are different shops.",
+  "$capacityComment": "Capacity has to clear 300 for the Sovereign band to be reachable at all: over-capacity caps a brew at grade D, so before these existed the top two potency tiers were a trap you could enter and never score in. cauldronFour is the first pot that can hold a Sovereign brew.",
+  "$stackComment": "You may own several of the same tier. maxOwned is the total across all tiers, so a late shop chooses between many small pots and a few great ones.",
+  "maxOwned": 6,
+  "tiers": [
+    {
+      "$comment": "The one you start with. A wooden bowl, and it shows.",
+      "id": "cauldronOne",
+      "cost": 0,
+      "requiresRank": 0,
+      "capacity": 60,
+      "maxIngredients": 8,
+      "brewSpeedMultiplier": 1
+    },
+    {
+      "id": "cauldronTwo",
+      "cost": 260,
+      "requiresRank": 1,
+      "capacity": 110,
+      "maxIngredients": 8,
+      "brewSpeedMultiplier": 1
+    },
+    {
+      "id": "cauldronThree",
+      "cost": 820,
+      "requiresRank": 2,
+      "capacity": 190,
+      "maxIngredients": 10,
+      "brewSpeedMultiplier": 0.95
+    },
+    {
+      "$comment": "Crystal-set, and the first pot that can hold a Sovereign brew.",
+      "id": "cauldronFour",
+      "cost": 2400,
+      "requiresRank": 3,
+      "capacity": 320,
+      "maxIngredients": 12,
+      "brewSpeedMultiplier": 0.9
+    },
+    {
+      "id": "cauldronFive",
+      "cost": 6200,
+      "requiresRank": 4,
+      "capacity": 440,
+      "maxIngredients": 14,
+      "brewSpeedMultiplier": 0.85
+    },
+    {
+      "$comment": "Runed. Holds more than any blend the garden can currently supply, which is the point of an endgame pot.",
+      "id": "cauldronSix",
+      "cost": 14000,
+      "requiresRank": 5,
+      "capacity": 600,
+      "maxIngredients": 16,
+      "brewSpeedMultiplier": 0.8
+    }
+  ],
+  "$openingComment": "The `opening` box on each tier is gone with the Phaser cauldron composition it positioned: brewing is drawn in the DOM now, so nothing needs to know where a painted pot mouth sits."
+}

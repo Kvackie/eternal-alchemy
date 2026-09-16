@@ -1,0 +1,119 @@
+{
+  "$comment": "The Long Distillation. Optional by design — Rank X with no reset is a complete, finished game.",
+  "requiresRank": 9,
+  "$masteryComment": "Earned from lifetime renown at the moment you retire, so retiring later is worth more. Square root, so the first run is not worthless and the tenth is not absurd.",
+  "masteryPerRenownRoot": 0.55,
+
+  "codex": [
+    {
+      "$comment": "Was '+1 action at the cauldron' for the alembic wheel, which no longer exists. A steadier hand now means a wider temperature band — the direct analogue in the system that replaced it.",
+      "id": "deftHands",
+      "tiers": 6,
+      "costPerTier": 3,
+      "effect": { "temperatureToleranceBonus": 8 }
+    },
+    {
+      "id": "greenThumb",
+      "tiers": 6,
+      "costPerTier": 2,
+      "effect": { "timerMultiplier": -0.1 }
+    },
+    {
+      "id": "deepVeins",
+      "tiers": 6,
+      "costPerTier": 3,
+      "effect": { "oreBatchBonus": 1, "startingDepthBonus": 20 }
+    },
+    {
+      "id": "oldFriends",
+      "tiers": 6,
+      "costPerTier": 4,
+      "effect": { "startingMerchantTier": 1 }
+    },
+    {
+      "id": "rememberedRecipes",
+      "tiers": 6,
+      "costPerTier": 3,
+      "effect": { "keptRecipes": 3 }
+    },
+    {
+      "id": "loyalCompanion",
+      "tiers": 6,
+      "costPerTier": 6,
+      "effect": { "keptHeroes": 1 }
+    },
+    {
+      "id": "fullPurse",
+      "tiers": 6,
+      "costPerTier": 2,
+      "effect": { "startingGold": 250 }
+    },
+    {
+      "id": "reputationPrecedesYou",
+      "tiers": 6,
+      "costPerTier": 4,
+      "effect": { "startingRenown": 200 }
+    }
+  ],
+
+  "$townComment": "A town's modifier reshapes which of the three gathering sites carries the run, so the Codex nodes you picked get tested differently each time.",
+  "$townComment2": "Mossvale is the baseline: no modifiers at all, and where a new game opens. It is the town every other one is a deviation from, so it is also the honest 'no thanks' when branching out — and it is what makes a first run readable, since nothing in it is being quietly scaled.",
+  "towns": [
+    {
+      "id": "mossvale",
+      "effects": {}
+    },
+    {
+      "id": "saltmarsh",
+      "effects": {
+        "cropGrowthMultiplier": 0.85,
+        "oreBatchMultiplier": 0.6,
+        "merchantPriceMultiplier": 1.15
+      }
+    },
+    {
+      "id": "cinderhold",
+      "effects": {
+        "cropGrowthMultiplier": 1.4,
+        "startingDepthBonus": 40,
+        "oreBatchMultiplier": 1.35
+      }
+    },
+    {
+      "id": "hollowreach",
+      "effects": {
+        "caveSpreadMultiplier": 1.5,
+        "caveTilesBonus": 6,
+        "merchantPriceMultiplier": 0.9
+      }
+    },
+    {
+      "id": "highmarch",
+      "effects": {
+        "contractPayoutMultiplier": 1.5,
+        "footfallMultiplier": 1.3,
+        "merchantPriceMultiplier": 1.35
+      }
+    },
+    {
+      "$comment": "The only town nobody comes to. Owns the two penalties no other town had — footfall and contract payout — so the run has to be built on cheap stock and a wide cave rather than on trade.",
+      "id": "duskmoor",
+      "effects": {
+        "footfallMultiplier": 0.7,
+        "contractPayoutMultiplier": 0.75,
+        "merchantPriceMultiplier": 0.65,
+        "caveTilesBonus": 4
+      }
+    },
+    {
+      "$comment": "Everything above ground, nothing below it. The counterpart to Hollowreach, and the only place where the cave is the weak leg. No negative caveTilesBonus: tile counts only ever grow (progression.ts widens the array and never shrinks it), so a minus there would be a field the engine silently ignores. The spread multiplier carries the penalty instead.",
+      "id": "amberfield",
+      "effects": {
+        "cropGrowthMultiplier": 0.75,
+        "oreBatchMultiplier": 1.2,
+        "caveSpreadMultiplier": 0.6,
+        "footfallMultiplier": 1.15
+      }
+    }
+  ]
+}

@@ -1,0 +1,781 @@
+[
+  {
+    "$comment": "Seeds are bought from merchants at merchant prices and recovered by harvesting, so a crop carries no price of its own.",
+    "id": "sunleaf",
+    "yields": "sunleaf",
+    "growMs": 300000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "emberroot",
+    "yields": "emberroot",
+    "growMs": 1800000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "dewcap",
+    "yields": "dewcap",
+    "growMs": 900000,
+    "yieldCount": 3,
+    "soil": "silt"
+  },
+  {
+    "$comment": "Slow and low-yield: a garden route to Umbra should cost patience, or the cave stops mattering.",
+    "id": "moonpetal",
+    "yields": "moonpetal",
+    "growMs": 2700000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "ashfern",
+    "yields": "ashfern",
+    "growMs": 2100000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "acorn",
+    "yields": "acorn",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "ash"
+  },
+  {
+    "id": "agilityFruit",
+    "yields": "agilityFruit",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "algae",
+    "yields": "algae",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "amberTuber",
+    "yields": "amberTuber",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "azureberry",
+    "yields": "azureberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "azurefan",
+    "yields": "azurefan",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "barkchip",
+    "yields": "barkchip",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "barkslab",
+    "yields": "barkslab",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "beetMandragora",
+    "yields": "beetMandragora",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "bilberry",
+    "yields": "bilberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "silt"
+  },
+  {
+    "id": "blackBerry",
+    "yields": "blackBerry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "blueBerry",
+    "yields": "blueBerry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "blueBud",
+    "yields": "blueBud",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "blueberryThistle",
+    "yields": "blueberryThistle",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "bluecone",
+    "yields": "bluecone",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "bluepetal",
+    "yields": "bluepetal",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "chrystaLily",
+    "yields": "chrystaLily",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "clawroot",
+    "yields": "clawroot",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "commonFlower",
+    "yields": "commonFlower",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "ash"
+  },
+  {
+    "id": "cornflower",
+    "yields": "cornflower",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "cottonFluff",
+    "yields": "cottonFluff",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "cottonSky",
+    "yields": "cottonSky",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "crimsonbloom",
+    "yields": "crimsonbloom",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "crimsontop",
+    "yields": "crimsontop",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "cyanFlower",
+    "yields": "cyanFlower",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "dandelion",
+    "yields": "dandelion",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "dryroot",
+    "yields": "dryroot",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "duskberry",
+    "yields": "duskberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "duskplum",
+    "yields": "duskplum",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "emberFruit",
+    "yields": "emberFruit",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "emberbundle",
+    "yields": "emberbundle",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "emberconch",
+    "yields": "emberconch",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "fanFlower",
+    "yields": "fanFlower",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "fanfungus",
+    "yields": "fanfungus",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "flamepetal",
+    "yields": "flamepetal",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "frostfan",
+    "yields": "frostfan",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "frostrosette",
+    "yields": "frostrosette",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "ghostroot",
+    "yields": "ghostroot",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "goldbeet",
+    "yields": "goldbeet",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "goldiris",
+    "yields": "goldiris",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "goldyarrow",
+    "yields": "goldyarrow",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "greenBerry",
+    "yields": "greenBerry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "greenclover",
+    "yields": "greenclover",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "greenhook",
+    "yields": "greenhook",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "greenolive",
+    "yields": "greenolive",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "heatBerry",
+    "yields": "heatBerry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "ash"
+  },
+  {
+    "id": "honeycombFlower",
+    "yields": "honeycombFlower",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "honeydewPlant",
+    "yields": "honeydewPlant",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "husknut",
+    "yields": "husknut",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "ice",
+    "yields": "ice",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "inkcap",
+    "yields": "inkcap",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "jadeberry",
+    "yields": "jadeberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "lacewort",
+    "yields": "lacewort",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "lighbulbLantern",
+    "yields": "lighbulbLantern",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "lilypad",
+    "yields": "lilypad",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "mandragora",
+    "yields": "mandragora",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "nightbloom",
+    "yields": "nightbloom",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "oakmast",
+    "yields": "oakmast",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "oldMandragora",
+    "yields": "oldMandragora",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "paleLeek",
+    "yields": "paleLeek",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "peapod",
+    "yields": "peapod",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "pepper",
+    "yields": "pepper",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "pepperBerry",
+    "yields": "pepperBerry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "ash"
+  },
+  {
+    "id": "pinkPuff",
+    "yields": "pinkPuff",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "pinkclover",
+    "yields": "pinkclover",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "pinklotus",
+    "yields": "pinklotus",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "pomegranate",
+    "yields": "pomegranate",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "puffpod",
+    "yields": "puffpod",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "purpleBerry",
+    "yields": "purpleBerry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "purplethistle",
+    "yields": "purplethistle",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "redSpices",
+    "yields": "redSpices",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "redcurrant",
+    "yields": "redcurrant",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "roots",
+    "yields": "roots",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "roseSalt",
+    "yields": "roseSalt",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "roseberry",
+    "yields": "roseberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "rowanberry",
+    "yields": "rowanberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "scalebark",
+    "yields": "scalebark",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "scarletbud",
+    "yields": "scarletbud",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "shalecap",
+    "yields": "shalecap",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "sloeberry",
+    "yields": "sloeberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "snapmaw",
+    "yields": "snapmaw",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "spiderbloom",
+    "yields": "spiderbloom",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "sunberry",
+    "yields": "sunberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "sunflower",
+    "yields": "sunflower",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "sweetHoney",
+    "yields": "sweetHoney",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "tealberry",
+    "yields": "tealberry",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "thornspiral",
+    "yields": "thornspiral",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "tidebulb",
+    "yields": "tidebulb",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "tidecluster",
+    "yields": "tidecluster",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "tulipsCharge",
+    "yields": "tulipsCharge",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "twistroot",
+    "yields": "twistroot",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "uncommonFlower",
+    "yields": "uncommonFlower",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "ash"
+  },
+  {
+    "id": "uncommonRoot",
+    "yields": "uncommonRoot",
+    "growMs": 600000,
+    "yieldCount": 3,
+    "soil": "loam"
+  },
+  {
+    "id": "violetBeet",
+    "yields": "violetBeet",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetSpices",
+    "yields": "violetSpices",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetSwarm",
+    "yields": "violetSwarm",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetUmbrella",
+    "yields": "violetUmbrella",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetgarlic",
+    "yields": "violetgarlic",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetpod",
+    "yields": "violetpod",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetroot",
+    "yields": "violetroot",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "violetshroom",
+    "yields": "violetshroom",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "whitedaisy",
+    "yields": "whitedaisy",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "wintercherry",
+    "yields": "wintercherry",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "yellowTulip",
+    "yields": "yellowTulip",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "youngRose",
+    "yields": "youngRose",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "ash"
+  },
+  {
+    "id": "youngtree",
+    "yields": "youngtree",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  }
+]
