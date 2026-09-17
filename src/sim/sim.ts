@@ -45,7 +45,17 @@ import { dayStateAt } from './clock';
 import { harvest, harvestAllReady, isReady, makePlots, plant, tend } from './garden';
 import { addIngredient, returnUnit, takeUnit } from './inventory';
 import { record } from './log';
-import { fairValue, fitBoard, makeShelf, runMarket, stockShelf, unstockShelf } from './market';
+import {
+  fairValue,
+  fitBoard,
+  makeShelf,
+  moveShelfStock,
+  placeableCount,
+  runMarket,
+  stockGoods,
+  stockShelf,
+  unstockShelf,
+} from './market';
 import {
   addRelationship,
   markBought,
@@ -1122,6 +1132,29 @@ export class Simulation {
     const ok = stockShelf(this.world, slotId, itemUid);
     if (ok && item) record(this.world, 'stocked', { recipe: item.recipeId, grade: item.grade });
     return ok;
+  }
+
+  /**
+   * Put several out in one go — see `stockGoods`.
+   *
+   * Returns how many went out, so the caller can say "4 of 6" rather than
+   * claiming it did what was asked.
+   */
+  stockMany(itemUid: string, quantity: number): number {
+    const item = this.world.bottled.find((entry) => entry.uid === itemUid);
+    const placed = stockGoods(this.world, itemUid, quantity);
+    if (placed > 0 && item) record(this.world, 'stocked', { recipe: item.recipeId, grade: item.grade });
+    return placed;
+  }
+
+  /** How many of these could go out right now, shelf room included. */
+  placeable(item: BottledItem): number {
+    return placeableCount(this.world, item);
+  }
+
+  /** Rearrange the floor: move or swap what two shelves are holding. */
+  moveStock(fromId: string, toId: string): boolean {
+    return moveShelfStock(this.world, fromId, toId);
   }
 
   unstock(slotId: string): boolean {
