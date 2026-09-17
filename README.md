@@ -53,7 +53,7 @@ src/
     dom/      The panels: eight screens of lists, forms and prices, plus the
               brewing station and the overlays a tile opens.
   platform/   Save adapters (localStorage now, Capacitor Preferences on mobile).
-  debug/      The time panel. Dev builds, or `?debug=1` on a built copy.
+  debug/      The time panel. Dev builds, or switched on in Settings.
 ```
 
 Eight screens: **Shop** (shelves and bottled inventory) · **Board** (contracts) · **Market**
@@ -194,11 +194,10 @@ ingredients.
 ## Debug panel
 
 On by default in `npm run dev`, off by default in a built copy — it grants gold and skips days, so it
-is not something every visitor to the deployed site should find. Two ways to change that, writing the
-same preference so they cannot disagree: **Settings → Debug menu**, and `?debug=1` in the URL
-(`?debug=0` to undo) for when there is no settings screen in front of you yet. Whichever is used
-wins in either build, so turning it off in `npm run dev` turns it off. It is imported dynamically, so
-a build nobody has asked it for never downloads it.
+is not something every visitor to the deployed site should find. **Settings → Debug menu** is the
+switch, and the only one: whichever way it is set wins in either build, so turning it off in
+`npm run dev` turns it off. It is imported dynamically, so a build nobody has asked it for never
+downloads it.
 
 A crop takes eighteen hours and a contract runs eight in-game days, so this is not optional tooling.
 

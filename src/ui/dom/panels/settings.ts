@@ -95,11 +95,12 @@ export function renderSettings(deps: SettingsDeps): HTMLElement {
   body.append(renderCodex(deps));
 
   /*
-   * The debug panel, reachable without a query string.
+   * The debug panel, and the only way to ask for it.
    *
-   * `?debug=1` still works and is how you turn it on when there is no settings
-   * screen in front of you, but a flag you have to know about is not a way in.
-   * Both write the same preference, so they cannot disagree.
+   * There was a `?debug=1` query flag as well, from before this switch existed.
+   * One setting with two ways to set it is a thing that can disagree with
+   * itself — and it did: the flag was re-read on every render and put the
+   * switch straight back on.
    */
   body.append(
     el('section', { class: 'setting' }, [

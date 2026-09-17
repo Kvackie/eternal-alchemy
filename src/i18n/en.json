@@ -792,7 +792,7 @@
   "settings.save.failed": "That file isn't a valid save.",
   "settings.newGame": "Start over",
   "settings.debug": "Debug menu",
-  "settings.debug.hint": "Time controls, grants and the RNG seed. Also reachable with ?debug=1.",
+  "settings.debug.hint": "Time controls, grants and the RNG seed.",
   "settings.debug.off": "Off",
   "settings.debug.on": "On",
   "settings.newGame.hint": "Wipes your save and start fresh.",
