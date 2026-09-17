@@ -225,7 +225,13 @@ export function sameGoods(a: BottledItem, b: BottledItem): boolean {
  * hold, rather than making the player tap the same shelf five times — the point
  * of a pouch is shelf space, and space you have to click for is not space.
  */
-export function stockShelf(world: World, slotId: string, itemUid: string): boolean {
+export function stockShelf(
+  world: World,
+  slotId: string,
+  itemUid: string,
+  /** Stop here even if the vessel would hold more — see `stockGoods`. */
+  limit = Number.POSITIVE_INFINITY,
+): boolean {
   const slot = world.shelf.find((s) => s.id === slotId);
   if (!slot || slot.item) return false;
 
@@ -238,7 +244,7 @@ export function stockShelf(world: World, slotId: string, itemUid: string): boole
   slot.item = item;
   slot.quantity = 1;
 
-  const capacity = getVessel(item.vesselId).shelfStack ?? 1;
+  const capacity = Math.min(getVessel(item.vesselId).shelfStack ?? 1, Math.max(1, limit));
   while (slot.quantity < capacity) {
     const next = world.bottled.findIndex((entry) => sameGoods(entry, item));
     if (next < 0) break;
@@ -259,5 +265,86 @@ export function unstockShelf(world: World, slotId: string): boolean {
   }
   slot.item = null;
   slot.quantity = 0;
+  return true;
+}
+
+/**
+ * How many of these goods could go out right now.
+ *
+ * Bounded by two things at once: how many interchangeable bottles are in
+ * storage, and how much empty shelf there is to stand them on. Both matter —
+ * the shop runs out of shelf long before it runs out of stock, and a count
+ * offered that cannot be honoured is worse than no count at all.
+ */
+export function placeableCount(world: World, item: BottledItem): number {
+  const inStore = world.bottled.filter((entry) => sameGoods(entry, item)).length;
+  const free = world.shelf.filter((slot) => !slot.item).length;
+  const perShelf = getVessel(item.vesselId).shelfStack ?? 1;
+  return Math.min(inStore, free * perShelf);
+}
+
+/**
+ * Put several out at once, across whatever shelves are free.
+ *
+ * Stocking was one bottle per press, and each press meant finding a free shelf
+ * first — putting eight bottles out was eight rounds of that. How many is the
+ * player's decision; which shelf each one lands on is not a decision worth
+ * making eight times, so shelves are filled in order and each takes as many as
+ * its vessel allows.
+ *
+ * Returns how many actually went out, which is fewer than asked when the shop
+ * runs out of shelf before it runs out of stock.
+ */
+export function stockGoods(world: World, itemUid: string, quantity: number): number {
+  const wanted = world.bottled.find((entry) => entry.uid === itemUid);
+  if (!wanted || quantity <= 0) return 0;
+
+  let placed = 0;
+  for (const slot of world.shelf) {
+    if (placed >= quantity) break;
+    if (slot.item) continue;
+
+    /*
+     * The next matching bottle, not the uid asked for.
+     *
+     * That one is spoken for after the first shelf, and every bottle in the
+     * stack is interchangeable by the same rule the shelf merges them with.
+     */
+    const next = world.bottled.find((entry) => sameGoods(entry, wanted));
+    if (!next) break;
+
+    if (!stockShelf(world, slot.id, next.uid, quantity - placed)) break;
+    placed += slot.quantity;
+  }
+
+  return placed;
+}
+
+/**
+ * Move what is on one shelf to another, swapping if both are full.
+ *
+ * The board stays with the shelf and the asking price travels with the goods.
+ * A board is furniture — it is the thing you fitted to that spot — where the
+ * price is part of the listing, and carrying a Lacquered Shelf's 140% ask over
+ * to a plank because the bottles moved would be a quiet, expensive surprise.
+ */
+export function moveShelfStock(world: World, fromId: string, toId: string): boolean {
+  if (fromId === toId) return false;
+
+  const from = world.shelf.find((slot) => slot.id === fromId);
+  const to = world.shelf.find((slot) => slot.id === toId);
+  if (!from || !to || !from.item) return false;
+
+  const item = from.item;
+  const quantity = from.quantity;
+  const priceRatio = from.priceRatio;
+
+  from.item = to.item;
+  from.quantity = to.quantity;
+  from.priceRatio = to.priceRatio;
+
+  to.item = item;
+  to.quantity = quantity;
+  to.priceRatio = priceRatio;
   return true;
 }

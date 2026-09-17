@@ -1,9 +1,15 @@
 /**
- * Shop: shelves and inventory.
+ * Shop: the floor, and the store room behind it.
  *
- * Bottled stock is an icon grid you can drag onto a shelf, the way any game with
- * an inventory works. Every tile is also a button, so the whole screen still
- * works with taps alone — drag is the accelerator, not the requirement.
+ * Two views rather than one long page. Putting stock out and arranging the
+ * floor are different jobs done at different times — one is "I have brewed
+ * twelve things, get them on sale", the other is "which shelf should the good
+ * ones be on" — and stacking both into a single scroll meant every act of
+ * either began with a hunt for the right section.
+ *
+ * The floor is shelves, furnishings and whoever is at the counter. The store is
+ * what you own and have not put out: bottles, and the boards you could fit. A
+ * customer is drawn on both, because a customer leaves and the shelves do not.
  */
 
 import { button, chip, el, goldText, gradeBadge, makeDropTarget, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
@@ -19,20 +25,59 @@ import type { BottledItem, ShelfSlot } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
-export const ITEM_DRAG = 'application/x-eternal-item';
+/**
+ * A stocked shelf being dragged to another one.
+ *
+ * The payload is the shelf's id, not the bottle's: what is being moved is the
+ * whole slot — its goods, however many of them, and the price you set — and the
+ * shelf it lands on is the other half of a swap.
+ */
+const SHELF_DRAG = 'application/x-eternal-shelf';
+
+type Tab = 'floor' | 'store';
+
+/**
+ * Which half is showing.
+ *
+ * Module state, like the Grounds' tabs: it must survive the panel being rebuilt
+ * — which happens on every press — and it is not worth saving between sessions,
+ * because the floor is the right thing to arrive at.
+ */
+let tab: Tab = 'floor';
 
 export function renderShop(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
 
-  // A customer standing at the counter comes before the shelves — they leave,
-  // the shelves don't.
+  // A customer standing at the counter comes before everything, on both views
+  // — they leave, and neither the shelves nor the store room do.
   body.append(renderHaggle(sim));
-  body.append(renderShelves(sim));
-  body.append(renderInventory(sim));
-  body.append(renderDecor(sim));
+
+  body.append(
+    el(
+      'div',
+      { class: 'options tabs' },
+      (['floor', 'store'] as Tab[]).map((id) => {
+        const node = el('button', { class: 'option', type: 'button' }, [
+          el('span', { text: t(`shop.tab.${id}`) }),
+        ]);
+        node.setAttribute('aria-pressed', String(tab === id));
+        node.addEventListener('click', () => {
+          tab = id;
+          changed();
+        });
+        return node;
+      }),
+    ),
+  );
+
+  if (tab === 'floor') {
+    body.append(renderShelves(sim), renderDecor(sim));
+  } else {
+    body.append(renderInventory(sim), renderBoards(sim));
+  }
 
   return el('div', { class: 'panel' }, [
-    panelHeader(t('shop.title'), t('shop.subtitle')),
+    panelHeader(t('shop.title'), t(`shop.${tab}.subtitle`)),
     body,
   ]);
 }
@@ -50,6 +95,14 @@ function itemIcon(item: BottledItem): Node {
   return potionIcon(item.recipeId);
 }
 
+/** What a shelf is called when it has to be named — "Shelf 3". */
+function shelfName(sim: Simulation, shelfSlot: ShelfSlot): string {
+  const index = sim.world.shelf.indexOf(shelfSlot);
+  return t('shop.shelf.numbered', { number: index + 1 });
+}
+
+// -- The floor ---------------------------------------------------------------
+
 function renderShelves(sim: Simulation): HTMLElement {
   const section = el('section', { class: 'shelves' }, [
     el('div', { class: 'stores-head' }, [
@@ -66,39 +119,21 @@ function renderShelves(sim: Simulation): HTMLElement {
 }
 
 /**
- * The board this shelf is made of, and any better one you could fit.
+ * The board this shelf is made of, said rather than badged.
  *
- * Offered on the shelf itself rather than in a separate list, because fitting a
- * board is a decision about *this* shelf — which of your shelves deserves the
- * good wood is the whole mechanic.
+ * Fitting is done from the store room now — which of your shelves gets the good
+ * wood is a decision about the board you own, not about the shelf you happen to
+ * be looking at — so this row only reports.
  */
-function boardRow(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
+function boardRow(shelfSlot: ShelfSlot): HTMLElement {
   const current = getShelfTier(shelfSlot.quality);
   const art = artUrlIf('shelf', shelfSlot.quality);
-
-  const better = shelfTiers.filter(
-    (tier) =>
-      tier.appealBonus > current.appealBonus && (sim.world.boards[tier.id] ?? 0) > 0,
-  );
-
-  const fits = better.map((tier) =>
-    button(
-      t('shop.board.fit', { board: t(`board.${tier.id}`) }),
-      () => {
-        if (sim.fitShelfBoard(shelfSlot.id, tier.id)) {
-          toast(t('shop.board.fitted', { board: t(`board.${tier.id}`) }));
-          changed();
-        }
-      },
-      { variant: 'quiet', small: true },
-    ),
-  );
 
   return el('div', { class: 'board-row' }, [
     ...(art ? [el('img', { class: 'board-thumb', src: art, alt: '', width: '46', height: '12' })] : []),
     el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
     /*
-     * What the board does, said rather than badged.
+     * What the board does, in a sentence.
      *
      * "Appeal +8%" in green reads as a rosette the shelf has been awarded. The
      * number is the same; the sentence is about the goods standing on it, which
@@ -112,35 +147,23 @@ function boardRow(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
           }),
         ]
       : []),
-    ...fits,
   ]);
 }
 
-function renderSlot(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
-  const node = el('div', { class: 'shelf' });
-
-  // Every shelf accepts a dragged bottle, empty or not — dropping onto a full
-  // shelf is a no-op rather than an error, which is what a player expects.
-  makeDropTarget(node, ITEM_DRAG, (uid) => {
-    if (sim.stock(shelfSlot.id, uid)) changed();
-    else toast(t('shop.shelf.occupied'));
-  });
-
-  if (!shelfSlot.item) {
-    node.classList.add('shelf-empty');
-    node.append(
-      boardRow(sim, shelfSlot),
-      el('span', { class: 'shelf-empty-label', text: t('shop.slot.empty') }),
-      el('span', { class: 'field-note', text: t('shop.slot.emptyHint') }),
-      button(t('shop.slot.stock'), () => openShelfPicker(sim, shelfSlot), { small: true }),
-    );
-    return node;
-  }
-
-  const item = shelfSlot.item;
-  const asking = Math.round(item.fairValue * shelfSlot.priceRatio);
-  const chance = saleChance(sim.world, shelfSlot, sim.now, true);
-
+/**
+ * The asking price, without rebuilding the shop under the thumb.
+ *
+ * This used to call `changed()` on every `input` event, which tore the panel
+ * down and built it again — including the slider being dragged. The drag died
+ * with the element, so the price moved one notch and stopped, every time. The
+ * readouts it feeds are three short strings, so they are written where they
+ * stand; the rebuild waits for the drag to end.
+ */
+function priceSlider(sim: Simulation, shelfSlot: ShelfSlot, readouts: {
+  asking: HTMLElement;
+  percent: HTMLElement;
+  pace: HTMLElement;
+}): HTMLElement {
   const slider = el('input', {
     type: 'range',
     min: '40',
@@ -152,15 +175,97 @@ function renderSlot(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
 
   slider.addEventListener('input', () => {
     sim.setPrice(shelfSlot.id, Number(slider.value) / 100);
-    changed();
+
+    const item = shelfSlot.item;
+    if (!item) return;
+    const chance = saleChance(sim.world, shelfSlot, sim.now, true);
+    readouts.asking.textContent = formatGold(Math.round(item.fairValue * shelfSlot.priceRatio));
+    readouts.percent.textContent = formatPercent(shelfSlot.priceRatio);
+    readouts.pace.textContent = paceLabel(chance);
+    readouts.pace.className = `chip ${chance > 0.15 ? 'plain' : 'warn'}`;
+    slider.setAttribute('aria-label', t('shop.price', { percent: formatPercent(shelfSlot.priceRatio) }));
   });
 
+  // Once the thumb is let go — the rest of the shop (the ledger's takings, the
+  // scene) can catch up now that there is nothing being held.
+  slider.addEventListener('change', () => changed());
+
+  return slider;
+}
+
+function renderSlot(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
+  const node = el('div', { class: 'shelf' });
+
+  /*
+   * Every shelf takes a dragged shelf, empty or not.
+   *
+   * Dropping onto a full one swaps the two, which is what "organise them
+   * visually" means in practice — the good bottles at eye level and the cheap
+   * ones at the back is a rearrangement, not an unstock and a restock.
+   */
+  makeDropTarget(node, SHELF_DRAG, (fromId) => {
+    if (sim.moveStock(fromId, shelfSlot.id)) changed();
+  });
+
+  if (!shelfSlot.item) {
+    node.classList.add('shelf-empty');
+    node.append(
+      boardRow(shelfSlot),
+      el('span', { class: 'shelf-empty-label', text: t('shop.slot.empty') }),
+      el('span', { class: 'field-note', text: t('shop.slot.emptyHint') }),
+    );
+    return node;
+  }
+
+  const item = shelfSlot.item;
+  const chance = saleChance(sim.world, shelfSlot, sim.now, true);
+
+  const asking = el('span', {
+    class: 'price-gold num',
+    text: formatGold(Math.round(item.fairValue * shelfSlot.priceRatio)),
+  });
+  const percent = chip(formatPercent(shelfSlot.priceRatio));
+  const pace = chip(paceLabel(chance), chance > 0.15 ? 'plain' : 'warn');
+
+  /*
+   * A grip rather than the whole card.
+   *
+   * The card holds a range input, and a draggable ancestor and a slider inside
+   * it fight over the same gesture. The grip is also the only honest place to
+   * hang the affordance: it says this row can be picked up, where a whole
+   * draggable card says nothing at all until you try.
+   */
+  const grip = el('span', {
+    class: 'shelf-grip',
+    text: '⠿',
+    title: t('shop.shelf.dragHint'),
+    'aria-hidden': 'true',
+  });
+  grip.draggable = true;
+  grip.addEventListener('dragstart', (event) => {
+    event.dataTransfer?.setData(SHELF_DRAG, shelfSlot.id);
+    // A plain-text fallback keeps the drag valid in browsers that ignore custom
+    // types until drop, which is most of them during dragover.
+    event.dataTransfer?.setData('text/plain', shelfSlot.id);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+    node.dataset.dragging = 'true';
+  });
+  grip.addEventListener('dragend', () => delete node.dataset.dragging);
+
   node.append(
-    boardRow(sim, shelfSlot),
+    boardRow(shelfSlot),
     el('div', { class: 'shelf-head' }, [
+      grip,
       gradeBadge(item.grade),
       el('span', { class: 'shelf-name', text: t(`recipe.${item.recipeId}`) }),
       chip(t(`form.${item.formId}`)),
+      // The tap route to the same rearrangement. Drag does not exist on a
+      // phone, and this screen is used on one.
+      button(t('shop.shelf.move'), () => openMovePicker(sim, shelfSlot), {
+        variant: 'quiet',
+        small: true,
+        disabled: sim.world.shelf.length < 2,
+      }),
       button(
         t('shop.slot.remove'),
         () => {
@@ -171,18 +276,52 @@ function renderSlot(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
       ),
     ]),
     el('div', { class: 'shelf-price' }, [
-      el('span', { class: 'price-gold num', text: formatGold(asking) }),
-      chip(formatPercent(shelfSlot.priceRatio)),
-      chip(paceLabel(chance), chance > 0.15 ? 'plain' : 'warn'),
+      asking,
+      percent,
+      pace,
       // A stacked slot has to say so, or it looks like one bottle that will not sell out.
       ...(shelfSlot.quantity > 1
         ? [chip(t('shop.stacked', { count: shelfSlot.quantity }), 'good')]
         : []),
     ]),
-    slider,
+    priceSlider(sim, shelfSlot, { asking, percent, pace }),
   );
 
   return node;
+}
+
+/** Where should this go? The same swap a drag does, for a thumb. */
+function openMovePicker(sim: Simulation, from: ShelfSlot): void {
+  const others = sim.world.shelf.filter((entry) => entry.id !== from.id);
+
+  modal({
+    content: (dismiss) => [
+      el('h2', { text: t('shop.shelf.moveTitle') }),
+      el('p', { text: t('shop.shelf.moveHint') }),
+      el(
+        'div',
+        { class: 'shelf-picker' },
+        others.map((target) =>
+          button(
+            target.item
+              ? t('shop.shelf.swapWith', {
+                  shelf: shelfName(sim, target),
+                  recipe: t(`recipe.${target.item.recipeId}`),
+                })
+              : t('shop.shelf.moveTo', { shelf: shelfName(sim, target) }),
+            () => {
+              dismiss();
+              if (sim.moveStock(from.id, target.id)) changed();
+            },
+            { variant: 'quiet' },
+          ),
+        ),
+      ),
+      el('div', { class: 'dialog-actions' }, [
+        button(t('common.close'), dismiss, { variant: 'quiet' }),
+      ]),
+    ],
+  });
 }
 
 /**
@@ -255,6 +394,8 @@ function renderDecor(sim: Simulation): HTMLElement {
   ]);
 }
 
+// -- The store room ----------------------------------------------------------
+
 /**
  * Bottles gathered into stacks, by the same rule the shelf stacks them.
  *
@@ -273,38 +414,50 @@ function stacksOf(items: BottledItem[]): Array<{ item: BottledItem; count: numbe
   return stacks;
 }
 
-/** Put one of these on the first shelf with room, and say so. */
-function stockOne(sim: Simulation, item: BottledItem): void {
-  const free = sim.world.shelf.find((entry) => !entry.item);
-  if (!free) {
-    toast(t('shop.noShelf'));
-    return;
-  }
-  if (sim.stock(free.id, item.uid)) changed();
-}
-
 function renderInventory(sim: Simulation): HTMLElement {
-  const tiles = stacksOf(sim.world.bottled).map(({ item, count }) =>
-    slot({
+  const tiles = stacksOf(sim.world.bottled).map(({ item, count }) => {
+    const room = sim.placeable(item);
+
+    return slot({
       id: item.uid,
       icon: itemIcon(item),
       label: t(`recipe.${item.recipeId}`),
       count,
       caption: [gradeBadge(item.grade), goldText(item.fairValue)],
-      dragType: ITEM_DRAG,
+      dimmed: room === 0,
       title:
         `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
         `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
-      // A tap tells you what it is, and the panel puts it out — the same two
-      // steps as a seed in the garden or a jar in the market.
+      /*
+       * How many, in one press.
+       *
+       * Putting eight bottles out was eight presses, each of which began by
+       * finding a free shelf. The count is the only part of that worth
+       * deciding, so it is the only part asked for — the shelves fill in
+       * order, and the ceiling is however many the shop has room for.
+       */
       onActivate: () =>
         showPotionInfo(sim, item, count, {
-          label: t('shop.slot.stock'),
-          max: 1,
-          run: () => stockOne(sim, item),
+          label: t('shop.slot.putOut'),
+          max: Math.max(1, room),
+          blocked: room === 0 ? t('shop.noShelf') : undefined,
+          run: (quantity) => {
+            const placed = sim.stockMany(item.uid, quantity);
+            if (placed === 0) {
+              toast(t('shop.noShelf'));
+              return;
+            }
+            toast(
+              t('shop.putOut', {
+                count: placed,
+                recipe: t(`recipe.${item.recipeId}`),
+              }),
+            );
+            changed();
+          },
         }),
-    }),
-  );
+    });
+  });
 
   return el('section', { class: 'inventory' }, [
     el('div', { class: 'stores-head' }, [
@@ -316,33 +469,72 @@ function renderInventory(sim: Simulation): HTMLElement {
 }
 
 /**
- * Fill this shelf, chosen from the shelf itself.
+ * Boards you own but have not fitted.
  *
- * Stocking used to start in the inventory and end wherever the first free shelf
- * happened to be — fine when one shelf is empty, no use at all when you mean
- * *that* one. Dragging could always say which; this is the same answer without
- * a drag.
+ * A board used to be offered on each shelf that could take it, which put the
+ * same board in front of you four times and never once said how many you had.
+ * It belongs here with the bottles: both are things in the store room waiting
+ * to go out, and both are put out by picking the thing and then the shelf.
  */
-function openShelfPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
-  const stacks = stacksOf(sim.world.bottled);
+function renderBoards(sim: Simulation): HTMLElement {
+  const owned = shelfTiers.filter((tier) => (sim.world.boards[tier.id] ?? 0) > 0);
+
+  const tiles = owned.map((tier) => {
+    const art = artUrlIf('shelf', tier.id);
+    const fits = sim.world.shelf.filter(
+      (shelfSlot) => getShelfTier(shelfSlot.quality).appealBonus < tier.appealBonus,
+    );
+
+    return slot({
+      id: tier.id,
+      icon: art
+        ? el('img', { class: 'art-icon', src: art, alt: '', width: '34', height: '12' })
+        : el('span', { class: 'slot-glyph', text: '🪵' }),
+      label: t(`board.${tier.id}`),
+      count: sim.world.boards[tier.id] ?? 0,
+      caption:
+        tier.appealBonus > 0
+          ? t('shop.board.appealNote', { percent: Math.round(tier.appealBonus * 100) })
+          : t('shop.board.plain'),
+      dimmed: fits.length === 0,
+      onActivate: () => openBoardPicker(sim, tier.id, fits),
+    });
+  });
+
+  return el('section', { class: 'boards' }, [
+    el('div', { class: 'stores-head' }, [
+      el('span', { class: 'field-label', text: t('shop.boards') }),
+      el('span', { class: 'field-note', text: t('shop.boards.hint') }),
+    ]),
+    slotGrid(tiles, t('shop.boards.empty')),
+  ]);
+}
+
+/** Which shelf should this board go on? */
+function openBoardPicker(sim: Simulation, tierId: string, fits: ShelfSlot[]): void {
   modal({
     content: (dismiss) => [
-      el('h2', { text: t('shop.slot.stock') }),
-      stacks.length === 0
-        ? el('p', { class: 'grid-empty', text: t('shop.inventory.empty') })
-        : slotGrid(
-            stacks.map(({ item, count }) =>
-              slot({
-                id: item.uid,
-                icon: itemIcon(item),
-                label: t(`recipe.${item.recipeId}`),
-                count,
-                caption: [gradeBadge(item.grade), goldText(item.fairValue)],
-                onActivate: () => {
+      el('h2', { text: t('shop.board.fitTo', { board: t(`board.${tierId}`) }) }),
+      fits.length === 0
+        ? el('p', { class: 'grid-empty', text: t('shop.board.noShelf') })
+        : el(
+            'div',
+            { class: 'shelf-picker' },
+            fits.map((shelfSlot) =>
+              button(
+                t('shop.board.onShelf', {
+                  shelf: shelfName(sim, shelfSlot),
+                  board: t(`board.${shelfSlot.quality}`),
+                }),
+                () => {
                   dismiss();
-                  if (sim.stock(shelfSlot.id, item.uid)) changed();
+                  if (sim.fitShelfBoard(shelfSlot.id, tierId)) {
+                    toast(t('shop.board.fitted', { board: t(`board.${tierId}`) }));
+                    changed();
+                  }
                 },
-              }),
+                { variant: 'quiet' },
+              ),
             ),
           ),
       el('div', { class: 'dialog-actions' }, [
