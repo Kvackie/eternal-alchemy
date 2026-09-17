@@ -922,23 +922,87 @@ export class Simulation {
    * a button being pressed.
    */
   buy(merchantId: string, index: number): { ok: boolean; reasonKey?: string } {
-    const visit = this.merchants().find((entry) => entry.merchantId === merchantId);
-    if (!visit) return { ok: false, reasonKey: 'market.error.gone' };
-
-    const entry = visit.entries[index];
+    const entry = this.stockAt(merchantId, index);
     if (!entry) return { ok: false, reasonKey: 'market.error.gone' };
     if (entry.remaining <= 0) return { ok: false, reasonKey: 'market.error.soldOut' };
 
-    if (entry.kind === 'equipment') {
-      const def = getEquipment(entry.id);
-      if (!canBuyEquipment(this.world, def)) return { ok: false, reasonKey: 'market.reason.rank' };
+    const gate = this.purchaseGate(entry);
+    if (gate) return { ok: false, reasonKey: gate };
+
+    return this.settle(entry, merchantId);
+  }
+
+  /**
+   * Buy several of one entry in a single pass.
+   *
+   * The entry is resolved once and then held, which is the whole point. Buying
+   * N by calling `buy` N times re-derived every merchant's stock on every unit
+   * — and a purchase that pushes a relationship past a tier boundary
+   * regenerates that list, so the same index pointed at different goods half
+   * way through. The player was shown one basket and charged for another.
+   *
+   * `remaining` is derived from what has been bought, so it does not move
+   * underneath us within this loop; a local count stands in for the
+   * recomputation that happens on the next generation.
+   */
+  buyQuantity(
+    merchantId: string,
+    index: number,
+    quantity: number,
+  ): { bought: number; reasonKey?: string } {
+    const entry = this.stockAt(merchantId, index);
+    if (!entry) return { bought: 0, reasonKey: 'market.error.gone' };
+
+    const gate = this.purchaseGate(entry);
+    if (gate) return { bought: 0, reasonKey: gate };
+
+    // A tool is installed and a furnishing stands in one spot, so a second copy
+    // of either is not a thing the world can hold.
+    const once = entry.kind === 'equipment' || entry.kind === 'decor';
+    const wanted = Math.max(1, Math.floor(once ? 1 : quantity));
+
+    let left = entry.remaining;
+    let bought = 0;
+    let reasonKey: string | undefined;
+
+    for (let i = 0; i < wanted; i += 1) {
+      if (left <= 0) {
+        reasonKey = 'market.error.soldOut';
+        break;
+      }
+      const result = this.settle(entry, merchantId);
+      if (!result.ok) {
+        reasonKey = result.reasonKey;
+        break;
+      }
+      left -= 1;
+      bought += 1;
     }
 
-    if (entry.kind === 'decor') {
-      const def = getDecor(entry.id);
-      if (!canBuyDecor(this.world, def)) return { ok: false, reasonKey: 'market.reason.rank' };
-    }
+    // A partial fill is a success that stopped; only a fill of nothing needs to
+    // say why.
+    return bought > 0 ? { bought } : { bought: 0, reasonKey };
+  }
 
+  /** The entry a merchant is offering at this position, if they are still here. */
+  private stockAt(merchantId: string, index: number): StockEntry | null {
+    const visit = this.merchants().find((entry) => entry.merchantId === merchantId);
+    return visit?.entries[index] ?? null;
+  }
+
+  /** What stops this being bought at all, as opposed to not being affordable. */
+  private purchaseGate(entry: StockEntry): string | undefined {
+    if (entry.kind === 'equipment' && !canBuyEquipment(this.world, getEquipment(entry.id))) {
+      return 'market.reason.rank';
+    }
+    if (entry.kind === 'decor' && !canBuyDecor(this.world, getDecor(entry.id))) {
+      return 'market.reason.rank';
+    }
+    return undefined;
+  }
+
+  /** Pay for one unit and hand it over. */
+  private settle(entry: StockEntry, merchantId: string): { ok: boolean; reasonKey?: string } {
     const paid = entry.barter ? this.payInPotions(entry.barter) : this.payInGold(entry, merchantId);
     if (!paid.ok) return paid;
 

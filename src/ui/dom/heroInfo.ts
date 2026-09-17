@@ -14,7 +14,7 @@
  * about them changes.
  */
 
-import { button, chip, el, portrait, potionIcon } from './components';
+import { button, chip, el, modal, portrait, potionIcon } from './components';
 import { formatDuration, formatGold, t } from '@/i18n';
 import { getHeroDef } from '@/sim/config';
 import { effectiveLevel, favourBandOf, isInjured, recruitCostOf } from '@/sim/heroes';
@@ -29,20 +29,18 @@ import { changed, toast } from '@/ui/bus';
  * since an unrecruited hero has no favour, no injuries and no record.
  */
 export function showHeroInfo(sim: Simulation, heroId: string, hero: Hero | null): void {
-  const def = getHeroDef(heroId);
+  // Built inside the modal because the buttons in it — hire, dismiss, heal —
+  // close the dialog, so they need the way out that `modal` hands them.
+  modal({ content: (dismiss) => [buildHeroInfo(sim, heroId, hero, dismiss)] });
+}
 
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => {
-    overlay.remove();
-    document.removeEventListener('keydown', onKey);
-  };
-  function onKey(event: KeyboardEvent) {
-    if (event.key === 'Escape') dismiss();
-  }
-  document.addEventListener('keydown', onKey);
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) dismiss();
-  });
+function buildHeroInfo(
+  sim: Simulation,
+  heroId: string,
+  hero: Hero | null,
+  dismiss: () => void,
+): HTMLElement {
+  const def = getHeroDef(heroId);
 
   const face = portrait('hero', heroId);
 
@@ -144,6 +142,5 @@ export function showHeroInfo(sim: Simulation, heroId: string, hero: Hero | null)
     el('div', { class: 'dialog-actions' }, actions),
   ]);
 
-  overlay.append(el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [body]));
-  document.getElementById('panels')?.append(overlay);
+  return body;
 }

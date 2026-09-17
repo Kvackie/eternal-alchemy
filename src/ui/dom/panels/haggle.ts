@@ -9,21 +9,10 @@
  * Five buttons and a price stepper. Touch and mouse identical.
  */
 
-import {
-  button,
-  chip,
-  el,
-  goldText,
-  gradeBadge,
-  meter,
-  potionIcon,
-  slot,
-  slotGrid,
-  stat,
-} from '../components';
+import { button, chip, el, goldText, gradeBadge, meter, potionIcon, slot, slotGrid, stat } from '../components';
 import { formatGold, t } from '@/i18n';
 import { customersConfig, getCustomer, getRecipe } from '@/sim/config';
-import { essenceGlyphSvg } from '@/ui/theme';
+
 import { dominantEssence } from '@/ui/phaser/placeholders';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';

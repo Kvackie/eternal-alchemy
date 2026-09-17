@@ -11,7 +11,7 @@
  * "does" whatever it steers the pot toward.
  */
 
-import { button, chip, el, ingredientIcon, quantityAction } from './components';
+import { button, chip, el, ingredientIcon, modal, quantityAction } from './components';
 import type { QuantityActionSpec } from './components';
 import { t } from '@/i18n';
 import { config, getIngredient, realRecipes } from '@/sim/config';
@@ -162,40 +162,44 @@ function essenceRows(essence: EssenceVector): HTMLElement {
  * "buy one" in the market and "select" in the garden and "tell me" only on a
  * dot in the corner too small to aim at.
  */
+export interface IngredientInfoOptions {
+  action?: QuantityActionSpec;
+  /**
+   * The vector to report, where it is not the wild ingredient's own.
+   *
+   * A bred strain yields its base crop's ingredient but carries a crossbred
+   * essence, so reading the definition gave the wild plant's numbers — a
+   * generation-3 strain opened a panel that contradicted the tooltip on the
+   * tile that opened it, and pointed at recipes chosen from the wrong vector.
+   */
+  essence?: EssenceVector;
+  /** The name to show, where it is not the ingredient's own. */
+  title?: string;
+}
+
 export function showIngredientInfo(
   sim: Simulation,
   ingredientId: string,
-  action?: Omit<QuantityActionSpec, 'run'> & { run: (quantity: number) => void },
+  options: IngredientInfoOptions = {},
 ): void {
+  const { action, title } = options;
   const def = getIngredient(ingredientId);
-  const total = totalEssence(def.essence);
-  const dominant = dominantEssence(def.essence);
-
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => {
-    overlay.remove();
-    document.removeEventListener('keydown', onKey);
-  };
-  function onKey(event: KeyboardEvent) {
-    if (event.key === 'Escape') dismiss();
-  }
-  document.addEventListener('keydown', onKey);
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) dismiss();
-  });
+  const essence = options.essence ?? def.essence;
+  const total = totalEssence(essence);
+  const dominant = dominantEssence(essence);
 
   const tags: HTMLElement[] = [chip(t(`category.${def.category as IngredientCategory}`))];
   for (const trait of def.traits ?? []) {
     tags.push(chip(t(`trait.${trait}`), trait === 'volatile' ? 'warn' : 'good'));
   }
 
-  const suggestions = pointsToward(sim, def.essence);
+  const suggestions = pointsToward(sim, essence);
 
-  const body = el('div', { class: 'ingredient-info' }, [
+  const build = (dismiss: () => void) => [el('div', { class: 'ingredient-info' }, [
     el('div', { class: 'ingredient-info-head' }, [
       el('span', { class: 'ingredient-info-art' }, [ingredientIcon(ingredientId, 44)]),
       el('div', {}, [
-        el('h2', { text: t(`ingredient.${ingredientId}`) }),
+        el('h2', { text: title ?? t(`ingredient.${ingredientId}`) }),
         el('div', { class: 'row-sub' }, tags),
       ]),
     ]),
@@ -204,7 +208,7 @@ export function showIngredientInfo(
       class: 'field-label',
       text: t('ingredientInfo.contributes', { total: String(total) }),
     }),
-    essenceRows(def.essence),
+    essenceRows(essence),
 
     el('span', { class: 'field-label', text: t('ingredientInfo.suits') }),
     suggestions.known.length === 0 && suggestions.unknown === 0
@@ -256,7 +260,7 @@ export function showIngredientInfo(
       : [
           el('div', { class: 'freshness-block' }, [
             el('p', { class: 'ingredient-info-note', text: t('ingredientInfo.ages') }),
-            freshnessTable(def.essence, agingRateFor(ingredientId)),
+            freshnessTable(essence, agingRateFor(ingredientId)),
           ]),
         ]),
 
@@ -276,8 +280,7 @@ export function showIngredientInfo(
           ]
         : []),
     ]),
-  ]);
+  ])];
 
-  overlay.append(el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [body]));
-  document.getElementById('panels')?.append(overlay);
+  modal({ content: build });
 }

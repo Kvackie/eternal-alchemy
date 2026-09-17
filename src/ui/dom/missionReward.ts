@@ -10,7 +10,7 @@
  * where they are handed over: the claim is what moves the goods, once.
  */
 
-import { button, el, ingredientIcon } from './components';
+import { button, el, ingredientIcon, modal } from './components';
 import { formatNumber, t } from '@/i18n';
 import type { Simulation } from '@/sim/sim';
 import type { MissionOutcome } from '@/sim/types';
@@ -27,19 +27,12 @@ export function showMissionReward(sim: Simulation, missionId: string): void {
   const outcome = sim.claimMission(missionId);
   if (!outcome) return;
 
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => {
-    overlay.remove();
-    document.removeEventListener('keydown', onKey);
-    changed();
-  };
-  function onKey(event: KeyboardEvent) {
-    if (event.key === 'Escape') dismiss();
-  }
-  document.addEventListener('keydown', onKey);
-
-  overlay.append(
-    el('div', { class: 'dialog reward', role: 'dialog', 'aria-modal': 'true' }, [
+  modal({
+    className: 'reward',
+    // Claiming a haul changes the world; the board behind this redraws once the
+    // card is out of the way rather than underneath it.
+    onClose: changed,
+    content: (dismiss) => [
       el('h2', { text: t(`biome.${outcome.biomeId}`) }),
       // Its own keys rather than `quality.*`: those are lower-case because they
       // sit mid-sentence in the ledger, and this is a heading.
@@ -52,10 +45,8 @@ export function showMissionReward(sim: Simulation, missionId: string): void {
       el('div', { class: 'dialog-actions' }, [
         button(t('common.close'), dismiss, { variant: 'gold' }),
       ]),
-    ]),
-  );
-
-  document.getElementById('panels')?.append(overlay);
+    ],
+  });
 }
 
 /** The find list, or a line saying there wasn't one. */

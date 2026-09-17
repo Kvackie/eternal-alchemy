@@ -398,6 +398,16 @@ export interface SlotSpec {
   tone?: 'default' | 'warn' | 'good';
   selected?: boolean;
   disabled?: boolean;
+  /**
+   * Unavailable, but still worth opening.
+   *
+   * Reads like `disabled` and keeps its own click, which `disabled` does not.
+   * A sold-out or rank-locked thing is exactly what a player wants to look at —
+   * that is when they ask what it was and what it would take — and while the
+   * tile was the corner dot's neighbour that still worked. Once the tile became
+   * the only way in, `disabled` made those the only things you could not read.
+   */
+  dimmed?: boolean;
   /** Tooltip / accessible description. */
   title?: string;
   onActivate?: () => void;
@@ -435,6 +445,7 @@ export function slot(spec: SlotSpec): HTMLElement {
   if (spec.tone && spec.tone !== 'default') node.dataset.tone = spec.tone;
   if (spec.selected) node.dataset.selected = 'true';
   if (spec.disabled) node.disabled = true;
+  if (spec.dimmed) node.dataset.dimmed = 'true';
   if (spec.title) node.title = spec.title;
 
   if (spec.onActivate && !spec.disabled) {
@@ -457,6 +468,64 @@ export function slot(spec: SlotSpec): HTMLElement {
   return node;
 }
 
+export interface ModalSpec {
+  /** Extra classes for the dialog box, e.g. a panel-specific layout. */
+  className?: string;
+  /** Built with its own way out, so a button inside can close it. */
+  content: (dismiss: () => void) => Array<Node | string>;
+  /** After it has gone. */
+  onClose?: () => void;
+}
+
+/**
+ * One modal, for every panel that needs one.
+ *
+ * There were ten of these, each with its own copy of the overlay, the dismiss
+ * closure, the Escape handler, the backdrop-click guard and the mount. Three of
+ * them registered a `keydown` listener and never removed it.
+ *
+ * All ten mounted into `#panels`, which `Shell.renderPanels()` clears on every
+ * world change — so a dialog left open while a merchant left town was torn out
+ * of the document without anything calling `dismiss`, stranding the listener
+ * and the whole closure behind it. One of them worked around that by refusing
+ * to call `changed()` until it closed. Mounting on the stage instead puts the
+ * modal outside the container that gets rebuilt, which ends both problems: the
+ * dialog survives a redraw, and closing it is the only thing that removes it.
+ */
+export function modal(spec: ModalSpec): () => void {
+  const overlay = el('div', { class: 'overlay' });
+
+  const dismiss = () => {
+    overlay.remove();
+    document.removeEventListener('keydown', onKey);
+    spec.onClose?.();
+  };
+
+  function onKey(event: KeyboardEvent): void {
+    if (event.key === 'Escape') dismiss();
+  }
+
+  document.addEventListener('keydown', onKey);
+
+  // A tap on the ground around the card is a way out, not a way through.
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) dismiss();
+  });
+
+  const dialog = el('div', {
+    class: spec.className ? `dialog ${spec.className}` : 'dialog',
+    role: 'dialog',
+    'aria-modal': 'true',
+  });
+  dialog.append(...spec.content(dismiss));
+  overlay.append(dialog);
+
+  // The stage outlives the panels; `#panels` is the thing being rebuilt.
+  const host = document.getElementById('stage') ?? document.getElementById('panels');
+  host?.append(overlay);
+  return dismiss;
+}
+
 export interface QuantityActionSpec {
   /** The verb, e.g. "Buy" or "Plant". */
   label: string;
@@ -466,6 +535,8 @@ export interface QuantityActionSpec {
   unitPrice?: number;
   /** Why the action cannot be taken, if it cannot. */
   blocked?: string;
+  /** What it costs, where that is not a number of coins. */
+  note?: string;
   run: (quantity: number) => void;
 }
 
@@ -506,7 +577,6 @@ export function quantityAction(spec: QuantityActionSpec): HTMLElement {
     plus.disabled = quantity >= spec.max;
     total.textContent =
       spec.unitPrice === undefined ? '' : formatGold(spec.unitPrice * quantity);
-    go.textContent = spec.label;
   }
 
   if (spec.blocked) {
@@ -517,6 +587,7 @@ export function quantityAction(spec: QuantityActionSpec): HTMLElement {
 
   // One of a thing is not a quantity, so it gets no stepper to say so.
   if (spec.max > 1) row.append(el('div', { class: 'quantity-steps' }, [minus, count, plus]));
+  if (spec.note) row.append(el('span', { class: 'quantity-note', text: spec.note }));
   if (spec.unitPrice !== undefined) row.append(total);
   row.append(go);
   draw();

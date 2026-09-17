@@ -6,29 +6,17 @@
  * day/night cycle finally has consequences a player can act on.
  */
 
-import {
-  button,
-  chip,
-  el,
-  goldText,
-  ingredientIcon,
-  panelHeader,
-  portrait,
-  quantityAction,
-  slot,
-  slotGrid,
-  stat,
-} from '../components';
+import { button, chip, el, goldText, ingredientIcon, panelHeader, portrait, quantityAction, modal, slot, slotGrid, stat } from '../components';
 import type { QuantityActionSpec } from '../components';
-import { formatDuration, formatGold, has, t } from '@/i18n';
-import { getCrop, getDecor, getEquipment, getIngredient, getMerchant, getSeal, getVessel } from '@/sim/config';
+import { formatDuration, has, t } from '@/i18n';
+import { getCrop, getDecor, getEquipment, getMerchant } from '@/sim/config';
 import { decorAvailability } from '@/sim/decor';
 import { artUrlIf } from '@/ui/art';
 import { showIngredientInfo } from '../ingredientInfo';
+import { goodsNotes } from '../goods';
 import type { MerchantVisit, StockEntry } from '@/sim/merchants';
 import { equipmentAvailability, renownToNextRank } from '@/sim/progression';
-import { essenceGlyphSvg } from '@/ui/theme';
-import { dominantEssence } from '@/ui/phaser/placeholders';
+
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
@@ -252,7 +240,7 @@ function buildEntry(
         : [goldText(entry.price ?? 0)],
     count: entry.remaining > 1 ? entry.remaining : undefined,
     tone: blockedKey ? 'warn' : 'default',
-    disabled: Boolean(blockedKey),
+    dimmed: Boolean(blockedKey),
     title,
     /*
      * The tile opens the thing; the panel sells it.
@@ -265,74 +253,6 @@ function buildEntry(
      */
     onActivate: () => openEntry(sim, visit, entry, index),
   });
-}
-
-/**
- * What a vessel or a seal actually does, in sentences.
- *
- * These were chips — "Appeal +8%" in green — which reads as a badge the thing
- * has won rather than a thing it does to your shelf, and left every other
- * number on the definition unsaid. Each line below is one field of the data,
- * written out; a field at its default says nothing rather than saying zero.
- */
-function goodsNotes(entry: StockEntry): string[] {
-  const notes: string[] = [];
-  const pct = (n: number) => Math.round(Math.abs(n) * 100);
-
-  const value = (multiplier: number) => {
-    if (multiplier > 1) notes.push(t('goods.valueMore', { percent: pct(multiplier - 1) }));
-    if (multiplier < 1) notes.push(t('goods.valueLess', { percent: pct(1 - multiplier) }));
-  };
-
-  if (entry.kind === 'vessel') {
-    const def = getVessel(entry.id);
-    notes.push(t('goods.potencyCap', { potency: t(`potency.${def.potencyCap}`) }));
-    if (def.onlyForms?.length) {
-      notes.push(t('goods.onlyForms', { forms: def.onlyForms.map((f) => t(`form.${f}`)).join(', ') }));
-    }
-    if (def.appealBonus > 0) notes.push(t('goods.appeal', { percent: pct(def.appealBonus) }));
-    value(def.valueMultiplier);
-    if (def.supplyGradeBonus) notes.push(t('goods.supplyGrade'));
-    if (def.shelfStack && def.shelfStack > 1) notes.push(t('goods.shelfStack', { count: def.shelfStack }));
-  }
-
-  if (entry.kind === 'decor') {
-    const { effect } = getDecor(entry.id);
-    if (effect.appealBonus) notes.push(t('goods.decorAppeal', { percent: pct(effect.appealBonus) }));
-    if (effect.footfallBonus) notes.push(t('goods.footfall', { percent: pct(effect.footfallBonus) }));
-    if (effect.nightFootfallBonus) {
-      notes.push(t('goods.nightFootfall', { percent: pct(effect.nightFootfallBonus) }));
-    }
-    if (effect.haggleCeilingBonus) {
-      notes.push(t('goods.haggleCeiling', { percent: pct(effect.haggleCeilingBonus) }));
-    }
-  }
-
-  if (entry.kind === 'seal') {
-    const def = getSeal(entry.id);
-    if (def.umbraOnly) notes.push(t('goods.umbraOnly'));
-    // An override replaces appeal rather than adjusting it, so it is the only
-    // thing worth saying about how this one sells.
-    if (def.shelfAppealOverride !== undefined) {
-      notes.push(t('goods.appealOverride', { percent: pct(def.shelfAppealOverride) }));
-    } else if (def.appealBonus > 0) {
-      notes.push(t('goods.appeal', { percent: pct(def.appealBonus) }));
-    }
-    value(def.valueMultiplier);
-    if (def.renownPerSale) notes.push(t('goods.renownPerSale', { count: def.renownPerSale }));
-    if (def.contractPayoutBonus) {
-      notes.push(t('goods.contractPayout', { percent: pct(def.contractPayoutBonus) }));
-    }
-    if (def.supplyGradeBonus) notes.push(t('goods.supplyGrade'));
-    if (def.haggleCeilingBonus) {
-      notes.push(t('goods.haggleCeiling', { percent: pct(def.haggleCeilingBonus) }));
-    }
-    if (def.barterMultiplier && def.barterMultiplier !== 1) {
-      notes.push(t('goods.barter', { times: def.barterMultiplier }));
-    }
-  }
-
-  return notes;
 }
 
 /** Why this cannot be bought right now, or nothing. */
@@ -355,33 +275,18 @@ function blockedReason(sim: Simulation, entry: StockEntry): string | undefined {
  * headings. This is the same shape with only the parts that apply.
  */
 function showGoodsInfo(entry: StockEntry, label: string, action: QuantityActionSpec): void {
-  const overlay = el('div', { class: 'overlay' });
-  const dismiss = () => {
-    overlay.remove();
-    document.removeEventListener('keydown', onKey);
-  };
-  function onKey(event: KeyboardEvent) {
-    if (event.key === 'Escape') dismiss();
-  }
-  document.addEventListener('keydown', onKey);
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) dismiss();
-  });
-
   /*
    * Only what the data actually holds.
    *
-   * Equipment and furnishings are written up; vessels and seals are not, and
-   * `t()` renders a missing key as the key itself — "vessel.hornPhial.detail"
-   * on screen. So the prose is asked for rather than assumed, and what a vessel
-   * or a seal *does* is read off its own numbers instead.
+   * Equipment and furnishings are written up; vessels, seals and boards are
+   * not, and `t()` renders a missing key as the key itself — "vessel.hornPhial.
+   * detail" on screen. So the prose is asked for rather than assumed, and what
+   * a thing does is read off its own numbers instead.
    */
   const lines: HTMLElement[] = [];
   const detailKey = `${entry.kind}.${entry.id}.detail`;
   if (has(detailKey)) lines.push(el('p', { class: 'ingredient-info-note', text: t(detailKey) }));
-
-  const facts: HTMLElement[] = [chip(t(`market.kind.${entry.kind}`))];
-  for (const note of goodsNotes(entry)) {
+  for (const note of goodsNotes(entry.kind, entry.id)) {
     lines.push(el('p', { class: 'ingredient-info-note', text: note }));
   }
   if (entry.kind === 'decor') {
@@ -393,14 +298,14 @@ function showGoodsInfo(entry: StockEntry, label: string, action: QuantityActionS
     );
   }
 
-  overlay.append(
-    el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [
+  modal({
+    content: (dismiss) => [
       el('div', { class: 'ingredient-info' }, [
         el('div', { class: 'ingredient-info-head' }, [
           el('span', { class: 'ingredient-info-art' }, [entryIcon(entry)]),
           el('div', {}, [
             el('h2', { text: label }),
-            el('div', { class: 'row-sub' }, facts),
+            el('div', { class: 'row-sub' }, [chip(t(`market.kind.${entry.kind}`))]),
           ]),
         ]),
         ...lines,
@@ -415,67 +320,87 @@ function showGoodsInfo(entry: StockEntry, label: string, action: QuantityActionS
           }),
         ]),
       ]),
-    ]),
-  );
-  document.getElementById('panels')?.append(overlay);
+    ],
+  });
 }
 
-/** Buy this entry `quantity` times, stopping at the first refusal. */
+/** Buy this entry `quantity` times, in one pass through the simulation. */
 function buyMany(sim: Simulation, merchantId: string, index: number, quantity: number, label: string): void {
-  let bought = 0;
-  for (let i = 0; i < quantity; i += 1) {
-    const result = sim.buy(merchantId, index);
-    if (!result.ok) {
-      // Only worth saying when nothing at all happened; a partial fill is
-      // explained well enough by the count that did land.
-      if (bought === 0 && result.reasonKey) toast(t(result.reasonKey));
-      break;
-    }
-    bought += 1;
+  const { bought, reasonKey } = sim.buyQuantity(merchantId, index, quantity);
+  if (bought === 0) {
+    if (reasonKey) toast(t(reasonKey));
+    return;
   }
-  if (bought > 0) {
-    toast(
-      bought === 1
-        ? t('market.bought', { item: label })
-        : t('market.boughtMany', { count: bought, item: label }),
-    );
-    changed();
-  }
+  toast(
+    bought === 1
+      ? t('market.bought', { item: label })
+      : t('market.boughtMany', { count: bought, item: label }),
+  );
+  changed();
 }
 
 /**
  * How many of this the player could take away right now.
  *
  * Bounded by the stock and by the purse, so the stepper cannot offer a number
- * the press behind it would refuse. Bartered goods cost potions rather than
- * gold, and pricing those is the barter rule's business, so they stay at one.
+ * the press behind it would refuse — including zero, which is the answer when
+ * the purse cannot cover even one. A floor of 1 here used to hand the player an
+ * enabled Buy button and a refusal toast. Bartered goods are priced in potions
+ * rather than gold, so what the purse will bear is the barter rule's business
+ * and they are offered one at a time; a tool or a furnishing is a single thing
+ * the world holds once.
  */
 function affordable(sim: Simulation, entry: StockEntry): number {
-  if (entry.barter) return 1;
+  // Priced in potions, so what the purse will bear is the barter rule's
+  // business; the panel says the terms and offers one at a time.
+  if (entry.barter) return Math.min(1, entry.remaining);
+
   const price = entry.price ?? 0;
-  if (price <= 0) return entry.remaining;
-  return Math.max(1, Math.min(entry.remaining, Math.floor(sim.world.gold / price)));
+  const byPurse = price <= 0 ? entry.remaining : Math.floor(sim.world.gold / price);
+
+  // A tool is installed and a furnishing stands in one spot, so the world holds
+  // one of either — but one is still one more than you can pay for.
+  const ceiling =
+    entry.kind === 'equipment' || entry.kind === 'decor' ? 1 : entry.remaining;
+
+  return Math.min(ceiling, entry.remaining, byPurse);
 }
 
 function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, index: number): void {
   const label = entryLabel(entry);
-  const blocked = blockedReason(sim, entry);
+  // Sold out and rank-locked come first; an empty purse is the next reason, and
+  // it is a reason rather than a disabled button with a price on it.
+  const blockedKey = blockedReason(sim, entry);
+  const affordableNow = affordable(sim, entry);
+  const blocked = blockedKey ?? (affordableNow < 1 ? 'market.error.gold' : undefined);
+
   const action = {
     label: t('market.buy'),
-    max: blocked ? 1 : affordable(sim, entry),
+    max: Math.max(1, affordableNow),
     unitPrice: entry.barter ? undefined : (entry.price ?? 0),
     blocked: blocked ? t(blocked) : undefined,
+    /*
+     * What it costs, when the cost is not a number of coins.
+     *
+     * The Ashwalker is paid in sealed potions, so `unitPrice` has nothing to
+     * say and the footer would show a Buy button over no price at all — the
+     * terms were on the tile, and the tile is now only the way in. Thirteen of
+     * his entries are bartered.
+     */
+    note: entry.barter
+      ? t('market.barterCost', { count: entry.barter.potions, grade: entry.barter.minGrade })
+      : undefined,
     run: (quantity: number) => buyMany(sim, visit.merchantId, index, quantity, label),
   };
 
   // Anything the pot will eventually see has an essence vector worth reading,
   // so it gets the full panel with the till attached to the bottom of it.
   if (entry.kind === 'ingredient' || entry.kind === 'spore') {
-    showIngredientInfo(sim, entry.id, action);
+    showIngredientInfo(sim, entry.id, { action });
     return;
   }
   if (entry.kind === 'seed') {
-    showIngredientInfo(sim, getCrop(entry.id).yields, action);
+    showIngredientInfo(sim, getCrop(entry.id).yields, { action });
     return;
   }
   showGoodsInfo(entry, label, action);
