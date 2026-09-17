@@ -576,31 +576,98 @@ export function quantityAction(spec: QuantityActionSpec): HTMLElement {
   const row = el('div', { class: 'quantity-action' });
 
   const total = el('span', { class: 'quantity-total' });
-  const count = el('span', { class: 'quantity-count num' });
 
-  const step = (glyph: string, delta: number, label: string) => {
-    const b = el('button', { class: 'quantity-step', type: 'button', 'aria-label': label, text: glyph });
+  /*
+   * The count is typed into, not only stepped to.
+   *
+   * Taking forty of something at one press per unit is forty presses; at ten a
+   * press it is four, and the player who knows they want forty should not have
+   * to press anything. So the number is a field: tap it, type it, done. It is
+   * `inputmode="numeric"` rather than `type="number"` because the spinner a
+   * number input draws is a second, worse pair of steppers sitting next to
+   * these ones, and it cannot be styled away portably.
+   */
+  const count = el('input', {
+    class: 'quantity-count num',
+    type: 'text',
+    inputmode: 'numeric',
+    autocomplete: 'off',
+    'aria-label': t('quantity.count'),
+  });
+
+  const step = (glyph: string, delta: number, label: string, wide = false) => {
+    const b = el('button', {
+      class: wide ? 'quantity-step wide' : 'quantity-step',
+      type: 'button',
+      'aria-label': label,
+      text: glyph,
+    });
     b.addEventListener('click', () => {
-      quantity = Math.min(spec.max, Math.max(1, quantity + delta));
-      draw();
+      set(quantity + delta);
     });
     return b;
   };
 
+  const minusTen = step('−10', -10, t('quantity.fewer10'), true);
   const minus = step('−', -1, t('quantity.fewer'));
   const plus = step('+', 1, t('quantity.more'));
+  const plusTen = step('+10', 10, t('quantity.more10'), true);
+  const most = el('button', { class: 'quantity-step wide', type: 'button', text: t('quantity.max') });
+  most.addEventListener('click', () => set(spec.max));
+
   const go = button(spec.label, () => spec.run(quantity), {
     variant: 'gold',
     disabled: Boolean(spec.blocked),
   });
 
-  function draw(): void {
-    count.textContent = String(quantity);
-    minus.disabled = quantity <= 1;
-    plus.disabled = quantity >= spec.max;
-    total.textContent =
-      spec.unitPrice === undefined ? '' : formatGold(spec.unitPrice * quantity);
+  function set(next: number): void {
+    quantity = Math.min(spec.max, Math.max(1, Math.round(next)));
+    draw();
   }
+
+  /** Everything but the field itself — see `draw`. */
+  function refresh(): void {
+    minus.disabled = quantity <= 1;
+    minusTen.disabled = quantity <= 1;
+    plus.disabled = quantity >= spec.max;
+    plusTen.disabled = quantity >= spec.max;
+    most.disabled = quantity >= spec.max;
+    total.textContent = spec.unitPrice === undefined ? '' : formatGold(spec.unitPrice * quantity);
+  }
+
+  function draw(): void {
+    count.value = String(quantity);
+    refresh();
+  }
+
+  /*
+   * Typing is clamped as it goes, but an empty field is left empty.
+   *
+   * Rewriting the box to "1" the instant it is cleared makes it impossible to
+   * replace a two-digit number: you delete the second digit, the field snaps
+   * back, and the first one is still there. So an empty box counts as one and
+   * says nothing until the focus leaves.
+   */
+  count.addEventListener('input', () => {
+    const digits = count.value.replace(/\D/g, '');
+    if (digits === '') {
+      quantity = 1;
+      if (count.value !== '') count.value = '';
+      refresh();
+      return;
+    }
+    quantity = Math.min(spec.max, Math.max(1, Number(digits)));
+    if (String(quantity) !== digits) count.value = String(quantity);
+    refresh();
+  });
+
+  count.addEventListener('blur', () => draw());
+  count.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    draw();
+    if (!spec.blocked) spec.run(quantity);
+  });
 
   if (spec.blocked) {
     row.append(el('span', { class: 'quantity-blocked', text: spec.blocked }), go);
@@ -608,8 +675,16 @@ export function quantityAction(spec: QuantityActionSpec): HTMLElement {
     return row;
   }
 
-  // One of a thing is not a quantity, so it gets no stepper to say so.
-  if (spec.max > 1) row.append(el('div', { class: 'quantity-steps' }, [minus, count, plus]));
+  // One of a thing is not a quantity, so it gets no stepper to say so. The
+  // ten-at-a-time pair only appears where ten is a step worth having.
+  if (spec.max > 1) {
+    const steps = el('div', { class: 'quantity-steps' });
+    if (spec.max > 10) steps.append(minusTen);
+    steps.append(minus, count, plus);
+    if (spec.max > 10) steps.append(plusTen);
+    steps.append(most);
+    row.append(steps);
+  }
   if (spec.note) row.append(el('span', { class: 'quantity-note', text: spec.note }));
   if (spec.unitPrice !== undefined) row.append(total);
   row.append(go);

@@ -626,15 +626,30 @@ function renderOutcome(sim: Simulation): HTMLElement {
   return section;
 }
 
+/**
+ * A pot at work: what it is making, how long is left, and how far along it is.
+ *
+ * The clock and the bar move themselves — `data-countdown-at` and
+ * `data-progress-from` are patched by the shell each frame. They used to move
+ * because this whole screen was rebuilt sixty times a second for as long as
+ * anything was brewing, which cost the page its scroll and most of its clicks.
+ */
 function renderBrewingTimer(sim: Simulation): HTMLElement {
   const brewing = sim.brewing!;
   const total = brewing.readyAt - brewing.startedAt;
   const done = sim.now - brewing.startedAt;
 
-  const clock = stat(
-    t('cauldron.brewing.remaining'),
-    formatDuration(Math.max(0, brewing.readyAt - sim.now)),
-  );
+  const remaining = el('span', {
+    text: formatDuration(Math.max(0, brewing.readyAt - sim.now)),
+  });
+  remaining.dataset.countdownAt = String(brewing.readyAt);
+
+  const bar = meter(total > 0 ? done / total : 1);
+  const fill = bar.querySelector<HTMLElement>('.meter-fill');
+  if (fill && total > 0) {
+    fill.dataset.progressFrom = String(brewing.startedAt);
+    fill.dataset.progressTo = String(brewing.readyAt);
+  }
 
   return el('section', { class: 'station-block' }, [
     el('div', { class: 'outcome' }, [
@@ -643,8 +658,8 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
         el('span', { class: 'outcome-name', text: t(`recipe.${brewing.outcome.recipeId}`) }),
         chip(t(`potency.${brewing.outcome.potencyTier}`)),
       ]),
-      clock,
-      meter(total > 0 ? done / total : 1),
+      stat(t('cauldron.brewing.remaining'), remaining),
+      bar,
     ]),
   ]);
 }

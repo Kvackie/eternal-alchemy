@@ -47,7 +47,7 @@ export function renderMarket(sim: Simulation): HTMLElement {
    * full-stage page on a phone and a centred card given room, rather than a
    * sheet docked to one side of a picture that is no longer drawn.
    */
-  return el('div', { class: 'panel panel-roomy' }, [
+  return el('div', { class: 'panel panel-roomy panel-market' }, [
     panelHeader(t('market.title'), t('market.subtitle')),
     body,
   ]);
@@ -133,15 +133,67 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
     el('p', { class: 'merchant-blurb', text: t(`merchant.${visit.merchantId}.blurb`) }),
   ]);
 
-  const tiles = visit.entries.map((entry, index) => buildEntry(sim, visit, entry, index));
-
-  const section = el('section', { class: 'merchant' }, [
-    header,
-    slotGrid(tiles, t('market.stock.empty')),
-  ]);
+  const section = el('section', { class: 'merchant' }, [header, ...renderStock(sim, visit)]);
 
   if (sim.canSetStandingOrders) section.append(renderStandingOrder(sim, visit));
   return section;
+}
+
+/**
+ * The order a merchant's stock is laid out in.
+ *
+ * A trader's pack came out in whatever order the generator happened to fill it,
+ * so eleven tiles alternated seed, phial, seed, wax, board — and on a phone,
+ * where a name gets about eleven characters, telling what someone sells meant
+ * reading every tile. Grouped, the shape of the stock is legible without
+ * reading anything: this trader is three ingredients and a shelf.
+ *
+ * Things the pot will see come first, then the things you put a potion in, then
+ * the things you keep it on, then the shop itself. Kinds absent from a pack are
+ * simply not drawn.
+ */
+const KIND_ORDER: Array<StockEntry['kind']> = [
+  'ingredient',
+  'seed',
+  'spore',
+  'vessel',
+  'seal',
+  'board',
+  'decor',
+  'equipment',
+];
+
+function renderStock(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
+  if (visit.entries.length === 0) return [slotGrid([], t('market.stock.empty'))];
+
+  /*
+   * The index is carried, not recomputed.
+   *
+   * Everything downstream — buying, the standing order, the tile's own id —
+   * addresses an entry by its position in the merchant's pack, so grouping must
+   * not renumber them.
+   */
+  const byKind = new Map<StockEntry['kind'], HTMLElement[]>();
+  visit.entries.forEach((entry, index) => {
+    const tiles = byKind.get(entry.kind) ?? [];
+    tiles.push(buildEntry(sim, visit, entry, index));
+    byKind.set(entry.kind, tiles);
+  });
+
+  const out: HTMLElement[] = [];
+  for (const kind of KIND_ORDER) {
+    const tiles = byKind.get(kind);
+    if (!tiles || tiles.length === 0) continue;
+    const grid = slotGrid(tiles);
+    grid.classList.add('roomy');
+    out.push(
+      el('div', { class: 'stock-group' }, [
+        el('span', { class: 'field-label', text: t(`market.group.${kind}`) }),
+        grid,
+      ]),
+    );
+  }
+  return out;
 }
 
 /**

@@ -11,7 +11,8 @@
  * elsewhere on the tile.
  */
 
-import { button, chip, el, gradeBadge, modal, potionIcon, stat } from './components';
+import { button, chip, el, gradeBadge, modal, potionIcon, quantityAction, stat } from './components';
+import type { QuantityActionSpec } from './components';
 import { formatGold, formatNumber, t } from '@/i18n';
 import { getForm, getHeroDef, getSeal, getVessel } from '@/sim/config';
 import type { Simulation } from '@/sim/sim';
@@ -50,7 +51,19 @@ function notesOn(sim: Simulation, item: BottledItem): string[] {
   return notes;
 }
 
-export function showPotionInfo(sim: Simulation, item: BottledItem, count = 1): void {
+/**
+ * What a bottle is, and — where there is one — what to do with it.
+ *
+ * The action is what the tile's own click used to be. It lives here so a tap on
+ * a bottle means the same thing as a tap on a seed or a jar of stock: tell me
+ * about this, and then let me act on it.
+ */
+export function showPotionInfo(
+  sim: Simulation,
+  item: BottledItem,
+  count = 1,
+  action?: QuantityActionSpec,
+): void {
   const vessel = getVessel(item.vesselId);
   const seal = getSeal(item.sealId);
 
@@ -104,6 +117,17 @@ export function showPotionInfo(sim: Simulation, item: BottledItem, count = 1): v
       ),
       el('div', { class: 'dialog-actions' }, [
         button(t('common.close'), dismiss, { variant: 'quiet' }),
+        ...(action
+          ? [
+              quantityAction({
+                ...action,
+                run: (quantity) => {
+                  dismiss();
+                  action.run(quantity);
+                },
+              }),
+            ]
+          : []),
       ]),
     ],
   });

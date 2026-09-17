@@ -841,6 +841,8 @@ input[type='range'] {
   gap: 0.5rem;
   justify-content: flex-end;
   margin-top: 0.875rem;
+  /* Six steppers, a total and two verbs do not fit a phone on one line. */
+  flex-wrap: wrap;
 }
 
 /*
@@ -861,6 +863,7 @@ input[type='range'] {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  flex-wrap: wrap;
 }
 
 .quantity-step {
@@ -882,12 +885,45 @@ input[type='range'] {
   opacity: 0.35;
 }
 
-/* Wide enough for three figures, so the row does not shuffle as it counts. */
+/*
+ * The wider steps — ten at a time, and all of it.
+ *
+ * A square tap target with "+10" in it is unreadable, so these keep the height
+ * and give up the square.
+ */
+.quantity-step.wide {
+  min-width: auto;
+  padding-inline: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/*
+ * Wide enough for three figures, so the row does not shuffle as it counts.
+ *
+ * It is a text field rather than a label: the number can be typed, which is the
+ * only way to take ninety of something in one gesture.
+ */
 .quantity-count {
-  min-width: 2.25rem;
+  /* A field, so it must be told not to take the whole row it sits in. */
+  flex: 0 0 auto;
+  width: 3.25rem;
+  min-height: var(--tap);
+  padding: 0 0.25rem;
   text-align: center;
   font-weight: 700;
   font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.quantity-count:focus-visible {
+  outline: 2px solid var(--verd);
+  outline-offset: 1px;
 }
 
 .quantity-total {
@@ -1029,6 +1065,25 @@ input[type='range'] {
 }
 
 /*
+ * The market's grid, given room to be read.
+ *
+ * At the default tile width a phone fits five columns and gives each name about
+ * eleven characters, which turns "Moonpetal Draught" into a guess. A merchant's
+ * stock is the one grid where the label IS the information — you are deciding
+ * what to buy, not counting what you own — so it takes fewer, wider tiles.
+ */
+.slot-grid.roomy {
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+}
+
+/* One kind of goods, under its heading. */
+.stock-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/*
  * Ingredient names are long, and a phone was breaking them in the middle.
  *
  * At five columns a tile gave the label 62px and "Crimsonbloom" wants 89, so
@@ -1041,6 +1096,11 @@ input[type='range'] {
 @media (max-width: 559.98px) {
   .slot-grid {
     grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  }
+
+  /* Two across on a phone, which is the width a full name needs. */
+  .slot-grid.roomy {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
   }
 
   .slot-label {
@@ -1493,6 +1553,12 @@ input[type='range'] {
 .chip.good {
   color: var(--verd-ink);
   background: var(--verd-soft);
+}
+
+/* Something under way, as opposed to something finished. Amber, not green. */
+.chip.warm {
+  color: var(--amber);
+  background: var(--amber-soft);
 }
 
 /* --------------------------------------------------------------- grounds */
@@ -2466,6 +2532,43 @@ input[type='range'] {
 
 .bench-card[data-activity='ready'] {
   border-color: var(--verd);
+}
+
+/*
+ * A pot at work looks like it is working.
+ *
+ * All this screen used to say about a brew in progress was the word "Brewing"
+ * in the same grey chip an empty pot gets, which is indistinguishable from a
+ * pot that is doing nothing. Now the card takes the warm edge, the chip carries
+ * the time left, and the bar under it fills — the bar being the part that is
+ * visibly moving, which is what "it is working" actually looks like.
+ */
+.bench-card[data-activity='brewing'] {
+  border-color: var(--amber);
+}
+
+.bench-card[data-activity='brewing'] .bench-art {
+  animation: bench-simmer 3.2s ease-in-out infinite;
+}
+
+.bench-progress {
+  width: 100%;
+  margin-top: 0.125rem;
+}
+
+.bench-card[data-activity='brewing'] .meter-fill {
+  background: var(--amber);
+}
+
+@keyframes bench-simmer {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
 .bench-art {
@@ -4150,6 +4253,17 @@ input[type='range'] {
   .panel-roomy {
     margin-inline: auto;
     max-width: 52rem;
+  }
+
+  /*
+   * The market gets more of the page than the other roomy screens.
+   *
+   * Its body is a grid of goods rather than rows of text, so the bound that
+   * keeps a paragraph readable just costs it columns — at 52rem a trader's pack
+   * ran four tiles wide with a third of the window empty on either side.
+   */
+  .panel-market {
+    max-width: 68rem;
   }
 
   /* Both fit at this size, so there is nothing to take turns over. */

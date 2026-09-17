@@ -10,12 +10,13 @@
  * the station once you have picked one. See `station.ts`.
  */
 
-import { button, chip, collapsible, el, panelHeader } from '../components';
-import { formatGold, t } from '@/i18n';
+import { button, chip, collapsible, el, meter, panelHeader } from '../components';
+import { formatDuration, formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
 import { atCauldronLimit, activityOf, buyableTiers } from '@/sim/cauldrons';
+import type { CauldronActivity } from '@/sim/cauldrons';
 import { findCauldronTier } from '@/sim/config';
-import type { Cauldron } from '@/sim/types';
+import type { BrewInProgress, Cauldron } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 import { isStationOpen, openStation, renderStation } from './station';
@@ -68,6 +69,43 @@ export function renderCauldron(sim: Simulation): HTMLElement {
 }
 
 /**
+ * The pot's state, as a chip — with the clock still running where there is one.
+ *
+ * The countdown is patched in place by the shell rather than by redrawing the
+ * bench, because redrawing the bench sixty times a second is what made it
+ * impossible to scroll. See `needsLiveRedraw`.
+ */
+function stateChip(sim: Simulation, pot: Cauldron, activity: CauldronActivity): HTMLElement {
+  if (activity !== 'brewing' || !pot.brewing) {
+    return chip(t(`cauldron.state.${activity}`), activity === 'ready' ? 'good' : 'plain');
+  }
+
+  const node = chip(
+    t('cauldron.state.brewingIn', {
+      time: formatDuration(Math.max(0, pot.brewing.readyAt - sim.now)),
+    }),
+    'warm',
+  );
+  node.dataset.countdownAt = String(pot.brewing.readyAt);
+  node.dataset.countdownKey = 'cauldron.state.brewingIn';
+  return node;
+}
+
+/** How far along the brew is, filling on its own between two fixed moments. */
+function brewProgress(sim: Simulation, brewing: BrewInProgress): HTMLElement {
+  const total = brewing.readyAt - brewing.startedAt;
+  const bar = meter(total > 0 ? (sim.now - brewing.startedAt) / total : 1);
+  bar.classList.add('bench-progress');
+
+  const fill = bar.querySelector<HTMLElement>('.meter-fill');
+  if (fill && total > 0) {
+    fill.dataset.progressFrom = String(brewing.startedAt);
+    fill.dataset.progressTo = String(brewing.readyAt);
+  }
+  return bar;
+}
+
+/**
  * One pot card: a face that opens it, and a control that puts it away.
  *
  * The card cannot hold the button — a button may not contain a button — so the
@@ -85,8 +123,13 @@ function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
     el('span', { class: 'bench-name', text: t(`cauldronTier.${pot.tierId}`) }),
     stored
       ? chip(t('cauldron.buy.capacity', { capacity: tier?.capacity ?? 0 }))
-      : chip(t(`cauldron.state.${activity}`), activity === 'ready' ? 'good' : 'plain'),
+      : stateChip(sim, pot, activity),
   ]);
+
+  // A pot at work says how much longer, and shows it filling. The word
+  // "Brewing" on its own was the only sign anything was happening, and a grey
+  // label that never changes reads the same as a grey label that means nothing.
+  if (!stored && pot.brewing) face.append(brewProgress(sim, pot.brewing));
   face.dataset.activity = activity;
   face.dataset.stored = String(stored);
 
