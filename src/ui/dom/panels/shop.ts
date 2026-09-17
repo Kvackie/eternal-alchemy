@@ -6,12 +6,13 @@
  * works with taps alone — drag is the accelerator, not the requirement.
  */
 
-import { button, chip, el, goldText, gradeBadge, makeDropTarget, panelHeader, potionIcon, slot, slotGrid } from '../components';
+import { button, chip, el, goldText, gradeBadge, makeDropTarget, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
-import { saleChance } from '@/sim/market';
+import { saleChance, sameGoods } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
 import { artUrlIf } from '@/ui/art';
 import { goodsNotes } from '../goods';
+import { showPotionInfo } from '../potionInfo';
 
 import { renderHaggle } from './haggle';
 import type { BottledItem, ShelfSlot } from '@/sim/types';
@@ -131,6 +132,7 @@ function renderSlot(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
       boardRow(sim, shelfSlot),
       el('span', { class: 'shelf-empty-label', text: t('shop.slot.empty') }),
       el('span', { class: 'field-note', text: t('shop.slot.emptyHint') }),
+      button(t('shop.slot.stock'), () => openShelfPicker(sim, shelfSlot), { small: true }),
     );
     return node;
   }
@@ -253,28 +255,54 @@ function renderDecor(sim: Simulation): HTMLElement {
   ]);
 }
 
-function renderInventory(sim: Simulation): HTMLElement {
-  const items = sim.world.bottled;
+/**
+ * Bottles gathered into stacks, by the same rule the shelf stacks them.
+ *
+ * Twelve identical Ember Draughts used to be twelve tiles — a wall of the same
+ * picture, and a grid whose length said how much you had brewed rather than
+ * what you had. `sameGoods` is the sim's own test for whether two bottles are
+ * interchangeable, so the grid groups by exactly what a shelf slot would merge.
+ */
+function stacksOf(items: BottledItem[]): Array<{ item: BottledItem; count: number }> {
+  const stacks: Array<{ item: BottledItem; count: number }> = [];
+  for (const item of items) {
+    const found = stacks.find((stack) => sameGoods(stack.item, item));
+    if (found) found.count += 1;
+    else stacks.push({ item, count: 1 });
+  }
+  return stacks;
+}
 
-  const tiles = items.map((item) =>
+/** Put one of these on the first shelf with room, and say so. */
+function stockOne(sim: Simulation, item: BottledItem): void {
+  const free = sim.world.shelf.find((entry) => !entry.item);
+  if (!free) {
+    toast(t('shop.noShelf'));
+    return;
+  }
+  if (sim.stock(free.id, item.uid)) changed();
+}
+
+function renderInventory(sim: Simulation): HTMLElement {
+  const tiles = stacksOf(sim.world.bottled).map(({ item, count }) =>
     slot({
       id: item.uid,
       icon: itemIcon(item),
       label: t(`recipe.${item.recipeId}`),
+      count,
       caption: [gradeBadge(item.grade), goldText(item.fairValue)],
       dragType: ITEM_DRAG,
       title:
         `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
-        `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}\n` +
-        t('shop.tip.stock'),
-      onActivate: () => {
-        const free = sim.world.shelf.find((entry) => !entry.item);
-        if (!free) {
-          toast(t('shop.noShelf'));
-          return;
-        }
-        if (sim.stock(free.id, item.uid)) changed();
-      },
+        `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
+      // A tap tells you what it is, and the panel puts it out — the same two
+      // steps as a seed in the garden or a jar in the market.
+      onActivate: () =>
+        showPotionInfo(sim, item, count, {
+          label: t('shop.slot.stock'),
+          max: 1,
+          run: () => stockOne(sim, item),
+        }),
     }),
   );
 
@@ -285,4 +313,41 @@ function renderInventory(sim: Simulation): HTMLElement {
     ]),
     slotGrid(tiles, t('shop.inventory.empty')),
   ]);
+}
+
+/**
+ * Fill this shelf, chosen from the shelf itself.
+ *
+ * Stocking used to start in the inventory and end wherever the first free shelf
+ * happened to be — fine when one shelf is empty, no use at all when you mean
+ * *that* one. Dragging could always say which; this is the same answer without
+ * a drag.
+ */
+function openShelfPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
+  const stacks = stacksOf(sim.world.bottled);
+  modal({
+    content: (dismiss) => [
+      el('h2', { text: t('shop.slot.stock') }),
+      stacks.length === 0
+        ? el('p', { class: 'grid-empty', text: t('shop.inventory.empty') })
+        : slotGrid(
+            stacks.map(({ item, count }) =>
+              slot({
+                id: item.uid,
+                icon: itemIcon(item),
+                label: t(`recipe.${item.recipeId}`),
+                count,
+                caption: [gradeBadge(item.grade), goldText(item.fairValue)],
+                onActivate: () => {
+                  dismiss();
+                  if (sim.stock(shelfSlot.id, item.uid)) changed();
+                },
+              }),
+            ),
+          ),
+      el('div', { class: 'dialog-actions' }, [
+        button(t('common.close'), dismiss, { variant: 'quiet' }),
+      ]),
+    ],
+  });
 }

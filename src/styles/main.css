@@ -732,6 +732,32 @@ button {
 }
 
 /*
+ * A cave tool, which is a thing you hold rather than a tab you are on.
+ *
+ * Three identical cells reading Seed, Lantern, Tray read as a segmented
+ * control. The glyph is what tells you at a glance that one of them is in your
+ * hand and what it does.
+ */
+.option-tool {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.5rem;
+  align-items: center;
+  text-align: left;
+}
+
+.tool-glyph {
+  grid-row: 1 / span 2;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.option-tool small {
+  grid-column: 2;
+}
+
+/*
  * What a town does to a run, on the card you pick it from.
  *
  * Wide enough columns that a modifier is one line rather than three: the whole
@@ -815,6 +841,8 @@ input[type='range'] {
   gap: 0.5rem;
   justify-content: flex-end;
   margin-top: 0.875rem;
+  /* Six steppers, a total and two verbs do not fit a phone on one line. */
+  flex-wrap: wrap;
 }
 
 /*
@@ -835,6 +863,7 @@ input[type='range'] {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  flex-wrap: wrap;
 }
 
 .quantity-step {
@@ -856,12 +885,45 @@ input[type='range'] {
   opacity: 0.35;
 }
 
-/* Wide enough for three figures, so the row does not shuffle as it counts. */
+/*
+ * The wider steps — ten at a time, and all of it.
+ *
+ * A square tap target with "+10" in it is unreadable, so these keep the height
+ * and give up the square.
+ */
+.quantity-step.wide {
+  min-width: auto;
+  padding-inline: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/*
+ * Wide enough for three figures, so the row does not shuffle as it counts.
+ *
+ * It is a text field rather than a label: the number can be typed, which is the
+ * only way to take ninety of something in one gesture.
+ */
 .quantity-count {
-  min-width: 2.25rem;
+  /* A field, so it must be told not to take the whole row it sits in. */
+  flex: 0 0 auto;
+  width: 3.25rem;
+  min-height: var(--tap);
+  padding: 0 0.25rem;
   text-align: center;
   font-weight: 700;
   font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.quantity-count:focus-visible {
+  outline: 2px solid var(--verd);
+  outline-offset: 1px;
 }
 
 .quantity-total {
@@ -880,6 +942,66 @@ input[type='range'] {
   color: var(--amber);
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/*
+ * A setting that is on or off, sized like one.
+ *
+ * Two full-width `option` cells reading Off and On carried the weight of the
+ * text-size row above it, which is a choice between five things. This is one
+ * thing with two states, so it is one control.
+ */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: flex-start;
+  min-height: var(--tap);
+  padding: 0 0.5rem 0 0;
+  background: none;
+  border: 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+}
+
+.switch-track {
+  position: relative;
+  flex: none;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.switch[aria-checked='true'] {
+  color: var(--ink);
+}
+
+.switch[aria-checked='true'] .switch-track {
+  background: var(--verd-soft);
+  border-color: var(--verd);
+}
+
+.switch[aria-checked='true'] .switch-thumb {
+  background: var(--verd);
+  transform: translateX(1.25rem);
+}
+
+.switch:hover .switch-track {
+  border-color: var(--verd);
 }
 
 /* ------------------------------------------------------------------ steps */
@@ -943,6 +1065,25 @@ input[type='range'] {
 }
 
 /*
+ * The market's grid, given room to be read.
+ *
+ * At the default tile width a phone fits five columns and gives each name about
+ * eleven characters, which turns "Moonpetal Draught" into a guess. A merchant's
+ * stock is the one grid where the label IS the information — you are deciding
+ * what to buy, not counting what you own — so it takes fewer, wider tiles.
+ */
+.slot-grid.roomy {
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+}
+
+/* One kind of goods, under its heading. */
+.stock-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/*
  * Ingredient names are long, and a phone was breaking them in the middle.
  *
  * At five columns a tile gave the label 62px and "Crimsonbloom" wants 89, so
@@ -955,6 +1096,11 @@ input[type='range'] {
 @media (max-width: 559.98px) {
   .slot-grid {
     grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  }
+
+  /* Two across on a phone, which is the width a full name needs. */
+  .slot-grid.roomy {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
   }
 
   .slot-label {
@@ -1407,6 +1553,12 @@ input[type='range'] {
 .chip.good {
   color: var(--verd-ink);
   background: var(--verd-soft);
+}
+
+/* Something under way, as opposed to something finished. Amber, not green. */
+.chip.warm {
+  color: var(--amber);
+  background: var(--amber-soft);
 }
 
 /* --------------------------------------------------------------- grounds */
@@ -2382,6 +2534,43 @@ input[type='range'] {
   border-color: var(--verd);
 }
 
+/*
+ * A pot at work looks like it is working.
+ *
+ * All this screen used to say about a brew in progress was the word "Brewing"
+ * in the same grey chip an empty pot gets, which is indistinguishable from a
+ * pot that is doing nothing. Now the card takes the warm edge, the chip carries
+ * the time left, and the bar under it fills — the bar being the part that is
+ * visibly moving, which is what "it is working" actually looks like.
+ */
+.bench-card[data-activity='brewing'] {
+  border-color: var(--amber);
+}
+
+.bench-card[data-activity='brewing'] .bench-art {
+  animation: bench-simmer 3.2s ease-in-out infinite;
+}
+
+.bench-progress {
+  width: 100%;
+  margin-top: 0.125rem;
+}
+
+.bench-card[data-activity='brewing'] .meter-fill {
+  background: var(--amber);
+}
+
+@keyframes bench-simmer {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
 .bench-art {
   width: 100%;
   max-width: 5rem;
@@ -2790,7 +2979,27 @@ input[type='range'] {
 
 /* ------------------------------------------------------------ checklist */
 
+/*
+ * The opening checklist, floating over the panel rather than built into it.
+ *
+ * As a child of `.panel-body` it joined that body's flex flow: it took the gap,
+ * pushed the screen's own content down, scrolled away with it, and on a 412px
+ * phone held roughly a third of the view on every screen at once. Lifting it
+ * out is what stops it deciding other screens' layout.
+ *
+ * Bottom right, above the nav, under the modals (30) and clear of the debug
+ * toggle (20). It caps its own height and scrolls inside itself, because eight
+ * steps at 150% text is taller than a phone.
+ */
 .checklist {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 18;
+  width: min(23rem, calc(100% - 1.5rem));
+  max-height: min(60%, 24rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -2798,6 +3007,15 @@ input[type='range'] {
   background: var(--verd-soft);
   border: 1px solid var(--verd);
   border-radius: var(--radius);
+  /* It is over the content now, so it has to read as being over it. */
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.45);
+}
+
+/* Folded down it is one line, and takes only the width that line needs. */
+.checklist[data-collapsed='true'] {
+  width: auto;
+  max-width: min(23rem, calc(100% - 1.5rem));
+  max-height: none;
 }
 
 .checklist-head {
@@ -3908,6 +4126,16 @@ input[type='range'] {
   }
 
   /*
+   * The zoom controls step above the checklist rather than under it.
+   *
+   * Both want the bottom of the stage, and 412px has no room for a 368px card
+   * beside a row of buttons. Desktop has the width, so this is only here.
+   */
+  #panels[data-checklist='true'] .view-controls {
+    bottom: calc(1.5rem + var(--checklist-h, 0px));
+  }
+
+  /*
    * The scene with the panel out of the way.
    *
    * `display: none` rather than a transform or an opacity: a panel that is off
@@ -4025,6 +4253,17 @@ input[type='range'] {
   .panel-roomy {
     margin-inline: auto;
     max-width: 52rem;
+  }
+
+  /*
+   * The market gets more of the page than the other roomy screens.
+   *
+   * Its body is a grid of goods rather than rows of text, so the bound that
+   * keeps a paragraph readable just costs it columns — at 52rem a trader's pack
+   * ran four tiles wide with a third of the window empty on either side.
+   */
+  .panel-market {
+    max-width: 68rem;
   }
 
   /* Both fit at this size, so there is nothing to take turns over. */

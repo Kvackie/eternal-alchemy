@@ -208,7 +208,7 @@ export function fitBoard(world: World, slotId: string, tierId: string): boolean 
 }
 
 /** Two bottles are interchangeable on a shelf only if nothing about them differs. */
-function sameGoods(a: BottledItem, b: BottledItem): boolean {
+export function sameGoods(a: BottledItem, b: BottledItem): boolean {
   return (
     a.recipeId === b.recipeId &&
     a.formId === b.formId &&

@@ -11,6 +11,7 @@
  */
 
 import { button, clear, el } from './components';
+import { captureScroll, restoreScroll } from './scroll';
 import { renderGrounds } from './panels/grounds';
 import { renderCauldron } from './panels/cauldron';
 import { closeStation, isStationOpen } from './panels/station';
@@ -22,6 +23,7 @@ import { renderLedger, resetLedgerPaging } from './panels/ledger';
 import { renderSettings } from './panels/settings';
 import { renderOnboarding } from './panels/onboarding';
 import { formatDuration, formatGold, formatLongDuration, formatNumber, t } from '@/i18n';
+import { activityOf } from '@/sim/cauldrons';
 import { dayStateAt } from '@/sim/clock';
 import { config } from '@/sim/config';
 import { bus, changed, type ConfirmRequest, type ScreenId } from '@/ui/bus';
@@ -96,6 +98,9 @@ export class Shell {
 
   /** The market's cast as it was last drawn — see `marketCastChanged`. */
   private marketCast = '';
+
+  /** What the pots were doing when the bench was last drawn. */
+  private cauldronShape = '';
 
   private hud = el('div', { class: 'hud' });
   private panels = el('div', { id: 'panels' });
@@ -268,8 +273,29 @@ export class Shell {
 
   private needsLiveRedraw(): boolean {
     if (this.away) return false;
+
+    /*
+     * The bench does NOT redraw because something is brewing.
+     *
+     * It used to: `sim.brewing !== null` meant that from the moment a brew was
+     * accepted until the moment it finished, this screen was torn down and
+     * rebuilt sixty times a second — 240 fresh children under `#panels` in two
+     * seconds, measured. That is the market bug described below, and it had the
+     * same two symptoms: the page could not be scrolled, because the thing
+     * under the finger was replaced mid-gesture, and buttons only answered
+     * about one press in six, because a click needs mousedown and mouseup to
+     * land on the same element.
+     *
+     * The timer and its bar carry `data-countdown-at` and `data-progress-from`
+     * instead, so they move on their own. What is left worth a rebuild is a pot
+     * changing what it is doing — filling, brewing, ready — which is a string
+     * this can compare.
+     *
+     * A held burner still redraws every frame: the readout it feeds is the
+     * whole point of holding it, and it lasts as long as a finger is down.
+     */
     if (this.screen === 'cauldron') {
-      return this.deps.sim.burner !== null || this.deps.sim.brewing !== null;
+      return this.deps.sim.burner !== null || this.cauldronShapeChanged();
     }
     /*
      * The market redraws when its cast changes, not when its clock moves.
@@ -298,6 +324,25 @@ export class Shell {
      * out. See the note there.
      */
     return false;
+  }
+
+  /**
+   * What the pots are doing, as a string — see `needsLiveRedraw`.
+   *
+   * Like the market's cast, this is made of fixed facts rather than of the
+   * clock, so it reads the same on every frame until something really happens.
+   * Nothing emits `world:changed` when a brew finishes on its own, so the
+   * change has to be noticed from here or the bench would keep saying
+   * "Brewing" over a pot that was done.
+   */
+  private cauldronShapeChanged(): boolean {
+    const shape = this.deps.sim.world.cauldrons
+      .map((pot) => `${pot.id}:${activityOf(pot)}:${pot.stored ? 'away' : 'out'}`)
+      .join('|');
+
+    if (shape === this.cauldronShape) return false;
+    this.cauldronShape = shape;
+    return true;
   }
 
   /**
@@ -369,6 +414,11 @@ export class Shell {
   // -- Nav ------------------------------------------------------------------
 
   private renderNav(): void {
+    /*
+     * The nav scrolls as well — sideways on a phone, down the side above the
+     * breakpoint — and it is rebuilt on every tick for its badges.
+     */
+    const scrolls = captureScroll(this.nav);
     clear(this.nav);
     const { sim } = this.deps;
 
@@ -410,6 +460,8 @@ export class Shell {
       node.addEventListener('click', () => this.setScreen(entry.id));
       this.nav.append(node);
     }
+
+    restoreScroll(this.nav, scrolls);
   }
 
   // -- Panels ---------------------------------------------------------------
@@ -417,57 +469,36 @@ export class Shell {
   private renderPanels(): void {
     /*
      * Preserve scroll position across the rebuild, or a live-updating screen
-     * yanks itself back to the top under the reader's finger.
+     * yanks itself back to the top under the reader's finger — and the panels
+     * are rebuilt on every world change, which is most of a press.
      *
-     * Every body, not the first one. The Roster is two panels side by side, and
-     * restoring only `querySelector('.panel-body')` meant the tavern — 45 cards
-     * deep — jumped to the top whenever anything in the world ticked.
-     *
-     * The pair counts as well. Below the desktop breakpoint its two panels stack
-     * into one page and the pair itself is the scroller, so tracking only the
-     * bodies meant picking a hero half way down the Roster threw the page back
-     * to the top — on the one screen where choosing is the whole activity.
+     * Which element scrolls is not something this can know. Above the desktop
+     * breakpoint it is the panel body; below it the panel itself, or the pair
+     * the Roster stacks into; inside the Roster it is a fold; inside the
+     * brewing station it is one of five columns and lists. `captureScroll`
+     * records whatever has been scrolled, wherever it is, so a scroller added
+     * later keeps its place without anything here being told about it.
      */
-    const SCROLLERS = '.panel-body, .panel-pair';
-    const scrolls = [...this.panels.querySelectorAll(SCROLLERS)].map((node) => node.scrollTop);
-
-    /*
-     * Anything that scrolls and is not a panel body keeps its place by name.
-     *
-     * Positional matching works for panel bodies, which are one per panel and
-     * always in the same order. The brewing station is three columns and two
-     * lists inside them, and which of those exist changes with what the pot is
-     * doing — so they are keyed instead, and a list that is not on screen this
-     * time simply has nothing to restore.
-     */
-    const keyed = new Map<string, number>();
-    for (const node of this.panels.querySelectorAll<HTMLElement>('[data-keep-scroll]')) {
-      keyed.set(node.dataset.keepScroll ?? '', node.scrollTop);
-    }
+    const scrolls = captureScroll(this.panels);
 
     clear(this.panels);
 
-    // The checklist rides above whichever panel is open, so it is never a
-    // screen you have to go to.
-    const checklist = renderOnboarding(this.deps.sim);
     const panel = this.buildPanel();
-    if (checklist.tagName !== 'SPAN') {
-      const body = panel.querySelector('.panel-body');
-      if (body) body.prepend(checklist);
-    }
     this.panels.append(panel);
 
-    // Positional: the same screen rebuilds to the same shape, and a screen that
-    // has changed shape has no position worth restoring anyway.
-    this.panels.querySelectorAll(SCROLLERS).forEach((node, index) => {
-      const scroll = scrolls[index] ?? 0;
-      if (scroll > 0) node.scrollTop = scroll;
-    });
-
-    for (const node of this.panels.querySelectorAll<HTMLElement>('[data-keep-scroll]')) {
-      const scroll = keyed.get(node.dataset.keepScroll ?? '') ?? 0;
-      if (scroll > 0) node.scrollTop = scroll;
-    }
+    /*
+     * The checklist floats over the panel rather than sitting inside it.
+     *
+     * It used to be prepended into `.panel-body`, which made it part of every
+     * screen's layout: it took the body's flex gap, pushed the real content
+     * down, scrolled away with it, and on a phone held about a third of the
+     * screen on all eight screens at once. It is still above whatever panel is
+     * open — it is just no longer made of the same cloth.
+     */
+    const checklist = renderOnboarding(this.deps.sim);
+    const hasChecklist = checklist.tagName !== 'SPAN';
+    if (hasChecklist) this.panels.append(checklist);
+    this.panels.dataset.checklist = String(hasChecklist);
 
     // Only where there is a world to recentre. The Ledger and Settings take the
     // whole stage, so the canvas behind them is not showing anything — and nor
@@ -502,8 +533,26 @@ export class Shell {
       }
     }
 
+    /*
+     * How much of the bottom corner the checklist is using.
+     *
+     * The zoom and recentre controls live in that corner too, and on a phone
+     * there is not room for both side by side — so they sit above it instead,
+     * which takes a number only the layout knows. Read once per render, and
+     * only while the checklist is up.
+     */
+    if (hasChecklist) {
+      this.panels.style.setProperty('--checklist-h', `${checklist.offsetHeight}px`);
+    } else {
+      this.panels.style.removeProperty('--checklist-h');
+    }
+
     if (this.away) this.panels.append(this.buildAwayDialog(this.away));
     if (this.confirming) this.panels.append(this.buildConfirmDialog(this.confirming));
+
+    // Last, once everything that affects the layout is in place: a scroller put
+    // back before its siblings exist has nothing to scroll through yet.
+    restoreScroll(this.panels, scrolls);
   }
 
   private buildPanel(): HTMLElement {
