@@ -468,6 +468,29 @@ export function slot(spec: SlotSpec): HTMLElement {
   return node;
 }
 
+/**
+ * An on/off switch, for a setting that is simply on or off.
+ *
+ * `optionGroup` was standing in for this — two full-width cells reading Off and
+ * On, which is the weight of a choice between five text sizes rather than of a
+ * thing with two states. `role="switch"` is what a screen reader wants for the
+ * same reason a track and a thumb are what an eye wants.
+ */
+export function toggleSwitch(spec: {
+  label: string;
+  on: boolean;
+  onChange: (on: boolean) => void;
+}): HTMLElement {
+  const node = el('button', { class: 'switch', type: 'button' }, [
+    el('span', { class: 'switch-track' }, [el('span', { class: 'switch-thumb' })]),
+    el('span', { class: 'switch-label', text: spec.label }),
+  ]);
+  node.setAttribute('role', 'switch');
+  node.setAttribute('aria-checked', String(spec.on));
+  node.addEventListener('click', () => spec.onChange(!spec.on));
+  return node;
+}
+
 export interface ModalSpec {
   /** Extra classes for the dialog box, e.g. a panel-specific layout. */
   className?: string;

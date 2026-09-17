@@ -447,15 +447,22 @@ export class Shell {
 
     clear(this.panels);
 
-    // The checklist rides above whichever panel is open, so it is never a
-    // screen you have to go to.
-    const checklist = renderOnboarding(this.deps.sim);
     const panel = this.buildPanel();
-    if (checklist.tagName !== 'SPAN') {
-      const body = panel.querySelector('.panel-body');
-      if (body) body.prepend(checklist);
-    }
     this.panels.append(panel);
+
+    /*
+     * The checklist floats over the panel rather than sitting inside it.
+     *
+     * It used to be prepended into `.panel-body`, which made it part of every
+     * screen's layout: it took the body's flex gap, pushed the real content
+     * down, scrolled away with it, and on a phone held about a third of the
+     * screen on all eight screens at once. It is still above whatever panel is
+     * open — it is just no longer made of the same cloth.
+     */
+    const checklist = renderOnboarding(this.deps.sim);
+    const hasChecklist = checklist.tagName !== 'SPAN';
+    if (hasChecklist) this.panels.append(checklist);
+    this.panels.dataset.checklist = String(hasChecklist);
 
     // Positional: the same screen rebuilds to the same shape, and a screen that
     // has changed shape has no position worth restoring anyway.
@@ -500,6 +507,20 @@ export class Shell {
           }),
         );
       }
+    }
+
+    /*
+     * How much of the bottom corner the checklist is using.
+     *
+     * The zoom and recentre controls live in that corner too, and on a phone
+     * there is not room for both side by side — so they sit above it instead,
+     * which takes a number only the layout knows. Read once per render, and
+     * only while the checklist is up.
+     */
+    if (hasChecklist) {
+      this.panels.style.setProperty('--checklist-h', `${checklist.offsetHeight}px`);
+    } else {
+      this.panels.style.removeProperty('--checklist-h');
     }
 
     if (this.away) this.panels.append(this.buildAwayDialog(this.away));

@@ -12,8 +12,8 @@ import {
   clear,
   el,
   modal,
-  optionGroup,
   panelHeader,
+  toggleSwitch,
   splitOnValue,
 } from '../components';
 import { debugEnabled, setDebugEnabled } from '@/platform/debugFlag';
@@ -106,24 +106,14 @@ export function renderSettings(deps: SettingsDeps): HTMLElement {
     el('section', { class: 'setting' }, [
       el('span', { class: 'field-label', text: t('settings.debug') }),
       el('span', { class: 'field-note', text: t('settings.debug.hint') }),
-      optionGroup([
-        {
-          label: t('settings.debug.off'),
-          selected: !debugEnabled(),
-          onSelect: () => {
-            setDebugEnabled(false);
-            bus.emit({ type: 'debug', enabled: false });
-          },
+      toggleSwitch({
+        label: t(debugEnabled() ? 'settings.debug.on' : 'settings.debug.off'),
+        on: debugEnabled(),
+        onChange: (on) => {
+          setDebugEnabled(on);
+          bus.emit({ type: 'debug', enabled: on });
         },
-        {
-          label: t('settings.debug.on'),
-          selected: debugEnabled(),
-          onSelect: () => {
-            setDebugEnabled(true);
-            bus.emit({ type: 'debug', enabled: true });
-          },
-        },
-      ]),
+      }),
     ]),
   );
 

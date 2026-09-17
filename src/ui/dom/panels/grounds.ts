@@ -162,17 +162,29 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
        * the tile — 18px, and the only route to it. The tap now means the same
        * thing here as everywhere else, and choosing the seed is a button inside.
        */
+      /*
+       * The tile explains the seed; the panel plants it.
+       *
+       * This used to select the seed and leave the planting to a plot's own
+       * button — tile, Plant this, then Plant, three presses to put one seed in
+       * the ground. The panel does it now, into the first empty plot, and keeps
+       * the seed in hand so the next plot's button plants the same thing.
+       * Dragging onto a particular plot is still there for when *which* plot
+       * matters; this is for when it does not.
+       */
       onActivate: () => {
-        const chosen = selectedCrop === id;
+        const free = sim.world.plots.find((plot) => !plot.crop);
         showIngredientInfo(sim, crop.yields, {
           // A bred strain carries its own vector, not the wild plant's.
           essence: strain?.essence,
           title: strain ? label : undefined,
           action: {
-            label: chosen ? t('garden.seed.deselect') : t('garden.seed.select'),
+            label: t('garden.seed.plant'),
             max: 1,
+            blocked: free ? undefined : t('garden.seed.noPlot'),
             run: () => {
-              selectedCrop = chosen ? null : id;
+              selectedCrop = id;
+              if (free) sim.plant(free.id, id);
               changed();
             },
           },
@@ -436,7 +448,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
           const chosen = selectedSpecies === species.id;
           showIngredientInfo(sim, species.id, {
             action: {
-              label: chosen ? t('garden.seed.deselect') : t('cave.spore.select'),
+              label: chosen ? t('cave.spore.deselect') : t('cave.spore.select'),
               max: 1,
               run: () => {
                 selectedSpecies = chosen ? null : species.id;
@@ -466,8 +478,18 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
       el(
         'div',
         { class: 'options' },
-        (['seed', 'lantern', 'tray'] as const).map((id) => {
-          const node = el('button', { class: 'option', type: 'button' }, [
+        /*
+         * A glyph each, because three words in a row of identical cells do not
+         * read as tools — they read as tabs. The picture is what says "this is
+         * the thing in your hand".
+         */
+        ([
+          ['seed', '\u{1F344}'],
+          ['lantern', '\u{1F3EE}'],
+          ['tray', '\u{1F9FA}'],
+        ] as const).map(([id, glyph]) => {
+          const node = el('button', { class: 'option option-tool', type: 'button' }, [
+            el('span', { class: 'tool-glyph', text: glyph }),
             el('span', { text: t(`cave.tool.${id}`) }),
             el('small', { text: t(`cave.tool.${id}.hint`) }),
           ]);

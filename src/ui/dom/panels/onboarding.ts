@@ -5,8 +5,9 @@
  * forces an order. It is a list of eight things that add up to one complete
  * loop, each ticking itself off when the world says it happened.
  *
- * It sits above the panel on whatever screen the next step belongs to, and
- * disappears the moment the loop closes.
+ * It floats over the panel on whatever screen you are on, as a card you can
+ * fold down to a single line or send away for good — not as a block wedged into
+ * the top of every screen's content, which is what it used to be.
  */
 
 import { button, el } from '../components';
@@ -47,6 +48,7 @@ export function renderOnboarding(sim: Simulation): HTMLElement {
   ]);
 
   const section = el('section', { class: 'checklist' }, [header]);
+  section.dataset.collapsed = String(collapsed);
 
   if (collapsed) {
     // Collapsed still shows the one thing to do next — a checklist that hides

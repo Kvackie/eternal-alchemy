@@ -732,6 +732,32 @@ button {
 }
 
 /*
+ * A cave tool, which is a thing you hold rather than a tab you are on.
+ *
+ * Three identical cells reading Seed, Lantern, Tray read as a segmented
+ * control. The glyph is what tells you at a glance that one of them is in your
+ * hand and what it does.
+ */
+.option-tool {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.5rem;
+  align-items: center;
+  text-align: left;
+}
+
+.tool-glyph {
+  grid-row: 1 / span 2;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.option-tool small {
+  grid-column: 2;
+}
+
+/*
  * What a town does to a run, on the card you pick it from.
  *
  * Wide enough columns that a modifier is one line rather than three: the whole
@@ -880,6 +906,66 @@ input[type='range'] {
   color: var(--amber);
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/*
+ * A setting that is on or off, sized like one.
+ *
+ * Two full-width `option` cells reading Off and On carried the weight of the
+ * text-size row above it, which is a choice between five things. This is one
+ * thing with two states, so it is one control.
+ */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: flex-start;
+  min-height: var(--tap);
+  padding: 0 0.5rem 0 0;
+  background: none;
+  border: 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+}
+
+.switch-track {
+  position: relative;
+  flex: none;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.switch[aria-checked='true'] {
+  color: var(--ink);
+}
+
+.switch[aria-checked='true'] .switch-track {
+  background: var(--verd-soft);
+  border-color: var(--verd);
+}
+
+.switch[aria-checked='true'] .switch-thumb {
+  background: var(--verd);
+  transform: translateX(1.25rem);
+}
+
+.switch:hover .switch-track {
+  border-color: var(--verd);
 }
 
 /* ------------------------------------------------------------------ steps */
@@ -2790,7 +2876,27 @@ input[type='range'] {
 
 /* ------------------------------------------------------------ checklist */
 
+/*
+ * The opening checklist, floating over the panel rather than built into it.
+ *
+ * As a child of `.panel-body` it joined that body's flex flow: it took the gap,
+ * pushed the screen's own content down, scrolled away with it, and on a 412px
+ * phone held roughly a third of the view on every screen at once. Lifting it
+ * out is what stops it deciding other screens' layout.
+ *
+ * Bottom right, above the nav, under the modals (30) and clear of the debug
+ * toggle (20). It caps its own height and scrolls inside itself, because eight
+ * steps at 150% text is taller than a phone.
+ */
 .checklist {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 18;
+  width: min(23rem, calc(100% - 1.5rem));
+  max-height: min(60%, 24rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -2798,6 +2904,15 @@ input[type='range'] {
   background: var(--verd-soft);
   border: 1px solid var(--verd);
   border-radius: var(--radius);
+  /* It is over the content now, so it has to read as being over it. */
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.45);
+}
+
+/* Folded down it is one line, and takes only the width that line needs. */
+.checklist[data-collapsed='true'] {
+  width: auto;
+  max-width: min(23rem, calc(100% - 1.5rem));
+  max-height: none;
 }
 
 .checklist-head {
@@ -3905,6 +4020,16 @@ input[type='range'] {
 
   .panel-roomy .send .send-action .btn {
     min-height: 2.75rem;
+  }
+
+  /*
+   * The zoom controls step above the checklist rather than under it.
+   *
+   * Both want the bottom of the stage, and 412px has no room for a 368px card
+   * beside a row of buttons. Desktop has the width, so this is only here.
+   */
+  #panels[data-checklist='true'] .view-controls {
+    bottom: calc(1.5rem + var(--checklist-h, 0px));
   }
 
   /*

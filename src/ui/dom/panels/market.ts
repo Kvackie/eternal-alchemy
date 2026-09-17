@@ -15,7 +15,7 @@ import { artUrlIf } from '@/ui/art';
 import { showIngredientInfo } from '../ingredientInfo';
 import { goodsNotes } from '../goods';
 import type { MerchantVisit, StockEntry } from '@/sim/merchants';
-import { equipmentAvailability, renownToNextRank } from '@/sim/progression';
+import { equipmentAvailability } from '@/sim/progression';
 
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
@@ -24,7 +24,6 @@ export function renderMarket(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
   const present = sim.merchants();
 
-  body.append(renderStanding(sim));
 
   if (present.length === 0) {
     body.append(
@@ -35,26 +34,22 @@ export function renderMarket(sim: Simulation): HTMLElement {
   for (const visit of present) body.append(renderVisit(sim, visit));
   body.append(renderUpcoming(sim));
 
-  // `panel-roomy`, like the Board and Settings: no scene behind it, so it is a
-  // full-stage page on a phone and a centred card given room, rather than a
-  // sheet docked to one side of a picture that is no longer drawn.
+  /*
+   * No rank readout here.
+   *
+   * It used to open this screen — your rank, and the renown to the next one —
+   * on the reasoning that rank is what unlocks a merchant's deeper stock. But
+   * this is the screen for who is in town and what they brought, and an
+   * unreachable item already says why it is unreachable, on the item. Rank
+   * lives in the Ledger, where the rest of your standing is.
+   *
+   * `panel-roomy`, like the Board and Settings: no scene behind it, so it is a
+   * full-stage page on a phone and a centred card given room, rather than a
+   * sheet docked to one side of a picture that is no longer drawn.
+   */
   return el('div', { class: 'panel panel-roomy' }, [
     panelHeader(t('market.title'), t('market.subtitle')),
     body,
-  ]);
-}
-
-/** Rank sits here because rank is what opens a merchant's deeper stock. */
-function renderStanding(sim: Simulation): HTMLElement {
-  const next = renownToNextRank(sim.world.renown);
-  return el('section', { class: 'standing' }, [
-    stat(t('market.rank'), t(`rank.${sim.rankId}`)),
-    next
-      ? stat(
-          t('market.nextRank', { rank: t(`rank.${next.nextId}`) }),
-          t('market.renownNeeded', { count: Math.ceil(next.needed) }),
-        )
-      : stat(t('market.nextRank.none'), '—'),
   ]);
 }
 
