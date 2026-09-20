@@ -77,6 +77,9 @@ export class WorldScene extends Phaser.Scene {
 
   private sim!: Simulation;
   private screen: ScreenId = 'grounds';
+
+  /** The garden as last drawn — see `redraw`. Cleared to force a redraw. */
+  private drawn = '';
   private content!: Phaser.GameObjects.Container;
   private lighting!: Phaser.GameObjects.Rectangle;
   private sky!: Phaser.GameObjects.Rectangle;
@@ -105,7 +108,13 @@ export class WorldScene extends Phaser.Scene {
       .setOrigin(0)
       .setBlendMode(Phaser.BlendModes.MULTIPLY);
 
-    this.scale.on('resize', () => this.redraw());
+    // A resize changes the layout without changing the world, and `redraw`
+    // compares against the world — so the record of what was drawn is thrown
+    // away rather than argued with.
+    this.scale.on('resize', () => {
+      this.drawn = '';
+      this.redraw();
+    });
     this.enablePanning();
     // The first screen gets the same prefetch a later switch would.
     this.prefetchFor(this.screen);
@@ -308,7 +317,6 @@ export class WorldScene extends Phaser.Scene {
   /** Called whenever the world changes; cheap enough at this scale to rebuild. */
   redraw(): void {
     if (!this.content) return;
-    this.content.removeAll(true);
 
     const { width, height } = this.scale.gameSize;
     this.sky.setSize(width, height);
@@ -324,10 +332,36 @@ export class WorldScene extends Phaser.Scene {
      * on a screen with nothing behind it. See `DRAWN_SCREENS`.
      */
     if (!DRAWN_SCREENS.has(this.screen)) {
+      this.drawn = '';
       this.applyLighting();
       return;
     }
 
+    /*
+     * Redraw the picture only when the picture has changed.
+     *
+     * `redraw` is called four times a second by the frame loop as well as on
+     * every world change, and it tears the whole scene down and builds it again
+     * — every bed, every plant, every heap of earth. Almost none of that is
+     * different from the last time: a crop's growth is the only continuously
+     * moving thing in it, and a twenty-five minute crop grows by two parts in a
+     * hundred thousand between one of those calls and the next.
+     *
+     * So growth is counted in twentieths. The garden is redrawn when a bed is
+     * planted or harvested, when a crop crosses into its next twentieth, and
+     * when the window changes shape — and left alone the rest of the time.
+     *
+     * The light is not part of this. It moves continuously and costs two
+     * property writes on one rectangle, so it is applied below on every call.
+     */
+    const signature = this.gardenSignature();
+    if (signature === this.drawn) {
+      this.applyLighting();
+      return;
+    }
+
+    this.drawn = signature;
+    this.content.removeAll(true);
     this.drawGarden(this.contentArea());
 
     /*
@@ -337,9 +371,51 @@ export class WorldScene extends Phaser.Scene {
      * scene's size afterwards — bottling the brew in the fourth cauldron,
      * resizing the window, the panel growing — could leave a pan that had been
      * legal stranded well outside the new bounds, with no way back.
+     *
+     * It sits under the signature check rather than above it because it
+     * measures: `applyView` asks for the content area, and `clampPan` asks
+     * again, so a pan that nothing has moved cost two `getBoundingClientRect`
+     * calls against the panel, four times a second, for the whole session.
      */
     this.applyView();
     this.applyLighting();
+  }
+
+  /**
+   * What the garden currently looks like, as one comparable string.
+   *
+   * Everything the drawing reads, and nothing it does not: how many beds there
+   * are, what is in each, whether it can be picked, how full it will be, and
+   * how far along it is to the nearest twentieth. The canvas size is in it too,
+   * because the beds are laid out to fit the space.
+   *
+   * Deliberately not the panel's measured rectangle — measuring is a
+   * `getBoundingClientRect` against a panel the shell has just rebuilt, which
+   * is the thing this check exists to avoid doing four times a second.
+   */
+  private gardenSignature(): string {
+    const { width, height } = this.scale.gameSize;
+    const parts = [`${Math.round(width)}x${Math.round(height)}`];
+
+    for (const plot of this.sim.world.plots) {
+      const crop = plot.crop;
+      if (!crop) {
+        parts.push('-');
+        continue;
+      }
+      const span = Math.max(1, crop.readyAt - crop.plantedAt);
+      const growth = Math.min(1, (this.sim.now - crop.plantedAt) / span);
+      parts.push(
+        [
+          crop.cropId,
+          Math.floor(growth * 20),
+          isReady(plot, this.sim.now) ? 'r' : '-',
+          harvestSize(this.sim.world, plot),
+        ].join(':'),
+      );
+    }
+
+    return parts.join('|');
   }
 
   /**

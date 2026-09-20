@@ -104,9 +104,9 @@ function itemIcon(item: BottledItem): Node {
 
 // -- The floor ---------------------------------------------------------------
 
-type ShelfSort = 'shelf' | 'selling' | 'price';
+type ShelfSort = 'selling' | 'price';
 
-let shelfSort: ShelfSort = 'shelf';
+let shelfSort: ShelfSort = 'selling';
 
 /** A shelf with the number it is known by, which sorting must not change. */
 interface NumberedShelf {
@@ -159,15 +159,18 @@ function renderShelves(sim: Simulation): HTMLElement {
 }
 
 /**
- * Three ways to read the floor.
+ * Two ways to read the floor.
  *
- * By shelf is where things are; by selling is what needs attention, which is
- * the question fifty shelves actually raise; by price is what is worth most.
- * Empty shelves sink to the bottom of both of the other two, because an empty
- * shelf is not a problem with a shelf.
+ * What needs attention, which is the question a hundred shelves actually
+ * raise, and what is worth most. Shelf order was a third, and was dropped: it
+ * is the order the list happens to be stored in, which answers nothing you
+ * would come to this screen to ask. The number is still on every shelf, in its
+ * details and its tooltip, for finding one you have in mind.
+ *
+ * Empty shelves sink to the bottom of both, because an empty shelf is not a
+ * problem with a shelf.
  */
 const comparators: Record<ShelfSort, (sim: Simulation) => (a: NumberedShelf, b: NumberedShelf) => number> = {
-  shelf: () => (a, b) => a.number - b.number,
   selling: (sim) => (a, b) => {
     /*
      * An empty shelf sells nothing, which is not the same as selling slowly.
@@ -191,7 +194,7 @@ const comparators: Record<ShelfSort, (sim: Simulation) => (a: NumberedShelf, b: 
 
 function sortRow(): HTMLElement {
   const row = el('div', { class: 'sort-row' });
-  for (const id of ['shelf', 'selling', 'price'] as ShelfSort[]) {
+  for (const id of ['selling', 'price'] as ShelfSort[]) {
     const node = el('button', { class: 'sort-chip', type: 'button', text: t(`shop.sort.${id}`) });
     node.setAttribute('aria-pressed', String(shelfSort === id));
     node.addEventListener('click', () => {

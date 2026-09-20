@@ -108,7 +108,40 @@ export class Shell {
   /** What the pots were doing when the bench was last drawn. */
   private cauldronShape = '';
 
+  /*
+   * The parts of the open panel that move on their own.
+   *
+   * Gathered when the panel is built and held until it is built again — see
+   * `collectLiveNodes`. Everything else on a screen is drawn once and left
+   * alone until something in the world actually changes it.
+   */
+  private liveClocks: HTMLElement[] = [];
+
+  private liveBars: HTMLElement[] = [];
+
+  private liveGauge: HTMLElement | null = null;
+
   private hud = el('div', { class: 'hud' });
+
+  /** The HUD's value nodes, written in place — see `updateHud`. */
+  private hudFields: {
+    gold: HTMLElement;
+    renown: HTMLElement;
+    mastery: HTMLElement;
+    dot: HTMLElement;
+    date: HTMLElement;
+    countdown: HTMLElement;
+  } | null = null;
+
+  /** What the HUD is currently showing, so a frame that changes nothing writes nothing. */
+  private hudShown = {
+    gold: Number.NaN,
+    renown: Number.NaN,
+    mastery: Number.NaN,
+    phase: '',
+    date: '',
+    clock: '',
+  };
   private panels = el('div', { id: 'panels' });
   private nav = el('nav', { class: 'nav' });
   private toasts = el('div', { class: 'toasts' });
@@ -204,7 +237,7 @@ export class Shell {
    * frame while it is open, and the others only on change.
    */
   tick(): void {
-    this.renderHud();
+    this.updateHud();
     this.updateCountdowns();
     this.updateTemperature();
     if (this.needsLiveRedraw()) this.renderPanels();
@@ -221,7 +254,7 @@ export class Shell {
    * and mouseup to land on the same element.
    */
   private updateTemperature(): void {
-    const value = this.panels.querySelector<HTMLElement>('[data-live-temp]');
+    const value = this.liveGauge;
     if (!value) return;
 
     const { sim } = this.deps;
@@ -255,8 +288,10 @@ export class Shell {
    * rebuilt when the world actually changes.
    */
   private updateCountdowns(): void {
+    if (this.liveClocks.length === 0 && this.liveBars.length === 0) return;
+
     const { sim } = this.deps;
-    for (const node of this.panels.querySelectorAll<HTMLElement>('[data-countdown-at]')) {
+    for (const node of this.liveClocks) {
       const at = Number(node.dataset.countdownAt);
       if (!Number.isFinite(at)) continue;
       const time = formatDuration(Math.max(0, at - sim.now));
@@ -268,13 +303,29 @@ export class Shell {
       if (node.textContent !== next) node.textContent = next;
     }
 
-    for (const node of this.panels.querySelectorAll<HTMLElement>('[data-progress-from]')) {
+    for (const node of this.liveBars) {
       const from = Number(node.dataset.progressFrom);
       const to = Number(node.dataset.progressTo);
       if (!Number.isFinite(from) || !Number.isFinite(to) || to <= from) continue;
       const done = (sim.now - from) / (to - from);
-      node.style.width = `${Math.max(0, Math.min(1, done)) * 100}%`;
+      const width = `${Math.max(0, Math.min(1, done)) * 100}%`;
+      if (node.style.width !== width) node.style.width = width;
     }
+  }
+
+  /**
+   * Find the things that move, once per render rather than once per frame.
+   *
+   * A clock and a bar are the only parts of a panel that change on their own,
+   * and which nodes those are is decided the moment the panel is built. Asking
+   * the DOM again every frame — two `querySelectorAll` over a panel that can
+   * hold a thousand nodes — was asking a question whose answer could not have
+   * changed since the last time it was asked.
+   */
+  private collectLiveNodes(): void {
+    this.liveClocks = [...this.panels.querySelectorAll<HTMLElement>('[data-countdown-at]')];
+    this.liveBars = [...this.panels.querySelectorAll<HTMLElement>('[data-progress-from]')];
+    this.liveGauge = this.panels.querySelector<HTMLElement>('[data-live-temp]');
   }
 
   private needsLiveRedraw(): boolean {
@@ -372,49 +423,110 @@ export class Shell {
   }
 
   render(): void {
-    this.renderHud();
+    this.updateHud();
     this.renderNav();
     this.renderPanels();
   }
 
   // -- HUD ------------------------------------------------------------------
 
-  private renderHud(): void {
+  /**
+   * Build the HUD once.
+   *
+   * Its shape never changes: three figures and a clock, on every screen, for
+   * the whole session. What changes is six short strings, and those are written
+   * where they stand by `updateHud`.
+   */
+  private buildHud(): void {
+    const gold = el('dd', { class: 'num gold' });
+    const renown = el('dd', { class: 'num renown' });
+    const mastery = el('dd', { class: 'num mastery' });
+
+    /*
+     * The dot is the phase, so the word is gone from the line — but it moves
+     * onto the dot rather than out of the build. A coloured circle is a
+     * colour-only signal, and this is the same game that gives every essence a
+     * glyph so colour is never the only carrier.
+     */
+    const dot = el('span', { class: 'phase-dot', role: 'img' });
+    const date = el('span');
+    const countdown = el('span', { class: 'num' });
+
+    clear(this.hud);
+    this.hud.append(
+      hudStat(t('hud.gold'), gold),
+      hudStat(t('hud.renown'), renown),
+      // Always, including at zero. Hiding it until the first branch meant the
+      // one currency a player has to save toward was invisible for the whole
+      // run in which they are saving toward it.
+      hudStat(t('hud.mastery'), mastery),
+      el('div', { class: 'hud-clock' }, [
+        dot,
+        date,
+        // The same middot the date already uses, so the countdown joins the line
+        // rather than floating off the end of it as a separate readout.
+        el('span', { class: 'hud-sep', text: '·', 'aria-hidden': 'true' }),
+        countdown,
+      ]),
+    );
+
+    this.hudFields = { gold, renown, mastery, dot, date, countdown };
+  }
+
+  /**
+   * Write what has changed, and nothing else.
+   *
+   * This runs every frame, and it used to `clear()` the HUD and build all of it
+   * again — fifteen elements and three `Intl` formats, sixty times a second, to
+   * move one countdown. Measured while sitting still on any screen: 480 DOM
+   * mutations a second, against nothing happening in the world at all.
+   *
+   * Gold changes when something sells. The date changes at midnight. Only the
+   * countdown changes every second, and even that is one string.
+   */
+  private updateHud(): void {
+    if (!this.hudFields) this.buildHud();
+    const f = this.hudFields!;
+
     const { sim } = this.deps;
     const day = dayStateAt(sim.now);
     const remaining = Math.max(0, day.phaseEndsAt - sim.now);
 
-    clear(this.hud);
-    this.hud.append(
-      hudStat(t('hud.gold'), formatGold(sim.world.gold), 'gold'),
-      hudStat(t('hud.renown'), formatNumber(Math.round(sim.world.renown)), 'renown'),
-      // Always, including at zero. Hiding it until the first branch meant the
-      // one currency a player has to save toward was invisible for the whole
-      // run in which they are saving toward it.
-      hudStat(t('hud.mastery'), formatNumber(sim.world.mastery), 'mastery'),
-      el('div', { class: 'hud-clock' }, [
-        /*
-         * The dot is the phase now, so the word is gone from the line — but it
-         * moves onto the dot rather than out of the build. A coloured circle is
-         * a colour-only signal, and this is the same game that gives every
-         * essence a glyph so colour is never the only carrier.
-         */
-        el('span', {
-          class: 'phase-dot',
-          'data-phase': day.phase,
-          role: 'img',
-          title: t(`phase.${day.phase}`),
-          'aria-label': t(`phase.${day.phase}`),
-        }),
-        el('span', {
-          text: `${t('hud.day', { day: day.dayNumber + 1 })} · ${t(`weekday.${day.weekday}`)}`,
-        }),
-        // The same middot the date already uses, so the countdown joins the line
-        // rather than floating off the end of it as a separate readout.
-        el('span', { class: 'hud-sep', text: '·', 'aria-hidden': 'true' }),
-        el('span', { class: 'num', text: formatDuration(remaining) }),
-      ]),
-    );
+    // Compared as numbers before they are formatted: `Intl` is the expensive
+    // half, and the figures behind these are unchanged on almost every frame.
+    if (sim.world.gold !== this.hudShown.gold) {
+      this.hudShown.gold = sim.world.gold;
+      f.gold.textContent = formatGold(sim.world.gold);
+    }
+    const renown = Math.round(sim.world.renown);
+    if (renown !== this.hudShown.renown) {
+      this.hudShown.renown = renown;
+      f.renown.textContent = formatNumber(renown);
+    }
+    if (sim.world.mastery !== this.hudShown.mastery) {
+      this.hudShown.mastery = sim.world.mastery;
+      f.mastery.textContent = formatNumber(sim.world.mastery);
+    }
+
+    const phase = t(`phase.${day.phase}`);
+    if (day.phase !== this.hudShown.phase) {
+      this.hudShown.phase = day.phase;
+      f.dot.dataset.phase = day.phase;
+      f.dot.title = phase;
+      f.dot.setAttribute('aria-label', phase);
+    }
+
+    const date = `${t('hud.day', { day: day.dayNumber + 1 })} · ${t(`weekday.${day.weekday}`)}`;
+    if (date !== this.hudShown.date) {
+      this.hudShown.date = date;
+      f.date.textContent = date;
+    }
+
+    const clock = formatDuration(remaining);
+    if (clock !== this.hudShown.clock) {
+      this.hudShown.clock = clock;
+      f.countdown.textContent = clock;
+    }
   }
 
   // -- Nav ------------------------------------------------------------------
@@ -559,6 +671,9 @@ export class Shell {
     // Last, once everything that affects the layout is in place: a scroller put
     // back before its siblings exist has nothing to scroll through yet.
     restoreScroll(this.panels, scrolls);
+
+    // Whatever moves on this screen, found now rather than every frame.
+    this.collectLiveNodes();
   }
 
   private buildPanel(): HTMLElement {
@@ -762,11 +877,9 @@ export class Shell {
   }
 }
 
-function hudStat(label: string, value: string, tone = ''): HTMLElement {
-  return el('dl', { class: 'hud-stat' }, [
-    el('dt', { text: label }),
-    el('dd', { class: `num ${tone}`.trim(), text: value }),
-  ]);
+/** A label and the node that carries its figure — see `buildHud`. */
+function hudStat(label: string, value: HTMLElement): HTMLElement {
+  return el('dl', { class: 'hud-stat' }, [el('dt', { text: label }), value]);
 }
 
 function readStoredScale(): number {
