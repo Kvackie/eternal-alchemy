@@ -276,11 +276,19 @@ export function unstockShelf(world: World, slotId: string): boolean {
  * the shop runs out of shelf long before it runs out of stock, and a count
  * offered that cannot be honoured is worse than no count at all.
  */
-export function placeableCount(world: World, item: BottledItem): number {
-  const inStore = world.bottled.filter((entry) => sameGoods(entry, item)).length;
+export function placeableCount(world: World, item: BottledItem, inStore?: number): number {
+  /*
+   * The caller may already know how many it has.
+   *
+   * The shop's grid groups the store room into stacks before it draws it, so it
+   * counted every matching bottle once per tile and then this counted them all
+   * again — a hundred tiles against four hundred bottles, on every press. The
+   * rule stays here; only the number it was going to recompute is handed in.
+   */
+  const have = inStore ?? world.bottled.filter((entry) => sameGoods(entry, item)).length;
   const free = world.shelf.filter((slot) => !slot.item).length;
   const perShelf = getVessel(item.vesselId).shelfStack ?? 1;
-  return Math.min(inStore, free * perShelf);
+  return Math.min(have, free * perShelf);
 }
 
 /**

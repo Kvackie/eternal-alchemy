@@ -57,8 +57,14 @@ export interface ShellDeps {
  * borrowed the Shop's, so standing in the market drew your own shelves behind
  * another trader's stock — one picture claiming to be two places. The market is
  * the merchants and what they are selling, which is a list.
+ *
+ * The Shop left it last, and is expected back. A painted wall of fifty shelves
+ * was rebuilt from nothing on every press, and the Shop is the screen where
+ * presses happen — measuring the panel alone forced a synchronous layout of the
+ * whole thing inside the click handler. It returns when it can be drawn from
+ * the shelf grid instead of rebuilt each time.
  */
-const SCENE_SCREENS = new Set<ScreenId>(['grounds', 'shop']);
+const SCENE_SCREENS = new Set<ScreenId>(['grounds']);
 
 const SCREENS: Array<{ id: ScreenId; icon: string }> = [
   { id: 'shop', icon: '🏪' },

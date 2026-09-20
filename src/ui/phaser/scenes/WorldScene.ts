@@ -10,9 +10,9 @@
  */
 
 import Phaser from 'phaser';
-import { blendColor, ensureTexture, generatePlaceholders, preloadArt } from '../placeholders';
+import { ensureTexture, generatePlaceholders, preloadArt } from '../placeholders';
 import { artUrlIf, hasArt } from '@/ui/art';
-import { essenceColors, palette, phaseTint } from '@/ui/theme';
+import { palette, phaseTint } from '@/ui/theme';
 import { dayStateAt, phaseProgress } from '@/sim/clock';
 
 /**
@@ -50,49 +50,27 @@ function axisPan(offset: number, from: number, to: number, min: number, max: num
   // Overflows: the usual scroll range, opened up by the same slack.
   return Phaser.Math.Clamp(offset, max - to - slack, min - from + slack);
 }
-import { config, getRecipe } from '@/sim/config';
 import { harvestSize, isReady } from '@/sim/garden';
-import { formatGold, t } from '@/i18n';
-import { bus, type ScreenId } from '@/ui/bus';
+import type { ScreenId } from '@/ui/bus';
 import type { Simulation } from '@/sim/sim';
 
 /**
- * Placeholder colour for a furnishing.
+ * The screens with something behind the panel.
  *
- * Keyed on the piece rather than the spot so an upgrade visibly reads as an
- * upgrade — a gilded sign should not look like the painted one it replaced.
- */
-/**
- * Where each spot's art sits, relative to the shop's centre.
+ * One, for now. The Cauldron left when brewing moved into its own station, and
+ * the Market never had a scene of its own — it borrowed the Shop's, so standing
+ * in the market drew your own shelves behind another trader's stock.
  *
- * `x` is a fraction of the shop's width so the layout holds at any size; `y` and
- * the box are pixels, because a banner should not grow to the size of a phone.
+ * The Shop left last and is expected back. A painted wall of fifty shelves was
+ * rebuilt from nothing, text objects and all, on every press — and the Shop is
+ * the screen where presses happen. It returns when it can be drawn from the
+ * shelf grid instead of rebuilt each time.
+ *
+ * Named here rather than inferred, because `redraw` has to know whether to draw
+ * before it measures: measuring means asking the panel where it is, and the
+ * panel has just been rebuilt.
  */
-const DECOR_BOX: Record<string, { x: number; y: number; w: number; h: number }> = {
-  wall: { x: 0, y: -78, w: 74, h: 74 },
-  window: { x: -0.38, y: -34, w: 62, h: 62 },
-  counter: { x: 0.3, y: 70, w: 54, h: 54 },
-  nook: { x: 0.4, y: -8, w: 48, h: 48 },
-  floor: { x: -0.28, y: 92, w: 56, h: 56 },
-};
-
-function decorTone(decorId: string): number {
-  // Literals rather than the UI palette: these have to carry against the dark
-  // ground at low alpha, which the surface tones do not.
-  const tones: Record<string, number> = {
-    paintedSign: 0x6f9c74,
-    gildedSign: palette.amber,
-    displayCase: essenceColors.aqua,
-    lanternDisplay: 0xf0c368,
-    polishedCounter: 0x8a6a4a,
-    alchemistsBench: 0xb08654,
-    curioCabinet: essenceColors.umbra,
-    incenseBurner: essenceColors.ignis,
-    wovenRug: 0xa2564a,
-    mosaicFloor: essenceColors.aer,
-  };
-  return tones[decorId] ?? palette.ink2;
-}
+const DRAWN_SCREENS = new Set<ScreenId>(['grounds']);
 
 export class WorldScene extends Phaser.Scene {
   static readonly KEY = 'world';
@@ -285,7 +263,6 @@ export class WorldScene extends Phaser.Scene {
    */
   private prefetchFor(screen: ScreenId): void {
     const ingredientIds: string[] = [];
-    const potionIds: string[] = [];
 
     if (screen === 'grounds') {
       for (const plot of this.sim.world.plots) {
@@ -298,17 +275,8 @@ export class WorldScene extends Phaser.Scene {
         for (const unit of pot.contents.units) ingredientIds.push(unit.ingredientId);
       }
     }
-    if (screen === 'shop') {
-      for (const slot of this.sim.world.shelf) {
-        if (slot.item) potionIds.push(slot.item.recipeId);
-      }
-    }
-
     for (const id of new Set(ingredientIds)) {
       this.wantTexture(`ingredient:${id}`, artUrlIf('ingredient', id));
-    }
-    for (const id of new Set(potionIds)) {
-      this.wantTexture(`potion:${id}`, artUrlIf('potion', id));
     }
   }
 
@@ -346,27 +314,21 @@ export class WorldScene extends Phaser.Scene {
     this.sky.setSize(width, height);
     this.lighting.setSize(width, height);
 
-    const area = this.contentArea();
-
-    switch (this.screen) {
-      case 'grounds':
-        this.drawGarden(area);
-        break;
-      case 'shop':
-        this.drawShop(area);
-        break;
-      case 'market':
-      case 'ledger':
-      case 'settings':
-        /*
-         * No scene. The market used to borrow `drawShop` as a stand-in until
-         * stall art arrived, which meant the Market drew your own shop behind a
-         * list of other people's stock — the same picture as the Shop screen,
-         * saying something untrue about where you were. The market is the
-         * merchants and what they have; it is a document like the other two.
-         */
-        break;
+    /*
+     * A screen that draws nothing measures nothing.
+     *
+     * `contentArea` asks the panel where it is, and asking runs head-first into
+     * a panel the shell has just rebuilt — so the browser lays the whole thing
+     * out there and then, synchronously, inside the click handler. On the Shop
+     * at fifty shelves that one call was an eighth of the frame budget, spent
+     * on a screen with nothing behind it. See `DRAWN_SCREENS`.
+     */
+    if (!DRAWN_SCREENS.has(this.screen)) {
+      this.applyLighting();
+      return;
     }
+
+    this.drawGarden(this.contentArea());
 
     /*
      * Re-check the pan against what was just drawn.
@@ -674,198 +636,6 @@ export class WorldScene extends Phaser.Scene {
   }
 
 
-  /**
-   * The furnishings, each in its own place in the room.
-   *
-   * Painted art is drawn where the spot's box says; anything without art falls
-   * back to a tinted block of roughly the right shape and size, so a bought
-   * piece still visibly changes the room rather than doing nothing until the
-   * art lands. The tint is keyed on the piece rather than the spot, so an
-   * upgrade reads as an upgrade.
-   */
-  private drawDecor(area: { cx: number; cy: number; width: number; height: number }): void {
-    const { cx, cy, width } = area;
-    const room = Math.min(width - 40, 460);
-
-    for (const view of this.sim.decorSpots()) {
-      if (!view.placed) continue;
-
-      const key = `decor:${view.placed.id}`;
-      if (this.textures.exists(key)) {
-        const box = DECOR_BOX[view.spot];
-        if (box) {
-          const shrink = Math.min(1, area.height / 260);
-          const node = this.add
-            .image(cx + room * box.x, cy + box.y * shrink, key)
-            .setDisplaySize(box.w * shrink, box.h * shrink);
-          this.content.add(node);
-          continue;
-        }
-      }
-
-      const tone = decorTone(view.placed.id);
-      switch (view.spot) {
-        case 'wall':
-          this.content.add(this.add.rectangle(cx, cy - 74, room * 0.34, 20, tone, 0.75));
-          break;
-        case 'window':
-          this.content.add(this.add.rectangle(cx - room * 0.38, cy - 30, 40, 54, tone, 0.55));
-          break;
-        case 'counter':
-          this.content.add(this.add.rectangle(cx, cy + 76, room * 0.62, 10, tone, 0.8));
-          break;
-        case 'nook':
-          this.content.add(this.add.rectangle(cx + room * 0.4, cy - 6, 26, 40, tone, 0.6));
-          break;
-        case 'floor':
-          this.content.add(this.add.ellipse(cx, cy + 96, room * 0.7, 26, tone, 0.4));
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  private drawShop(area: { cx: number; cy: number; width: number; height: number }): void {
-    // Furnishings first, so the shelves stand in front of them.
-    this.drawDecor(area);
-
-    /*
-     * A shelving unit, built upward.
-     *
-     * Laying every shelf in one row meant each new one made all of them
-     * narrower — six shelves and the bottles were thumbnails. Stacking keeps a
-     * bottle the same size however many shelves you own, and it looks like
-     * furniture rather than a row of planks: two posts, boards between them,
-     * rising from the floor.
-     */
-    const slots = this.sim.world.shelf;
-
-    /*
-     * How many rows the space can actually hold decides the shape.
-     *
-     * On a phone the world is a band about a third of the screen tall, and a
-     * fixed two-row unit simply hid its top row behind the panel. Rows are
-     * budgeted from the height available and the columns follow, so the unit
-     * stacks where there is room to stack and spreads where there is not.
-     */
-    /*
-     * A wall of shelves, laid out as a grid.
-     *
-     * A shop can own a great many — the aim is something like ten by ten — so
-     * this picks a column count from the free area's shape and lets the grid run
-     * as deep as it needs. What does not fit on screen is reached by dragging;
-     * shrinking a hundred shelves until they all fit would make every bottle a
-     * speck.
-     */
-    const aspect = Math.max(0.4, area.width / Math.max(1, area.height));
-    const cols = Math.max(1, Math.min(slots.length, Math.round(Math.sqrt(slots.length * aspect))));
-    const rows = Math.ceil(slots.length / cols);
-
-    const spacing = Math.max(64, Math.min(118, (area.width - 40) / cols));
-    const rowHeight = Math.max(96, Math.min(126, (area.height - 24) / rows));
-
-    const startX = area.cx - ((cols - 1) * spacing) / 2;
-    // Row 0 at the top, reading like any other grid.
-    const startY = area.cy - ((rows - 1) * rowHeight) / 2;
-
-    /*
-     * The cell is divided top-down: bottle, then board, then a band reserved for
-     * the label. Deriving the bottle's height from what is left over — rather
-     * than sizing it independently and hoping — is what stops a tall bottle
-     * sitting on top of its own price.
-     */
-    const TEXT_BAND = 26;
-    const boardH = Math.min(26, rowHeight * 0.2);
-    const bottleH = Math.max(24, Math.min(74, rowHeight - TEXT_BAND - boardH - 8, spacing * 0.8));
-    const bottleW = bottleH * 0.66;
-
-    slots.forEach((slot, index) => {
-      const col = index % cols;
-      const row = Math.floor(index / cols);
-      const x = startX + col * spacing;
-      const shelfY = startY + row * rowHeight;
-
-      /*
-       * The plank is anchored by its TOP, which is the board's surface — so the
-       * number the bottles stand on and the number the board is drawn at are the
-       * same one, and they cannot drift apart.
-       */
-      const cellTop = shelfY - rowHeight / 2;
-      const boardY = cellTop + bottleH + 4;
-      const key = `shelf:${slot.quality}`;
-      const plank = this.add
-        .image(x, boardY, this.textures.exists(key) ? key : 'shelf')
-        .setOrigin(0.5, 0);
-      plank.setDisplaySize(spacing - 4, boardH);
-      this.content.add(plank);
-
-      if (!slot.item) {
-        const ghost = this.add
-          .rectangle(x, boardY, bottleW * 0.7, bottleH * 0.8, palette.surface2, 0.28)
-          .setOrigin(0.5, 1);
-        this.content.add(ghost);
-        return;
-      }
-
-      /*
-       * The recipe's own painted bottle where there is one. Only when there
-       * isn't does this fall back to the generic shape tinted by essence — a
-       * tint is a poor stand-in for a picture, but it still says at a glance
-       * that a shelf of tonics is not a shelf of draughts.
-       */
-      // Stood ON the board — its foot at the board's top edge — rather than
-      // centred on the line, which is what makes a bottle look placed.
-      const potionKey = `potion:${slot.item.recipeId}`;
-      // Standing ON the surface: the board's top is `boardY`, plus a pixel so
-      // the bottle's base overlaps the wood rather than hovering over its edge.
-      const footY = boardY + 1;
-      if (this.wantTexture(potionKey, artUrlIf('potion', slot.item.recipeId))) {
-        const painted = this.add.image(x, footY, potionKey).setOrigin(0.5, 1);
-        painted.setDisplaySize(bottleW, bottleH);
-        this.content.add(painted);
-      } else {
-        const bottle = this.add.image(x, footY, 'bottle').setOrigin(0.5, 1);
-        bottle.setDisplaySize(bottleW * 0.95, bottleH * 0.95);
-        bottle.setTint(blendColor(getRecipe(slot.item.recipeId).target));
-        this.content.add(bottle);
-      }
-
-      /*
-       * What is on the shelf and what it costs — the two things a shopkeeper
-       * glancing at a wall of shelves actually wants. A bare grade letter told
-       * you nothing about which shelf held the Night Glass.
-       *
-       * Long names are trimmed to the cell rather than wrapped, so the grid's
-       * rows stay level.
-       */
-      const name = t(`recipe.${slot.item.recipeId}`);
-      const room = Math.max(6, Math.floor((spacing - 8) / 5.4));
-      const shown = name.length > room ? `${name.slice(0, room - 1)}…` : name;
-      const asking = Math.round(slot.item.fairValue * slot.priceRatio);
-      const detail =
-        (slot.quantity > 1 ? `x${slot.quantity}  ` : '') + formatGold(asking);
-
-      // Centred on the plank and clear of it, in the band the cell reserved.
-      const title = this.add
-        .text(x, boardY + boardH + 4, shown, {
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '10px',
-          color: '#cdd6cf',
-        })
-        .setOrigin(0.5, 0);
-      this.content.add(title);
-
-      const price = this.add
-        .text(x, boardY + boardH + 16, detail, {
-          fontFamily: 'ui-monospace, monospace',
-          fontSize: '10px',
-          color: '#8fd4c3',
-        })
-        .setOrigin(0.5, 0);
-      this.content.add(price);
-    });
-  }
 
 }
 

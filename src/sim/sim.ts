@@ -1147,9 +1147,14 @@ export class Simulation {
     return placed;
   }
 
-  /** How many of these could go out right now, shelf room included. */
-  placeable(item: BottledItem): number {
-    return placeableCount(this.world, item);
+  /**
+   * How many of these could go out right now, shelf room included.
+   *
+   * `inStore` is for a caller that has already counted its matching bottles —
+   * see `placeableCount`.
+   */
+  placeable(item: BottledItem, inStore?: number): number {
+    return placeableCount(this.world, item, inStore);
   }
 
   /** Rearrange the floor: move or swap what two shelves are holding. */

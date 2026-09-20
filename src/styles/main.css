@@ -1532,38 +1532,7 @@ input[type='range'] {
   flex-wrap: wrap;
 }
 
-/*
- * The handle a shelf is picked up by.
- *
- * Only the grip is draggable, not the whole card. The card holds a range input,
- * and a draggable ancestor and a slider inside it fight over the same gesture —
- * which is how the price control came to move one notch and stop. The grip also
- * says the row can be picked up, which a silently draggable card never does.
- */
-.shelf-grip {
-  cursor: grab;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1;
-  padding: 0.25rem;
-  border-radius: var(--radius);
-}
-
-.shelf-grip:hover {
-  color: var(--ink-2);
-  background: var(--sunken);
-}
-
-.shelf-grip:active {
-  cursor: grabbing;
-}
-
-/* The shelf being carried, so it is clear which one the drop will move. */
-.shelf[data-dragging='true'] {
-  opacity: 0.45;
-}
-
-/* One shelf per line, named, in the modal that stands in for a drag. */
+/* One shelf per line, named, in the pickers that move goods and boards. */
 .shelf-picker {
   display: flex;
   flex-direction: column;
