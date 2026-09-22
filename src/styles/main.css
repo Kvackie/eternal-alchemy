@@ -1990,6 +1990,17 @@ input[type='range'] {
  * The wrapper is the grid cell, so the stepper sits under the tile rather than
  * inside it — a button cannot legally contain buttons, and the tile is one.
  */
+/*
+ * Wide enough for two thumb-sized buttons and the count between them.
+ *
+ * 44 + 44 for the pair, 20 for the number and two gaps is 114px, so anything
+ * narrower than about 7.25rem guarantees an undersized target however the
+ * buttons themselves are styled.
+ */
+.supplies .slot-grid {
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+}
+
 .supply-tile {
   display: flex;
   flex-direction: column;
@@ -2007,9 +2018,19 @@ input[type='range'] {
   gap: 0.1875rem;
 }
 
+/*
+ * Thumb-sized, because this is the pair a thumb actually lands on.
+ *
+ * They were 33x28 — the smallest targets in the game, against a commitment of
+ * 44 everywhere else — and they are the two controls a player presses most on
+ * this screen. It is also where a mis-tap was reported: a 28px button rebuilt
+ * under the finger is exactly the shape of gesture a touchscreen gets wrong.
+ * The tile grid widens to suit; see `.supplies .slot-grid`.
+ */
 .supply-step {
   flex: 1;
-  min-height: 1.75rem;
+  min-height: var(--tap);
+  min-width: var(--tap);
   padding: 0;
   background: var(--sunken);
   border: 1px solid var(--rule);
@@ -3623,6 +3644,20 @@ input[type='range'] {
   .sort-row {
     gap: 0.375rem;
   }
+
+  /*
+   * A small button is small because of what it weighs, not how hard it is to
+   * hit.
+   *
+   * `.btn.small` is 36px, which is the right visual weight for "Heal" beside
+   * "Take along" and the wrong target for a thumb. On a touchscreen it grows to
+   * the commitment; the type and the padding do not, so the row still reads as
+   * secondary. Every panel's small buttons are covered by the one rule rather
+   * than by chasing them screen by screen.
+   */
+  .btn.small {
+    min-height: var(--tap);
+  }
 }
 
 /*
@@ -4914,5 +4949,23 @@ input[type='range'] {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * The last word on tap targets.
+ *
+ * These two are declared further down the sheet than the `pointer: coarse`
+ * block above, so a rule up there loses on source order however correct it is.
+ * Kept here, at the end, where nothing can outrank them.
+ */
+@media (pointer: coarse) {
+  .view-button,
+  .debug-toggle {
+    min-height: var(--tap);
+  }
+
+  .view-button {
+    min-width: var(--tap);
   }
 }
