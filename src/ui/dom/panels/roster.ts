@@ -22,6 +22,7 @@ import {
   portrait,
   potionIcon,
   searchField,
+  row,
   slot,
   slotGrid,
   stat,
@@ -133,20 +134,19 @@ function renderClaims(sim: Simulation): HTMLElement {
   if (sim.pendingClaims.length === 0) return el('span');
 
   const rows = sim.pendingClaims.map((outcome) =>
-    el('div', { class: 'mission is-home' }, [
-      el('div', { class: 'plot-main' }, [
-        el('span', { class: 'plot-title', text: t(`biome.${outcome.biomeId}`) }),
-        el('div', { class: 'row-sub' }, [
-          chip(t('roster.home'), 'good'),
-          chip(outcome.heroIds.map((id) => t(`hero.${id}`)).join(', ')),
-        ]),
-      ]),
-      el('div', { class: 'row-actions' }, [
+    row({
+      variant: 'mission is-home',
+      title: t(`biome.${outcome.biomeId}`),
+      sub: [
+        chip(t('roster.home'), 'good'),
+        chip(outcome.heroIds.map((id) => t(`hero.${id}`)).join(', ')),
+      ],
+      actions: [
         button(t('roster.claim'), () => showMissionReward(sim, outcome.missionId), {
           variant: 'gold',
         }),
-      ]),
-    ]),
+      ],
+    }),
   );
 
   return el('section', { class: 'missions' }, [
@@ -183,16 +183,12 @@ function renderMissionsUnderway(sim: Simulation): HTMLElement {
       fill.dataset.progressTo = String(mission.returnsAt);
     }
 
-    return el('div', { class: 'mission' }, [
-      el('div', { class: 'plot-main' }, [
-        el('span', { class: 'plot-title', text: t(`biome.${mission.biomeId}`) }),
-        el('div', { class: 'row-sub' }, [
-          clock,
-          chip(mission.heroIds.map((id) => t(`hero.${id}`)).join(', ')),
-        ]),
-        bar,
-      ]),
-    ]);
+    return row({
+      variant: 'mission',
+      title: t(`biome.${mission.biomeId}`),
+      sub: [clock, chip(mission.heroIds.map((id) => t(`hero.${id}`)).join(', '))],
+      extra: [bar],
+    });
   });
 
   return el('section', { class: 'missions' }, [
@@ -234,10 +230,6 @@ function renderHeroes(sim: Simulation): HTMLElement {
     const hurt = isInjured(hero, sim.now);
     const selected = selectedHeroes.includes(hero.id);
 
-    const node = el('div', { class: 'hero' });
-    if (selected) node.dataset.selected = 'true';
-    if (hurt) node.dataset.hurt = 'true';
-
     const toggle = () => {
       selectedHeroes = selected
         ? selectedHeroes.filter((id) => id !== hero.id)
@@ -256,15 +248,6 @@ function renderHeroes(sim: Simulation): HTMLElement {
      * pressing the same place twice.
      */
     const open = () => showHeroInfo(sim, hero.id, hero);
-    node.dataset.pickable = 'true';
-    node.setAttribute('role', 'button');
-    node.setAttribute('tabindex', '0');
-    node.addEventListener('click', open);
-    node.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      open();
-    });
 
     const sub: Array<Node | string> = [
       chip(t('roster.level', { level: effectiveLevel(hero) })),
@@ -316,18 +299,18 @@ function renderHeroes(sim: Simulation): HTMLElement {
     }
 
     const face = portrait('hero', hero.id);
-    if (face) node.classList.add('has-portrait');
 
-    node.append(
-      ...(face ? [face] : []),
-      el('div', { class: 'plot-main' }, [
-        el('span', { class: 'plot-title', text: t(`hero.${hero.id}`) }),
-        el('div', { class: 'row-sub' }, sub),
-        el('div', { class: 'favour-bar' }, [meter(hero.favour / 100)]),
-      ]),
-      ...actions,
-    );
-    return node;
+    return row({
+      variant: face ? 'hero has-portrait' : 'hero',
+      icon: face ?? undefined,
+      title: t(`hero.${hero.id}`),
+      sub,
+      extra: [el('div', { class: 'favour-bar' }, [meter(hero.favour / 100)])],
+      actions,
+      selected,
+      data: { pickable: 'true', ...(hurt ? { hurt: 'true' } : {}) },
+      onClick: open,
+    });
   });
 
   // No slot count here: it is a fact about hiring, and hiring happens in the

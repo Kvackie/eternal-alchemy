@@ -211,33 +211,59 @@ export function splitOnValue(sentence: string, value: Node): Array<Node | string
   return out;
 }
 
+/**
+ * The card that a list is made of.
+ *
+ * Optional picture, a title, a line of chips under it, sometimes a meter, and
+ * the buttons that act on it. Every list in the game is made of these — plots,
+ * seams, heroes, missions, contracts, walk-ins, shelves — and until now every
+ * one of them built its own out of `.plot-main` and `.plot-title`, which is
+ * why a Quarry seam was marked up as a garden plot.
+ *
+ * `variant` is the family name. It carries only what that family does
+ * differently: a contract's coloured left edge, a shelf stacking downwards.
+ * The card itself is this.
+ */
 export interface RowOptions {
-  title: Array<Node | string>;
+  /** plot, vein, hero, mission, contract, walkin, shelf — the family class. */
+  variant?: string;
+  /** Drawn at the leading edge, at a fixed width so titles line up. */
+  icon?: Node;
+  title: Array<Node | string> | string;
   sub?: Array<Node | string>;
-  actions?: HTMLElement[];
+  /** Below the chips: a meter, a bar, whatever this row measures. */
+  extra?: Array<Node | string>;
+  actions?: Array<HTMLElement | null | undefined>;
   ready?: boolean;
   blocked?: boolean;
   selected?: boolean;
   onClick?: () => void;
+  /** Anything else the family needs, e.g. `{ working: 'true' }`. */
+  data?: Record<string, string>;
 }
 
 export function row(options: RowOptions): HTMLElement {
   const classes = ['row'];
+  if (options.variant) classes.push(options.variant);
   if (options.ready) classes.push('is-ready');
   if (options.blocked) classes.push('is-blocked');
 
   const main = el('div', { class: 'row-main' }, [
-    el('div', { class: 'row-title' }, options.title),
-    ...(options.sub ? [el('div', { class: 'row-sub' }, options.sub)] : []),
+    el('div', { class: 'row-title' }, typeof options.title === 'string' ? [options.title] : options.title),
+    ...(options.sub?.length ? [el('div', { class: 'row-sub' }, options.sub)] : []),
+    ...(options.extra ?? []),
   ]);
 
-  const children: HTMLElement[] = [main];
-  if (options.actions?.length) {
-    children.push(el('div', { class: 'row-actions' }, options.actions));
-  }
+  const actions = (options.actions ?? []).filter((node): node is HTMLElement => node != null);
+  const node = el('div', { class: classes.join(' ') }, [
+    ...(options.icon ? [el('span', { class: 'row-icon' }, [options.icon])] : []),
+    main,
+    ...(actions.length > 0 ? [el('div', { class: 'row-actions' }, actions)] : []),
+  ]);
 
-  const node = el('div', { class: classes.join(' ') }, children);
   if (options.selected) node.dataset.selected = 'true';
+  for (const [key, value] of Object.entries(options.data ?? {})) node.dataset[key] = value;
+
   if (options.onClick) {
     node.setAttribute('role', 'button');
     node.setAttribute('tabindex', '0');

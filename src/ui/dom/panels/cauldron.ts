@@ -18,6 +18,7 @@ import {
   emptyNote,
   meter,
   panelHeader,
+  row,
 } from '../components';
 import { formatDuration, formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
@@ -269,11 +270,16 @@ function renderStorage(sim: Simulation): HTMLElement {
      * could buy was four names and two numbers each, which is the one place a
      * player is choosing between them and the one place they could not see what
      * they were choosing. Same art the card uses, at a size that suits a row.
+     *
+     * It was a `.plot-row`, which is a class with no rule anywhere: the art,
+     * the name, the chips and the button stacked down a transparent block
+     * while every other list in the game drew a card. It is a card now.
      */
     const art = artUrlIf('scene', tier.id);
     section.append(
-      el('div', { class: 'plot-row' }, [
-        el('span', { class: 'buy-art' }, [
+      row({
+        variant: 'pot-offer',
+        icon: el('span', { class: 'buy-art' }, [
           art
             ? el('img', {
                 src: art,
@@ -285,24 +291,24 @@ function renderStorage(sim: Simulation): HTMLElement {
               })
             : el('span', { class: 'slot-glyph', text: '⚗️' }),
         ]),
-        el('div', { class: 'plot-main' }, [
-          el('span', { class: 'plot-title', text: t(`cauldronTier.${tier.id}`) }),
-          el('div', { class: 'row-sub' }, [
-            chip(t('cauldron.buy.capacity', { capacity: tier.capacity })),
-            chip(t('cauldron.buy.slots', { count: tier.maxIngredients })),
-          ]),
-        ]),
-        button(
-          t('cauldron.buy.action', { gold: formatGold(tier.cost) }),
-          () => {
-            if (sim.buyCauldron(tier.id)) {
-              toast(t('toast.cauldronBought', { tier: t(`cauldronTier.${tier.id}`) }));
-              changed();
-            }
-          },
-          { small: true, disabled: sim.world.gold < tier.cost },
-        ),
-      ]),
+        title: t(`cauldronTier.${tier.id}`),
+        sub: [
+          chip(t('cauldron.buy.capacity', { capacity: tier.capacity })),
+          chip(t('cauldron.buy.slots', { count: tier.maxIngredients })),
+        ],
+        actions: [
+          button(
+            t('cauldron.buy.action', { gold: formatGold(tier.cost) }),
+            () => {
+              if (sim.buyCauldron(tier.id)) {
+                toast(t('toast.cauldronBought', { tier: t(`cauldronTier.${tier.id}`) }));
+                changed();
+              }
+            },
+            { small: true, disabled: sim.world.gold < tier.cost },
+          ),
+        ],
+      }),
     );
   }
 

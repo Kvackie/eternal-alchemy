@@ -86,7 +86,12 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
   if (summary.vessel) requirements.push(chip(t(`vessel.${summary.vessel.id}`), 'term-vessel'));
   if (summary.seal) requirements.push(chip(t(`seal.${summary.seal.id}`), 'term-seal'));
 
-  const node = el('div', { class: 'contract' });
+  /*
+   * A contract is a card but not a row: its blocks stack rather than sitting
+   * beside a title. It takes the card's chrome from `.row` and supplies its own
+   * direction, which is the whole of what makes it different.
+   */
+  const node = el('div', { class: 'row contract' });
   if (daysLeft < 1) node.dataset.urgent = 'true';
 
   node.append(

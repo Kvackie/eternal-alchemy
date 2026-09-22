@@ -19,6 +19,7 @@ import {
   meter,
   modal,
   panelHeader,
+  row,
   sectionHead,
   slot,
   slotGrid,
@@ -371,14 +372,7 @@ function soilWantedBy(cropOrStrainId: string): string | null {
 }
 
 function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
-  const node = el('div', { class: 'plot' });
-
   if (!plot.crop) {
-    node.classList.add('plot-empty');
-    makeDropTarget(node, SEED_DRAG, (cropId) => {
-      if (sim.plant(plot.id, cropId)) changed();
-    });
-
     /*
      * The plot asks which seed; the seed asks which soil.
      *
@@ -388,63 +382,54 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
      * whose button did nothing until you had been somewhere else first.
      */
     const seeds = seedsOnHand(sim);
-    node.append(
-      el('div', { class: 'plot-main' }, [
-        el('span', { class: 'plot-title', text: t('garden.plot.empty') }),
-        el('div', { class: 'row-sub' }, [
-          chip(t(`soil.${plot.soil}`), 'plain'),
-          el('span', { text: t('garden.plot.emptyHint') }),
-        ]),
-      ]),
-      button(
-        t('garden.action.plant'),
-        () => openSeedPicker(sim, plot),
-        { disabled: seeds.length === 0, small: true },
-      ),
-    );
-    return node;
+    const empty = row({
+      variant: 'plot plot-empty',
+      title: t('garden.plot.empty'),
+      sub: [chip(t(`soil.${plot.soil}`), 'plain'), el('span', { text: t('garden.plot.emptyHint') })],
+      actions: [
+        button(t('garden.action.plant'), () => openSeedPicker(sim, plot), {
+          disabled: seeds.length === 0,
+          small: true,
+        }),
+      ],
+    });
+    makeDropTarget(empty, SEED_DRAG, (cropId) => {
+      if (sim.plant(plot.id, cropId)) changed();
+    });
+    return empty;
   }
 
   const crop = getCrop(plot.crop.cropId);
   const ready = isReady(plot, sim.now);
   const remaining = Math.max(0, plot.crop.readyAt - sim.now);
   const name = t(`crop.${crop.id}`);
-  if (ready) node.classList.add('plot-ready');
 
   const sub: Array<Node | string> = [soilChipFor(plot, crop.id)];
   if (plot.soil === crop.soil) sub.push(chip(t('garden.suited'), 'good'));
 
-  const actions: HTMLElement[] = [];
-  if (ready) {
-    actions.push(
-      button(
-        t('garden.action.harvest'),
-        () => {
-          const result = sim.harvest(plot.id);
-          if (result) {
-            toast(harvestToast([result], result.count, result.seeds));
-            changed();
-          }
-        },
-        { small: true },
-      ),
-    );
-  }
-
-  node.append(
-    el('span', { class: 'plot-icon' }, [iconFor(crop.yields)]),
-    el('div', { class: 'plot-main' }, [
-      el('span', {
-        class: 'plot-title',
-        text: ready
-          ? t('garden.plot.ready', { crop: name })
-          : t('garden.plot.growing', { crop: name, time: formatDuration(remaining) }),
-      }),
-      el('div', { class: 'row-sub' }, sub),
-    ]),
-    ...actions,
-  );
-  return node;
+  return row({
+    variant: ready ? 'plot plot-ready' : 'plot',
+    icon: iconFor(crop.yields),
+    title: ready
+      ? t('garden.plot.ready', { crop: name })
+      : t('garden.plot.growing', { crop: name, time: formatDuration(remaining) }),
+    sub,
+    actions: ready
+      ? [
+          button(
+            t('garden.action.harvest'),
+            () => {
+              const result = sim.harvest(plot.id);
+              if (result) {
+                toast(harvestToast([result], result.count, result.seeds));
+                changed();
+              }
+            },
+            { small: true },
+          ),
+        ]
+      : [],
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -805,9 +790,6 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
     const rows = group.veins.map((vein) => {
       const working = shaft.workingVeinId === vein.id;
       const workable = isWorkable(vein, sim.now);
-      const node = el('div', { class: 'vein' });
-      if (working) node.dataset.working = 'true';
-
       const status = working
         ? t('shaft.working', {
             time: formatDuration(Math.max(0, (vein.nextBatchAt ?? sim.now) - sim.now)),
@@ -818,30 +800,35 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
               time: formatDuration(Math.max(0, (vein.refillsAt ?? sim.now) - sim.now)),
             });
 
-      node.append(
-        el('span', { class: 'plot-icon' }, [iconFor(vein.ingredientId)]),
-        el('div', { class: 'plot-main' }, [
-          el('span', { class: 'plot-title', text: veinTitle(vein, seen, ordinal) }),
-          el('div', { class: 'row-sub' }, [
-            chip(t('shaft.remaining', { count: vein.remaining, size: vein.size })),
-            chip(status, working ? 'good' : 'plain'),
-          ]),
-          meter(vein.size > 0 ? vein.remaining / vein.size : 0),
-        ]),
-        working
-          ? button(t('shaft.stop'), () => {
-              sim.stopVein();
-              changed();
-            }, { variant: 'quiet', small: true })
-          : button(
-              t('shaft.work'),
-              () => {
-                if (sim.workVein(vein.id)) changed();
-              },
-              { small: true, disabled: !workable },
-            ),
-      );
-      return node;
+      return row({
+        variant: 'vein',
+        data: working ? { working: 'true' } : {},
+        icon: iconFor(vein.ingredientId),
+        title: veinTitle(vein, seen, ordinal),
+        sub: [
+          chip(t('shaft.remaining', { count: vein.remaining, size: vein.size })),
+          chip(status, working ? 'good' : 'plain'),
+        ],
+        extra: [meter(vein.size > 0 ? vein.remaining / vein.size : 0)],
+        actions: [
+          working
+            ? button(
+                t('shaft.stop'),
+                () => {
+                  sim.stopVein();
+                  changed();
+                },
+                { variant: 'quiet', small: true },
+              )
+            : button(
+                t('shaft.work'),
+                () => {
+                  if (sim.workVein(vein.id)) changed();
+                },
+                { small: true, disabled: !workable },
+              ),
+        ],
+      });
     });
 
     body.append(

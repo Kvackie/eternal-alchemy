@@ -18,6 +18,7 @@ import {
   meter,
   potionIcon,
   sectionHead,
+  row,
   slot,
   slotGrid,
   stat,
@@ -52,24 +53,26 @@ export function renderHaggle(sim: Simulation): HTMLElement {
     const def = getCustomer(walkIn.customerId);
     const open = chosenCustomer === walkIn.customerId;
 
-    const row = el('div', { class: 'walkin' }, [
-      el('div', { class: 'plot-main' }, [
-        el('span', { class: 'plot-title', text: t(`customer.${walkIn.customerId}`) }),
-        el('div', { class: 'row-sub' }, [
+    section.append(
+      row({
+        variant: 'walkin',
+        title: t(`customer.${walkIn.customerId}`),
+        sub: [
           chip(t(`archetype.${def.archetype}`)),
           chip(t('haggle.wants', { count: walkIn.wantedUids.length })),
-        ]),
-      ]),
-      button(
-        open ? t('haggle.closeList') : t('haggle.show'),
-        () => {
-          chosenCustomer = open ? null : walkIn.customerId;
-          changed();
-        },
-        { small: true, variant: open ? 'quiet' : 'ghost' },
-      ),
-    ]);
-    section.append(row);
+        ],
+        actions: [
+          button(
+            open ? t('haggle.closeList') : t('haggle.show'),
+            () => {
+              chosenCustomer = open ? null : walkIn.customerId;
+              changed();
+            },
+            { small: true, variant: open ? 'quiet' : 'ghost' },
+          ),
+        ],
+      }),
+    );
 
     if (!open) continue;
 
