@@ -13,7 +13,7 @@ import { button, chip, el, goldText, gradeBadge, meter, potionIcon, slot, slotGr
 import { formatGold, t } from '@/i18n';
 import { customersConfig, getCustomer, getRecipe } from '@/sim/config';
 
-import { dominantEssence } from '@/ui/phaser/placeholders';
+import { dominantEssence } from '@/ui/art';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 

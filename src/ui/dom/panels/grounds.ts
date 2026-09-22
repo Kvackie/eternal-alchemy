@@ -33,7 +33,7 @@ import { isMature, maturityOf } from '@/sim/cave';
 import { previewCross } from '@/sim/greenhouse';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { ESSENCES } from '@/sim/types';
-import { dominantEssence } from '@/ui/phaser/placeholders';
+import { dominantEssence } from '@/ui/art';
 import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
@@ -752,7 +752,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
 // Shaft — you dig
 // ---------------------------------------------------------------------------
 
-function veinTitle(
+export function veinTitle(
   vein: ShaftVein,
   seen: Map<string, number>,
   ordinal: Map<string, number>,

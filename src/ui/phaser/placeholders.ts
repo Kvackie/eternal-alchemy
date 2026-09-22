@@ -20,9 +20,6 @@ import type { Essence, EssenceVector } from '@/sim/types';
 /** Authoring grid. Everything is a multiple of this so the atlas stays tidy. */
 const CELL = 64;
 
-// Moved to `@/ui/art` so the DOM panels can use it without importing Phaser.
-export { dominantEssence } from '@/ui/art';
-
 /**
  * Queue every sprite that has real art.
  *

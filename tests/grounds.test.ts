@@ -10,6 +10,8 @@ import { caveConfig, crops, getEquipment, getIngredient, shaftConfig } from '@/s
 import { isMature, maturityOf, neighboursOf, spreadChanceFor, tileAt } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { countOf } from '@/sim/inventory';
+import { veinTitle } from '@/ui/dom/panels/grounds';
+import type { ShaftVein } from '@/sim/types';
 
 const HOUR = 3_600_000;
 
@@ -294,6 +296,38 @@ describe('soil', () => {
 });
 
 describe('the quarry', () => {
+  const vein = (ingredientId: string, id: string): ShaftVein => ({
+    id,
+    ingredientId,
+    depth: 20,
+    batch: 1,
+    size: 10,
+    remaining: 10,
+    refillsAt: null,
+    nextBatchAt: null,
+  });
+
+  /*
+   * A panel, under test.
+   *
+   * This could not be written until the DOM layer stopped importing Phaser: a
+   * panel module pulled in the canvas engine, which wants a `window`, so every
+   * rule about how a panel words something was only checkable in a browser.
+   */
+  it('numbers seams only when a stratum repeats an ingredient', () => {
+    // Two rows reading the same name, each with its own size and its own Work
+    // it, are two seams a player cannot tell apart.
+    const veins = [vein('cloudJasper', 'a'), vein('barkOpal', 'b'), vein('cloudJasper', 'c')];
+    const seen = new Map<string, number>();
+    for (const v of veins) seen.set(v.ingredientId, (seen.get(v.ingredientId) ?? 0) + 1);
+    const ordinal = new Map<string, number>();
+
+    const titles = veins.map((v) => veinTitle(v, seen, ordinal));
+    expect(titles[0]).toMatch(/seam 1$/);
+    expect(titles[2]).toMatch(/seam 2$/);
+    expect(titles[1]).not.toMatch(/seam/);
+  });
+
   it('every vein the shaft can roll is a real ingredient', () => {
     // A vein naming an ingredient that does not exist renders its own key.
     const sim = new Simulation(createWorld(7));
