@@ -11,7 +11,17 @@
  * elsewhere on the tile.
  */
 
-import { button, chip, el, gradeBadge, modal, potionIcon, quantityAction, stat } from './components';
+import {
+  chip,
+  gradeBadge,
+  infoActions,
+  infoFacts,
+  infoHead,
+  infoNote,
+  modal,
+  potionIcon,
+  stat,
+} from './components';
 import type { QuantityActionSpec } from './components';
 import { formatGold, formatNumber, t } from '@/i18n';
 import { getForm, getHeroDef, getSeal, getVessel } from '@/sim/config';
@@ -97,38 +107,21 @@ export function showPotionInfo(
   modal({
     className: 'potion-info',
     content: (dismiss) => [
-      el('div', { class: 'ingredient-info-head' }, [
-        el('span', { class: 'ingredient-info-art' }, [potionIcon(item.recipeId, 44)]),
-        el('div', {}, [
-          el('h2', { text: t(`recipe.${item.recipeId}`) }),
-          el('div', { class: 'row-sub' }, [
-            gradeBadge(item.grade),
-            chip(t(`potency.${item.potencyTier}`)),
-            // Only where there is a stack behind the tile that was tapped.
-            ...(count > 1 ? [chip(t('potionInfo.held', { count }))] : []),
-          ]),
-        ]),
-      ]),
-      el('div', { class: 'potion-facts' }, facts),
+      infoHead({
+        art: potionIcon(item.recipeId, 44),
+        title: t(`recipe.${item.recipeId}`),
+        chips: [
+          gradeBadge(item.grade),
+          chip(t(`potency.${item.potencyTier}`)),
+          // Only where there is a stack behind the tile that was tapped.
+          ...(count > 1 ? [chip(t('potionInfo.held', { count }))] : []),
+        ],
+      }),
+      infoFacts(facts),
       // Unheaded, under the figures: a remark about the bottle rather than
       // another field of it.
-      ...notesOn(sim, item).map((note) =>
-        el('p', { class: 'ingredient-info-note', text: note }),
-      ),
-      el('div', { class: 'dialog-actions' }, [
-        button(t('common.close'), dismiss, { variant: 'quiet' }),
-        ...(action
-          ? [
-              quantityAction({
-                ...action,
-                run: (quantity) => {
-                  dismiss();
-                  action.run(quantity);
-                },
-              }),
-            ]
-          : []),
-      ]),
+      ...notesOn(sim, item).map(infoNote),
+      infoActions({ dismiss, action }),
     ],
   });
 }

@@ -755,6 +755,80 @@ export function modal(spec: ModalSpec): () => void {
   return dismiss;
 }
 
+// ---------------------------------------------------------------------------
+// Detail dialogs
+// ---------------------------------------------------------------------------
+
+/**
+ * The top of a details dialog: a picture, a name, and a line of chips.
+ *
+ * Four of these existed — an ingredient's, a bottle's, a hero's and a market
+ * entry's — under three sets of class names for one layout, which is three
+ * places to change when the heading gets a line under it.
+ */
+export function infoHead(spec: {
+  art?: Node | null;
+  /**
+   * A framed tile around the picture. Icons want it; a portrait is already a
+   * photograph and sits flush, aligned to the top of a taller card.
+   */
+  framed?: boolean;
+  title: string;
+  chips?: HTMLElement[];
+}): HTMLElement {
+  const framed = spec.framed ?? true;
+  const head = el('div', { class: framed ? 'info-head' : 'info-head info-head-tall' }, [
+    ...(spec.art ? [framed ? el('span', { class: 'info-art' }, [spec.art]) : spec.art] : []),
+    el('div', { class: 'info-name' }, [
+      el('h2', { text: spec.title }),
+      ...(spec.chips?.length ? [el('div', { class: 'row-sub' }, spec.chips)] : []),
+    ]),
+  ]);
+  return head;
+}
+
+/** The inset block of label-and-value lines under the head. */
+export function infoFacts(lines: HTMLElement[]): HTMLElement {
+  return el('div', { class: 'info-facts' }, lines);
+}
+
+/** A remark about the thing, rather than another field of it. */
+export function infoNote(text: string): HTMLElement {
+  return el('p', { class: 'info-note', text });
+}
+
+/**
+ * The foot of a details dialog: the way out, and the thing you came to do.
+ *
+ * The action closes the dialog on its way, so the result lands on the screen
+ * behind it rather than under a panel nobody dismissed — which every one of
+ * these had written out, with the same comment above it.
+ */
+export function infoActions(spec: {
+  dismiss: () => void;
+  /** Buttons that go before the way out, e.g. recruit or dismiss a hero. */
+  before?: Array<HTMLElement | null | undefined>;
+  /** "Cancel" where the dialog offers a commitment; "Close" where it does not. */
+  closeLabel?: string;
+  action?: QuantityActionSpec;
+}): HTMLElement {
+  return el('div', { class: 'dialog-actions' }, [
+    ...(spec.before ?? []).filter((node): node is HTMLElement => node != null),
+    button(spec.closeLabel ?? t('common.close'), spec.dismiss, { variant: 'quiet' }),
+    ...(spec.action
+      ? [
+          quantityAction({
+            ...spec.action,
+            run: (quantity) => {
+              spec.dismiss();
+              spec.action?.run(quantity);
+            },
+          }),
+        ]
+      : []),
+  ]);
+}
+
 export interface QuantityActionSpec {
   /** The verb, e.g. "Buy" or "Plant". */
   label: string;
@@ -983,12 +1057,21 @@ export function makeDropTarget(
 }
 
 /** A labelled key/value line, for readouts that aren't tables. */
-export function stat(label: string, value: Node | string, tone?: string): HTMLElement {
+export function stat(
+  label: string,
+  value: Node | string | Array<Node | string>,
+  tone?: string,
+): HTMLElement {
+  // An array where the value is a picture and a word, so both sit in the one
+  // `.stat-value` the layout expects rather than in a wrapper inside it.
+  const parts = Array.isArray(value) ? value : [value];
   const node = el('div', { class: 'stat-line' }, [
     el('span', { class: 'stat-label', text: label }),
-    el('span', { class: 'stat-value' }, [
-      typeof value === 'string' ? document.createTextNode(value) : value,
-    ]),
+    el(
+      'span',
+      { class: 'stat-value' },
+      parts.map((part) => (typeof part === 'string' ? document.createTextNode(part) : part)),
+    ),
   ]);
   if (tone) node.dataset.tone = tone;
   return node;

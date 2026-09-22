@@ -7,16 +7,17 @@
  */
 
 import {
-  button,
   chip,
   el,
+  infoActions,
+  infoHead,
+  infoNote,
   emptyNote,
   goldText,
   ingredientIcon,
   modal,
   panelHeader,
   portrait,
-  quantityAction,
   slot,
   slotGrid,
 } from '../components';
@@ -315,40 +316,24 @@ function showGoodsInfo(entry: StockEntry, label: string, action: QuantityActionS
    */
   const lines: HTMLElement[] = [];
   const detailKey = `${entry.kind}.${entry.id}.detail`;
-  if (has(detailKey)) lines.push(el('p', { class: 'ingredient-info-note', text: t(detailKey) }));
+  if (has(detailKey)) lines.push(infoNote(t(detailKey)));
   for (const note of goodsNotes(entry.kind, entry.id)) {
-    lines.push(el('p', { class: 'ingredient-info-note', text: note }));
+    lines.push(infoNote(note));
   }
   if (entry.kind === 'decor') {
-    lines.push(
-      el('p', {
-        class: 'ingredient-info-note',
-        text: t('decor.spotNote', { spot: t(`decor.spot.${getDecor(entry.id).spot}`) }),
-      }),
-    );
+    lines.push(infoNote(t('decor.spotNote', { spot: t(`decor.spot.${getDecor(entry.id).spot}`) })));
   }
 
   modal({
     content: (dismiss) => [
       el('div', { class: 'ingredient-info' }, [
-        el('div', { class: 'ingredient-info-head' }, [
-          el('span', { class: 'ingredient-info-art' }, [entryIcon(entry)]),
-          el('div', {}, [
-            el('h2', { text: label }),
-            el('div', { class: 'row-sub' }, [chip(t(`market.kind.${entry.kind}`))]),
-          ]),
-        ]),
+        infoHead({
+          art: entryIcon(entry),
+          title: label,
+          chips: [chip(t(`market.kind.${entry.kind}`))],
+        }),
         ...lines,
-        el('div', { class: 'dialog-actions' }, [
-          button(t('common.close'), dismiss, { variant: 'quiet' }),
-          quantityAction({
-            ...action,
-            run: (quantity) => {
-              dismiss();
-              action.run(quantity);
-            },
-          }),
-        ]),
+        infoActions({ dismiss, action }),
       ]),
     ],
   });

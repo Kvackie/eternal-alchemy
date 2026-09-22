@@ -2090,7 +2090,8 @@ input[type='range'] {
   color: var(--warn);
 }
 
-.potion-facts {
+/* The inset block of figures under the head, in every details dialog. */
+.info-facts {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -3819,28 +3820,10 @@ input[type='range'] {
   gap: 0.75rem;
 }
 
-.hero-info-head {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
 /* The dialog is where the face is worth its space. */
-.hero-info-head .portrait-hero {
+.info-head .portrait-hero {
   width: 104px;
   height: 130px;
-}
-
-.hero-info-name {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  min-width: 0;
-}
-
-.hero-info-name h2 {
-  margin: 0;
-  font-size: 1.0625rem;
 }
 
 .hero-info-blurb {
@@ -3850,16 +3833,7 @@ input[type='range'] {
   line-height: 1.5;
 }
 
-.hero-info-facts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem 0.625rem;
-  background: var(--bg-inset);
-  border-radius: var(--radius);
-}
-
-.hero-info-facts .stat-value {
+.info-facts .stat-value {
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -4084,18 +4058,38 @@ input[type='range'] {
   max-width: 22rem;
 }
 
-.ingredient-info-head {
+/*
+ * The top of any details dialog.
+ *
+ * An ingredient, a bottle, a hero and a market entry all draw this, and for a
+ * while they drew it three different ways: `.ingredient-info-head` with a
+ * framed icon, `.hero-info-head` with a portrait, and a nameless div in
+ * between holding the heading.
+ */
+.info-head {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.ingredient-info-head h2 {
-  margin: 0 0 0.25rem;
+/* A portrait is tall, so the name sits at the top of it rather than beside its middle. */
+.info-head-tall {
+  align-items: flex-start;
+}
+
+.info-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.info-name h2 {
+  margin: 0;
   font-size: 1.0625rem;
 }
 
-.ingredient-info-art {
+.info-art {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4106,7 +4100,7 @@ input[type='range'] {
   border-radius: var(--radius);
 }
 
-.ingredient-info-art img {
+.info-art img {
   width: 2.75rem;
   height: 2.75rem;
   object-fit: contain;
@@ -4156,7 +4150,7 @@ input[type='range'] {
   font-size: 0.8125rem;
 }
 
-.ingredient-info-note {
+.info-note {
   margin: 0;
   font-size: 0.75rem;
   color: var(--text-faint);

@@ -14,7 +14,18 @@
  * about them changes.
  */
 
-import { button, chip, el, modal, portrait, potionIcon } from './components';
+import {
+  button,
+  chip,
+  el,
+  infoActions,
+  infoFacts,
+  infoHead,
+  modal,
+  portrait,
+  potionIcon,
+  stat,
+} from './components';
 import { formatDuration, formatGold, t } from '@/i18n';
 import { getHeroDef } from '@/sim/config';
 import { effectiveLevel, favourBandOf, isInjured, recruitCostOf } from '@/sim/heroes';
@@ -65,26 +76,13 @@ function buildHeroInfo(
   }
   for (const trait of def.traits) tags.push(chip(t(`heroTrait.${trait}`)));
 
-  const facts = el('div', { class: 'hero-info-facts' }, [
-    el('div', { class: 'stat-line' }, [
-      el('span', { class: 'stat-label', text: t('heroInfo.affinity') }),
-      el('span', { class: 'stat-value', text: t(`biome.${def.affinity}`) }),
+  const facts = infoFacts([
+    stat(t('heroInfo.affinity'), t(`biome.${def.affinity}`)),
+    stat(t('heroInfo.favourite'), [
+      potionIcon(def.favourite, 16),
+      el('span', { text: t(`recipe.${def.favourite}`) }),
     ]),
-    el('div', { class: 'stat-line' }, [
-      el('span', { class: 'stat-label', text: t('heroInfo.favourite') }),
-      el('span', { class: 'stat-value' }, [
-        potionIcon(def.favourite, 16),
-        el('span', { text: t(`recipe.${def.favourite}`) }),
-      ]),
-    ]),
-    ...(hero
-      ? [
-          el('div', { class: 'stat-line' }, [
-            el('span', { class: 'stat-label', text: t('heroInfo.missions') }),
-            el('span', { class: 'stat-value', text: String(hero.missionsCompleted) }),
-          ]),
-        ]
-      : []),
+    ...(hero ? [stat(t('heroInfo.missions'), String(hero.missionsCompleted))] : []),
   ]);
 
   const actions: HTMLElement[] = [];
@@ -134,23 +132,18 @@ function buildHeroInfo(
     if (full) reasons.push(t('roster.full'));
     else if (poor) reasons.push(t('heroInfo.tooPoor'));
   }
-  actions.push(button(t('common.cancel'), dismiss, { variant: 'quiet' }));
-
   const body = el('div', { class: 'hero-info' }, [
-    el('div', { class: 'hero-info-head' }, [
-      ...(face ? [face] : []),
-      el('div', { class: 'hero-info-name' }, [
-        el('h2', { text: t(`hero.${heroId}`) }),
-        el('div', { class: 'row-sub' }, tags),
-      ]),
-    ]),
+    // Unframed: a portrait is already a picture with an edge of its own.
+    infoHead({ art: face, framed: false, title: t(`hero.${heroId}`), chips: tags }),
 
     el('p', { class: 'hero-info-blurb', text: t(`hero.${heroId}.blurb`) }),
 
     facts,
 
     ...reasons.map((reason) => el('p', { class: 'field-note dialog-reason', text: reason })),
-    el('div', { class: 'dialog-actions' }, actions),
+    // Cancel rather than Close: this dialog offers to take someone on or let
+    // them go, so backing out of it is backing out of a decision.
+    infoActions({ dismiss, before: actions, closeLabel: t('common.cancel') }),
   ]);
 
   return body;

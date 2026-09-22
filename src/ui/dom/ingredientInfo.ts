@@ -12,13 +12,14 @@
  */
 
 import {
-  button,
   chip,
   el,
   emptyNote,
+  infoActions,
+  infoHead,
+  infoNote,
   ingredientIcon,
   modal,
-  quantityAction,
 } from './components';
 import type { QuantityActionSpec } from './components';
 import { t } from '@/i18n';
@@ -204,13 +205,11 @@ export function showIngredientInfo(
   const suggestions = pointsToward(sim, essence);
 
   const build = (dismiss: () => void) => [el('div', { class: 'ingredient-info' }, [
-    el('div', { class: 'ingredient-info-head' }, [
-      el('span', { class: 'ingredient-info-art' }, [ingredientIcon(ingredientId, 44)]),
-      el('div', {}, [
-        el('h2', { text: title ?? t(`ingredient.${ingredientId}`) }),
-        el('div', { class: 'row-sub' }, tags),
-      ]),
-    ]),
+    infoHead({
+      art: ingredientIcon(ingredientId, 44),
+      title: title ?? t(`ingredient.${ingredientId}`),
+      chips: tags,
+    }),
 
     el('span', {
       class: 'field-label',
@@ -241,7 +240,7 @@ export function showIngredientInfo(
           ...(suggestions.unknown > 0
             ? [
                 el('p', {
-                  class: 'ingredient-info-note',
+                  class: 'info-note',
                   // "And 3 more" needs something to be more *than*. With no
                   // known recipes above it, the count stands on its own.
                   text: t(
@@ -264,30 +263,15 @@ export function showIngredientInfo(
      * and everything else gets one drawn at its own rate.
      */
     ...(agingRateFor(ingredientId) <= 0
-      ? [el('p', { class: 'ingredient-info-note', text: t('ingredientInfo.stable') })]
+      ? [infoNote(t('ingredientInfo.stable'))]
       : [
           el('div', { class: 'freshness-block' }, [
-            el('p', { class: 'ingredient-info-note', text: t('ingredientInfo.ages') }),
+            infoNote(t('ingredientInfo.ages')),
             freshnessTable(essence, agingRateFor(ingredientId)),
           ]),
         ]),
 
-    el('div', { class: 'dialog-actions' }, [
-      button(t('common.close'), dismiss, { variant: 'quiet' }),
-      ...(action
-        ? [
-            quantityAction({
-              ...action,
-              // The panel closes on the way out, so the result lands on the
-              // screen behind it rather than under a dialog nobody dismissed.
-              run: (quantity) => {
-                dismiss();
-                action.run(quantity);
-              },
-            }),
-          ]
-        : []),
-    ]),
+    infoActions({ dismiss, action }),
   ])];
 
   modal({ content: build });
