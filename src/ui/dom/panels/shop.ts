@@ -18,16 +18,20 @@
 
 import {
   button,
+  chipRow,
   chip,
   clear,
   el,
+  emptyNote,
   goldText,
   gradeBadge,
   matchesSearch,
   modal,
+  pager,
   panelHeader,
   potionIcon,
   searchField,
+  sectionHead,
   slot,
   slotGrid,
   tabPanel,
@@ -188,13 +192,7 @@ function renderShelves(sim: Simulation): HTMLElement {
   const sorted = [...numbered].sort(comparators[shelfSort]);
 
   const section = el('section', { class: 'shelves' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('shop.shelves') }),
-      el('span', {
-        class: 'field-note',
-        text: t('shop.shelves.count', { full, total: numbered.length }),
-      }),
-    ]),
+    sectionHead(t('shop.shelves'), t('shop.shelves.count', { full, total: numbered.length })),
   ]);
 
   // Only worth offering once there is enough to lose track of.
@@ -227,17 +225,14 @@ const comparators: Record<ShelfSort, (a: NumberedShelf, b: NumberedShelf) => num
 };
 
 function sortRow(): HTMLElement {
-  const row = el('div', { class: 'sort-row' });
-  for (const id of ['selling', 'price'] as ShelfSort[]) {
-    const node = el('button', { class: 'sort-chip', type: 'button', text: t(`shop.sort.${id}`) });
-    node.setAttribute('aria-pressed', String(shelfSort === id));
-    node.addEventListener('click', () => {
+  return chipRow<ShelfSort>({
+    options: (['selling', 'price'] as const).map((id) => ({ id, label: t(`shop.sort.${id}`) })),
+    current: shelfSort,
+    onPick: (id) => {
       shelfSort = id;
       changed();
-    });
-    row.append(node);
-  }
-  return row;
+    },
+  });
 }
 
 function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
@@ -363,7 +358,7 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
       content: (dismiss) => [
         el('h2', { text: t('shop.shelf.numbered', { number }) }),
         boardLine,
-        el('p', { class: 'grid-empty', text: t('shop.slot.empty') }),
+        emptyNote(t('shop.slot.empty')),
         el('div', { class: 'dialog-actions' }, [
           button(t('common.close'), dismiss, { variant: 'quiet' }),
           button(t('shop.slot.stockThis'), () => {
@@ -475,28 +470,14 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
 
         if (pageCount > 1) {
           body.append(
-            el('div', { class: 'pager' }, [
-              button(
-                t('shop.inventory.prev'),
-                () => {
-                  page = Math.max(1, page - 1);
-                  draw();
-                },
-                { variant: 'quiet', small: true, disabled: page <= 1 },
-              ),
-              el('span', {
-                class: 'pager-label num',
-                text: t('ledger.page.of', { page, count: pageCount }),
-              }),
-              button(
-                t('shop.inventory.next'),
-                () => {
-                  page = Math.min(pageCount, page + 1);
-                  draw();
-                },
-                { variant: 'quiet', small: true, disabled: page >= pageCount },
-              ),
-            ]),
+            pager({
+              page,
+              pageCount,
+              onChange: (next) => {
+                page = next;
+                draw();
+              },
+            }),
           );
         }
       };
@@ -563,18 +544,18 @@ const stackSorts: Record<StackSort, (a: Stack, b: Stack) => number> = {
 };
 
 function stackSortRow(): HTMLElement {
-  const row = el('div', { class: 'sort-row' });
-  for (const id of ['value', 'count'] as StackSort[]) {
-    const node = el('button', { class: 'sort-chip', type: 'button', text: t(`shop.stackSort.${id}`) });
-    node.setAttribute('aria-pressed', String(stackSort === id));
-    node.addEventListener('click', () => {
+  return chipRow<StackSort>({
+    options: (['value', 'count'] as const).map((id) => ({
+      id,
+      label: t(`shop.stackSort.${id}`),
+    })),
+    current: stackSort,
+    onPick: (id) => {
       stackSort = id;
       stackPage = 1;
       changed();
-    });
-    row.append(node);
-  }
-  return row;
+    },
+  });
 }
 
 /**
@@ -625,13 +606,7 @@ function renderInventory(sim: Simulation): HTMLElement {
   const shown = stacks.slice((stackPage - 1) * STACK_PAGE, stackPage * STACK_PAGE);
 
   const section = el('section', { class: 'inventory' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('shop.inventory') }),
-      el('span', {
-        class: 'field-note',
-        text: t('shop.inventory.count', { kinds: stacks.length, bottles }),
-      }),
-    ]),
+    sectionHead(t('shop.inventory'), t('shop.inventory.count', { kinds: stacks.length, bottles })),
   ]);
 
   section.append(
@@ -661,28 +636,14 @@ function renderInventory(sim: Simulation): HTMLElement {
 
   if (pageCount > 1) {
     section.append(
-      el('div', { class: 'pager' }, [
-        button(
-          t('shop.inventory.prev'),
-          () => {
-            stackPage = Math.max(1, stackPage - 1);
-            changed();
-          },
-          { variant: 'quiet', small: true, disabled: stackPage <= 1 },
-        ),
-        el('span', {
-          class: 'pager-label num',
-          text: t('ledger.page.of', { page: stackPage, count: pageCount }),
-        }),
-        button(
-          t('shop.inventory.next'),
-          () => {
-            stackPage = Math.min(pageCount, stackPage + 1);
-            changed();
-          },
-          { variant: 'quiet', small: true, disabled: stackPage >= pageCount },
-        ),
-      ]),
+      pager({
+        page: stackPage,
+        pageCount,
+        onChange: (next) => {
+          stackPage = next;
+          changed();
+        },
+      }),
     );
   }
 
@@ -758,10 +719,7 @@ function renderBoards(sim: Simulation): HTMLElement {
   });
 
   return el('section', { class: 'boards' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('shop.boards') }),
-      el('span', { class: 'field-note', text: t('shop.boards.hint') }),
-    ]),
+    sectionHead(t('shop.boards'), t('shop.boards.hint')),
     slotGrid(tiles, t('shop.boards.empty')),
   ]);
 }
@@ -772,7 +730,7 @@ function openBoardPicker(sim: Simulation, tierId: string, fits: ShelfRef[]): voi
     content: (dismiss) => [
       el('h2', { text: t('shop.board.fitTo', { board: t(`board.${tierId}`) }) }),
       fits.length === 0
-        ? el('p', { class: 'grid-empty', text: t('shop.board.noShelf') })
+        ? emptyNote(t('shop.board.noShelf'))
         : el(
             'div',
             { class: 'shelf-picker' },

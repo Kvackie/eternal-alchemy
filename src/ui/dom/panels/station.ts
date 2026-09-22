@@ -23,6 +23,7 @@ import {
   clear,
   collapsible,
   el,
+  emptyNote,
   emptyState,
   essenceChip,
   gradeBadge,
@@ -31,8 +32,10 @@ import {
   matchesSearch,
   meter,
   modal,
-  searchField,
   optionGroup,
+  pager,
+  searchField,
+  sectionHead,
   stat,
   tabStrip,
 } from '../components';
@@ -455,34 +458,20 @@ function renderStores(sim: Simulation): HTMLElement {
     scroller('stores', 'station-scroll', [
       tiles.length > 0
         ? el('div', { class: 'ingredient-grid' }, tiles)
-        : el('p', { class: 'grid-empty', text: empty }),
+        : emptyNote(empty),
     ]),
   ];
 
   if (pageCount > 1) {
     body.push(
-      el('div', { class: 'pager' }, [
-        button(
-          t('shop.inventory.prev'),
-          () => {
-            storePage = Math.max(1, storePage - 1);
-            changed();
-          },
-          { variant: 'quiet', small: true, disabled: storePage <= 1 },
-        ),
-        el('span', {
-          class: 'pager-label num',
-          text: t('ledger.page.of', { page: storePage, count: pageCount }),
-        }),
-        button(
-          t('shop.inventory.next'),
-          () => {
-            storePage = Math.min(pageCount, storePage + 1);
-            changed();
-          },
-          { variant: 'quiet', small: true, disabled: storePage >= pageCount },
-        ),
-      ]),
+      pager({
+        page: storePage,
+        pageCount,
+        onChange: (next) => {
+          storePage = next;
+          changed();
+        },
+      }),
     );
   }
 
@@ -1293,10 +1282,7 @@ function renderRight(sim: Simulation): HTMLElement {
 
   return scroller('right', 'station-col station-right', [
     el('section', { class: 'station-block' }, [
-      el('div', { class: 'stores-head' }, [
-        el('span', { class: 'field-label', text: t('cauldron.recipes') }),
-        el('span', { class: 'field-note', text: t('station.showing', { count: recipes.length }) }),
-      ]),
+      sectionHead(t('cauldron.recipes'), t('station.showing', { count: recipes.length })),
       el('div', { class: 'sort-row' }, [
         (() => {
           const node = el('button', { class: 'sort-chip', type: 'button', text: t('station.matchPot') });
@@ -1326,37 +1312,18 @@ function renderRight(sim: Simulation): HTMLElement {
         'station-scroll',
         rows.length > 0
           ? rows
-          : [
-              el('p', {
-                class: 'grid-empty',
-                text: recipeQuery.trim() ? t('common.search.none') : t('station.noRecipes'),
-              }),
-            ],
+          : [emptyNote(recipeQuery.trim() ? t('common.search.none') : t('station.noRecipes'))],
       ),
       ...(pageCount > 1
         ? [
-            el('div', { class: 'pager' }, [
-              button(
-                t('shop.inventory.prev'),
-                () => {
-                  recipePage = Math.max(1, recipePage - 1);
-                  changed();
-                },
-                { variant: 'quiet', small: true, disabled: recipePage <= 1 },
-              ),
-              el('span', {
-                class: 'pager-label num',
-                text: t('ledger.page.of', { page: recipePage, count: pageCount }),
-              }),
-              button(
-                t('shop.inventory.next'),
-                () => {
-                  recipePage = Math.min(pageCount, recipePage + 1);
-                  changed();
-                },
-                { variant: 'quiet', small: true, disabled: recipePage >= pageCount },
-              ),
-            ]),
+            pager({
+              page: recipePage,
+              pageCount,
+              onChange: (next) => {
+                recipePage = next;
+                changed();
+              },
+            }),
           ]
         : []),
     ]),

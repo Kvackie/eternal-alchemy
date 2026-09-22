@@ -7,7 +7,17 @@
  * pays pro rata and costs nothing.
  */
 
-import { button, chip, el, goldText, gradeFloor, meter, panelHeader, stat } from '../components';
+import {
+  button,
+  chip,
+  el,
+  emptyNote,
+  goldText,
+  gradeFloor,
+  meter,
+  panelHeader,
+  stat,
+} from '../components';
 import { formatGold, t } from '@/i18n';
 import { config } from '@/sim/config';
 import { contractSummary } from '@/sim/contracts';
@@ -18,7 +28,7 @@ export function renderBoard(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
 
   if (sim.world.contracts.length === 0) {
-    body.append(el('p', { class: 'grid-empty', text: t('board.empty') }));
+    body.append(emptyNote(t('board.empty')));
   }
 
   for (const contract of sim.world.contracts) {

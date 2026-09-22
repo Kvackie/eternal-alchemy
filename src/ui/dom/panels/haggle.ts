@@ -9,7 +9,19 @@
  * Five buttons and a price stepper. Touch and mouse identical.
  */
 
-import { button, chip, el, goldText, gradeBadge, meter, potionIcon, slot, slotGrid, stat } from '../components';
+import {
+  button,
+  chip,
+  el,
+  goldText,
+  gradeBadge,
+  meter,
+  potionIcon,
+  sectionHead,
+  slot,
+  slotGrid,
+  stat,
+} from '../components';
 import { formatGold, t } from '@/i18n';
 import { customersConfig, getCustomer, getRecipe } from '@/sim/config';
 
@@ -33,10 +45,7 @@ export function renderHaggle(sim: Simulation): HTMLElement {
   if (walkIns.length === 0) return el('span');
 
   const section = el('section', { class: 'walkins' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('haggle.walkIns') }),
-      el('span', { class: 'field-note', text: t('haggle.walkIns.hint') }),
-    ]),
+    sectionHead(t('haggle.walkIns'), t('haggle.walkIns.hint')),
   ]);
 
   for (const walkIn of walkIns) {

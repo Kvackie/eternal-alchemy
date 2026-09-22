@@ -10,12 +10,13 @@ import {
   button,
   chip,
   el,
+  emptyNote,
   goldText,
   ingredientIcon,
+  modal,
   panelHeader,
   portrait,
   quantityAction,
-  modal,
   slot,
   slotGrid,
 } from '../components';
@@ -38,9 +39,7 @@ export function renderMarket(sim: Simulation): HTMLElement {
 
 
   if (present.length === 0) {
-    body.append(
-      el('div', { class: 'grid-empty', text: t('market.closed') }),
-    );
+    body.append(emptyNote(t('market.closed')));
   }
 
   for (const visit of present) body.append(renderVisit(sim, visit));

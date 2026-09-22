@@ -7,7 +7,15 @@
  * my text" has nothing to do with "what did I earn last week".
  */
 
-import { VALUE_MARK, button, el, gradeBadge, panelHeader, splitOnValue } from '../components';
+import {
+  el,
+  emptyNote,
+  gradeBadge,
+  pager,
+  panelHeader,
+  splitOnValue,
+  VALUE_MARK,
+} from '../components';
 import { formatGold, formatNumber, has, t } from '@/i18n';
 import { dayStateAt } from '@/sim/clock';
 import { logPage } from '@/sim/log';
@@ -133,31 +141,20 @@ function renderLog(sim: Simulation): HTMLElement {
 
   const rows =
     result.entries.length === 0
-      ? [el('p', { class: 'grid-empty', text: t('ledger.log.empty') })]
+      ? [emptyNote(t('ledger.log.empty'))]
       : result.entries.map(renderEntry);
 
-  const pager = el('div', { class: 'pager' }, [
-    button(
-      t('ledger.page.prev'),
-      () => {
-        page = Math.max(1, page - 1);
-        changed();
-      },
-      { variant: 'quiet', small: true, disabled: result.page <= 1 },
-    ),
-    el('span', {
-      class: 'pager-label num',
-      text: t('ledger.page.of', { page: result.page, count: result.pageCount }),
-    }),
-    button(
-      t('ledger.page.next'),
-      () => {
-        page = Math.min(result.pageCount, page + 1);
-        changed();
-      },
-      { variant: 'quiet', small: true, disabled: result.page >= result.pageCount },
-    ),
-  ]);
+  // Newer and Older rather than Back and More: these pages run through time.
+  const pages = pager({
+    page: result.page,
+    pageCount: result.pageCount,
+    prev: t('ledger.page.prev'),
+    next: t('ledger.page.next'),
+    onChange: (next) => {
+      page = next;
+      changed();
+    },
+  });
 
   return el('section', { class: 'ledger-log' }, [
     el('div', { class: 'log-head' }, [
@@ -166,7 +163,7 @@ function renderLog(sim: Simulation): HTMLElement {
     ]),
     tabs,
     el('div', { class: 'log-rows' }, rows),
-    pager,
+    pages,
   ]);
 }
 

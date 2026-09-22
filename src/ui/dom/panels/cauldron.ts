@@ -10,7 +10,15 @@
  * the station once you have picked one. See `station.ts`.
  */
 
-import { button, chip, collapsible, el, meter, panelHeader } from '../components';
+import {
+  button,
+  chip,
+  collapsible,
+  el,
+  emptyNote,
+  meter,
+  panelHeader,
+} from '../components';
 import { formatDuration, formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
 import { atCauldronLimit, activityOf, buyableTiers } from '@/sim/cauldrons';
@@ -232,7 +240,7 @@ function renderStorage(sim: Simulation): HTMLElement {
           { class: 'bench-grid' },
           stored.map((pot) => potCard(sim, pot, true)),
         )
-      : el('p', { class: 'grid-empty', text: t('cauldron.storage.empty') }),
+      : emptyNote(t('cauldron.storage.empty')),
   );
 
   /*
@@ -248,7 +256,7 @@ function renderStorage(sim: Simulation): HTMLElement {
 
   const offers = buyableTiers(sim.world);
   if (offers.length === 0) {
-    section.append(el('p', { class: 'grid-empty', text: t('cauldron.buy.locked') }));
+    section.append(emptyNote(t('cauldron.buy.locked')));
     return section;
   }
 

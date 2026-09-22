@@ -19,6 +19,7 @@ import {
   meter,
   modal,
   panelHeader,
+  sectionHead,
   slot,
   slotGrid,
   stat,
@@ -213,10 +214,7 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
 
   body.append(
     el('section', { class: 'seeds' }, [
-      el('div', { class: 'stores-head' }, [
-        el('span', { class: 'field-label', text: t('garden.seeds') }),
-        el('span', { class: 'field-note', text: t('garden.seeds.source') }),
-      ]),
+      sectionHead(t('garden.seeds'), t('garden.seeds.source')),
       slotGrid(tiles, t('garden.seeds.empty')),
     ]),
   );
@@ -231,25 +229,23 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
    */
   const ready = sim.world.plots.filter((plot) => isReady(plot, sim.now)).length;
   const plots = el('section', { class: 'plots' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('garden.plots') }),
-      el('span', { class: 'field-note', text: t('garden.plots.hint') }),
-      ...(ready > 0
-        ? [
-            button(
-              t('garden.action.harvestAll', { count: ready }),
-              () => {
-                const results = sim.harvestAll();
-                const total = results.reduce((sum, r) => sum + r.count, 0);
-                const seeds = results.reduce((sum, r) => sum + r.seeds, 0);
-                toast(harvestToast(results, total, seeds));
-                changed();
-              },
-              { small: true, variant: 'good' },
-            ),
-          ]
-        : []),
-    ]),
+    sectionHead(
+      t('garden.plots'),
+      t('garden.plots.hint'),
+      ready > 0
+        ? button(
+            t('garden.action.harvestAll', { count: ready }),
+            () => {
+              const results = sim.harvestAll();
+              const total = results.reduce((sum, r) => sum + r.count, 0);
+              const seeds = results.reduce((sum, r) => sum + r.seeds, 0);
+              toast(harvestToast(results, total, seeds));
+              changed();
+            },
+            { small: true, variant: 'good' },
+          )
+        : null,
+    ),
   ]);
   for (const plot of sim.world.plots) plots.append(renderPlot(sim, plot));
   body.append(plots);
@@ -501,10 +497,7 @@ function renderGreenhouse(sim: Simulation): HTMLElement {
   });
 
   const section = el('section', { class: 'greenhouse' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('greenhouse.title') }),
-      el('span', { class: 'field-note', text: t('greenhouse.hint') }),
-    ]),
+    sectionHead(t('greenhouse.title'), t('greenhouse.hint')),
     slotGrid(tiles),
   ]);
 
@@ -602,10 +595,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
 
   body.append(
     el('section', { class: 'seeds' }, [
-      el('div', { class: 'stores-head' }, [
-        el('span', { class: 'field-label', text: t('cave.clusters') }),
-        el('span', { class: 'field-note', text: t('cave.clusters.source') }),
-      ]),
+      sectionHead(t('cave.clusters'), t('cave.clusters.source')),
       slotGrid(clusters, t('cave.clusters.empty')),
     ]),
   );
@@ -726,23 +716,21 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
   const ripe = sim.world.cave.tiles.filter((tile) => isMature(tile, sim.now)).length;
   body.append(
     el('section', { class: 'cave' }, [
-      el('div', { class: 'stores-head' }, [
-        el('span', { class: 'field-label', text: t('cave.grid') }),
-        el('span', { class: 'field-note', text: t('cave.grid.hint') }),
-        ...(ripe > 0
-          ? [
-              button(
-                t('cave.harvestAll', { count: ripe }),
-                () => {
-                  const results = sim.harvestCave();
-                  toast(harvestToast(results, results.reduce((s, r) => s + r.count, 0), 0));
-                  changed();
-                },
-                { small: true, variant: 'good' },
-              ),
-            ]
-          : []),
-      ]),
+      sectionHead(
+        t('cave.grid'),
+        t('cave.grid.hint'),
+        ripe > 0
+          ? button(
+              t('cave.harvestAll', { count: ripe }),
+              () => {
+                const results = sim.harvestCave();
+                toast(harvestToast(results, results.reduce((s, r) => s + r.count, 0), 0));
+                changed();
+              },
+              { small: true, variant: 'good' },
+            )
+          : null,
+      ),
       grid,
     ]),
   );

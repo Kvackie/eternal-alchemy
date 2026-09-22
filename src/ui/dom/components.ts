@@ -466,6 +466,92 @@ export function panelHeader(title: string, subtitle?: string): HTMLElement {
   ]);
 }
 
+/**
+ * The line above a list: what it is, a remark, and what you can do to it.
+ *
+ * Ten sections built this by hand out of a `.stores-head` wrapping a
+ * `.field-label` and a `.field-note`, and the two that also wanted a button
+ * had to remember that the button goes inside the head rather than under it.
+ */
+export function sectionHead(
+  label: string,
+  note?: string,
+  ...actions: Array<HTMLElement | null | undefined>
+): HTMLElement {
+  return el('div', { class: 'stores-head' }, [
+    el('span', { class: 'field-label', text: label }),
+    ...(note ? [el('span', { class: 'field-note', text: note })] : []),
+    ...actions.filter((node): node is HTMLElement => node != null),
+  ]);
+}
+
+/**
+ * One line saying a list is empty, where a whole empty state is too much.
+ *
+ * `emptyState` is the two-line version, for a screen with nothing on it;
+ * this is the note inside a section that happens to have no rows today.
+ */
+export function emptyNote(text: string): HTMLElement {
+  return el('p', { class: 'grid-empty', text });
+}
+
+/**
+ * Previous, "page 2 of 7", next.
+ *
+ * Five copies of this existed, each twenty lines, each with its own page
+ * variable and its own idea of how to clamp it — which is five places to get
+ * the disabled state of the last page wrong.
+ */
+export function pager(spec: {
+  page: number;
+  pageCount: number;
+  onChange: (page: number) => void;
+  /** The Ledger's pages run backwards through time, so it says Newer/Older. */
+  prev?: string;
+  next?: string;
+}): HTMLElement {
+  const go = (page: number) => spec.onChange(Math.min(spec.pageCount, Math.max(1, page)));
+  return el('div', { class: 'pager' }, [
+    button(spec.prev ?? t('common.page.prev'), () => go(spec.page - 1), {
+      variant: 'quiet',
+      small: true,
+      disabled: spec.page <= 1,
+    }),
+    el('span', {
+      class: 'pager-label num',
+      text: t('common.page.of', { page: spec.page, count: spec.pageCount }),
+    }),
+    button(spec.next ?? t('common.page.next'), () => go(spec.page + 1), {
+      variant: 'quiet',
+      small: true,
+      disabled: spec.page >= spec.pageCount,
+    }),
+  ]);
+}
+
+/**
+ * A row of chips where exactly one is on.
+ *
+ * Distinct from `optionGroup`, which is a row of cells sized to a grid: this
+ * is the lighter thing that sits above a list to say how it is ordered.
+ */
+export function chipRow<T extends string>(spec: {
+  options: ReadonlyArray<{ id: T; label: string }>;
+  current: T;
+  onPick: (id: T) => void;
+}): HTMLElement {
+  return el(
+    'div',
+    { class: 'sort-row' },
+    spec.options.map(({ id, label }) => {
+      const node = el('button', { class: 'sort-chip', type: 'button', text: label });
+      node.setAttribute('aria-pressed', String(spec.current === id));
+      node.addEventListener('click', () => spec.onPick(id));
+      return node;
+    }),
+  );
+}
+
 export function clear(node: HTMLElement): void {
   while (node.firstChild) node.firstChild.remove();
 }
@@ -788,7 +874,7 @@ export function quantityAction(spec: QuantityActionSpec): HTMLElement {
 
 export function slotGrid(slots: HTMLElement[], emptyMessage?: string): HTMLElement {
   if (slots.length === 0 && emptyMessage) {
-    return el('p', { class: 'grid-empty', text: emptyMessage });
+    return emptyNote(emptyMessage);
   }
   return el('div', { class: 'slot-grid' }, slots);
 }

@@ -12,12 +12,13 @@ import {
   chip,
   collapsible,
   el,
+  emptyNote,
   goldText,
   gradeBadge,
   ingredientIcon,
+  matchesSearch,
   meter,
   panelHeader,
-  matchesSearch,
   portrait,
   potionIcon,
   searchField,
@@ -204,7 +205,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
   if (sim.world.heroes.length === 0) {
     return el('section', { class: 'heroes' }, [
       el('span', { class: 'field-label', text: t('roster.heroes') }),
-      el('p', { class: 'grid-empty', text: t('roster.heroes.empty') }),
+      emptyNote(t('roster.heroes.empty')),
     ]);
   }
 
@@ -223,7 +224,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
       title: t('roster.heroes'),
       open: !folded.has('heroes'),
       onToggle: fold('heroes'),
-      body: [el('p', { class: 'grid-empty', text: t('roster.heroes.allOut') })],
+      body: [emptyNote(t('roster.heroes.allOut'))],
     });
   }
 
@@ -768,10 +769,7 @@ function renderTavern(sim: Simulation): HTMLElement {
     ...(recruitable.length > 0 || tavernArea !== null ? [sorts, areas] : []),
     cards.length > 0
       ? el('div', { class: 'tavern-grid' }, cards)
-      : el('p', {
-          class: 'grid-empty',
-          text: tavernArea ? t('roster.tavern.noneHere') : t('roster.tavern.empty'),
-        }),
+      : emptyNote(tavernArea ? t('roster.tavern.noneHere') : t('roster.tavern.empty')),
   ]);
 
   /*

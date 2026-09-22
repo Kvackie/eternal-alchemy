@@ -11,7 +11,15 @@
  * "does" whatever it steers the pot toward.
  */
 
-import { button, chip, el, ingredientIcon, modal, quantityAction } from './components';
+import {
+  button,
+  chip,
+  el,
+  emptyNote,
+  ingredientIcon,
+  modal,
+  quantityAction,
+} from './components';
 import type { QuantityActionSpec } from './components';
 import { t } from '@/i18n';
 import { config, getIngredient, realRecipes } from '@/sim/config';
@@ -143,7 +151,7 @@ function essenceRows(essence: EssenceVector): HTMLElement {
   );
 
   if (rows.length === 0) {
-    return el('p', { class: 'grid-empty', text: t('ingredientInfo.noEssence') });
+    return emptyNote(t('ingredientInfo.noEssence'));
   }
   return el('div', { class: 'essence-rows' }, rows);
 }
@@ -212,7 +220,7 @@ export function showIngredientInfo(
 
     el('span', { class: 'field-label', text: t('ingredientInfo.suits') }),
     suggestions.known.length === 0 && suggestions.unknown === 0
-      ? el('p', { class: 'grid-empty', text: t('ingredientInfo.suitsNothing') })
+      ? emptyNote(t('ingredientInfo.suitsNothing'))
       : el('div', { class: 'ingredient-info-recipes' }, [
           ...suggestions.known.map((entry) =>
             el('div', { class: 'ingredient-info-recipe' }, [
