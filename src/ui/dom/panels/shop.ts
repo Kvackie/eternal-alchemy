@@ -12,7 +12,7 @@
  * customer is drawn on both, because a customer leaves and the shelves do not.
  */
 
-import { button, chip, el, goldText, gradeBadge, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
+import { button, chip, clear, el, goldText, gradeBadge, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance, sameGoods } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
@@ -122,10 +122,27 @@ type ShelfSort = 'selling' | 'price';
 
 let shelfSort: ShelfSort = 'selling';
 
-/** A shelf with the number it is known by, which sorting must not change. */
-interface NumberedShelf {
+/** A shelf and the number it is known by, which sorting must not change. */
+interface ShelfRef {
   slot: ShelfSlot;
   number: number;
+}
+
+/**
+ * A shelf on the floor, with what the grid sorts and reads it by.
+ *
+ * `rate` and `ask` are worked out once per render and carried, rather than
+ * recomputed inside the comparator. `saleChance` sweeps every equipment
+ * definition twice — once itself and once through `footfallAt` — and a sort
+ * asks its comparator a few hundred questions for a hundred shelves, each
+ * costing two of those. The tile needs the same two numbers anyway, so
+ * carrying them turns several hundred sweeps into one per shelf.
+ */
+interface NumberedShelf extends ShelfRef {
+  /** How briskly it sells. Empty shelves sell nothing, which is not slowly. */
+  rate: number;
+  /** What it is asking, or -1 for an empty shelf. */
+  ask: number;
 }
 
 /**
@@ -145,10 +162,17 @@ function renderShelves(sim: Simulation): HTMLElement {
   const numbered: NumberedShelf[] = sim.world.shelf.map((slot, index) => ({
     slot,
     number: index + 1,
+    /*
+     * Sorted ascending, so an empty shelf's sentinel has to be larger than any
+     * real chance rather than smaller — as a negative it put every empty shelf
+     * at the head of the list, which is the opposite of what the sort is for.
+     */
+    rate: slot.item ? saleChance(sim.world, slot, sim.now, true) : Number.POSITIVE_INFINITY,
+    ask: slot.item ? slot.item.fairValue * slot.priceRatio : -1,
   }));
   const full = numbered.filter((entry) => entry.slot.item).length;
 
-  const sorted = [...numbered].sort(comparators[shelfSort](sim));
+  const sorted = [...numbered].sort(comparators[shelfSort]);
 
   const section = el('section', { class: 'shelves' }, [
     el('div', { class: 'stores-head' }, [
@@ -184,26 +208,9 @@ function renderShelves(sim: Simulation): HTMLElement {
  * Empty shelves sink to the bottom of both, because an empty shelf is not a
  * problem with a shelf.
  */
-const comparators: Record<ShelfSort, (sim: Simulation) => (a: NumberedShelf, b: NumberedShelf) => number> = {
-  selling: (sim) => (a, b) => {
-    /*
-     * An empty shelf sells nothing, which is not the same as selling slowly.
-     *
-     * Sorted ascending, so the sentinel has to be larger than any real chance
-     * rather than smaller — as a negative it put every empty shelf at the head
-     * of the list, which is the opposite of what this sort is for.
-     */
-    const rate = (entry: NumberedShelf) =>
-      entry.slot.item
-        ? saleChance(sim.world, entry.slot, sim.now, true)
-        : Number.POSITIVE_INFINITY;
-    return rate(a) - rate(b) || a.number - b.number;
-  },
-  price: (sim) => (a, b) => {
-    const ask = (entry: NumberedShelf) =>
-      entry.slot.item ? entry.slot.item.fairValue * entry.slot.priceRatio : -1;
-    return ask(b) - ask(a) || a.number - b.number;
-  },
+const comparators: Record<ShelfSort, (a: NumberedShelf, b: NumberedShelf) => number> = {
+  selling: (a, b) => a.rate - b.rate || a.number - b.number,
+  price: (a, b) => b.ask - a.ask || a.number - b.number,
 };
 
 function sortRow(): HTMLElement {
@@ -237,8 +244,8 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
     });
   }
 
-  const asking = Math.round(item.fairValue * shelfSlot.priceRatio);
-  const chance = saleChance(sim.world, shelfSlot, sim.now, true);
+  const asking = Math.round(entry.ask);
+  const chance = entry.rate;
 
   return slot({
     id: shelfSlot.id,
@@ -409,7 +416,7 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
 }
 
 /** Where should this go? Pick a shelf; a full one swaps with this one. */
-function openMovePicker(sim: Simulation, from: NumberedShelf): void {
+function openMovePicker(sim: Simulation, from: ShelfRef): void {
   const others = sim.world.shelf
     .map((slot, index) => ({ slot, number: index + 1 }))
     .filter((entry) => entry.slot.id !== from.slot.id);
@@ -446,17 +453,36 @@ function openMovePicker(sim: Simulation, from: NumberedShelf): void {
   });
 }
 
-/** Fill this one shelf, from whatever is in the store room. */
+/**
+ * Fill this one shelf, from whatever is in the store room.
+ *
+ * Paged, for the same reason the store room itself is: a finished Codex is
+ * very nearly two hundred kinds of potion, and building all of them into a
+ * dialog is the cost that grid was paged to avoid — inside a click handler,
+ * where it is felt most. Ordered by the same chip the store room is set to, so
+ * the page you are shown is the one you were just looking at.
+ *
+ * The grid is redrawn in place rather than the dialog reopened, so paging does
+ * not blink the whole thing away and back.
+ */
 function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
-  const stacks = stacksOf(sim.world.bottled);
+  const stacks = stacksOf(sim.world.bottled)
+    .map(({ item, count }) => ({ item, count, room: 0 }))
+    .sort(stackSorts[stackSort]);
+
+  const pageCount = Math.max(1, Math.ceil(stacks.length / STACK_PAGE));
+  let page = 1;
 
   modal({
-    content: (dismiss) => [
-      el('h2', { text: t('shop.slot.stockThis') }),
-      stacks.length === 0
-        ? el('p', { class: 'grid-empty', text: t('shop.inventory.empty') })
-        : slotGrid(
-            stacks.map(({ item, count }) =>
+    content: (dismiss) => {
+      const body = el('div');
+
+      const draw = (): void => {
+        clear(body);
+        const shown = stacks.slice((page - 1) * STACK_PAGE, page * STACK_PAGE);
+        body.append(
+          slotGrid(
+            shown.map(({ item, count }) =>
               slot({
                 id: item.uid,
                 icon: potionIcon(item.recipeId),
@@ -469,11 +495,48 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
                 },
               }),
             ),
+            t('shop.inventory.empty'),
           ),
-      el('div', { class: 'dialog-actions' }, [
-        button(t('common.close'), dismiss, { variant: 'quiet' }),
-      ]),
-    ],
+        );
+
+        if (pageCount > 1) {
+          body.append(
+            el('div', { class: 'pager' }, [
+              button(
+                t('shop.inventory.prev'),
+                () => {
+                  page = Math.max(1, page - 1);
+                  draw();
+                },
+                { variant: 'quiet', small: true, disabled: page <= 1 },
+              ),
+              el('span', {
+                class: 'pager-label num',
+                text: t('ledger.page.of', { page, count: pageCount }),
+              }),
+              button(
+                t('shop.inventory.next'),
+                () => {
+                  page = Math.min(pageCount, page + 1);
+                  draw();
+                },
+                { variant: 'quiet', small: true, disabled: page >= pageCount },
+              ),
+            ]),
+          );
+        }
+      };
+
+      draw();
+
+      return [
+        el('h2', { text: t('shop.slot.stockThis') }),
+        body,
+        el('div', { class: 'dialog-actions' }, [
+          button(t('common.close'), dismiss, { variant: 'quiet' }),
+        ]),
+      ];
+    },
   });
 }
 
@@ -762,7 +825,7 @@ function renderBoards(sim: Simulation): HTMLElement {
 }
 
 /** Which shelf should this board go on? */
-function openBoardPicker(sim: Simulation, tierId: string, fits: NumberedShelf[]): void {
+function openBoardPicker(sim: Simulation, tierId: string, fits: ShelfRef[]): void {
   modal({
     content: (dismiss) => [
       el('h2', { text: t('shop.board.fitTo', { board: t(`board.${tierId}`) }) }),

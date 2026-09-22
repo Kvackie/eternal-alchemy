@@ -355,7 +355,15 @@ export class WorldScene extends Phaser.Scene {
    * rather than waiting — the world is never blank while art is in flight.
    */
   private wantTexture(key: string, url: string | null): boolean {
-    return ensureTexture(this, key, url, () => this.redraw());
+    /*
+     * `true`, because a texture landing is exactly the case the signature
+     * cannot see: nothing in the world changed, only what there is to draw it
+     * with. Without it a bed kept its placeholder until the crop crossed into
+     * its next twentieth of growth — over a minute for most crops — which is
+     * the same stale-placeholder symptom `generatePlaceholders` was written to
+     * cure.
+     */
+    return ensureTexture(this, key, url, () => this.redraw(true));
   }
 
   /** Called whenever the world changes; cheap enough at this scale to rebuild. */
@@ -385,7 +393,24 @@ export class WorldScene extends Phaser.Scene {
      * on a screen with nothing behind it. See `DRAWN_SCREENS`.
      */
     if (!DRAWN_SCREENS.has(this.screen)) {
-      this.drawn = '';
+      /*
+       * And what was drawn has to go.
+       *
+       * The teardown used to be the unconditional first line of this method;
+       * moving it under the signature check left this branch returning without
+       * it, so walking from the Grounds to the Shop left the garden painted on
+       * the canvas — and the canvas is behind every panel, so two beds sat in
+       * plain sight either side of a panel that does not fill the stage. It is
+       * the same "one picture claiming to be two places" this file already
+       * records for the market borrowing the shop's drawing.
+       *
+       * Guarded, so the four-times-a-second call does not keep clearing a
+       * container that is already empty.
+       */
+      if (this.drawn !== '') {
+        this.content.removeAll(true);
+        this.drawn = '';
+      }
       this.applyLighting();
       return;
     }

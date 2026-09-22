@@ -178,6 +178,21 @@ export class Shell {
     this.uiScale = readStoredScale();
     document.documentElement.style.setProperty('--ui-scale', String(this.uiScale));
 
+    /*
+     * Redraw when the window crosses the breakpoint.
+     *
+     * The view toggle asks `bothFit()` for its label and for what its press
+     * should do, and it asks at render time. Nothing on a scene screen forces
+     * a render as the window is dragged, so widening past 960px left the
+     * button still offering the narrow layout's move — and narrowing past it
+     * left "Manage" on a screen the panel already owned, which is the dead
+     * press the button's own comment claims to have fixed.
+     *
+     * `matchMedia` fires on the crossing itself rather than on every pixel of
+     * a drag, which is the one moment any of this changes.
+     */
+    window.matchMedia(DESKTOP).addEventListener('change', () => this.renderPanels());
+
     if (debugEnabled()) this.loadDebugPanel();
 
     bus.on((event) => {
@@ -880,7 +895,15 @@ export class Shell {
         ? t('world.viewScreen', { screen: place })
         : t('world.manageScreen', { screen: place }),
     });
-    peek.setAttribute('aria-pressed', String(managing));
+    /*
+     * No `aria-pressed`.
+     *
+     * This is a button whose name changes to describe what pressing it will
+     * do, the way Play and Pause do — and for those, a pressed state is the
+     * wrong control. It read "View Grounds, pressed" at exactly the moment the
+     * garden was *not* showing, which is a sentence that means the opposite of
+     * what is on screen. The label alone says it, and says it right.
+     */
     peek.addEventListener('click', () => {
       this.view = managing ? (bothFit() ? 'split' : 'scene') : 'manage';
       this.renderPanels();
