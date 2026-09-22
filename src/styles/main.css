@@ -2152,20 +2152,90 @@ input[type='range'] {
  * column will otherwise hand it a sideways scrollbar for the last few pixels,
  * and a sideways scrollbar on a vertical list is never what was meant.
  */
+/*
+ * The list grows into whatever the column has spare.
+ *
+ * It used to be capped at 40vh — and, inside a flex column whose other blocks
+ * size to their content, it did not even reach that: the ingredient grid was
+ * 181px tall on a 757px column, with four hundred pixels of nothing under the
+ * burners. A cap is the wrong tool on a desktop, where the column has a height
+ * and the list is the one thing in it that can use more. On a phone the split
+ * view caps it instead, because there the column has no height of its own.
+ */
 .station-scroll {
-  min-height: 0;
-  /*
-   * Bounded, so a long list cannot push the pot off the page.
-   *
-   * Stacked on a narrow screen the three columns become one, and twenty-eight
-   * ingredient tiles sat between the top of the page and the cauldron. Capping
-   * the list means the thing you are brewing in is always a short scroll away,
-   * whatever is in your stores.
-   */
-  max-height: 40vh;
+  flex: 1;
+  min-height: 6rem;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
+}
+
+/*
+ * The Inventory block is what the left column spends its spare height on.
+ *
+ * Prepare and Method are fixed — a gauge, four buttons, two chips — so they
+ * take what they need and the stores take the rest. Without this every block
+ * sizes to its content and the column simply ends early, which is what left
+ * the bottom of the screen empty.
+ */
+.station-left > .collapsible[data-open='true'],
+.station-right > .station-block {
+  flex: 1;
+  min-height: 0;
+}
+
+.station-left > .collapsible > .collapsible-body,
+.station-right > .station-block {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/*
+ * Inside the station the body neither caps nor scrolls.
+ *
+ * `.collapsible-body` is capped at 17rem and scrolls itself everywhere else,
+ * which is right for a fold on a page — but here the fold IS the column, and
+ * the list inside it is the thing that scrolls. Two nested scrollers, the outer
+ * one 272px tall, is what kept the ingredient grid to a sixth of the screen.
+ */
+.station-left > .collapsible > .collapsible-body {
+  flex: 1;
+  max-height: none;
+  overflow: visible;
+}
+
+/* Shut, the filter row is a single line and must not stretch. */
+.station-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: none;
+}
+
+.filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.station-filters[data-open='false'] .filter-toggle .collapsible-caret {
+  transform: rotate(-90deg);
+}
+
+/* How many filters are in force, so a narrowed list is never a mystery. */
+.filter-count {
+  min-width: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: var(--amber);
+  font-weight: 700;
+}
+
+.filter-bar {
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* -- the inventory ------------------------------------------------------- */
@@ -2353,14 +2423,33 @@ input[type='range'] {
  * screen at once, and `vh` rather than `rem` so raising the text scale grows
  * the reading matter without growing the picture past the window.
  */
+/*
+ * The pot takes the room its column has.
+ *
+ * Fixed at 340px it sat in the middle of a 750px column on a laptop and a
+ * 1000px one on a monitor, with the difference left as empty ground — which on
+ * the one screen whose middle column exists to show you the pot is the last
+ * place to be saving space. It still keeps its square and a ceiling, so it
+ * grows into a large window rather than filling every window it is given.
+ */
 .pot-stage {
   position: relative;
-  height: min(42vh, 340px);
+  flex: 1;
+  min-height: 11rem;
+  max-height: min(58vh, 34rem);
   aspect-ratio: 1 / 1;
+  align-self: center;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 10%;
+}
+
+/* The block the pot sits in is what hands it that height. */
+.station-pot {
+  flex: 1;
+  min-height: 0;
+  justify-content: center;
 }
 
 /*
@@ -2740,7 +2829,13 @@ input[type='range'] {
    * ever. 34vh leaves the gauge and the method on screen with it.
    */
   .station[data-view='brew'] .station-scroll {
-    max-height: 34vh;
+    flex: none;
+    max-height: 42vh;
+  }
+
+  .station[data-view='pot'] .station-scroll {
+    flex: none;
+    max-height: 46vh;
   }
 
   /*
@@ -2770,6 +2865,11 @@ input[type='range'] {
  */
 .station-pinned .recipe {
   background: var(--surface-2);
+}
+
+.station-pinned-hint {
+  margin: 0;
+  flex: none;
 }
 
 /* ------------------------------------------------------------ mission haul */
@@ -4541,20 +4641,36 @@ input[type='range'] {
    * Not `.panel-wide`: these are still cards on a ground, not documents that own
    * the page, and the rows inside them read better bounded than run edge to edge.
    */
+  /*
+   * A roomy panel takes the page.
+   *
+   * It was capped at 52rem on the reasoning that these are cards on a ground
+   * rather than documents — which is true of their *text* and false of almost
+   * everything else in them. The Shop is a grid of shelves, the Market a grid
+   * of goods, the Board a grid of cards, the Roster a grid of faces: bounding
+   * those at 832px on a 1920px monitor does not make anything more readable, it
+   * just throws away columns and leaves a thousand pixels of empty ground.
+   *
+   * What actually needs a measure is prose, so that is bounded where it lives —
+   * see `.panel-head p` and the Settings rows below — rather than by squeezing
+   * the whole page to fit the widest sentence on it.
+   */
   .panel-roomy {
     margin-inline: auto;
-    max-width: 52rem;
+    max-width: none;
+  }
+
+  /* A sentence still wants a sentence's width, whatever the panel is doing. */
+  .panel-roomy > .panel-head p {
+    max-width: 46rem;
   }
 
   /*
-   * The market gets more of the page than the other roomy screens.
-   *
-   * Its body is a grid of goods rather than rows of text, so the bound that
-   * keeps a paragraph readable just costs it columns — at 52rem a trader's pack
-   * ran four tiles wide with a third of the window empty on either side.
+   * Settings is the exception: it is rows of prose with a control on the end,
+   * and a 1900px row puts the switch a screen away from the label it belongs to.
    */
-  .panel-market {
-    max-width: 68rem;
+  .settings-panel {
+    max-width: 60rem;
   }
 
   /*

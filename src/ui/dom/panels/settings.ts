@@ -131,7 +131,7 @@ export function renderSettings(deps: SettingsDeps): HTMLElement {
   );
 
   // Nothing to see behind it, so it sits in the middle rather than docked right.
-  return el('div', { class: 'panel panel-roomy' }, [
+  return el('div', { class: 'panel panel-roomy settings-panel' }, [
     panelHeader(t('settings.title')),
     body,
   ]);

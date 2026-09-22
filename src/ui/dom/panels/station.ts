@@ -89,6 +89,20 @@ let sealId = 'cork';
 let ingredientCategories = new Set<IngredientCategory>();
 let ingredientEssences = new Set<Essence>();
 let ingredientFreshness = new Set<Freshness>();
+
+/**
+ * Whether the filter rows are showing.
+ *
+ * `null` until the player touches it, which resolves to open where there is
+ * room and shut where there is not — three rows of chips is about a third of a
+ * phone's brew half, spent on controls rather than on the ingredients they
+ * filter.
+ */
+let filtersOpen: boolean | null = null;
+
+function filtersShown(): boolean {
+  return filtersOpen ?? !isSplit();
+}
 let recipeEssences = new Set<Essence>();
 /** The auto-filter: hide recipes the pot has already ruled out. */
 let matchPot = true;
@@ -238,9 +252,21 @@ function renderPinned(sim: Simulation): HTMLElement {
     .filter((recipe) => pinned.has(recipe.id))
     .map((recipe) => renderRecipe(sim, recipe, blend));
 
+  /*
+   * Nothing pinned is one quiet line, not an empty box.
+   *
+   * A dashed `grid-empty` panel saying "star a recipe in the book" took a
+   * quarter of a phone's brew half to tell the player to go and do something on
+   * the other half — on the screen whose whole point is room for the
+   * ingredients. The invitation is still there; it is just a sentence.
+   */
+  if (rows.length === 0) {
+    return el('p', { class: 'field-note station-pinned-hint', text: t('station.pinnedHint') });
+  }
+
   return el('section', { class: 'station-block station-pinned' }, [
     el('span', { class: 'field-label', text: t('station.pinnedHere') }),
-    ...(rows.length > 0 ? rows : [el('p', { class: 'grid-empty', text: t('station.pinnedHint') })]),
+    ...rows,
   ]);
 }
 
@@ -304,28 +330,70 @@ function renderStores(sim: Simulation): HTMLElement {
 
   const tiles = rows.map((entry) => ingredientCard(sim, entry, full));
 
+  /*
+   * The filters fold away, because they are not what the screen is for.
+   *
+   * Three rows of chips — five categories, five essences, three freshnesses —
+   * is about a third of a phone's brew half standing permanently between the
+   * heading and the first ingredient. Shut, the row says how many are in force,
+   * so a list narrowed by a filter you have forgotten is never a mystery.
+   */
+  const active = ingredientCategories.size + ingredientEssences.size + ingredientFreshness.size;
+  const shown = filtersShown();
+
+  const toggle = el('button', { class: 'sort-chip filter-toggle', type: 'button' }, [
+    el('span', { class: 'collapsible-caret', text: '▾', 'aria-hidden': 'true' }),
+    el('span', { text: t('station.filters') }),
+    ...(active > 0 ? [el('span', { class: 'filter-count num', text: String(active) })] : []),
+  ]);
+  toggle.setAttribute('aria-expanded', String(shown));
+  toggle.addEventListener('click', () => {
+    filtersOpen = !shown;
+    changed();
+  });
+
+  const clear = button(
+    t('station.filters.clear'),
+    () => {
+      ingredientCategories.clear();
+      ingredientEssences.clear();
+      ingredientFreshness.clear();
+      changed();
+    },
+    { variant: 'quiet', small: true },
+  );
+
+  const filters = el('div', { class: 'station-filters' });
+  filters.dataset.open = String(shown);
+  filters.append(el('div', { class: 'sort-row filter-bar' }, active > 0 ? [toggle, clear] : [toggle]));
+  if (shown) {
+    filters.append(
+      el(
+        'div',
+        { class: 'sort-row' },
+        CATEGORIES.map((category) =>
+          filterChip(t(`category.${category}`), ingredientCategories, category),
+        ),
+      ),
+      el(
+        'div',
+        { class: 'sort-row' },
+        ESSENCES.map((essence) =>
+          filterChip(t(`essence.${essence}.short`), ingredientEssences, essence),
+        ),
+      ),
+      el(
+        'div',
+        { class: 'sort-row' },
+        FRESHNESSES.map((freshness) =>
+          filterChip(t(`freshness.${freshness}`), ingredientFreshness, freshness),
+        ),
+      ),
+    );
+  }
+
   const body = [
-    el(
-      'div',
-      { class: 'sort-row' },
-      CATEGORIES.map((category) =>
-        filterChip(t(`category.${category}`), ingredientCategories, category),
-      ),
-    ),
-    el(
-      'div',
-      { class: 'sort-row' },
-      ESSENCES.map((essence) =>
-        filterChip(t(`essence.${essence}.short`), ingredientEssences, essence),
-      ),
-    ),
-    el(
-      'div',
-      { class: 'sort-row' },
-      FRESHNESSES.map((freshness) =>
-        filterChip(t(`freshness.${freshness}`), ingredientFreshness, freshness),
-      ),
-    ),
+    filters,
     scroller('stores', 'station-scroll', [
       tiles.length > 0
         ? el('div', { class: 'ingredient-grid' }, tiles)

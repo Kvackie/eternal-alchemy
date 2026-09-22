@@ -1661,5 +1661,7 @@
   "cauldron.ready.title": "{recipe} is ready",
   "common.gradeOrBetter": "Grade {grade} or better",
   "market.barter.one": "Pay 1 sealed potion, {grade}+",
-  "market.barter.many": "Pay {count} sealed potions, {grade}+"
+  "market.barter.many": "Pay {count} sealed potions, {grade}+",
+  "station.filters": "Filters",
+  "station.filters.clear": "Clear"
 }
