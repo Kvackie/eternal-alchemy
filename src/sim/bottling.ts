@@ -201,7 +201,7 @@ export function canBottle(
 let uidCounter = 0;
 
 /** Deterministic enough for a save file, unique enough for a session. */
-function nextUid(now: number): string {
+export function nextUid(now: number): string {
   uidCounter += 1;
   return `item-${now.toString(36)}-${uidCounter.toString(36)}`;
 }

@@ -162,6 +162,21 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
       },
       { variant: 'quiet', small: true },
     ),
+    /*
+     * Finished stock, which was the one thing there was no way to conjure.
+     *
+     * Everything the Shop and the Roster are about is a bottled potion, and
+     * getting one meant brewing it a pot at a time. Twelve kinds at five each
+     * is enough to fill a shelf, a supply rack and a search box.
+     */
+    button(
+      t('debug.grant.bottles'),
+      () => {
+        sim.grant({ bottles: { kinds: 12, each: 5 } });
+        changed();
+      },
+      { variant: 'quiet', small: true },
+    ),
     button(
       t('debug.finishTimers'),
       () => {

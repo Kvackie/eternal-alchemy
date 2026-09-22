@@ -13,10 +13,11 @@ import { config, heroesConfig, ingredients, realRecipes } from '@/sim/config';
 import { makeCauldron } from '@/sim/cauldrons';
 import { generateContract } from '@/sim/contracts';
 import { addIngredient } from '@/sim/inventory';
-import { fairValue, makeShelf } from '@/sim/market';
+import { makeShelf } from '@/sim/market';
 import { Rng } from '@/sim/rng';
+import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import type { BottledItem, World } from '@/sim/types';
+import type { World } from '@/sim/types';
 
 /**
  * Two clocks, because the market is two different screens.
@@ -83,28 +84,14 @@ export function buildWorld(clock: Clock = 'night'): World {
   // One order inside a day, so the urgent styling is on screen to be measured.
   if (world.contracts[0]) world.contracts[0].msRemaining = 30_000;
 
-  const grades = ['A', 'B', 'C'] as const;
-  let uid = 0;
-  for (const recipe of realRecipes().slice(0, 8)) {
-    for (let copy = 0; copy < 5; copy += 1) {
-      const item: BottledItem = {
-        uid: `fixture-${(uid += 1)}`,
-        recipeId: recipe.id,
-        formId: 'potion',
-        vesselId: 'clayVial',
-        sealId: 'cork',
-        grade: grades[copy % grades.length]!,
-        purity: 70,
-        potencyTier: 'common',
-        totalEssence: 40,
-        dosesLeft: 1,
-        fairValue: 0,
-        bottledAt: 0,
-      };
-      item.fairValue = fairValue(item);
-      world.bottled.push(item);
-    }
-  }
+  /*
+   * Stock through the same grant the debug panel offers.
+   *
+   * Hand-rolling bottles here is how this fixture drifted last time — it built
+   * a world the save schema had moved on from and nobody noticed until a check
+   * loaded one cauldron where it meant three. One path, exercised both ways.
+   */
+  new Simulation(world).grant({ bottles: { kinds: 8, each: 5 } });
 
   world.shelf = makeShelf(12);
   world.bottled.slice(0, 6).forEach((item, index) => {

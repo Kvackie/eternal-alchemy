@@ -1673,5 +1673,6 @@
   "market.barter.cost.one": "Pay 1 sealed potion, {grade}+",
   "market.barter.cost.other": "Pay {count} sealed potions, {grade}+",
   "cauldron.stores.search": "Search your stores",
-  "station.search": "Search recipes"
+  "station.search": "Search recipes",
+  "debug.grant.bottles": "Stock potions"
 }

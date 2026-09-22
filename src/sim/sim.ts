@@ -128,7 +128,7 @@ import {
   driftTemperature,
   nudgeTemperature,
 } from './brewing';
-import { bottle, type BottleRequest } from './bottling';
+import { bottle, nextUid, type BottleRequest } from './bottling';
 import type {
   BottledItem,
   BrewMethod,
@@ -1268,6 +1268,8 @@ export class Simulation {
     mastery?: number;
     ingredient?: { id: string; count: number };
     seed?: { id: string; count: number };
+    /** Finished stock, so the Shop and the Roster can be looked at. */
+    bottles?: { kinds: number; each: number };
   }): void {
     if (patch.gold) this.world.gold += patch.gold;
     if (patch.renown) this.world.renown += patch.renown;
@@ -1282,7 +1284,52 @@ export class Simulation {
       getCrop(patch.seed.id);
       this.world.seeds[patch.seed.id] = (this.world.seeds[patch.seed.id] ?? 0) + patch.seed.count;
     }
+    if (patch.bottles) this.grantBottles(patch.bottles.kinds, patch.bottles.each);
     this.noticeRankUp();
+  }
+
+  /**
+   * A cellar of finished potions, for looking at the screens that sell them.
+   *
+   * Everything else can be conjured — gold, renown, a full larder, every
+   * upgrade — but the one thing the Shop and the Roster are actually about had
+   * to be brewed a pot at a time or hand-written into a save file. Which is why
+   * the fixture that feeds the browser checks used to build its own, and why it
+   * silently loaded one cauldron where it meant three.
+   *
+   * Spread across grades on purpose: a shelf of identical A-grade bottles hides
+   * every bug that depends on sorting, on a grade badge, or on two stacks that
+   * look alike until you read them.
+   *
+   * Drawn from every recipe rather than from the discovered ones. A new game
+   * knows two, so a grant that respected discovery handed over ten bottles of
+   * the same two things — which is a shelf that proves nothing. Discovery is
+   * what the Codex is for; this is for having something to look at.
+   */
+  private grantBottles(kinds: number, each: number): void {
+    const grades: Grade[] = ['S', 'A', 'B', 'C', 'D'];
+    const recipes = realRecipes().slice(0, kinds);
+
+    recipes.forEach((recipe, index) => {
+      for (let copy = 0; copy < each; copy += 1) {
+        const item: BottledItem = {
+          uid: nextUid(this.world.now),
+          recipeId: recipe.id,
+          formId: 'potion',
+          vesselId: 'clayVial',
+          sealId: 'cork',
+          grade: grades[(index + copy) % grades.length]!,
+          purity: 60 + ((index * 7 + copy * 11) % 40),
+          potencyTier: 'common',
+          totalEssence: 40,
+          dosesLeft: 1,
+          fairValue: 0,
+          bottledAt: this.world.now,
+        };
+        item.fairValue = fairValue(item);
+        this.world.bottled.push(item);
+      }
+    });
   }
 
   /**
