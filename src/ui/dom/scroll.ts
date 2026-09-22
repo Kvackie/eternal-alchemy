@@ -106,3 +106,56 @@ export function restoreScroll(root: Element, memory: ScrollMemory): void {
     if (saved.left > 0) node.scrollLeft = saved.left;
   });
 }
+
+/**
+ * Where the caret was, kept across the same rebuild.
+ *
+ * A search box asks for a rebuild on every keystroke — the filter has to run
+ * where the list is built, before it is sorted and paged, or a query would only
+ * ever narrow the page you happen to be looking at. That rebuild throws the
+ * field away mid-word, so the caret has to be put back with it.
+ *
+ * Named rather than pathed, unlike the scrollers: there are a handful of these,
+ * each already unique on its screen, and a name survives the surrounding list
+ * changing shape underneath it — which is exactly what typing does.
+ */
+export interface FocusMemory {
+  name: string;
+  start: number | null;
+  end: number | null;
+}
+
+export function captureFocus(root: Element): FocusMemory | null {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement) || !root.contains(active)) return null;
+
+  const name = active.dataset.keepFocus;
+  if (!name) return null;
+
+  const field = active as HTMLInputElement;
+  return {
+    name,
+    start: typeof field.selectionStart === 'number' ? field.selectionStart : null,
+    end: typeof field.selectionEnd === 'number' ? field.selectionEnd : null,
+  };
+}
+
+export function restoreFocus(root: Element, memory: FocusMemory | null): void {
+  if (!memory) return;
+
+  const field = root.querySelector<HTMLInputElement>(
+    `[data-keep-focus="${CSS.escape(memory.name)}"]`,
+  );
+  if (!field) return;
+
+  // `preventScroll`, or refocusing a field near the bottom of a long list
+  // yanks the list to it — undoing the scroll restore that just ran.
+  field.focus({ preventScroll: true });
+  if (memory.start !== null && memory.end !== null) {
+    try {
+      field.setSelectionRange(memory.start, memory.end);
+    } catch {
+      /* Not a field that carries a selection. The focus is the important half. */
+    }
+  }
+}

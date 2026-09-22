@@ -17,8 +17,10 @@ import {
   ingredientIcon,
   meter,
   panelHeader,
+  matchesSearch,
   portrait,
   potionIcon,
+  searchField,
   slot,
   slotGrid,
   stat,
@@ -63,11 +65,15 @@ function fold(id: string): () => void {
   };
 }
 
+/** What the supply search box is narrowed to. Module state, like the folds. */
+let supplyQuery = '';
+
 let selectedHeroes: string[] = [];
 let selectedSupplies: string[] = [];
 let selectedBiome: string | null = null;
 
 export function resetRosterSelection(): void {
+  supplyQuery = '';
   selectedHeroes = [];
   selectedSupplies = [];
   selectedBiome = null;
@@ -457,7 +463,25 @@ function supplyStacks(sim: Simulation) {
 function renderSupplies(sim: Simulation): HTMLElement {
   const slots = heroesConfig.supplies.slots;
 
-  const tiles = supplyStacks(sim).map((stack) => {
+  /*
+   * Filtered where the list is built, not by hiding tiles afterwards.
+   *
+   * A shop late in a run holds a couple of hundred kinds of bottle, and the
+   * question this box answers — "have I got any Ember Draughts" — is about the
+   * whole rack. The shell puts the caret back after the rebuild each keystroke
+   * causes; see `captureFocus`.
+   */
+  const stacks = supplyStacks(sim).filter((stack) => {
+    const first = stack.items[0]!;
+    return matchesSearch(
+      supplyQuery,
+      t(`recipe.${first.recipeId}`),
+      first.grade,
+      t(`form.${first.formId}`),
+    );
+  });
+
+  const tiles = stacks.map((stack) => {
     const first = stack.items[0]!;
     const taken = stack.items.filter((item) => selectedSupplies.includes(item.uid));
 
@@ -509,11 +533,39 @@ function renderSupplies(sim: Simulation): HTMLElement {
         }),
         el('span', { class: 'supply-step-count num', text: String(taken.length) }),
         step('+', t('roster.supplies.add'), canAdd, () => {
-          if (spare) selectedSupplies = [...selectedSupplies, spare.uid];
+          /*
+           * Guarded rather than appended.
+           *
+           * `spare` is the bottle this button was drawn for, so a press that
+           * arrives twice — which a touchscreen does when the panel is rebuilt
+           * under the finger — asks to pack the same bottle again. Appending
+           * blindly put its uid in the list twice: the tile still read "1", but
+           * two of the three slots were gone and the party counted one bottle's
+           * grade bonus twice.
+           */
+          if (spare && !selectedSupplies.includes(spare.uid)) {
+            selectedSupplies = [...selectedSupplies, spare.uid];
+          }
         }),
       ]),
     ]);
   });
+
+  const search = searchField({
+    name: 'roster-supplies',
+    value: supplyQuery,
+    placeholder: t('roster.supplies.search'),
+    onInput: (query) => {
+      supplyQuery = query;
+      changed();
+    },
+  });
+
+  // "Nothing matches" and "you have no bottles" are different facts, and only
+  // one of them is worth an instruction about brewing.
+  const empty = supplyQuery.trim()
+    ? t('common.search.none')
+    : t('roster.supplies.empty');
 
   return collapsible({
     className: 'supplies',
@@ -521,7 +573,7 @@ function renderSupplies(sim: Simulation): HTMLElement {
     note: t('roster.supplies.hint', { slots }),
     open: !folded.has('supplies'),
     onToggle: fold('supplies'),
-    body: [slotGrid(tiles, t('roster.supplies.empty'))],
+    body: [search, slotGrid(tiles, empty)],
   });
 }
 

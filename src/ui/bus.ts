@@ -64,9 +64,33 @@ class Bus {
 
 export const bus = new Bus();
 
-/** Shorthand for the commonest event — something changed, redraw. */
+/**
+ * Shorthand for the commonest event — something changed, redraw.
+ *
+ * Coalesced to the next frame rather than emitted where it is called. Every
+ * panel is rebuilt wholesale on a world change, so emitting synchronously tears
+ * the pressed button out of the document while its own click is still being
+ * dispatched — and a browser that delivers a second click for one tap, which
+ * Android's WebView does when the element under the finger is replaced, lands
+ * that second click on the *replacement*. That is how one tap on the roster's
+ * `+` packed two bottles. Deferring keeps the pressed button alive for the whole
+ * gesture, and collapses a burst of changes into a single render.
+ */
+let redrawPending = false;
+
 export function changed(): void {
-  bus.emit({ type: 'world:changed' });
+  if (redrawPending) return;
+  redrawPending = true;
+
+  const flush = () => {
+    redrawPending = false;
+    bus.emit({ type: 'world:changed' });
+  };
+
+  // `requestAnimationFrame` is absent outside a browser — tests, and the save
+  // importer running under Node — where emitting straight away is correct.
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(flush);
+  else flush();
 }
 
 export function toast(message: string): void {

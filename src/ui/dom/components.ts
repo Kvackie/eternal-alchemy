@@ -700,6 +700,54 @@ export function slotGrid(slots: HTMLElement[], emptyMessage?: string): HTMLEleme
 }
 
 /**
+ * Does this thing answer to what was typed?
+ *
+ * The terms are given by the caller rather than scraped from the tile, because
+ * a tile's text also carries its price, its grade and its freshness — so typing
+ * "50" would match every bottle worth fifty gold as well as every one named for
+ * it. Blank matches everything, which is what an empty box should mean.
+ */
+export function matchesSearch(query: string, ...terms: Array<string | undefined>): boolean {
+  const needle = query.trim().toLowerCase();
+  if (needle === '') return true;
+  return terms.some((term) => term !== undefined && term.toLowerCase().includes(needle));
+}
+
+/**
+ * A text filter over a list of tiles.
+ *
+ * Unlike the chip rows beside it this is an open question rather than a closed
+ * list, so it gets a line of its own. `name` is what the shell puts the caret
+ * back into after the rebuild every keystroke causes — see `captureFocus` —
+ * which is what lets the filter be applied where the list is built, before it
+ * is sorted and paged, rather than by hiding tiles that are already drawn.
+ */
+export function searchField(spec: {
+  name: string;
+  value: string;
+  placeholder: string;
+  onInput: (query: string) => void;
+}): HTMLElement {
+  const input = el('input', {
+    class: 'search-input',
+    type: 'search',
+    placeholder: spec.placeholder,
+    'aria-label': spec.placeholder,
+    enterkeyhint: 'done',
+    autocomplete: 'off',
+  });
+  input.dataset.keepFocus = spec.name;
+  input.value = spec.value;
+  input.addEventListener('input', () => spec.onInput(input.value));
+  // A form-less input still submits on Enter in some engines, which reloads.
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') event.preventDefault();
+  });
+
+  return el('div', { class: 'search-row' }, [input]);
+}
+
+/**
  * Make an element accept a dragged slot.
  *
  * `dragover` must be cancelled for a drop to fire at all — the single most

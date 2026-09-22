@@ -11,7 +11,7 @@
  */
 
 import { button, clear, el } from './components';
-import { captureScroll, restoreScroll } from './scroll';
+import { captureFocus, captureScroll, restoreFocus, restoreScroll } from './scroll';
 import { renderGrounds } from './panels/grounds';
 import { renderCauldron } from './panels/cauldron';
 import { closeStation, isStationOpen } from './panels/station';
@@ -634,6 +634,7 @@ export class Shell {
      * later keeps its place without anything here being told about it.
      */
     const scrolls = captureScroll(this.panels);
+    const focus = captureFocus(this.panels);
 
     clear(this.panels);
 
@@ -706,6 +707,7 @@ export class Shell {
     // Last, once everything that affects the layout is in place: a scroller put
     // back before its siblings exist has nothing to scroll through yet.
     restoreScroll(this.panels, scrolls);
+    restoreFocus(this.panels, focus);
 
     // Whatever moves on this screen, found now rather than every frame.
     this.collectLiveNodes();
