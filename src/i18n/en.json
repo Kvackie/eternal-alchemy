@@ -252,12 +252,9 @@
   "faction.hearthGuild": "The Hearth Guild",
   "faction.templeOfStill": "Temple of the Still",
   "faction.houseValen": "House Valen",
-  "board.title": "Board",
-  "board.subtitle": "Standing orders. Bigger money than the shelf, if you can meet the terms.",
+  "board.title": "Standing Orders",
   "board.empty": "The board is bare. Something will be posted soon.",
   "board.wants": "{count} × {recipe}",
-  "board.grade": "Grade {grade} or better",
-  "board.payout": "{gold}",
   "board.progress": "Delivered",
   "board.progressValue": "{delivered} of {total} · {ready} ready",
   "board.deadline": "Deadline",
@@ -1652,5 +1649,8 @@
   "common.search.none": "Nothing matches that.",
   "roster.supplies.search": "Search your bottles",
   "common.confirm": "Confirm",
-  "shop.inventory.search": "Search your bottles"
+  "shop.inventory.search": "Search your bottles",
+  "board.reward": "Reward",
+  "board.wantsLabel": "Wants",
+  "board.gradeOrBetter": "or better"
 }

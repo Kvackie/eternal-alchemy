@@ -49,6 +49,16 @@
   --grade-e: #e0913f;
   --grade-f: #e05c4a;
 
+  /*
+   * A hue each for the two terms a contract can add to a grade.
+   *
+   * Both used to be amber, which is also the deadline warning, the selected
+   * sort chip and the picked-hero wash — so a row of terms read as "some amber
+   * things". Far apart from each other and from the gold a reward is drawn in.
+   */
+  --term-vessel: #6fb0d8;
+  --term-seal: #b58ad8;
+
   --ignis: #ee7250;
   --aqua: #5ca9e8;
   --terra: #c7ac3c;
@@ -1601,6 +1611,22 @@ input[type='range'] {
   background: var(--verd-soft);
 }
 
+.chip.term-vessel {
+  color: var(--term-vessel);
+  background: color-mix(in srgb, var(--term-vessel) 14%, transparent);
+}
+
+.chip.term-seal {
+  color: var(--term-seal);
+  background: color-mix(in srgb, var(--term-seal) 14%, transparent);
+}
+
+/* The grade keeps the colour of the grade; the chip only holds it. */
+.chip.term-grade {
+  gap: 0.3125rem;
+  color: var(--ink-2);
+}
+
 /* Something under way, as opposed to something finished. Amber, not green. */
 .chip.warm {
   color: var(--amber);
@@ -2731,7 +2757,30 @@ input[type='range'] {
 }
 
 .contract[data-urgent='true'] {
-  border-left-color: var(--amber);
+  border-left-color: var(--danger);
+}
+
+.contract-reward {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.contract-want {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+/*
+ * The goods are the sentence; everything else on the card is a condition on
+ * them, so they are the one line drawn at full strength.
+ */
+.contract-goods {
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
 }
 
 .contract-head {
@@ -2745,11 +2794,6 @@ input[type='range'] {
 .contract-faction {
   font-weight: 700;
   font-size: 0.875rem;
-}
-
-.contract-want {
-  font-size: 0.8125rem;
-  color: var(--ink-2);
 }
 
 /* --------------------------------------------------------------- haggle */
