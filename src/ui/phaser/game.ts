@@ -14,7 +14,8 @@ import type { Simulation } from '@/sim/sim';
 
 export interface GameHandle {
   setScreen: (screen: ScreenId) => void;
-  redraw: () => void;
+  /** `layoutChanged` when the panel has been rebuilt — see `WorldScene.redraw`. */
+  redraw: (layoutChanged?: boolean) => void;
   /** Put a dragged or zoomed scene back where it was drawn. */
   recenter: () => void;
   /** Above 1 zooms in, below 1 out. */
@@ -72,7 +73,7 @@ export function createGame(parent: HTMLElement, sim: Simulation): GameHandle {
       if (scene) scene.setScreen(screen);
       else pending = screen;
     },
-    redraw: () => world()?.redraw(),
+    redraw: (layoutChanged?: boolean) => world()?.redraw(layoutChanged),
     recenter: () => world()?.recenter(),
     zoomBy: (factor) => world()?.zoomBy(factor),
     destroy: () => game.destroy(true),

@@ -80,6 +80,9 @@ export class WorldScene extends Phaser.Scene {
 
   /** The garden as last drawn — see `redraw`. Cleared to force a redraw. */
   private drawn = '';
+
+  /** The panel's box as last seen — see `watchPanel`. */
+  private panelBox = '';
   private content!: Phaser.GameObjects.Container;
   private lighting!: Phaser.GameObjects.Rectangle;
   private sky!: Phaser.GameObjects.Rectangle;
@@ -115,10 +118,51 @@ export class WorldScene extends Phaser.Scene {
       this.drawn = '';
       this.redraw();
     });
+    this.watchPanel();
     this.enablePanning();
     // The first screen gets the same prefetch a later switch would.
     this.prefetchFor(this.screen);
     this.redraw();
+  }
+
+  /**
+   * Redraw when the panel moves, because the panel decides where the world goes.
+   *
+   * `contentArea` lays the scene out in whatever the panel leaves over, and the
+   * panel is rebuilt by code that knows nothing about this scene. Watching the
+   * DOM for that is the only signal that does not depend on the order two
+   * unrelated modules happen to run in — which is exactly what went wrong
+   * before: the scene was told the screen had changed *before* the new screen's
+   * panel existed to be measured, so the first draw was laid out against the
+   * whole stage and, with nothing to correct it, stayed there. A quarter of the
+   * garden sat behind the panel for the rest of the session.
+   *
+   * The box is compared rather than the rebuild counted. A press rebuilds the
+   * panel without moving it, and relaying out the garden for that would undo
+   * the point of drawing it once. One measurement per rebuild is the cost, and
+   * a rebuild is already a measurement's worth of work.
+   */
+  private watchPanel(): void {
+    const panels = document.getElementById('panels');
+    if (!panels || typeof MutationObserver === 'undefined') return;
+
+    const observer = new MutationObserver(() => {
+      if (this.panelMoved()) this.redraw(true);
+    });
+    observer.observe(panels, { childList: true });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => observer.disconnect());
+  }
+
+  /** Has the panel's box changed since the scene last looked? */
+  private panelMoved(): boolean {
+    const rect = document.querySelector<HTMLElement>('.panel')?.getBoundingClientRect();
+    const box = rect
+      ? `${Math.round(rect.left)},${Math.round(rect.top)},${Math.round(rect.width)},${Math.round(rect.height)}`
+      : '';
+
+    if (box === this.panelBox) return false;
+    this.panelBox = box;
+    return true;
   }
 
   /**
@@ -315,8 +359,17 @@ export class WorldScene extends Phaser.Scene {
   }
 
   /** Called whenever the world changes; cheap enough at this scale to rebuild. */
-  redraw(): void {
+  /**
+   * Draw the world.
+   *
+   * `layoutChanged` is for the callers who know the panel has been rebuilt —
+   * the scene is laid out around wherever the panel is, and the signature below
+   * is made of the world rather than of the page, so it cannot notice that the
+   * shape of the free area has moved under it.
+   */
+  redraw(layoutChanged = false): void {
     if (!this.content) return;
+    if (layoutChanged) this.drawn = '';
 
     const { width, height } = this.scale.gameSize;
     this.sky.setSize(width, height);
@@ -348,8 +401,15 @@ export class WorldScene extends Phaser.Scene {
      * hundred thousand between one of those calls and the next.
      *
      * So growth is counted in twentieths. The garden is redrawn when a bed is
-     * planted or harvested, when a crop crosses into its next twentieth, and
-     * when the window changes shape — and left alone the rest of the time.
+     * planted or harvested, when a crop crosses into its next twentieth, when
+     * the window changes shape, and whenever the panel beside it is rebuilt —
+     * and left alone the rest of the time.
+     *
+     * That last one is not optional. The signature is made of the world, so it
+     * cannot see the panel move; without it the very first draw — taken before
+     * the panel existed to be measured, and so laid out against the whole
+     * stage — was the one that stuck, and a quarter of the garden sat behind
+     * the panel for the rest of the session.
      *
      * The light is not part of this. It moves continuously and costs two
      * property writes on one rectangle, so it is applied below on every call.
