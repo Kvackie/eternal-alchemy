@@ -4658,12 +4658,31 @@ input[type='range'] {
    * this is wider at every size and narrower at none; the ceiling keeps the
    * picture worth having on a very wide monitor.
    */
+  /*
+   * A panel is the height of the stage, not the height of what is in it.
+   *
+   * It used to be `max-height`, so a card sized to its content: a twelve-shelf
+   * Shop was a 257px band across the top of a 1080px window with everything
+   * below it bare ground. The body takes the spare room and scrolls when there
+   * is more than fits, which is the same behaviour a full page already has
+   * below the breakpoint — so the two sizes now differ in where the panel sits
+   * rather than in how it is shaped.
+   */
   .panel {
     margin: 0.875rem 0.875rem 0.875rem auto;
     max-width: clamp(30rem, 42%, 40rem);
-    max-height: calc(100% - 1.75rem);
+    height: calc(100% - 1.75rem);
+    /* The base rule caps a docked sheet at 68% of the stage; up here the panel
+       IS the stage, so the cap has to be lifted as well as the height set. */
+    max-height: none;
     border: 1px solid var(--rule);
     border-radius: var(--radius);
+  }
+
+  /* The body is what grows, and what scrolls when it has outgrown the panel. */
+  .panel > .panel-body {
+    flex: 1;
+    min-height: 0;
   }
 
   /*
