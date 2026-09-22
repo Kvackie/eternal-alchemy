@@ -843,20 +843,19 @@ button {
 .option-tool {
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
   column-gap: 0.5rem;
   align-items: center;
   text-align: left;
 }
 
 .tool-glyph {
-  grid-row: 1 / span 2;
   font-size: 1.25rem;
   line-height: 1;
 }
 
-.option-tool small {
-  grid-column: 2;
+/* Three tools, three equal cells — the hint lives under the strip. */
+.options-tools {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 /*
@@ -1690,10 +1689,20 @@ input[type='range'] {
   padding-bottom: 0.25rem;
 }
 
+/*
+ * A bed is a bed, not a billboard.
+ *
+ * The columns divide whatever width there is, which was fine while the Cave
+ * was squeezed into a docked panel and absurd the moment it got the page: six
+ * across 1,832px is a 297px square holding one mushroom. Capped, the grid
+ * grows to a comfortable size and then stops, left-aligned rather than
+ * stretched across a window it does not need.
+ */
 .cave-grid {
   display: grid;
   grid-template-columns: repeat(var(--cave-width, 6), minmax(0, 1fr));
   gap: 0.25rem;
+  max-width: calc(var(--cave-width, 6) * 6.5rem);
 }
 
 .cave-tile {
@@ -1713,6 +1722,37 @@ input[type='range'] {
 
 .cave-tile:hover {
   border-color: var(--good);
+}
+
+/* The thing growing in it, at the size a bed can show. */
+.cave-crop {
+  display: grid;
+  place-items: center;
+  width: 60%;
+  height: 60%;
+}
+
+.cave-crop img,
+.cave-crop .essence-mark {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/*
+ * An empty bed says it is a bed you can sow.
+ *
+ * Unplanted and unlit it was a dark square with nothing in it, indentical to
+ * the gap between two tiles, and the only thing that said otherwise was a
+ * tooltip.
+ */
+.cave-empty {
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--border);
+}
+
+.cave-tile:hover .cave-empty {
+  color: var(--good);
 }
 
 /* A lit bed reads warm; the lantern is the steering wheel, so it must be visible. */

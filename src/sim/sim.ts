@@ -11,6 +11,7 @@ import {
   cauldronTiers,
   config,
   equipment,
+  getCaveSpecies,
   getCrop,
   getDecor,
   getEquipment,
@@ -1409,12 +1410,27 @@ export class Simulation {
   }
 
   /** Finish every running timer immediately. */
+  /*
+   * "Finish all timers" used to mean the garden's and the pots', which left
+   * the two screens with the longest waits — a cave bed and a quarry vein —
+   * untestable except by waiting them out in real time.
+   */
   finishAllTimers(): void {
     for (const plot of this.world.plots) {
       if (plot.crop) plot.crop.readyAt = this.world.now;
     }
     for (const pot of this.world.cauldrons) {
       if (pot.brewing) pot.brewing.readyAt = this.world.now;
+    }
+    // Maturity is derived from when a bed was seeded, so age it, don't flag it.
+    for (const tile of this.world.cave.tiles) {
+      if (tile.speciesId) {
+        tile.seededAt = this.world.now - getCaveSpecies(tile.speciesId).growMs;
+      }
+    }
+    for (const vein of this.world.shaft.veins) {
+      if (vein.nextBatchAt !== null) vein.nextBatchAt = this.world.now;
+      if (vein.refillsAt !== null) vein.refillsAt = this.world.now;
     }
     this.settleBrew();
   }

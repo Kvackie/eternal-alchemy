@@ -12,7 +12,7 @@
 
 import { button, clear, el } from './components';
 import { captureFocus, captureScroll, restoreFocus, restoreScroll } from './scroll';
-import { renderGrounds } from './panels/grounds';
+import { groundsHasScene, renderGrounds } from './panels/grounds';
 import { renderCauldron } from './panels/cauldron';
 import { closeStation, isStationOpen } from './panels/station';
 import { renderShop } from './panels/shop';
@@ -364,6 +364,19 @@ export class Shell {
     this.liveGauge = this.panels.querySelector<HTMLElement>('[data-live-temp]');
   }
 
+  /**
+   * Is there a picture behind the panel right now?
+   *
+   * A screen is not enough to answer it: the Grounds draws a garden and nothing
+   * for its other two tabs, and the station covers the canvas entirely while a
+   * pot is open. Both are asked rather than assumed, because both are the
+   * panel's business rather than the shell's.
+   */
+  private hasScene(): boolean {
+    if (!SCENE_SCREENS.has(this.screen) || isStationOpen()) return false;
+    return this.screen !== 'grounds' || groundsHasScene();
+  }
+
   private needsLiveRedraw(): boolean {
     if (this.away) return false;
 
@@ -658,7 +671,7 @@ export class Shell {
     // Only where there is a world to recentre. The Ledger and Settings take the
     // whole stage, so the canvas behind them is not showing anything — and nor
     // is the brewing station, which covers it while a pot is open.
-    if (SCENE_SCREENS.has(this.screen) && !isStationOpen()) {
+    if (this.hasScene()) {
       this.panels.append(this.buildViewControls());
     }
 
@@ -669,7 +682,7 @@ export class Shell {
      * `split` docks the panel beside the picture, below it there is no room to
      * and it reads as `manage`.
      */
-    const hasScene = SCENE_SCREENS.has(this.screen) && !isStationOpen();
+    const hasScene = this.hasScene();
     this.panels.dataset.scene = String(hasScene);
     this.panels.dataset.view = hasScene ? this.view : 'manage';
 

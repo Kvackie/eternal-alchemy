@@ -13,6 +13,7 @@ import {
   button,
   chip,
   el,
+  emptyState,
   ingredientIcon,
   makeDropTarget,
   meter,
@@ -32,9 +33,8 @@ import { isMature, maturityOf } from '@/sim/cave';
 import { previewCross } from '@/sim/greenhouse';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { ESSENCES } from '@/sim/types';
-import { essenceGlyphSvg } from '@/ui/theme';
 import { dominantEssence } from '@/ui/phaser/placeholders';
-import type { Plot } from '@/sim/types';
+import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
@@ -48,6 +48,19 @@ let caveTool: 'seed' | 'lantern' | 'tray' = 'seed';
 
 export function setGroundsTab(next: Tab): void {
   tab = next;
+}
+
+/**
+ * Whether what is showing here is drawn behind the panel.
+ *
+ * Only the garden is. The canvas paints plots, and it painted them on the Cave
+ * and the Quarry too — so both tabs sat over four beds of soil, which is a
+ * picture of somewhere else. Telling the shell that lets those two take the
+ * whole page, which they would rather have anyway: one is a grid and the other
+ * is a list, and neither has a view.
+ */
+export function groundsHasScene(): boolean {
+  return tab === 'garden';
 }
 
 export function renderGrounds(sim: Simulation): HTMLElement {
@@ -74,7 +87,15 @@ export function renderGrounds(sim: Simulation): HTMLElement {
   else renderShaft(sim, view);
   body.append(tabPanel('grounds', tab, [...view.children] as HTMLElement[]));
 
-  return el('div', { class: 'panel' }, [
+  /*
+   * Docked beside the garden, and a full page for the other two.
+   *
+   * A panel that leaves room for a picture is right only when there is a
+   * picture: the Cave is a grid of beds and the Quarry a list of seams, and
+   * both were squeezed into 640px of a 1920px window so that four beds of the
+   * garden's soil could show beside them.
+   */
+  return el('div', { class: groundsHasScene() ? 'panel' : 'panel panel-roomy' }, [
     panelHeader(t('grounds.title'), t(`grounds.${tab}.subtitle`)),
     body,
   ]);
@@ -536,6 +557,20 @@ function renderGreenhouse(sim: Simulation): HTMLElement {
 // Cave — it spreads
 // ---------------------------------------------------------------------------
 
+/*
+ * A bed's spoken label carries what its picture only tints.
+ *
+ * A lantern is a warm wash and a tray is a six-pixel dot in a corner — both
+ * invisible to a screen reader, and the tray nearly so to anyone else.
+ */
+function caveLabel(base: string, tile: CaveTile): string {
+  const marks = [
+    ...(tile.lit ? [t('cave.tile.lit')] : []),
+    ...(tile.locked ? [t('cave.tile.trayed')] : []),
+  ];
+  return marks.length > 0 ? `${base} (${marks.join(', ')})` : base;
+}
+
 function renderCave(sim: Simulation, body: HTMLElement): void {
   const clusters = caveConfig.species
     .map((species) => ({ species, count: sim.world.spores[species.id] ?? 0 }))
@@ -581,7 +616,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
       el('span', { class: 'field-label', text: t('cave.tool') }),
       el(
         'div',
-        { class: 'options' },
+        { class: 'options options-tools' },
         /*
          * A glyph each, because three words in a row of identical cells do not
          * read as tools — they read as tabs. The picture is what says "this is
@@ -592,12 +627,20 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
           ['lantern', '\u{1F3EE}'],
           ['tray', '\u{1F9FA}'],
         ] as const).map(([id, glyph]) => {
+          /*
+           * The strip is three short cells; the hint has a line of its own.
+           *
+           * Only the tool in hand explained itself, from inside its own cell —
+           * on a phone that is a sixty-pixel column of eight-word wrapping in
+           * one of three cells, and a strip whose three tools are different
+           * heights depending on which one you are holding.
+           */
+          const chosen = caveTool === id;
           const node = el('button', { class: 'option option-tool', type: 'button' }, [
             el('span', { class: 'tool-glyph', text: glyph }),
             el('span', { text: t(`cave.tool.${id}`) }),
-            el('small', { text: t(`cave.tool.${id}.hint`) }),
           ]);
-          node.setAttribute('aria-pressed', String(caveTool === id));
+          node.setAttribute('aria-pressed', String(chosen));
           node.addEventListener('click', () => {
             caveTool = id;
             changed();
@@ -605,6 +648,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
           return node;
         }),
       ),
+      el('span', { class: 'field-note', text: t(`cave.tool.${caveTool}.hint`) }),
     ]),
   );
 
@@ -616,19 +660,38 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
     const mature = isMature(tile, sim.now);
 
     if (tile.speciesId) {
+      /*
+       * The mushroom, not its essence glyph.
+       *
+       * A bed used to show the dominant essence's shape, so twelve beds of
+       * three species were twelve of the same two or three marks — and which
+       * species a bed held was in the tooltip, which a phone never shows. The
+       * painted icon is the thing you are actually growing, and the essence
+       * still tints the tile behind it.
+       */
       const essence = dominantEssence(getIngredient(tile.speciesId).essence);
       node.dataset.essence = essence;
-      node.append(el('span', { class: `essence-mark ${essence}`, html: essenceGlyphSvg(essence, 16) }));
-      node.append(
-        el('span', { class: 'cave-growth' }, [
-          meter(maturityOf(tile, sim.now)),
-        ]),
+      node.append(el('span', { class: 'cave-crop' }, [iconFor(tile.speciesId)]));
+      node.append(el('span', { class: 'cave-growth' }, [meter(maturityOf(tile, sim.now))]));
+      node.setAttribute(
+        'aria-label',
+        caveLabel(
+          `${t(`ingredient.${tile.speciesId}`)} — ${
+            mature ? t('cave.tile.ready') : t('cave.tile.growing')
+          }`,
+          tile,
+        ),
       );
-      node.title = `${t(`ingredient.${tile.speciesId}`)}\n${
-        mature ? t('cave.tile.ready') : t('cave.tile.growing')
-      }`;
     } else {
-      node.title = t('cave.tile.empty');
+      /*
+       * An empty bed looks like a bed.
+       *
+       * Twelve unlit, unplanted beds were twelve black squares with nothing in
+       * them and "Empty bed" in a tooltip: no way to tell a bed you can sow
+       * from a hole in the page.
+       */
+      node.append(el('span', { class: 'cave-empty', 'aria-hidden': 'true', text: '+' }));
+      node.setAttribute('aria-label', caveLabel(t('cave.tile.empty'), tile));
     }
 
     if (mature) node.dataset.ready = 'true';
@@ -652,33 +715,54 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
     grid.append(node);
   }
 
+  /*
+   * Harvest all sits in the section head, where the Garden's does.
+   *
+   * It used to hang below the last bed, so on a phone picking the cave meant
+   * scrolling past the twelve beds to reach the button that empties them. It
+   * also only appeared at two ripe beds or more, which made a button that
+   * comes and goes for no reason a player can see.
+   */
+  const ripe = sim.world.cave.tiles.filter((tile) => isMature(tile, sim.now)).length;
   body.append(
     el('section', { class: 'cave' }, [
       el('div', { class: 'stores-head' }, [
         el('span', { class: 'field-label', text: t('cave.grid') }),
         el('span', { class: 'field-note', text: t('cave.grid.hint') }),
+        ...(ripe > 0
+          ? [
+              button(
+                t('cave.harvestAll', { count: ripe }),
+                () => {
+                  const results = sim.harvestCave();
+                  toast(harvestToast(results, results.reduce((s, r) => s + r.count, 0), 0));
+                  changed();
+                },
+                { small: true, variant: 'good' },
+              ),
+            ]
+          : []),
       ]),
       grid,
     ]),
   );
-
-  const mature = sim.world.cave.tiles.filter((tile) => isMature(tile, sim.now)).length;
-  if (mature > 1) {
-    body.append(
-      el('div', { class: 'row-actions' }, [
-        button(t('cave.harvestAll'), () => {
-          const results = sim.harvestCave();
-          toast(harvestToast(results, results.reduce((s, r) => s + r.count, 0), 0));
-          changed();
-        }),
-      ]),
-    );
-  }
 }
 
 // ---------------------------------------------------------------------------
 // Shaft — you dig
 // ---------------------------------------------------------------------------
+
+function veinTitle(
+  vein: ShaftVein,
+  seen: Map<string, number>,
+  ordinal: Map<string, number>,
+): string {
+  const name = t(`ingredient.${vein.ingredientId}`);
+  if ((seen.get(vein.ingredientId) ?? 0) < 2) return name;
+  const nth = (ordinal.get(vein.ingredientId) ?? 0) + 1;
+  ordinal.set(vein.ingredientId, nth);
+  return t('shaft.seam', { name, nth });
+}
 
 function renderShaft(sim: Simulation, body: HTMLElement): void {
   const shaft = sim.shaft;
@@ -687,7 +771,17 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
     el('section', { class: 'shaft-head' }, [
       stat(t('shaft.depth'), t('shaft.metres', { depth: shaft.depth })),
       stat(t('shaft.supported'), t('shaft.metres', { depth: shaft.supportedDepth })),
+      /*
+       * The reason rides beside the button it greys out.
+       *
+       * It used to be a note on its own line below, which on a wide panel put
+       * "buy support beams" at the far left and the dead button at the far
+       * right — two facts about the same thing, a window apart.
+       */
       el('div', { class: 'row-actions' }, [
+        ...(sim.canDeepenShaft()
+          ? []
+          : [el('span', { class: 'field-note', text: t('shaft.needBeams') })]),
         button(
           t('shaft.deepen', { step: shaftConfig.depthStep }),
           () => {
@@ -699,13 +793,27 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
           { disabled: !sim.canDeepenShaft(), small: true },
         ),
       ]),
-      ...(sim.canDeepenShaft()
-        ? []
-        : [el('span', { class: 'field-note', text: t('shaft.needBeams') })]),
     ]),
   );
 
-  for (const group of veinsByDepth(sim.world)) {
+  const strata = veinsByDepth(sim.world);
+  if (strata.length === 0) {
+    body.append(emptyState(t('shaft.empty'), t('shaft.empty.hint')));
+    return;
+  }
+
+  for (const group of strata) {
+    /*
+     * A stratum can roll the same ingredient twice, and two rows both reading
+     * "Cloud Jasper" with their own sizes and their own Work it are two seams
+     * you cannot tell apart. Number them, but only when there is more than one.
+     */
+    const seen = new Map<string, number>();
+    for (const vein of group.veins) {
+      seen.set(vein.ingredientId, (seen.get(vein.ingredientId) ?? 0) + 1);
+    }
+    const ordinal = new Map<string, number>();
+
     const rows = group.veins.map((vein) => {
       const working = shaft.workingVeinId === vein.id;
       const workable = isWorkable(vein, sim.now);
@@ -725,7 +833,7 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
       node.append(
         el('span', { class: 'plot-icon' }, [iconFor(vein.ingredientId)]),
         el('div', { class: 'plot-main' }, [
-          el('span', { class: 'plot-title', text: t(`ingredient.${vein.ingredientId}`) }),
+          el('span', { class: 'plot-title', text: veinTitle(vein, seen, ordinal) }),
           el('div', { class: 'row-sub' }, [
             chip(t('shaft.remaining', { count: vein.remaining, size: vein.size })),
             chip(status, working ? 'good' : 'plain'),

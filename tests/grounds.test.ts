@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { caveConfig, crops, getEquipment, shaftConfig } from '@/sim/config';
+import { caveConfig, crops, getEquipment, getIngredient, shaftConfig } from '@/sim/config';
 import { isMature, maturityOf, neighboursOf, spreadChanceFor, tileAt } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { countOf } from '@/sim/inventory';
@@ -289,6 +289,16 @@ describe('soil', () => {
     const soils = new Set(sim.world.plots.map((plot) => plot.soil));
     for (const crop of crops) {
       expect(soils.has(crop.soil), `nothing in the starting garden suits ${crop.id}`).toBe(true);
+    }
+  });
+});
+
+describe('the quarry', () => {
+  it('every vein the shaft can roll is a real ingredient', () => {
+    // A vein naming an ingredient that does not exist renders its own key.
+    const sim = new Simulation(createWorld(7));
+    for (const v of sim.world.shaft.veins) {
+      expect(getIngredient(v.ingredientId), v.ingredientId).toBeTruthy();
     }
   });
 });
