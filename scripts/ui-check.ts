@@ -10,6 +10,7 @@
  */
 
 import {
+  checkCoveredControls,
   checkIdleChurn,
   checkOverflow,
   checkScrollMemory,
@@ -62,6 +63,7 @@ try {
       // Only where a finger is the pointer: on a mouse a 36px button is a
       // deliberate weight, not an obstacle.
       if (touch) add('tap targets', await checkTapTargets(page));
+      add('covered controls', await checkCoveredControls(page));
       add('idle churn', await checkIdleChurn(page, CHURN_BUDGET));
       add('scroll memory', await checkScrollMemory(page));
 

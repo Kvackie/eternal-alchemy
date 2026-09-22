@@ -69,6 +69,79 @@ export async function checkTapTargets(page: Page, tap: number = TAP): Promise<st
 }
 
 /**
+ * Controls with something parked on top of them.
+ *
+ * A few things float over the panel — the checklist, the zoom controls, the
+ * debug toggle — and a floating thing is, by construction, over whatever was
+ * there first. The onboarding checklist spent a while as a card in the bottom
+ * corner that covered two rows of cave beds and quietly ate the taps meant for
+ * them: nothing overflowed, nothing was too small, and it was still broken.
+ *
+ * The centre of a control is the test. A control whose middle belongs to
+ * something else is one you cannot press.
+ */
+export async function checkCoveredControls(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const seen = new Map<string, number>();
+    const controls = '#panels .panel button, #panels .panel input, #panels .panel [role="tab"]';
+
+    /*
+     * What of a control is actually on the screen.
+     *
+     * A control scrolled half out of its own scroller still has a full box,
+     * and asking what sits at the middle of that box answers with whatever is
+     * painted at those coordinates — the canvas below the panel, the nav under
+     * it. That is the control not being there, not something covering it. So
+     * clip the box against every ancestor that clips, and against the window,
+     * and ask about the middle of what is left.
+     */
+    const visible = (node: Element): DOMRect | null => {
+      let rect = node.getBoundingClientRect();
+      for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+        if (getComputedStyle(parent).overflow === 'visible') continue;
+        const clip = parent.getBoundingClientRect();
+        const left = Math.max(rect.left, clip.left);
+        const top = Math.max(rect.top, clip.top);
+        rect = new DOMRect(left, top, Math.min(rect.right, clip.right) - left, Math.min(rect.bottom, clip.bottom) - top);
+        if (rect.width <= 0 || rect.height <= 0) return null;
+      }
+      const left = Math.max(rect.left, 0);
+      const top = Math.max(rect.top, 0);
+      rect = new DOMRect(
+        left,
+        top,
+        Math.min(rect.right, window.innerWidth) - left,
+        Math.min(rect.bottom, window.innerHeight) - top,
+      );
+      if (rect.width <= 0 || rect.height <= 0) return null;
+
+      /*
+       * A sliver is not a control. Scrolled to its last line, a 44px field can
+       * leave two pixels showing at the edge of its scroller, and the middle of
+       * those two pixels is outside the scroller entirely — which answers with
+       * whatever is painted below it. A quarter of the box is the floor for
+       * calling it visible at all.
+       */
+      const full = node.getBoundingClientRect();
+      return rect.width * rect.height >= full.width * full.height * 0.25 ? rect : null;
+    };
+
+    for (const node of document.querySelectorAll(controls)) {
+      const rect = visible(node);
+      if (!rect) continue;
+
+      const over = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      if (!over || node.contains(over) || over.contains(node)) continue;
+
+      const name = (over.closest('[class]')?.className ?? over.tagName).toString().split(' ')[0];
+      const key = `${(node.textContent ?? '').slice(0, 24).trim() || node.className} is under .${name}`;
+      seen.set(key, (seen.get(key) ?? 0) + 1);
+    }
+    return [...seen].map(([key, count]) => `${key}${count > 1 ? ` (x${count})` : ''}`);
+  });
+}
+
+/**
  * How much the page rewrites itself while nobody is touching it.
  *
  * An idle screen should be almost still: clocks are patched in place and

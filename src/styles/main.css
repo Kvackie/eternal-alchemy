@@ -3365,55 +3365,55 @@ input[type='range'] {
 /* ------------------------------------------------------------ checklist */
 
 /*
- * The opening checklist, floating over the panel rather than built into it.
+ * The checklist's handle, which is all of it that is ever on the screen.
  *
- * As a child of `.panel-body` it joined that body's flex flow: it took the gap,
- * pushed the screen's own content down, scrolled away with it, and on a 412px
- * phone held roughly a third of the view on every screen at once. Lifting it
- * out is what stops it deciding other screens' layout.
+ * The list itself used to live here: a card of eight rows parked over the
+ * bottom corner of every screen, which on a phone covered two rows of cave
+ * beds and caught the taps meant for them. What is left is a pill — a title, a
+ * count and the one line to do next — and the list is a popup behind it.
  *
  * Bottom right, above the nav, under the modals (30) and clear of the debug
- * toggle (20). It caps its own height and scrolls inside itself, because eight
- * steps at 150% text is taller than a phone.
+ * toggle (20).
  */
-.checklist {
+.checklist-pill {
   position: absolute;
   right: 0.75rem;
   bottom: 0.75rem;
   z-index: 18;
-  width: min(23rem, calc(100% - 1.5rem));
-  max-height: min(60%, 24rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  max-width: min(20rem, calc(100% - 1.5rem));
+  min-height: var(--tap);
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.625rem 0.75rem;
+  align-items: flex-start;
+  gap: 0.125rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
   background: var(--good-wash);
   border: 1px solid var(--good);
   border-radius: var(--radius);
-  /* It is over the content now, so it has to read as being over it. */
+  color: var(--text);
+  /* It is over the content, so it has to read as being over it. */
   box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.45);
 }
 
-/* Folded down it is one line, and takes only the width that line needs. */
-.checklist[data-collapsed='true'] {
-  width: auto;
-  max-width: min(23rem, calc(100% - 1.5rem));
-  max-height: none;
+.checklist-pill:hover {
+  border-color: var(--good-text);
 }
 
 .checklist-head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.5rem;
-  flex-wrap: wrap;
+}
+
+.checklist-head h2 {
+  margin: 0;
+  flex: 1;
 }
 
 .checklist-title {
   font-weight: 700;
   font-size: 0.875rem;
-  flex: 1;
 }
 
 .checklist-count {
@@ -3421,17 +3421,36 @@ input[type='range'] {
   color: var(--good-text);
 }
 
+/*
+ * One line of it, whatever its length.
+ *
+ * Four of the eight steps are long enough to wrap twice at 412px, and a handle
+ * that changes height as you play moves the zoom controls stacked above it.
+ */
 .checklist-next {
-  margin: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 0.8125rem;
-  color: var(--text);
+  color: var(--text-dim);
+}
+
+/* Eight steps at 150% text is taller than a phone, so the list scrolls itself. */
+.checklist-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 55vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .checklist-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.8125rem;
+  min-height: var(--tap);
   color: var(--text-dim);
 }
 

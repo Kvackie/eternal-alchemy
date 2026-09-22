@@ -655,18 +655,19 @@ export class Shell {
     this.panels.append(panel);
 
     /*
-     * The checklist floats over the panel rather than sitting inside it.
+     * The checklist's handle floats over the panel rather than sitting in it.
      *
-     * It used to be prepended into `.panel-body`, which made it part of every
-     * screen's layout: it took the body's flex gap, pushed the real content
-     * down, scrolled away with it, and on a phone held about a third of the
-     * screen on all eight screens at once. It is still above whatever panel is
-     * open — it is just no longer made of the same cloth.
+     * The list used to be prepended into `.panel-body`, which made it part of
+     * every screen's layout: it took the body's flex gap, pushed the real
+     * content down, scrolled away with it, and on a phone held about a third of
+     * the screen on all eight screens at once. Lifting it out fixed that and
+     * gave it a new way to be in the way — a card over the bottom corner,
+     * covering what was under it and catching its taps. What is over the panel
+     * now is a pill; the list is a popup it opens.
      */
     const checklist = renderOnboarding(this.deps.sim);
-    const hasChecklist = checklist.tagName !== 'SPAN';
-    if (hasChecklist) this.panels.append(checklist);
-    this.panels.dataset.checklist = String(hasChecklist);
+    if (checklist) this.panels.append(checklist);
+    this.panels.dataset.checklist = String(checklist !== null);
 
     // Only where there is a world to recentre. The Ledger and Settings take the
     // whole stage, so the canvas behind them is not showing anything — and nor
@@ -708,7 +709,7 @@ export class Shell {
      * which takes a number only the layout knows. Read once per render, and
      * only while the checklist is up.
      */
-    if (hasChecklist) {
+    if (checklist) {
       this.panels.style.setProperty('--checklist-h', `${checklist.offsetHeight}px`);
     } else {
       this.panels.style.removeProperty('--checklist-h');
