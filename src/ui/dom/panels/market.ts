@@ -22,7 +22,7 @@ import {
   slotGrid,
 } from '../components';
 import type { QuantityActionSpec } from '../components';
-import { formatDuration, has, t } from '@/i18n';
+import { countdown, formatDuration, has, t } from '@/i18n';
 import { getCrop, getDecor, getEquipment } from '@/sim/config';
 import { decorAvailability } from '@/sim/decor';
 import { artUrlIf } from '@/ui/art';
@@ -425,7 +425,7 @@ function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, ind
 function whenDue(at: number, now: number): HTMLElement {
   const node = el('span', {
     class: 'num upcoming-when',
-    text: formatDuration(Math.max(0, at - now)),
+    text: countdown(at, now),
   });
   node.dataset.countdownAt = String(at);
   return node;

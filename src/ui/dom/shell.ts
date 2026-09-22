@@ -22,7 +22,7 @@ import { renderRoster, resetRosterSelection } from './panels/roster';
 import { renderLedger, resetLedgerPaging } from './panels/ledger';
 import { renderSettings } from './panels/settings';
 import { renderOnboarding } from './panels/onboarding';
-import { formatDuration, formatGold, formatLongDuration, formatNumber, t } from '@/i18n';
+import { countdown, formatDuration, formatGold, formatLongDuration, formatNumber, t } from '@/i18n';
 import { activityOf } from '@/sim/cauldrons';
 import { dayStateAt } from '@/sim/clock';
 import { config } from '@/sim/config';
@@ -330,7 +330,7 @@ export class Shell {
     for (const node of this.liveClocks) {
       const at = Number(node.dataset.countdownAt);
       if (!Number.isFinite(at)) continue;
-      const time = formatDuration(Math.max(0, at - sim.now));
+      const time = countdown(at, sim.now);
       const key = node.dataset.countdownKey;
       const next = key ? t(key, { time }) : time;
       // Only when it actually reads differently. These run at frame rate and

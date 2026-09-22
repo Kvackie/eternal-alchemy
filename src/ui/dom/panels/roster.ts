@@ -31,7 +31,7 @@ import { showHeroInfo } from '../heroInfo';
 import { showMissionReward } from '../missionReward';
 import { showIngredientInfo } from '../ingredientInfo';
 import { showPotionInfo } from '../potionInfo';
-import { formatDuration, formatPercent, t } from '@/i18n';
+import { countdown, formatDuration, formatPercent, t } from '@/i18n';
 import { getHeroDef, heroesConfig } from '@/sim/config';
 import {
   favourBandOf,
@@ -171,7 +171,7 @@ function renderMissionsUnderway(sim: Simulation): HTMLElement {
      * the moment a party was out.
      */
     const clock = chip(
-      t('roster.returns', { time: formatDuration(Math.max(0, mission.returnsAt - sim.now)) }),
+      t('roster.returns', { time: countdown(mission.returnsAt, sim.now) }),
     );
     clock.dataset.countdownAt = String(mission.returnsAt);
     clock.dataset.countdownKey = 'roster.returns';
@@ -257,7 +257,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
     if (hurt) {
       const healing = chip(
         t('roster.injured', {
-          time: formatDuration(Math.max(0, (hero.injuredUntil ?? 0) - sim.now)),
+          time: countdown((hero.injuredUntil ?? 0), sim.now),
         }),
         'warn',
       );

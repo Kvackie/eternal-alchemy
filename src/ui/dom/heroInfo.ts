@@ -26,7 +26,7 @@ import {
   potionIcon,
   stat,
 } from './components';
-import { formatDuration, formatGold, t } from '@/i18n';
+import { countdown, formatGold, t } from '@/i18n';
 import { getHeroDef } from '@/sim/config';
 import { effectiveLevel, favourBandOf, isInjured, recruitCostOf } from '@/sim/heroes';
 import type { Simulation } from '@/sim/sim';
@@ -65,7 +65,7 @@ function buildHeroInfo(
       tags.push(
         chip(
           t('roster.injured', {
-            time: formatDuration(Math.max(0, (hero.injuredUntil ?? 0) - sim.now)),
+            time: countdown((hero.injuredUntil ?? 0), sim.now),
           }),
           'warn',
         ),

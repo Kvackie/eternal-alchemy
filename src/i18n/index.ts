@@ -124,6 +124,17 @@ export function formatDuration(ms: number): string {
   return `${seconds}s`;
 }
 
+/**
+ * How long until something happens, as a duration.
+ *
+ * Nine places wrote `formatDuration(Math.max(0, at - now))`, and the clamp in
+ * all nine was already being done again inside `formatDuration` — a deadline
+ * that has passed reads as "0s" either way.
+ */
+export function countdown(at: number, now: number): string {
+  return formatDuration(at - now);
+}
+
 /** Long form for the away summary: "3 days, 4 hours". */
 export function formatLongDuration(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));

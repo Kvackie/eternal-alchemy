@@ -27,7 +27,7 @@ import {
   tabPanel,
   tabStrip,
 } from '../components';
-import { formatDuration, t } from '@/i18n';
+import { countdown, formatDuration, t } from '@/i18n';
 import { showIngredientInfo } from '../ingredientInfo';
 import { caveConfig, crops, getCrop, getIngredient, shaftConfig } from '@/sim/config';
 import { isReady } from '@/sim/garden';
@@ -792,12 +792,12 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
       const workable = isWorkable(vein, sim.now);
       const status = working
         ? t('shaft.working', {
-            time: formatDuration(Math.max(0, (vein.nextBatchAt ?? sim.now) - sim.now)),
+            time: countdown((vein.nextBatchAt ?? sim.now), sim.now),
           })
         : vein.remaining > 0
           ? t('shaft.idle')
           : t('shaft.refilling', {
-              time: formatDuration(Math.max(0, (vein.refillsAt ?? sim.now) - sim.now)),
+              time: countdown((vein.refillsAt ?? sim.now), sim.now),
             });
 
       return row({

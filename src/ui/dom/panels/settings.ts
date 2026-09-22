@@ -17,7 +17,6 @@ import {
   splitOnValue,
 } from '../components';
 import { debugEnabled, setDebugEnabled } from '@/platform/debugFlag';
-import { bus } from '@/ui/bus';
 import { formatGold, formatNumber, t } from '@/i18n';
 import { prestigeConfig } from '@/sim/config';
 import type { CodexNodeDef, TownDef } from '@/sim/config';
@@ -26,7 +25,7 @@ import { freshSeed } from '@/sim/rng';
 import type { SaveManager } from '@/platform/save';
 import type { Simulation } from '@/sim/sim';
 import type { World } from '@/sim/types';
-import { changed, toast } from '@/ui/bus';
+import { bus, changed, confirm, toast } from '@/ui/bus';
 
 export interface SettingsDeps {
   sim: Simulation;
@@ -495,36 +494,31 @@ let chosenTown: string | null = null;
 
 function confirmRetire(deps: SettingsDeps, townId: string | null): void {
   if (!townId) return;
-  modal({
-    content: (dismiss) => [
-      el('h2', { text: t('prestige.confirmTitle') }),
-      el('p', { text: t('prestige.confirmBody', { town: t(`town.${townId}`) }) }),
-      el('div', { class: 'dialog-actions' }, [
-        button(t('common.cancel'), dismiss, { variant: 'quiet' }),
-        button(t('prestige.retire'), () => {
-          const result = deps.sim.retire(townId, freshSeed());
-          dismiss();
-          if (result) deps.onImport(result.world);
-        }, { variant: 'warm' }),
-      ]),
-    ],
+  confirm({
+    title: t('prestige.confirmTitle'),
+    body: t('prestige.confirmBody', { town: t(`town.${townId}`) }),
+    confirm: t('prestige.retire'),
+    onConfirm: () => {
+      const result = deps.sim.retire(townId, freshSeed());
+      if (result) deps.onImport(result.world);
+    },
   });
 }
 
 /**
- * Starting over destroys a save with no undo, so it asks first — in the page
- * rather than through `confirm()`, which blocks the whole tab.
+ * Starting over destroys a save with no undo, so it asks first.
+ *
+ * Through the shell's own question rather than the browser's `window.confirm`,
+ * which blocks the whole tab — and through the same one every other
+ * irreversible act in the game uses, rather than a second copy of it built
+ * here out of a modal and two buttons.
  */
 function confirmNewGame(onConfirm: () => void): void {
-  modal({
-    content: (dismiss) => [
-      el('h2', { text: t('settings.newGame.confirmTitle') }),
-      el('p', { text: t('settings.newGame.confirmBody') }),
-      el('div', { class: 'dialog-actions' }, [
-        button(t('common.cancel'), dismiss, { variant: 'quiet' }),
-        button(t('settings.newGame.action'), onConfirm, { variant: 'warm' }),
-      ]),
-    ],
+  confirm({
+    title: t('settings.newGame.confirmTitle'),
+    body: t('settings.newGame.confirmBody'),
+    confirm: t('settings.newGame.action'),
+    onConfirm,
   });
 }
 

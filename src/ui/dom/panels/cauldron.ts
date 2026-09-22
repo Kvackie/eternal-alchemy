@@ -20,7 +20,7 @@ import {
   panelHeader,
   row,
 } from '../components';
-import { formatDuration, formatGold, t } from '@/i18n';
+import { countdown, formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
 import { atCauldronLimit, activityOf, buyableTiers } from '@/sim/cauldrons';
 import type { CauldronActivity } from '@/sim/cauldrons';
@@ -91,7 +91,7 @@ function stateChip(sim: Simulation, pot: Cauldron, activity: CauldronActivity): 
 
   const node = chip(
     t('cauldron.state.brewingIn', {
-      time: formatDuration(Math.max(0, pot.brewing.readyAt - sim.now)),
+      time: countdown(pot.brewing.readyAt, sim.now),
     }),
     'warm',
   );

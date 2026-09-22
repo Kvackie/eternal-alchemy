@@ -39,7 +39,7 @@ import {
   stat,
   tabStrip,
 } from '../components';
-import { formatDuration, formatGold, t } from '@/i18n';
+import { countdown, formatDuration, formatGold, t } from '@/i18n';
 import { config, getIngredient, getSeal } from '@/sim/config';
 import { inventoryRows } from '@/sim/inventory';
 import { availableForms, availableSeals, availableVessels } from '@/sim/bottling';
@@ -965,7 +965,7 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
   const done = sim.now - brewing.startedAt;
 
   const remaining = el('span', {
-    text: formatDuration(Math.max(0, brewing.readyAt - sim.now)),
+    text: countdown(brewing.readyAt, sim.now),
   });
   remaining.dataset.countdownAt = String(brewing.readyAt);
 
