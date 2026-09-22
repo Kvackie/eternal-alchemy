@@ -1065,53 +1065,6 @@ input[type='range'] {
   border-color: var(--verd);
 }
 
-/* ------------------------------------------------------------------ steps */
-
-.step {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  padding-bottom: 0.875rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.step:last-of-type {
-  border-bottom: 0;
-}
-
-.step-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.step-num {
-  flex: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--verd-soft);
-  color: var(--verd-ink);
-  border: 1px solid var(--verd);
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-family: ui-monospace, monospace;
-}
-
-.step-title {
-  display: block;
-  font-weight: 600;
-  font-size: 0.9375rem;
-}
-
-.step-hint {
-  display: block;
-  font-size: 0.6875rem;
-  color: var(--muted);
-}
-
 .field-note {
   font-size: 0.6875rem;
   color: var(--muted);
@@ -1949,10 +1902,32 @@ input[type='range'] {
   padding-right: 0.125rem;
 }
 
-/* Portraits make these rows tall; two or three of them is already a list. */
-.heroes .collapsible-body {
-  max-height: 20rem;
+/*
+ * A fold inside a panel does not scroll; the panel does.
+ *
+ * The cap above is for a fold on a page that sizes to its content, where a long
+ * section would push everything under it out of reach. A panel has a height of
+ * its own now, so the same cap produces the opposite problem: the Roster had
+ * three separate scroll regions on one screen — the hero list, the supply rack
+ * and the tavern beside them — each with its own bar, each swallowing a flick
+ * meant for the page. One scroller per window is the rule the phone already
+ * followed; this is the same rule, at every size.
+ */
+.panel-roomy .collapsible-body,
+#panels[data-scene='true']:not([data-view='scene']) > .panel .collapsible-body {
+  max-height: none;
+  overflow: visible;
 }
+
+/* Portraits make these rows tall; two or three of them is already a list. */
+/*
+ * The hero list has no cap of its own any more.
+ *
+ * 20rem was a taller version of the 17rem above, for the one fold most likely
+ * to be long — and it outranked the rule that says a fold in a panel does not
+ * scroll, so the Roster kept its second scrollbar at both sizes while every
+ * other screen lost theirs.
+ */
 
 /*
  * The Cauldron's steps keep their own heading inside the toggle.
@@ -1969,12 +1944,6 @@ input[type='range'] {
 
 .collapsible-head:has(.step-head) {
   align-items: center;
-}
-
-/* A step is a taller thing than a roster section; give it room before it scrolls. */
-.step > .collapsible-body,
-.recipes > .collapsible-body {
-  max-height: 26rem;
 }
 
 /* Selected out of a stack, beside the grade and the price. */
@@ -4468,12 +4437,7 @@ input[type='range'] {
     overflow: visible;
   }
 
-  /* A folded section inside a scrolling page must not scroll on its own. */
-  .panel-roomy .collapsible-body,
-  #panels[data-scene='true']:not([data-view='scene']) > .panel .collapsible-body {
-    max-height: none;
-    overflow: visible;
-  }
+
 
   /*
    * The Roster's two windows stack into one page here.

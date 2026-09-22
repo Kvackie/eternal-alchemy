@@ -380,17 +380,6 @@ export function clear(node: HTMLElement): void {
   while (node.firstChild) node.firstChild.remove();
 }
 
-/** A numbered step heading, for the cauldron's three stages. */
-export function stepHeader(index: number, title: string, hint?: string): HTMLElement {
-  return el('div', { class: 'step-head' }, [
-    el('span', { class: 'step-num', text: String(index) }),
-    el('div', {}, [
-      el('span', { class: 'step-title', text: title }),
-      ...(hint ? [el('span', { class: 'step-hint', text: hint })] : []),
-    ]),
-  ]);
-}
-
 // ---------------------------------------------------------------------------
 // Icon inventory
 // ---------------------------------------------------------------------------
