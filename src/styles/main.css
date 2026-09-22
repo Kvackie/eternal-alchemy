@@ -59,6 +59,9 @@
   --term-vessel: #6fb0d8;
   --term-seal: #b58ad8;
 
+  /* Paid in potions rather than coin — deliberately nothing like gold. */
+  --barter: #e59ac4;
+
   --ignis: #ee7250;
   --aqua: #5ca9e8;
   --terra: #c7ac3c;
@@ -613,6 +616,21 @@ button {
   background: var(--amber-soft);
 }
 
+/*
+ * A minimum grade, with nothing drawn around it.
+ *
+ * The badge is a bordered box on a filled chip, which is the right weight for
+ * "this bottle is an A" and much too much for "we will take a D or better" —
+ * on a contract card it was the loudest thing in a row of terms and the least
+ * important of them.
+ */
+.grade-floor {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
 .grade {
   display: inline-grid;
   place-items: center;
@@ -626,13 +644,14 @@ button {
   flex: none;
 }
 
-.grade[data-grade='S'] { color: var(--grade-s); }
-.grade[data-grade='A'] { color: var(--grade-a); }
-.grade[data-grade='B'] { color: var(--grade-b); }
-.grade[data-grade='C'] { color: var(--grade-c); }
-.grade[data-grade='D'] { color: var(--grade-d); }
-.grade[data-grade='E'] { color: var(--grade-e); }
-.grade[data-grade='F'] { color: var(--grade-f); }
+/* Any element carrying a grade wears that grade's colour — badge or not. */
+[data-grade='S'] { color: var(--grade-s); }
+[data-grade='A'] { color: var(--grade-a); }
+[data-grade='B'] { color: var(--grade-b); }
+[data-grade='C'] { color: var(--grade-c); }
+[data-grade='D'] { color: var(--grade-d); }
+[data-grade='E'] { color: var(--grade-e); }
+[data-grade='F'] { color: var(--grade-f); }
 
 /*
  * Coin is always the colour of coin.
@@ -1114,8 +1133,16 @@ input[type='range'] {
  * stock is the one grid where the label IS the information — you are deciding
  * what to buy, not counting what you own — so it takes fewer, wider tiles.
  */
+/*
+ * Wide enough for the longest thing a tile has to say on one line.
+ *
+ * The Ashwalker's price — "Pay 1 sealed potion, D+" — is a sentence rather than
+ * a number, and at 7rem it broke across two lines with the grade stranded at
+ * the end of the first. The pictures grew here too, so the extra width is for
+ * both.
+ */
 .slot-grid.roomy {
-  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
 }
 
 /* One kind of goods, under its heading. */
@@ -1142,7 +1169,7 @@ input[type='range'] {
 
   /* Two across on a phone, which is the width a full name needs. */
   .slot-grid.roomy {
-    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
   }
 
   .slot-label {
@@ -3742,6 +3769,21 @@ input[type='range'] {
   font-size: 1rem;
 }
 
+.buy-art {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.buy-art img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
 .slot-glyph {
   font-size: 1.125rem;
   line-height: 1;
@@ -3779,10 +3821,16 @@ input[type='range'] {
   gap: 0.1875rem;
 }
 
-.barter-grade {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.1875rem;
+/*
+ * A price paid in potions, in a colour no price in coins uses.
+ *
+ * The Ashwalker takes no gold, and his tiles sit in the same grid as four
+ * traders who do — so the thing that makes his stock different from theirs is
+ * exactly what the caption has to say at a glance, before it is read.
+ */
+.barter-cost {
+  color: var(--barter);
+  font-weight: 600;
   white-space: nowrap;
 }
 

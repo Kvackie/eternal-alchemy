@@ -1632,7 +1632,6 @@
   "market.group.board": "Shelf boards",
   "market.group.decor": "Furnishings",
   "market.group.equipment": "Equipment",
-  "market.barterCost": "Costs {count} × sealed potion, grade {grade} or better",
   "goods.boardFitting": "Fitted to a shelf of your choosing, in the Shop.",
   "garden.seed.plant": "Plant",
   "garden.seed.noPlot": "Every plot is full",
@@ -1644,9 +1643,6 @@
   "shop.inventory.search": "Search your bottles",
   "board.reward": "Reward",
   "board.wantsLabel": "Wants",
-  "board.gradeOrBetter": "or better",
-  "market.barter.pay": "{count} × sealed potion",
-  "market.barter.orBetter": "or better",
   "garden.soil.title": "Which ground?",
   "garden.soil.hint": "It does best in {soil}. Goes into the first empty bed of the ground you pick.",
   "garden.soil.option": "{soil} — {count} empty",
@@ -1662,5 +1658,8 @@
   "station.pinnedHere": "Pinned",
   "station.pinnedHint": "Star a recipe in the book to keep it here",
   "cauldron.bottle.open": "Bottle it",
-  "cauldron.ready.title": "{recipe} is ready"
+  "cauldron.ready.title": "{recipe} is ready",
+  "common.gradeOrBetter": "Grade {grade} or better",
+  "market.barter.one": "Pay 1 sealed potion, {grade}+",
+  "market.barter.many": "Pay {count} sealed potions, {grade}+"
 }

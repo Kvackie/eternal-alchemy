@@ -11,7 +11,6 @@ import {
   chip,
   el,
   goldText,
-  gradeBadge,
   ingredientIcon,
   panelHeader,
   portrait,
@@ -102,22 +101,20 @@ function entryIcon(entry: StockEntry): Node {
 }
 
 /**
- * What a barter costs, in the colours the rest of the game says it in.
+ * What a barter costs, in one line and in a colour of its own.
  *
- * "1 × grade D or better" left the noun out — grade D *what* — and printed the
- * grade as plain text, which is the one thing in this game that always carries
- * its own colour. The badge is the same one the shelf, the store room and the
- * contract board use, so a grade reads as a grade wherever it appears.
+ * Every other price on this screen is a number of coins in gold, so the one
+ * thing that is not paid in coins should not look like one. It reads as a
+ * sentence rather than as fragments — how many, of what, at what grade — and
+ * it stays on a single line, because "1 × sealed potion" wrapping above "D or
+ * better" was three pieces of one fact arranged as two.
  */
 function barterCaption(count: number, grade: string): Array<Node | string> {
   return [
-    el('span', { text: t('market.barter.pay', { count }) }),
-    // The badge and the words it qualifies wrap as one thing, or a narrow tile
-    // leaves the grade stranded at the end of the line above "or better".
-    el('span', { class: 'barter-grade' }, [
-      gradeBadge(grade as never),
-      el('span', { text: t('market.barter.orBetter') }),
-    ]),
+    el('span', {
+      class: 'barter-cost',
+      text: t(count === 1 ? 'market.barter.one' : 'market.barter.many', { count, grade }),
+    }),
   ];
 }
 
@@ -480,7 +477,10 @@ function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, ind
      * his entries are bartered.
      */
     note: entry.barter
-      ? t('market.barterCost', { count: entry.barter.potions, grade: entry.barter.minGrade })
+      ? t(
+          entry.barter.potions === 1 ? 'market.barter.one' : 'market.barter.many',
+          { count: entry.barter.potions, grade: entry.barter.minGrade },
+        )
       : undefined,
     run: (quantity: number) => buyMany(sim, visit.merchantId, index, quantity, label),
   };

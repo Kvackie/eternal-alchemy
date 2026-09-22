@@ -254,8 +254,29 @@ function renderStorage(sim: Simulation): HTMLElement {
 
   section.append(el('span', { class: 'field-label', text: t('cauldron.buy.title') }));
   for (const tier of offers) {
+    /*
+     * A pot you could own looks like a pot.
+     *
+     * The bench and the storage shelf both draw the pot; the list of what you
+     * could buy was four names and two numbers each, which is the one place a
+     * player is choosing between them and the one place they could not see what
+     * they were choosing. Same art the card uses, at a size that suits a row.
+     */
+    const art = artUrlIf('scene', tier.id);
     section.append(
       el('div', { class: 'plot-row' }, [
+        el('span', { class: 'buy-art' }, [
+          art
+            ? el('img', {
+                src: art,
+                alt: '',
+                width: '44',
+                height: '44',
+                loading: 'lazy',
+                decoding: 'async',
+              })
+            : el('span', { class: 'slot-glyph', text: '⚗️' }),
+        ]),
         el('div', { class: 'plot-main' }, [
           el('span', { class: 'plot-title', text: t(`cauldronTier.${tier.id}`) }),
           el('div', { class: 'row-sub' }, [

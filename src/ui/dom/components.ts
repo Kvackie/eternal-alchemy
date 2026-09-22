@@ -158,6 +158,21 @@ export function gradeBadge(grade: Grade): HTMLElement {
 }
 
 /**
+ * A minimum grade, written the short way.
+ *
+ * "D or better" in a badge inside a chip is two boxes and three words around a
+ * single letter — on a contract card that is the loudest thing in a row of
+ * terms, and it is the least of them. "D+" says it, in the colour the grade
+ * already has, with nothing drawn around it.
+ */
+export function gradeFloor(grade: Grade): HTMLElement {
+  const node = el('span', { class: 'grade-floor', text: `${grade}+` });
+  node.dataset.grade = grade;
+  node.setAttribute('aria-label', t('common.gradeOrBetter', { grade }));
+  return node;
+}
+
+/**
  * An amount of gold, in gold.
  *
  * A node rather than a string, so the colour travels with the number. Sites

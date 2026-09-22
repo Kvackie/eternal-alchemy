@@ -7,7 +7,7 @@
  * pays pro rata and costs nothing.
  */
 
-import { button, chip, el, goldText, gradeBadge, meter, panelHeader, stat } from '../components';
+import { button, chip, el, goldText, gradeFloor, meter, panelHeader, stat } from '../components';
 import { formatGold, t } from '@/i18n';
 import { config } from '@/sim/config';
 import { contractSummary } from '@/sim/contracts';
@@ -72,12 +72,7 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
    * which is the scale the rest of the game already reads, and the other two
    * get a hue each.
    */
-  const requirements: HTMLElement[] = [
-    el('span', { class: 'chip term-grade' }, [
-      gradeBadge(template.minGrade),
-      el('span', { text: t('board.gradeOrBetter') }),
-    ]),
-  ];
+  const requirements: HTMLElement[] = [gradeFloor(template.minGrade)];
   if (summary.vessel) requirements.push(chip(t(`vessel.${summary.vessel.id}`), 'term-vessel'));
   if (summary.seal) requirements.push(chip(t(`seal.${summary.seal.id}`), 'term-seal'));
 
