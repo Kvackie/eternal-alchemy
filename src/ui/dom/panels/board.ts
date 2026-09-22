@@ -118,7 +118,7 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
     // Red rather than amber: it is the one thing on the card that runs out.
     stat(
       t('board.deadline'),
-      t('board.daysLeft', { days: Math.max(0, Math.ceil(daysLeft)) }),
+      t('board.daysLeft', { count: Math.max(0, Math.ceil(daysLeft)) }),
       daysLeft < 1 ? 'bad' : undefined,
     ),
     meter(contract.delivered / contract.quantity),

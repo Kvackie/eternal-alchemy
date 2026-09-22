@@ -29,14 +29,44 @@ export function locale(): LocaleId {
   return current;
 }
 
+const pluralRules = new Map<LocaleId, Intl.PluralRules>();
+
+function pluralCategory(count: number): Intl.LDMLPluralRule {
+  let rules = pluralRules.get(current);
+  if (!rules) {
+    rules = new Intl.PluralRules(current);
+    pluralRules.set(current, rules);
+  }
+  return rules.select(count);
+}
+
 /**
  * Look up a string.
  *
  * A missing key returns the key itself rather than throwing or rendering blank —
  * an untranslated string should be visibly wrong in the UI, not invisible.
+ *
+ * A key given a `count` may have plural forms, written as sibling keys:
+ * `board.daysLeft.one` beside `board.daysLeft.other`. English needs two;
+ * `Intl.PluralRules` picks the right one for whatever a locale needs, which is
+ * six for Arabic and one for Japanese, and is the reason this is not an
+ * `=== 1` in here. An exact key wins over a category — `away.crops.0` says
+ * "nothing is ready", which no plural category can express.
+ *
+ * Only keys that declare an `other` form pay for any of it. Everything else
+ * costs one extra property read, which matters: this runs thousands of times
+ * per render.
  */
 export function t(key: string, params?: Record<string, string | number>): string {
-  const template = table[key] ?? key;
+  let template = table[key];
+
+  const count = params?.count;
+  if (typeof count === 'number' && `${key}.other` in table) {
+    template =
+      table[`${key}.${count}`] ?? table[`${key}.${pluralCategory(count)}`] ?? table[`${key}.other`];
+  }
+
+  template ??= key;
   if (!params) return template;
 
   return template.replace(/\{(\w+)\}/g, (match, name: string) => {

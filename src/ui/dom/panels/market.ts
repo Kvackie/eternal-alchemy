@@ -113,7 +113,7 @@ function barterCaption(count: number, grade: string): Array<Node | string> {
   return [
     el('span', {
       class: 'barter-cost',
-      text: t(count === 1 ? 'market.barter.one' : 'market.barter.many', { count, grade }),
+      text: t('market.barter.cost', { count, grade }),
     }),
   ];
 }
@@ -419,10 +419,7 @@ function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, ind
      * his entries are bartered.
      */
     note: entry.barter
-      ? t(
-          entry.barter.potions === 1 ? 'market.barter.one' : 'market.barter.many',
-          { count: entry.barter.potions, grade: entry.barter.minGrade },
-        )
+      ? t('market.barter.cost', { count: entry.barter.potions, grade: entry.barter.minGrade })
       : undefined,
     run: (quantity: number) => buyMany(sim, visit.merchantId, index, quantity, label),
   };

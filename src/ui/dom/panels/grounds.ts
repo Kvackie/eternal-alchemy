@@ -98,7 +98,7 @@ function harvestToast(
   const name =
     kinds.size === 1
       ? t(`ingredient.${[...kinds][0]}`)
-      : t('toast.harvestKinds', { kinds: kinds.size });
+      : t('toast.harvestKinds', { count: kinds.size });
 
   return seeds > 0
     ? t('toast.harvestSeeds', { count: total, ingredient: name, seeds })
