@@ -107,11 +107,17 @@ export function tierOf(def: MerchantDef, relationship: number, floor = 0): numbe
 }
 
 /**
- * Pick this visit's goods.
+ * What this visit is carrying, and what it costs.
  *
- * Weighted draw without replacement from everything the player's relationship
- * tier and rank have opened up. Equipment already owned is filtered out before
- * the draw, so a full shelf of upgrades never crowds out the staples.
+ * A pack is dealt once, when the trader arrives — see `packArrivals`. The draw
+ * reads the world: which upgrades you already own, what rank you are, what
+ * your standing with this trader is. All three move while a trader is in town,
+ * and buying the cauldron is exactly what takes it out of the pool, so dealing
+ * again on the next look handed a player who bought one thing four different
+ * other things.
+ *
+ * The prices are worked out here every time, because a discount earned during
+ * a visit should apply to what is still on the shelf.
  */
 function generateEntries(
   world: World,
@@ -119,31 +125,45 @@ function generateEntries(
   dayNumber: number,
   tier: number,
 ): StockEntry[] {
-  const rng = new Rng(visitSeed(def.id, dayNumber));
-  const rank = rankIndexFor(world.renown);
+  const packed = packedFor(world, def.id, dayNumber);
 
   /*
-   * A pack is packed once, when the trader arrives.
+   * A pack nobody has recorded yet is dealt but not kept.
    *
-   * The draw below reads the world: which upgrades you already own, what rank
-   * you are, what your standing with this trader is. All three move while a
-   * trader is in town — buying the cauldron is what takes it out of the pool —
-   * so re-running the draw on the next render dealt a different pack, and a
-   * player who bought one thing watched the other four turn into other things.
-   *
-   * The ids that were dealt are therefore kept on the visit record, and a visit
-   * that already has them deals exactly those again. A save from before this
-   * change has none, so its current visit settles on its next redraw and every
-   * visit after it is stable from the moment it opens.
+   * That is a save from before packs were recorded, or a visit being looked at
+   * between arriving and the next tick. Drawing without writing keeps this a
+   * read — the tick is what makes it permanent, a frame later at the outside.
    */
-  const remembered = rememberedPicks(world, def.id, dayNumber);
-  if (remembered) {
-    const byId = new Map(def.pool.map((item) => [item.id, item]));
-    const kept = remembered.map((id) => byId.get(id)).filter((item) => item !== undefined);
-    // An id that no longer exists in the pool — a content edit between sessions
-    // — simply drops out rather than taking the rest of the pack with it.
-    if (kept.length > 0) return priceEntries(world, def, dayNumber, tier, kept);
-  }
+  const chosen = packed ? fromPicks(def, packed) : drawPicks(world, def, dayNumber, tier);
+  return priceEntries(world, def, dayNumber, tier, chosen);
+}
+
+/**
+ * The goods behind a list of remembered ids.
+ *
+ * An id that has since left the pool — a content edit between sessions — drops
+ * out rather than taking the rest of the pack with it.
+ */
+function fromPicks(def: MerchantDef, picks: string[]): MerchantStockDef[] {
+  const byId = new Map(def.pool.map((item) => [item.id, item]));
+  return picks.map((id) => byId.get(id)).filter((item) => item !== undefined);
+}
+
+/**
+ * Deal a pack.
+ *
+ * Weighted draw without replacement from everything the player's relationship
+ * tier and rank have opened up. Equipment already owned is filtered out before
+ * the draw, so a full shelf of upgrades never crowds out the staples.
+ */
+function drawPicks(
+  world: World,
+  def: MerchantDef,
+  dayNumber: number,
+  tier: number,
+): MerchantStockDef[] {
+  const rng = new Rng(visitSeed(def.id, dayNumber));
+  const rank = rankIndexFor(world.renown);
 
   const pool = def.pool.filter((item) => {
     if (item.tier > tier) return false;
@@ -232,8 +252,7 @@ function generateEntries(
     if (!dealt) break;
   }
 
-  rememberPicks(world, def.id, dayNumber, chosen.map((item) => item.id));
-  return priceEntries(world, def, dayNumber, tier, chosen);
+  return chosen;
 }
 
 /** What the dealt goods cost, which is read fresh every time. */
@@ -298,35 +317,37 @@ function boughtRecord(world: World, merchantId: string, dayNumber: number): Reco
 }
 
 /** The ids this visit was packed with, if it has been packed. */
-function rememberedPicks(
-  world: World,
-  merchantId: string,
-  dayNumber: number,
-): string[] | undefined {
+function packedFor(world: World, merchantId: string, dayNumber: number): string[] | undefined {
   const record = world.merchantVisits[merchantId];
   if (!record || record.dayNumber !== dayNumber) return undefined;
   return record.picks;
 }
 
 /**
- * Write down what this visit is carrying.
+ * Pack whoever has just arrived.
  *
- * Only ever for the visit happening now: a record for another day is a stale
- * visit, and it is replaced rather than merged, which is also what clears the
- * purchases made on it.
+ * Called from the tick rather than from the draw, because the draw is read by
+ * rendering and rendering must not change the world — a screen that writes as
+ * it draws is one whose behaviour depends on how often it is looked at.
+ *
+ * Idempotent: a merchant already packed for today is left alone, and a record
+ * from another day is replaced wholesale, which is also what clears the
+ * purchases made against it.
  */
-function rememberPicks(
-  world: World,
-  merchantId: string,
-  dayNumber: number,
-  picks: string[],
-): void {
-  const record = world.merchantVisits[merchantId];
-  if (record && record.dayNumber === dayNumber) {
-    record.picks = picks;
-    return;
+export function packArrivals(world: World): void {
+  const day = dayStateAt(world.now);
+
+  for (const def of merchants) {
+    if (!isPresent(def, world.now)) continue;
+    if (packedFor(world, def.id, day.dayNumber)) continue;
+
+    const tier = tierOf(def, relationshipOf(world, def.id), codexBonuses(world).startingMerchantTier);
+    world.merchantVisits[def.id] = {
+      dayNumber: day.dayNumber,
+      bought: {},
+      picks: drawPicks(world, def, day.dayNumber, tier).map((item) => item.id),
+    };
   }
-  world.merchantVisits[merchantId] = { dayNumber, bought: {}, picks };
 }
 
 /** Every merchant currently in town, with their stock for this visit. */

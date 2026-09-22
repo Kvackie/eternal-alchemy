@@ -59,6 +59,7 @@ import {
 import {
   addRelationship,
   markBought,
+  packArrivals,
   presentMerchants,
   upcomingMerchants,
   type MerchantVisit,
@@ -191,6 +192,11 @@ export class Simulation {
     this.world.now = target;
 
     this.settleBrew();
+
+    // Whoever has just arrived is packed before anything reads their stock, so
+    // the pack is a fact about the visit rather than about when it was looked
+    // at. See `packArrivals`.
+    packArrivals(this.world);
 
     const { sales } = runMarket(this.world, this.rng, online);
     for (const sale of sales) {

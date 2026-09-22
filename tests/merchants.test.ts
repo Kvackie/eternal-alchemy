@@ -97,6 +97,31 @@ describe('merchant stock', () => {
     expect(new Set(visits).size).toBeGreaterThan(1);
   });
 
+  it('does not change the world just by being looked at', () => {
+    // `presentMerchants` is what rendering calls, and rendering happens far
+    // more often than anything else — a read that writes makes behaviour
+    // depend on how many times a screen was drawn.
+    const sim = new Simulation(createWorld(3));
+    sim.advanceTo(midday(2));
+
+    const before = JSON.stringify(sim.world);
+    presentMerchants(sim.world);
+    presentMerchants(sim.world);
+    expect(JSON.stringify(sim.world)).toBe(before);
+  });
+
+  it('packs a trader on the tick that brings them into town', () => {
+    const sim = new Simulation(createWorld(3));
+    expect(sim.world.merchantVisits.bramm).toBeUndefined();
+
+    sim.advanceTo(midday(2));
+    const packed = sim.world.merchantVisits.bramm;
+    expect(packed?.picks?.length).toBeGreaterThan(0);
+
+    // And what is drawn is exactly what was packed.
+    expect(sim.merchants()[0]!.entries.map((e) => e.id)).toEqual(packed!.picks);
+  });
+
   it('does not re-deal the pack when something is bought out of it', () => {
     // The draw reads the world — which upgrades are owned, what rank you are —
     // and all of that moves while a trader is in town. Buying the one-off used
