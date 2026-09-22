@@ -7,20 +7,36 @@
  * ones be on" — and stacking both into a single scroll meant every act of
  * either began with a hunt for the right section.
  *
- * The floor is shelves, furnishings and whoever is at the counter. The store is
- * what you own and have not put out: bottles, and the boards you could fit. A
- * customer is drawn on both, because a customer leaves and the shelves do not.
+ * The floor is shelves. The store is what you own and have not put out:
+ * bottles, and the boards you could fit.
+ *
+ * Furnishings and the counter are both out of the build for now — customers are
+ * moving to a scene of their own, and the furnishing picker belongs with the
+ * painted shop it decorates. Neither is deleted; the sim keeps running both, so
+ * a piece bought from a merchant is still owned when the picker comes back.
  */
 
-import { button, chip, clear, el, goldText, gradeBadge, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
+import {
+  button,
+  chip,
+  clear,
+  el,
+  goldText,
+  gradeBadge,
+  matchesSearch,
+  modal,
+  panelHeader,
+  potionIcon,
+  searchField,
+  slot,
+  slotGrid,
+} from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance, sameGoods } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
 import { artUrlIf } from '@/ui/art';
-import { goodsNotes } from '../goods';
 import { showPotionInfo } from '../potionInfo';
 
-import { renderHaggle } from './haggle';
 import type { BottledItem, ShelfSlot } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
@@ -51,6 +67,9 @@ let stackSort: StackSort = 'value';
 
 let stackPage = 1;
 
+/** What the store room is narrowed to. Module state, like the tab and the page. */
+let stackQuery = '';
+
 /**
  * Which half is showing.
  *
@@ -62,10 +81,6 @@ let tab: Tab = 'floor';
 
 export function renderShop(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
-
-  // A customer standing at the counter comes before everything, on both views
-  // — they leave, and neither the shelves nor the store room do.
-  body.append(renderHaggle(sim));
 
   body.append(
     el(
@@ -86,7 +101,7 @@ export function renderShop(sim: Simulation): HTMLElement {
   );
 
   if (tab === 'floor') {
-    body.append(renderShelves(sim), renderDecor(sim));
+    body.append(renderShelves(sim));
   } else {
     body.append(renderInventory(sim), renderBoards(sim));
   }
@@ -358,7 +373,7 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
           button(t('shop.slot.stockThis'), () => {
             dismiss();
             openStackPicker(sim, shelfSlot);
-          }),
+          }, { variant: 'good' }),
         ]),
       ],
     });
@@ -390,8 +405,16 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
         ]),
         el('div', { class: 'shelf-price' }, [asking, percent, pace]),
         priceSlider(sim, shelfSlot, { asking, percent, pace }),
+        /*
+         * Two answers, and they read as opposites.
+         *
+         * The slider applies as it moves, so the button that closes this is not
+         * deciding anything — but "Close" left no sign that the new price had
+         * taken, which is the one thing a player wants told. "Confirm" in green
+         * says it has. Taking the goods back down is the other direction and
+         * wears the other colour.
+         */
         el('div', { class: 'dialog-actions' }, [
-          button(t('common.close'), dismiss, { variant: 'quiet' }),
           button(
             t('shop.slot.remove'),
             () => {
@@ -399,57 +422,12 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
               sim.unstock(shelfSlot.id);
               changed();
             },
-            { variant: 'quiet' },
+            { variant: 'danger' },
           ),
-          button(
-            t('shop.shelf.move'),
-            () => {
-              dismiss();
-              openMovePicker(sim, entry);
-            },
-            { disabled: sim.world.shelf.length < 2 },
-          ),
+          button(t('common.confirm'), dismiss, { variant: 'good' }),
         ]),
       ];
     },
-  });
-}
-
-/** Where should this go? Pick a shelf; a full one swaps with this one. */
-function openMovePicker(sim: Simulation, from: ShelfRef): void {
-  const others = sim.world.shelf
-    .map((slot, index) => ({ slot, number: index + 1 }))
-    .filter((entry) => entry.slot.id !== from.slot.id);
-
-  modal({
-    content: (dismiss) => [
-      el('h2', { text: t('shop.shelf.moveTitle') }),
-      el('p', { text: t('shop.shelf.moveHint') }),
-      el(
-        'div',
-        { class: 'shelf-picker' },
-        others.map((target) =>
-          button(
-            target.slot.item
-              ? t('shop.shelf.swapWith', {
-                  shelf: t('shop.shelf.numbered', { number: target.number }),
-                  recipe: t(`recipe.${target.slot.item.recipeId}`),
-                })
-              : t('shop.shelf.moveTo', {
-                  shelf: t('shop.shelf.numbered', { number: target.number }),
-                }),
-            () => {
-              dismiss();
-              if (sim.moveStock(from.slot.id, target.slot.id)) changed();
-            },
-            { variant: 'quiet' },
-          ),
-        ),
-      ),
-      el('div', { class: 'dialog-actions' }, [
-        button(t('common.close'), dismiss, { variant: 'quiet' }),
-      ]),
-    ],
   });
 }
 
@@ -540,76 +518,6 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
   });
 }
 
-/**
- * The shop floor.
- *
- * One row per spot, with every piece that could stand there — owned or not.
- * Showing what you *cannot* place yet is the point: the empty window advertises
- * that a window is worth furnishing, which a hidden row never would.
- */
-function renderDecor(sim: Simulation): HTMLElement {
-  const rows = sim.decorSpots().map((view) => {
-    const options = view.options.map((option) => {
-      const placed = view.placed?.id === option.def.id;
-
-      return button(
-        t(`decor.${option.def.id}`),
-        () => {
-          // Tapping what is already out takes it down — the only way to empty a
-          // spot, and it reads as a toggle rather than needing a second control.
-          if (placed) sim.clearSpot(view.spot);
-          else sim.place(option.def.id);
-          changed();
-        },
-        {
-          // The filled default marks what is out; everything else stays quiet.
-          variant: placed ? undefined : 'quiet',
-          small: true,
-          disabled: !option.owned,
-          /*
-           * The flavour and the figures, which is what a choice needs.
-           *
-           * The numbers used to be in the detail string and were taken out when
-           * they moved into generated prose — which left this picker, the one
-           * screen where you decide between a banner worth +10% footfall and one
-           * worth +44%, with nothing to decide on. Same source as the Market's
-           * panel, so the two can never drift apart.
-           */
-          title: option.owned
-            ? [t(`decor.${option.def.id}.detail`), ...goodsNotes('decor', option.def.id)].join('\n')
-            : t('decor.notOwned', { cost: formatGold(option.def.cost) }),
-        },
-      );
-    });
-
-    // A thumbnail of what is actually out, so the row shows the shop rather than
-    // just naming it.
-    const placedArt = view.placed ? artUrlIf('decor', view.placed.id) : null;
-
-    return el('div', { class: 'decor-row' }, [
-      el('div', { class: 'decor-spot' }, [
-        ...(placedArt
-          ? [el('img', { class: 'decor-thumb', src: placedArt, alt: '', width: '34', height: '34' })]
-          : []),
-        el('span', { class: 'field-label', text: t(`decor.spot.${view.spot}`) }),
-        el('span', {
-          class: 'field-note',
-          text: view.placed ? t(`decor.${view.placed.id}`) : t('decor.spot.empty'),
-        }),
-      ]),
-      el('div', { class: 'decor-options' }, options),
-    ]);
-  });
-
-  return el('section', { class: 'decor' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('shop.decor') }),
-      el('span', { class: 'field-note', text: t('shop.decor.hint') }),
-    ]),
-    ...rows,
-  ]);
-}
-
 // -- The store room ----------------------------------------------------------
 
 /**
@@ -687,12 +595,32 @@ function stackSortRow(): HTMLElement {
  * away rather than gone.
  */
 function renderInventory(sim: Simulation): HTMLElement {
-  const stacks: Stack[] = stacksOf(sim.world.bottled).map(({ item, count }) => ({
-    item,
-    count,
-    // The stack already counted them; see `placeableCount`.
-    room: sim.placeable(item, count),
-  }));
+  /*
+   * Narrowed before it is sorted and paged, which is the whole point.
+   *
+   * The store room is drawn sixty stacks at a time, so a filter that hid tiles
+   * already on screen would only ever search the page you were looking at —
+   * useless for the question it exists to answer, which is "do I have any of
+   * these anywhere". The shell puts the caret back afterwards; see
+   * `captureFocus`.
+   */
+  const stacks: Stack[] = stacksOf(sim.world.bottled)
+    .filter(({ item }) =>
+      matchesSearch(
+        stackQuery,
+        t(`recipe.${item.recipeId}`),
+        item.grade,
+        t(`form.${item.formId}`),
+        t(`vessel.${item.vesselId}`),
+        t(`seal.${item.sealId}`),
+      ),
+    )
+    .map(({ item, count }) => ({
+      item,
+      count,
+      // The stack already counted them; see `placeableCount`.
+      room: sim.placeable(item, count),
+    }));
   stacks.sort(stackSorts[stackSort]);
 
   const bottles = stacks.reduce((total, stack) => total + stack.count, 0);
@@ -710,10 +638,30 @@ function renderInventory(sim: Simulation): HTMLElement {
     ]),
   ]);
 
+  section.append(
+    searchField({
+      name: 'shop-inventory',
+      value: stackQuery,
+      placeholder: t('shop.inventory.search'),
+      onInput: (query) => {
+        stackQuery = query;
+        // A narrower list has fewer pages, and page four of one result is a
+        // blank grid. Every keystroke lands you back at the top.
+        stackPage = 1;
+        changed();
+      },
+    }),
+  );
+
   // Only worth offering once there is enough to lose track of.
   if (stacks.length > 4) section.append(stackSortRow());
 
-  section.append(slotGrid(shown.map((stack) => stackTile(sim, stack)), t('shop.inventory.empty')));
+  section.append(
+    slotGrid(
+      shown.map((stack) => stackTile(sim, stack)),
+      stackQuery.trim() ? t('common.search.none') : t('shop.inventory.empty'),
+    ),
+  );
 
   if (pageCount > 1) {
     section.append(

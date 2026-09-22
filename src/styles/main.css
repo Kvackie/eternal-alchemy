@@ -516,6 +516,38 @@ button {
   color: var(--ground);
 }
 
+/*
+ * The two answers a dialog can end on, in the two colours that mean them.
+ *
+ * Red is the one that takes something away and green the one that keeps it —
+ * the same pair the rest of the game already reads, so a dialog does not have
+ * to be read word by word to tell which button is which. Filled rather than
+ * outlined: these end the dialog, and the buttons that merely change something
+ * inside it stay quiet.
+ */
+.btn.danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn.danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: var(--ground);
+}
+
+.btn.good {
+  background: var(--verd-soft);
+  color: var(--verd-ink);
+  border-color: var(--verd);
+  font-weight: 600;
+}
+
+.btn.good:hover:not(:disabled) {
+  background: var(--verd);
+  color: var(--ground);
+}
+
 .btn:disabled {
   opacity: 0.35;
   cursor: default;

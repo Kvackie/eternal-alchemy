@@ -688,7 +688,7 @@
   "shop.title": "Shop",
   "shop.shelves": "Shelves",
   "shop.slot.empty": "Empty shelf",
-  "shop.slot.remove": "Take down",
+  "shop.slot.remove": "Remove",
   "shop.noShelf": "Every shelf is full",
   "shop.price": "Asking {percent} of fair value",
   "shop.pace.brisk": "Sells briskly",
@@ -1624,11 +1624,6 @@
   "shop.floor.subtitle": "Set a price. Customers come whether you're watching or not.",
   "shop.store.subtitle": "Everything you own and haven't put out yet.",
   "shop.shelf.numbered": "Shelf {number}",
-  "shop.shelf.move": "Move",
-  "shop.shelf.moveTitle": "Move these goods",
-  "shop.shelf.moveHint": "Pick where they should stand. A shelf that is already full swaps with this one.",
-  "shop.shelf.moveTo": "{shelf} — empty",
-  "shop.shelf.swapWith": "{shelf} — swap with {recipe}",
   "shop.slot.putOut": "Stock",
   "shop.putOut": "{count} × {recipe} on the shelves",
   "shop.boards": "Shelf boards",
@@ -1655,5 +1650,7 @@
   "cave.spore.deselect": "Choose another",
   "common.search": "Search",
   "common.search.none": "Nothing matches that.",
-  "roster.supplies.search": "Search your bottles"
+  "roster.supplies.search": "Search your bottles",
+  "common.confirm": "Confirm",
+  "shop.inventory.search": "Search your bottles"
 }
