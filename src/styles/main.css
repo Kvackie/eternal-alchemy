@@ -7,31 +7,64 @@
  * colour alone.
  */
 
+/*
+ * The palette, named for what a colour MEANS rather than for what it is.
+ *
+ * It used to be named for the colour: `--verd`, `--amber`, `--ink`. That reads
+ * fine until you need one — at which point the question is "what colour is a
+ * requirement chip", there is no answer in the list, and the honest move is to
+ * invent `--term-seal`. Three of those arrived in a single afternoon, which is
+ * how a palette stops being one.
+ *
+ * Pick from a group, and if nothing fits, the group is the thing to extend:
+ *
+ *   --bg-*      surfaces, from the page back to an inset well
+ *   --border    every rule and edge
+ *   --text*     the three weights of text
+ *   --good      this is fine, this is the way forward, this is selected
+ *   --warn      look at this; something is in progress or nearly wrong
+ *   --bad       this takes something away
+ *   --value-*   a quantity whose colour says what it counts
+ *   --grade-*   the seven grades
+ *   --req-*     a condition a contract can attach
+ *   essences    named for the essence, which is already the role
+ *
+ * A `-wash` is the same hue as a fill behind text; a `-text` or `-bright` is
+ * the same hue lifted to sit on one.
+ */
 :root {
   --ui-scale: 1;
 
-  --ground: #0f1412;
-  --surface: #161d1a;
-  --surface-2: #1e2723;
-  --sunken: #0b0f0e;
-  --ink: #e2e7e0;
-  --ink-2: #b4bfb8;
-  --muted: #87938c;
-  --rule: #2b3632;
-  --verd: #5cb3a0;
-  --verd-ink: #8fd4c3;
-  --verd-soft: #15302a;
-  --amber: #d9a441;
-  --amber-soft: #302614;
-  --danger: #ee7250;
+  --bg-page: #0f1412;
+  --bg-panel: #161d1a;
+  --bg-raised: #1e2723;
+  --bg-inset: #0b0f0e;
+  --text: #e2e7e0;
+  --text-dim: #b4bfb8;
+  --text-faint: #87938c;
+  --border: #2b3632;
+  --good: #5cb3a0;
+  --good-text: #8fd4c3;
+  --good-wash: #15302a;
+  --warn: #d9a441;
+  --warn-wash: #302614;
+  /*
+   * The lit version, for a hover on a filled warn button.
+   *
+   * It was written as `var(--amber-ink, #ecbc63)` against a token that was
+   * never declared, so the fallback did all the work and the name promised a
+   * scale that did not exist. Same colour, now actually defined.
+   */
+  --warn-bright: #ecbc63;
+  --bad: #ee7250;
   /* Affinity, and nothing else — see .favour-bar. */
-  --favour: #d98cb0;
+  --value-favour: #d98cb0;
   /* Coin, and nothing else — see .gold. */
-  --gold: #e5b755;
+  --value-gold: #e5b755;
   /* The currency that survives a branch. Deliberately not gold: it isn't money. */
-  --mastery: #b48ce0;
-  /* Standing, not coin. Deeper than --favour, which is a hero's regard for you. */
-  --renown: #c4658f;
+  --value-mastery: #b48ce0;
+  /* Standing, not coin. Deeper than --value-favour, which is a hero's regard for you. */
+  --value-renown: #c4658f;
 
   /*
    * Seven grades, seven colours.
@@ -56,11 +89,11 @@
    * sort chip and the picked-hero wash — so a row of terms read as "some amber
    * things". Far apart from each other and from the gold a reward is drawn in.
    */
-  --term-vessel: #6fb0d8;
-  --term-seal: #b58ad8;
+  --req-vessel: #6fb0d8;
+  --req-seal: #b58ad8;
 
   /* Paid in potions rather than coin — deliberately nothing like gold. */
-  --barter: #e59ac4;
+  --value-barter: #e59ac4;
 
   --ignis: #ee7250;
   --aqua: #5ca9e8;
@@ -88,8 +121,8 @@ body {
 }
 
 body {
-  background: var(--ground);
-  color: var(--ink);
+  background: var(--bg-page);
+  color: var(--text);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -104,7 +137,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--amber);
+  outline: 2px solid var(--warn);
   outline-offset: 2px;
 }
 
@@ -156,8 +189,8 @@ button {
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.875rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--rule);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
   min-height: var(--tap);
   flex-wrap: wrap;
 }
@@ -172,7 +205,7 @@ button {
   font-size: 0.625rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text-faint);
   margin: 0;
 }
 
@@ -189,21 +222,21 @@ button {
   /* Tight, because the middot is now doing the separating. */
   gap: 0.3rem;
   font-size: 0.75rem;
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 .phase-dot {
   width: 0.625rem;
   height: 0.625rem;
   border-radius: 50%;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--border);
   /* It reads as part of the line, so it keeps the line's spacing, not the flex gap. */
   flex: none;
   margin-right: 0.1rem;
 }
 
 .hud-sep {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .phase-dot[data-phase='dawn'] {
@@ -227,8 +260,8 @@ button {
   max-height: 68%;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
 }
 
 .panel-head {
@@ -261,7 +294,7 @@ button {
 .panel-head p {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .panel-body {
@@ -276,12 +309,12 @@ button {
 .empty-state {
   padding: 1.5rem 0.5rem;
   text-align: center;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .empty-state strong {
   display: block;
-  color: var(--ink-2);
+  color: var(--text-dim);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
@@ -297,8 +330,8 @@ button {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(3.75rem, 1fr);
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom, 0);
   overflow-x: auto;
   scrollbar-width: none;
@@ -319,24 +352,24 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 0.125rem;
-  color: var(--muted);
+  color: var(--text-faint);
   font-size: 0.6875rem;
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 .nav button[aria-current='true'] {
-  color: var(--verd-ink);
-  border-top-color: var(--verd);
-  background: var(--verd-soft);
+  color: var(--good-text);
+  border-top-color: var(--good);
+  background: var(--good-wash);
 }
 
 .nav .badge {
   position: absolute;
   top: 0.25rem;
   right: 0.5rem;
-  background: var(--amber);
-  color: var(--ground);
+  background: var(--warn);
+  color: var(--bg-page);
   font-size: 0.5625rem;
   font-weight: 700;
   min-width: 1rem;
@@ -354,8 +387,8 @@ button {
   align-items: center;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   min-height: var(--tap);
 }
@@ -375,7 +408,7 @@ button {
 
 .row-sub {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-faint);
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -407,8 +440,8 @@ button {
 }
 
 .row.is-ready {
-  border-color: var(--verd);
-  box-shadow: inset 2px 0 0 var(--verd);
+  border-color: var(--good);
+  box-shadow: inset 2px 0 0 var(--good);
 }
 
 .row.is-blocked {
@@ -416,16 +449,16 @@ button {
 }
 
 .row[data-selected='true'] {
-  border-color: var(--amber);
-  box-shadow: inset 2px 0 0 var(--amber);
+  border-color: var(--warn);
+  box-shadow: inset 2px 0 0 var(--warn);
 }
 
 /* ---------------------------------------------------------------- buttons */
 
 .btn {
-  background: var(--verd);
-  color: var(--ground);
-  border: 1px solid var(--verd);
+  background: var(--good);
+  color: var(--bg-page);
+  border: 1px solid var(--good);
   border-radius: var(--radius);
   padding: 0 0.75rem;
   min-height: var(--tap);
@@ -437,18 +470,18 @@ button {
 }
 
 .btn:hover:not(:disabled) {
-  background: var(--verd-ink);
-  border-color: var(--verd-ink);
+  background: var(--good-text);
+  border-color: var(--good-text);
 }
 
 .btn.ghost {
   background: transparent;
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .btn.ghost:hover:not(:disabled) {
-  background: var(--verd-soft);
-  color: var(--verd-ink);
+  background: var(--good-wash);
+  color: var(--good-text);
 }
 
 /*
@@ -461,14 +494,14 @@ button {
  * elsewhere, so the button now matches the card it undoes.
  */
 .btn.amber {
-  background: var(--amber-soft);
-  color: var(--amber);
-  border-color: var(--amber);
+  background: var(--warn-wash);
+  color: var(--warn);
+  border-color: var(--warn);
 }
 
 .btn.amber:hover:not(:disabled) {
-  background: var(--amber);
-  color: var(--ground);
+  background: var(--warn);
+  color: var(--bg-page);
 }
 
 /*
@@ -479,32 +512,32 @@ button {
  * same thing everywhere.
  */
 .btn.gold {
-  background: var(--amber);
-  color: var(--ground);
-  border-color: var(--amber);
+  background: var(--warn);
+  color: var(--bg-page);
+  border-color: var(--warn);
   font-weight: 700;
 }
 
 .btn.gold:hover:not(:disabled) {
-  background: var(--amber-ink, #ecbc63);
-  border-color: var(--amber-ink, #ecbc63);
+  background: var(--warn-bright);
+  border-color: var(--warn-bright);
 }
 
 .btn.gold:disabled {
-  background: var(--amber-soft);
-  color: var(--muted);
-  border-color: var(--rule);
+  background: var(--warn-wash);
+  color: var(--text-faint);
+  border-color: var(--border);
 }
 
 .btn.quiet {
   background: transparent;
-  color: var(--muted);
-  border-color: var(--rule);
+  color: var(--text-faint);
+  border-color: var(--border);
 }
 
 .btn.quiet:hover:not(:disabled) {
-  color: var(--ink);
-  border-color: var(--muted);
+  color: var(--text);
+  border-color: var(--text-faint);
 }
 
 .btn.warm {
@@ -515,7 +548,7 @@ button {
 
 .btn.warm:hover:not(:disabled) {
   background: var(--ignis);
-  color: var(--ground);
+  color: var(--bg-page);
 }
 
 .btn.cool {
@@ -526,7 +559,7 @@ button {
 
 .btn.cool:hover:not(:disabled) {
   background: var(--aqua);
-  color: var(--ground);
+  color: var(--bg-page);
 }
 
 /*
@@ -540,25 +573,25 @@ button {
  */
 .btn.danger {
   background: transparent;
-  color: var(--danger);
-  border-color: var(--danger);
+  color: var(--bad);
+  border-color: var(--bad);
 }
 
 .btn.danger:hover:not(:disabled) {
-  background: var(--danger);
-  color: var(--ground);
+  background: var(--bad);
+  color: var(--bg-page);
 }
 
 .btn.good {
-  background: var(--verd-soft);
-  color: var(--verd-ink);
-  border-color: var(--verd);
+  background: var(--good-wash);
+  color: var(--good-text);
+  border-color: var(--good);
   font-weight: 600;
 }
 
 .btn.good:hover:not(:disabled) {
-  background: var(--verd);
-  color: var(--ground);
+  background: var(--good);
+  color: var(--bg-page);
 }
 
 .btn:disabled {
@@ -580,7 +613,7 @@ button {
   gap: 0.25rem;
   padding: 0.1rem 0.375rem;
   border-radius: var(--radius);
-  background: var(--sunken);
+  background: var(--bg-inset);
   font-size: 0.6875rem;
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   font-variant-numeric: tabular-nums;
@@ -608,12 +641,12 @@ button {
 }
 
 .chip.plain {
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 .chip.warn {
-  color: var(--amber);
-  background: var(--amber-soft);
+  color: var(--warn);
+  background: var(--warn-wash);
 }
 
 /*
@@ -639,7 +672,7 @@ button {
   border-radius: var(--radius);
   font-weight: 700;
   font-size: 0.8125rem;
-  background: var(--sunken);
+  background: var(--bg-inset);
   border: 1px solid currentColor;
   flex: none;
 }
@@ -660,17 +693,17 @@ button {
  * `splitOnValue` arranges by cutting the finished string around the number.
  */
 .gold {
-  color: var(--gold);
+  color: var(--value-gold);
 }
 
 /* Mastery, the same way: its own colour wherever the figure is its own element. */
 .mastery {
-  color: var(--mastery);
+  color: var(--value-mastery);
   white-space: nowrap;
 }
 
 .renown {
-  color: var(--renown);
+  color: var(--value-renown);
 }
 
 /* Placeholder for the medal; sized to sit on the text baseline, not above it. */
@@ -696,19 +729,19 @@ button {
 .meter {
   height: 0.375rem;
   border-radius: 3px;
-  background: var(--sunken);
+  background: var(--bg-inset);
   overflow: hidden;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--border);
 }
 
 .meter-fill {
   height: 100%;
-  background: var(--verd);
+  background: var(--good);
   transition: width 0.25s ease;
 }
 
 .meter-fill.over {
-  background: var(--danger);
+  background: var(--bad);
 }
 
 /* --------------------------------------------------------------- controls */
@@ -723,7 +756,7 @@ button {
   font-size: 0.625rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /*
@@ -748,8 +781,8 @@ button {
   /* A grid cell has a definite width, and a long label must yield to it rather
      than force the column wider and un-even the row again. */
   min-width: 0;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 0.375rem 0.625rem;
   min-height: var(--tap);
@@ -758,7 +791,7 @@ button {
   justify-content: center;
   gap: 0.0625rem;
   text-align: left;
-  color: var(--ink-2);
+  color: var(--text-dim);
   font-size: 0.75rem;
 }
 
@@ -777,9 +810,9 @@ button {
 }
 
 .option[aria-pressed='true'] {
-  border-color: var(--verd);
-  background: var(--verd-soft);
-  color: var(--verd-ink);
+  border-color: var(--good);
+  background: var(--good-wash);
+  color: var(--good-text);
 }
 
 .option:disabled {
@@ -789,7 +822,7 @@ button {
 
 .option small {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /*
@@ -838,21 +871,21 @@ button {
 
 /* Gain and cost, told apart without reading — the sign is in the wording too. */
 .town-effects small[data-tone='good'] {
-  color: var(--verd);
+  color: var(--good);
 }
 
 .town-effects small[data-tone='bad'] {
-  color: var(--amber);
+  color: var(--warn);
 }
 
 /* Neither gain nor cost — the baseline town, which must not read as the best. */
 .town-effects small[data-tone='flat'] {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 input[type='range'] {
   width: 100%;
-  accent-color: var(--verd);
+  accent-color: var(--good);
   min-height: var(--tap);
 }
 
@@ -877,8 +910,8 @@ input[type='range'] {
 }
 
 .dialog {
-  background: var(--surface);
-  border: 1px solid var(--rule);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   max-width: 27rem;
   width: 100%;
@@ -894,7 +927,7 @@ input[type='range'] {
 
 .dialog p {
   margin: 0 0 0.75rem;
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 .dialog-actions {
@@ -930,16 +963,16 @@ input[type='range'] {
 .quantity-step {
   min-width: var(--tap);
   min-height: var(--tap);
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink);
+  color: var(--text);
   font-size: 1rem;
   line-height: 1;
 }
 
 .quantity-step:hover:not(:disabled) {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 .quantity-step:disabled {
@@ -976,31 +1009,31 @@ input[type='range'] {
   font-weight: 700;
   font-size: 0.9375rem;
   font-family: inherit;
-  color: var(--ink);
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  color: var(--text);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
 .quantity-count:focus-visible {
-  outline: 2px solid var(--verd);
+  outline: 2px solid var(--good);
   outline-offset: 1px;
 }
 
 .quantity-total {
-  color: var(--amber);
+  color: var(--warn);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .quantity-blocked {
-  color: var(--amber);
+  color: var(--warn);
   font-size: 0.75rem;
 }
 
 /* A price that is not in coins, said where the coins would have been. */
 .quantity-note {
-  color: var(--amber);
+  color: var(--warn);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -1021,7 +1054,7 @@ input[type='range'] {
   padding: 0 0.5rem 0 0;
   background: none;
   border: 0;
-  color: var(--ink-2);
+  color: var(--text-dim);
   font-size: 0.8125rem;
 }
 
@@ -1031,8 +1064,8 @@ input[type='range'] {
   width: 2.75rem;
   height: 1.5rem;
   border-radius: 999px;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   transition: background 120ms ease, border-color 120ms ease;
 }
 
@@ -1043,31 +1076,31 @@ input[type='range'] {
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
-  background: var(--muted);
+  background: var(--text-faint);
   transition: transform 120ms ease, background 120ms ease;
 }
 
 .switch[aria-checked='true'] {
-  color: var(--ink);
+  color: var(--text);
 }
 
 .switch[aria-checked='true'] .switch-track {
-  background: var(--verd-soft);
-  border-color: var(--verd);
+  background: var(--good-wash);
+  border-color: var(--good);
 }
 
 .switch[aria-checked='true'] .switch-thumb {
-  background: var(--verd);
+  background: var(--good);
   transform: translateX(1.25rem);
 }
 
 .switch:hover .switch-track {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 .field-note {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /* -------------------------------------------------------------- slot grid */
@@ -1134,9 +1167,9 @@ input[type='range'] {
   margin: 0;
   padding: 0.875rem 0.5rem;
   text-align: center;
-  color: var(--muted);
+  color: var(--text-faint);
   font-size: 0.75rem;
-  border: 1px dashed var(--rule);
+  border: 1px dashed var(--border);
   border-radius: var(--radius);
 }
 
@@ -1149,15 +1182,15 @@ input[type='range'] {
   gap: 0.125rem;
   padding: 0.5rem 0.25rem;
   min-height: 4.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink-2);
+  color: var(--text-dim);
   text-align: center;
 }
 
 .slot:hover:not(:disabled) {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 .slot:disabled {
@@ -1180,14 +1213,14 @@ input[type='range'] {
  * The same reading as a picked hero, for the same reason.
  *
  * A destination tile's only mark was a 1px amber border over a near-black
- * wash — against `--sunken` that is a few points of lightness, and on a phone
+ * wash — against `--bg-inset` that is a few points of lightness, and on a phone
  * it is no mark at all. The ring adds no layout, so a tile does not shift when
  * it is chosen.
  */
 .slot[data-selected='true'] {
-  border-color: var(--amber);
-  background: var(--amber-soft);
-  box-shadow: 0 0 0 2px var(--amber);
+  border-color: var(--warn);
+  background: var(--warn-wash);
+  box-shadow: 0 0 0 2px var(--warn);
 }
 
 .slot[data-dragging='true'] {
@@ -1205,13 +1238,13 @@ input[type='range'] {
   font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1.2;
-  color: var(--ink);
+  color: var(--text);
   overflow-wrap: anywhere;
 }
 
 .slot-caption {
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--text-faint);
   line-height: 1.2;
   display: flex;
   align-items: center;
@@ -1239,24 +1272,24 @@ input[type='range'] {
 }
 
 .slot[data-tone='good'] .slot-caption {
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .slot[data-tone='warn'] .slot-caption {
-  color: var(--amber);
+  color: var(--warn);
 }
 
 .slot-count {
   position: absolute;
   top: 0.1875rem;
   right: 0.1875rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: 0.625rem;
   padding: 0 0.25rem;
   font-size: 0.5625rem;
   font-family: ui-monospace, monospace;
-  color: var(--ink);
+  color: var(--text);
 }
 
 .essence-mark {
@@ -1281,9 +1314,9 @@ input[type='range'] {
 }
 
 [data-drop-target='active'] {
-  outline: 2px dashed var(--verd);
+  outline: 2px dashed var(--good);
   outline-offset: -2px;
-  background: var(--verd-soft);
+  background: var(--good-wash);
 }
 
 /* ------------------------------------------------------------------- pot */
@@ -1291,9 +1324,9 @@ input[type='range'] {
 .pot-drop {
   min-height: 5.5rem;
   padding: 0.5rem;
-  border: 1px dashed var(--rule);
+  border: 1px dashed var(--border);
   border-radius: var(--radius);
-  background: var(--sunken);
+  background: var(--bg-inset);
 }
 
 .capacity-head,
@@ -1332,13 +1365,13 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.625rem 0.75rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
 .gauge[data-in-band='true'] {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 .gauge-head {
@@ -1358,8 +1391,8 @@ input[type='range'] {
   position: relative;
   height: 0.75rem;
   border-radius: 0.375rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -1367,9 +1400,9 @@ input[type='range'] {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: var(--verd-soft);
-  border-left: 1px solid var(--verd);
-  border-right: 1px solid var(--verd);
+  background: var(--good-wash);
+  border-left: 1px solid var(--good);
+  border-right: 1px solid var(--good);
 }
 
 .gauge-fill {
@@ -1377,7 +1410,7 @@ input[type='range'] {
   top: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(90deg, var(--aqua), var(--amber) 55%, var(--ignis));
+  background: linear-gradient(90deg, var(--aqua), var(--warn) 55%, var(--ignis));
   opacity: 0.55;
 }
 
@@ -1386,7 +1419,7 @@ input[type='range'] {
   top: -2px;
   bottom: -2px;
   width: 2px;
-  background: var(--ink);
+  background: var(--text);
   transform: translateX(-1px);
 }
 
@@ -1426,14 +1459,14 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--verd);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--good);
   border-radius: var(--radius);
 }
 
 .outcome[data-tone='warn'] {
-  border-left-color: var(--amber);
+  border-left-color: var(--warn);
 }
 
 .outcome-head {
@@ -1456,7 +1489,7 @@ input[type='range'] {
 }
 
 .stat-label {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .stat-value {
@@ -1465,11 +1498,11 @@ input[type='range'] {
 }
 
 .stat-line[data-tone='warn'] .stat-value {
-  color: var(--amber);
+  color: var(--warn);
 }
 
 .stat-line[data-tone='good'] .stat-value {
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 /*
@@ -1480,14 +1513,14 @@ input[type='range'] {
  * come home hurt looked like part of the bill.
  */
 .stat-line[data-tone='bad'] .stat-value {
-  color: var(--danger);
+  color: var(--bad);
 }
 
 .problems {
   margin: 0;
   padding-left: 1.125rem;
   font-size: 0.75rem;
-  color: var(--amber);
+  color: var(--warn);
   display: flex;
   flex-direction: column;
   gap: 0.1875rem;
@@ -1502,8 +1535,8 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.625rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
@@ -1520,8 +1553,8 @@ input[type='range'] {
   align-items: center;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   min-height: var(--tap);
 }
@@ -1531,8 +1564,8 @@ input[type='range'] {
 }
 
 .plot-ready {
-  border-color: var(--verd);
-  box-shadow: inset 2px 0 0 var(--verd);
+  border-color: var(--good);
+  box-shadow: inset 2px 0 0 var(--good);
 }
 
 .plot-icon {
@@ -1570,7 +1603,7 @@ input[type='range'] {
 
 .shelf-empty-label {
   font-size: 0.8125rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .shelf-head {
@@ -1609,34 +1642,34 @@ input[type='range'] {
 .price-gold {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--value-gold);
 }
 
 .chip.good {
-  color: var(--verd-ink);
-  background: var(--verd-soft);
+  color: var(--good-text);
+  background: var(--good-wash);
 }
 
 .chip.term-vessel {
-  color: var(--term-vessel);
-  background: color-mix(in srgb, var(--term-vessel) 14%, transparent);
+  color: var(--req-vessel);
+  background: color-mix(in srgb, var(--req-vessel) 14%, transparent);
 }
 
 .chip.term-seal {
-  color: var(--term-seal);
-  background: color-mix(in srgb, var(--term-seal) 14%, transparent);
+  color: var(--req-seal);
+  background: color-mix(in srgb, var(--req-seal) 14%, transparent);
 }
 
 /* The grade keeps the colour of the grade; the chip only holds it. */
 .chip.term-grade {
   gap: 0.3125rem;
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 /* Something under way, as opposed to something finished. Amber, not green. */
 .chip.warm {
-  color: var(--amber);
-  background: var(--amber-soft);
+  color: var(--warn);
+  background: var(--warn-wash);
 }
 
 /* --------------------------------------------------------------- grounds */
@@ -1645,7 +1678,7 @@ input[type='range'] {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--surface);
+  background: var(--bg-panel);
   padding-bottom: 0.25rem;
 }
 
@@ -1664,24 +1697,24 @@ input[type='range'] {
   justify-content: center;
   gap: 0.125rem;
   padding: 0.25rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   min-height: 2.75rem;
 }
 
 .cave-tile:hover {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 /* A lit bed reads warm; the lantern is the steering wheel, so it must be visible. */
 .cave-tile[data-lit='true'] {
-  background: var(--amber-soft);
-  border-color: var(--amber);
+  background: var(--warn-wash);
+  border-color: var(--warn);
 }
 
 .cave-tile[data-ready='true'] {
-  box-shadow: inset 0 0 0 2px var(--verd);
+  box-shadow: inset 0 0 0 2px var(--good);
 }
 
 .cave-tile[data-locked='true']::after {
@@ -1708,8 +1741,8 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
@@ -1724,14 +1757,14 @@ input[type='range'] {
   align-items: center;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
 .vein[data-working='true'] {
-  border-color: var(--verd);
-  box-shadow: inset 2px 0 0 var(--verd);
+  border-color: var(--good);
+  box-shadow: inset 2px 0 0 var(--good);
 }
 
 /* --------------------------------------------------------------- roster */
@@ -1767,8 +1800,8 @@ input[type='range'] {
   flex-wrap: wrap;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
@@ -1787,11 +1820,11 @@ input[type='range'] {
  * state a body rather than an edge.
  */
 .hero[data-selected='true'] {
-  border-color: var(--amber);
-  background: var(--amber-soft);
+  border-color: var(--warn);
+  background: var(--warn-wash);
   box-shadow:
-    inset 4px 0 0 var(--amber),
-    0 0 0 1px var(--amber);
+    inset 4px 0 0 var(--warn),
+    0 0 0 1px var(--warn);
 }
 
 /* A card that answers to a tap should say so before it is tapped. */
@@ -1801,11 +1834,11 @@ input[type='range'] {
 }
 
 .hero[data-pickable='true']:hover {
-  border-color: var(--muted);
+  border-color: var(--text-faint);
 }
 
 .hero[data-pickable='true'][data-selected='true']:hover {
-  border-color: var(--amber);
+  border-color: var(--warn);
 }
 
 .hero[data-hurt='true'] {
@@ -1851,22 +1884,22 @@ input[type='range'] {
  * currency or essence already claims.
  */
 .collapsible-head .field-label {
-  color: var(--verd-ink);
+  color: var(--good-text);
   font-weight: 700;
 }
 
 .collapsible-head:hover .field-label,
 .collapsible-head:hover .collapsible-caret {
-  color: var(--verd);
+  color: var(--good);
 }
 
 .collapsible-head .collapsible-caret {
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .collapsible-caret {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--text-faint);
   transition: transform 120ms ease;
 }
 
@@ -1948,7 +1981,7 @@ input[type='range'] {
 
 /* Selected out of a stack, beside the grade and the price. */
 .supply-taken {
-  color: var(--amber);
+  color: var(--warn);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -2001,18 +2034,18 @@ input[type='range'] {
   min-height: var(--tap);
   min-width: var(--tap);
   padding: 0;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink-2);
+  color: var(--text-dim);
   font-size: 0.9375rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .supply-step:hover:not(:disabled) {
-  border-color: var(--amber);
-  color: var(--amber);
+  border-color: var(--warn);
+  color: var(--warn);
 }
 
 /* Kept in place rather than hidden: the row must not resize as you pack. */
@@ -2027,7 +2060,7 @@ input[type='range'] {
   font-size: 0.75rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--amber);
+  color: var(--warn);
 }
 
 .potion-facts {
@@ -2035,7 +2068,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.625rem;
-  background: var(--sunken);
+  background: var(--bg-inset);
   border-radius: var(--radius);
 }
 
@@ -2047,7 +2080,7 @@ input[type='range'] {
  * card that wants a tap, as opposed to one merely reporting a clock.
  */
 .mission.is-home {
-  border-color: var(--verd);
+  border-color: var(--good);
   border-left-width: 3px;
 }
 
@@ -2064,7 +2097,7 @@ input[type='range'] {
   inset: 0;
   display: flex;
   flex-direction: column;
-  background: var(--ground);
+  background: var(--bg-page);
 }
 
 .station-bar {
@@ -2072,8 +2105,8 @@ input[type='range'] {
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.875rem;
-  border-bottom: 1px solid var(--rule);
-  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
 }
 
 .station-title {
@@ -2085,7 +2118,7 @@ input[type='range'] {
 .station-capacity {
   margin-left: auto;
   margin-right: 5rem;
-  color: var(--muted);
+  color: var(--text-faint);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2218,8 +2251,8 @@ input[type='range'] {
   min-width: 1rem;
   padding: 0 0.25rem;
   border-radius: 999px;
-  background: var(--amber-soft);
-  color: var(--amber);
+  background: var(--warn-wash);
+  color: var(--warn);
   font-weight: 700;
 }
 
@@ -2250,16 +2283,16 @@ input[type='range'] {
   gap: 0.125rem 0.375rem;
   width: 100%;
   padding: 1.25rem 0.375rem 0.375rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink);
+  color: var(--text);
   text-align: left;
   cursor: pointer;
 }
 
 .ingredient-card:hover:not(:disabled) {
-  border-color: var(--muted);
+  border-color: var(--text-faint);
 }
 
 .ingredient-card:disabled {
@@ -2322,15 +2355,15 @@ input[type='range'] {
 .ingredient-freshness {
   grid-column: 2;
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .ingredient-card[data-tone='good'] .ingredient-freshness {
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .ingredient-card[data-tone='warn'] .ingredient-freshness {
-  color: var(--amber);
+  color: var(--warn);
 }
 
 /* Top-left: how many you have. Not a target — the card underneath is. */
@@ -2340,7 +2373,7 @@ input[type='range'] {
   left: 0.375rem;
   font-size: 0.625rem;
   font-weight: 700;
-  color: var(--ink-2);
+  color: var(--text-dim);
   pointer-events: none;
 }
 
@@ -2358,10 +2391,10 @@ input[type='range'] {
   width: 1.125rem;
   height: 1.125rem;
   padding: 0;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: 50%;
-  color: var(--muted);
+  color: var(--text-faint);
   font-size: 0.625rem;
   font-style: italic;
   line-height: 1;
@@ -2369,8 +2402,8 @@ input[type='range'] {
 }
 
 .ingredient-details:hover {
-  color: var(--ink);
-  border-color: var(--muted);
+  color: var(--text);
+  border-color: var(--text-faint);
 }
 
 /* -- heat and method ------------------------------------------------------ */
@@ -2518,7 +2551,7 @@ input[type='range'] {
 }
 
 .pot-empty {
-  color: var(--muted);
+  color: var(--text-faint);
   font-size: 0.8125rem;
 }
 
@@ -2577,18 +2610,18 @@ input[type='range'] {
   padding: 0 0.25rem;
   background: none;
   border: 0;
-  color: var(--rule);
+  color: var(--border);
   font-size: 0.875rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .recipe-pin[aria-pressed='true'] {
-  color: var(--gold);
+  color: var(--value-gold);
 }
 
 .recipe[data-pinned='true'] {
-  border-left: 2px solid var(--gold);
+  border-left: 2px solid var(--value-gold);
   padding-left: 0.375rem;
 }
 
@@ -2628,7 +2661,7 @@ input[type='range'] {
 .ratio-track {
   height: 0.5rem;
   border-radius: 999px;
-  background: var(--sunken);
+  background: var(--bg-inset);
   overflow: hidden;
 }
 
@@ -2640,7 +2673,7 @@ input[type='range'] {
 
 .ratio-share {
   text-align: right;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /*
@@ -2708,10 +2741,10 @@ input[type='range'] {
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -2731,11 +2764,11 @@ input[type='range'] {
 }
 
 .bench-card:hover {
-  border-color: var(--muted);
+  border-color: var(--text-faint);
 }
 
 .bench-card[data-activity='ready'] {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 /*
@@ -2748,7 +2781,7 @@ input[type='range'] {
  * visibly moving, which is what "it is working" actually looks like.
  */
 .bench-card[data-activity='brewing'] {
-  border-color: var(--amber);
+  border-color: var(--warn);
 }
 
 .bench-card[data-activity='brewing'] .bench-art {
@@ -2761,7 +2794,7 @@ input[type='range'] {
 }
 
 .bench-card[data-activity='brewing'] .meter-fill {
-  background: var(--amber);
+  background: var(--warn);
 }
 
 @keyframes bench-simmer {
@@ -2854,7 +2887,7 @@ input[type='range'] {
  * places — it is the same recipe, seen from the bench instead of the shelf.
  */
 .station-pinned .recipe {
-  background: var(--surface-2);
+  background: var(--bg-raised);
 }
 
 .station-pinned-hint {
@@ -2878,15 +2911,15 @@ input[type='range'] {
 }
 
 .reward-quality.is-bountiful {
-  color: var(--gold);
+  color: var(--value-gold);
 }
 
 .reward-quality.is-successful {
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .reward-quality.is-meagre {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .reward-haul {
@@ -2894,7 +2927,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.625rem;
-  background: var(--sunken);
+  background: var(--bg-inset);
   border-radius: var(--radius);
 }
 
@@ -2919,7 +2952,7 @@ input[type='range'] {
 .reward-injured {
   margin: 0;
   font-size: 0.8125rem;
-  color: var(--danger);
+  color: var(--bad);
 }
 
 /*
@@ -2940,18 +2973,18 @@ input[type='range'] {
 }
 
 .favour-bar .meter-fill {
-  background: var(--favour);
+  background: var(--value-favour);
 }
 
 /* --------------------------------------------------------------- board */
 
 .contract {
   gap: 0.375rem;
-  border-left: 3px solid var(--verd);
+  border-left: 3px solid var(--good);
 }
 
 .contract[data-urgent='true'] {
-  border-left-color: var(--danger);
+  border-left-color: var(--bad);
 }
 
 .contract-reward {
@@ -2972,7 +3005,7 @@ input[type='range'] {
  * them, so they are the one line drawn at full strength.
  */
 .contract-goods {
-  color: var(--ink);
+  color: var(--text);
   font-size: 0.9375rem;
   font-weight: 600;
 }
@@ -3022,22 +3055,22 @@ input[type='range'] {
   gap: 0.25rem;
   padding: 0.5rem 0.375rem;
   min-height: var(--tap);
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink-2);
+  color: var(--text-dim);
   text-align: center;
 }
 
 .codex-card:hover {
-  border-color: var(--muted);
+  border-color: var(--text-faint);
 }
 
 .codex-name {
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.2;
-  color: var(--ink);
+  color: var(--text);
 }
 
 /* Where the glyph was, and big enough to count at a glance without leaning in. */
@@ -3049,11 +3082,11 @@ input[type='range'] {
 }
 
 .codex-stars span[data-filled='true'] {
-  color: var(--mastery);
+  color: var(--value-mastery);
 }
 
 .codex-stars span[data-filled='false'] {
-  color: var(--rule);
+  color: var(--border);
 }
 
 .codex-cost {
@@ -3062,7 +3095,7 @@ input[type='range'] {
 }
 
 .codex-cost.is-maxed {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /*
@@ -3077,7 +3110,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.625rem;
-  background: var(--sunken);
+  background: var(--bg-inset);
   border-radius: var(--radius);
 }
 
@@ -3090,11 +3123,11 @@ input[type='range'] {
 }
 
 .codex-buff-label {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .codex-arrow {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .codex-tier {
@@ -3112,7 +3145,7 @@ input[type='range'] {
 }
 
 .codex-price.is-maxed {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /* Bigger where they are the subject rather than a summary. */
@@ -3126,16 +3159,16 @@ input[type='range'] {
   align-items: center;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--amber);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warn);
   border-radius: var(--radius);
 }
 
 .haggle {
   padding: 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--amber);
+  background: var(--bg-raised);
+  border: 1px solid var(--warn);
   border-radius: var(--radius);
 }
 
@@ -3161,8 +3194,8 @@ input[type='range'] {
   gap: 0.125rem;
   padding: 0.5rem 0.625rem;
   border-radius: var(--radius);
-  border-left: 3px solid var(--muted);
-  background: var(--sunken);
+  border-left: 3px solid var(--text-faint);
+  background: var(--bg-inset);
 }
 
 .stance[data-stance='sceptical'] {
@@ -3183,7 +3216,7 @@ input[type='range'] {
 
 .stance-line {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-faint);
   font-style: italic;
 }
 
@@ -3200,49 +3233,49 @@ input[type='range'] {
   padding: 0.5rem 0.625rem;
   min-height: var(--tap);
   text-align: left;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 /* How a pitch will land is shown before it is pressed — the system is meant to
    be reasoned through, not memorised. */
 .pitch[data-result='counter'] {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 .pitch[data-result='backfire'] {
   border-color: var(--ignis);
 }
 .pitch[data-result='holdFirm'] {
-  border-color: var(--amber);
+  border-color: var(--warn);
 }
 
 .pitch-name {
   font-weight: 600;
   font-size: 0.8125rem;
-  color: var(--ink);
+  color: var(--text);
 }
 
 .pitch-effect {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .pitch[data-result='counter'] .pitch-effect {
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 .pitch[data-result='backfire'] .pitch-effect {
   color: var(--ignis);
 }
 .pitch[data-result='holdFirm'] .pitch-effect {
-  color: var(--amber);
+  color: var(--warn);
 }
 
 .haggle-log {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--ink-2);
+  color: var(--text-dim);
   font-style: italic;
 }
 
@@ -3288,8 +3321,8 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.625rem 0.75rem;
-  background: var(--verd-soft);
-  border: 1px solid var(--verd);
+  background: var(--good-wash);
+  border: 1px solid var(--good);
   border-radius: var(--radius);
   /* It is over the content now, so it has to read as being over it. */
   box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.45);
@@ -3317,13 +3350,13 @@ input[type='range'] {
 
 .checklist-count {
   font-size: 0.75rem;
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .checklist-next {
   margin: 0;
   font-size: 0.8125rem;
-  color: var(--ink);
+  color: var(--text);
 }
 
 .checklist-row {
@@ -3331,24 +3364,24 @@ input[type='range'] {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8125rem;
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 .checklist-row[data-done='true'] {
-  color: var(--muted);
+  color: var(--text-faint);
   text-decoration: line-through;
 }
 
 /* The next thing to do reads as the next thing to do. */
 .checklist-row[data-current='true'] {
-  color: var(--ink);
+  color: var(--text);
   font-weight: 600;
 }
 
 .checklist-mark {
   width: 1rem;
   text-align: center;
-  color: var(--verd-ink);
+  color: var(--good-text);
 }
 
 .checklist-text {
@@ -3376,8 +3409,8 @@ input[type='range'] {
   object-fit: cover;
   object-position: top center;
   flex: none;
-  border: 1px solid var(--rule);
-  background: var(--surface-2);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
 }
 
 .portrait-merchant {
@@ -3449,19 +3482,19 @@ input[type='range'] {
   align-items: center;
   gap: 0.125rem;
   padding: 0.3rem 0.35rem 0.25rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
 }
 
 .find:hover {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 .find-odds {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--text-faint);
   font-variant-numeric: tabular-nums;
 }
 
@@ -3537,30 +3570,30 @@ input[type='range'] {
   min-width: 0;
   min-height: var(--tap);
   padding: 0.375rem 0.625rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink);
+  color: var(--text);
   font: inherit;
   font-size: 0.8125rem;
 }
 
 .search-input::placeholder {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 .sort-chip {
   padding: 0.1875rem 0.5rem;
   min-height: 0;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--text-faint);
   font-size: 0.6875rem;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
@@ -3568,8 +3601,8 @@ input[type='range'] {
 }
 
 .sort-chip:hover {
-  color: var(--ink-2);
-  border-color: var(--muted);
+  color: var(--text-dim);
+  border-color: var(--text-faint);
 }
 
 /*
@@ -3580,9 +3613,9 @@ input[type='range'] {
  * everywhere.
  */
 .sort-chip[aria-pressed='true'] {
-  background: var(--amber-soft);
-  border-color: var(--amber);
-  color: var(--amber);
+  background: var(--warn-wash);
+  border-color: var(--warn);
+  color: var(--warn);
   font-weight: 600;
 }
 
@@ -3647,15 +3680,15 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.375rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
   min-width: 0;
 }
 
 .tavern-card:hover {
-  border-color: var(--verd);
+  border-color: var(--good);
 }
 
 /* The face is the card; it sets the width and the name sits clear underneath. */
@@ -3675,7 +3708,7 @@ input[type='range'] {
 
 .tavern-card-name {
   font-size: 0.75rem;
-  color: var(--ink);
+  color: var(--text);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -3684,7 +3717,7 @@ input[type='range'] {
 /*
  * No colour of its own, so `.gold` is free to supply one.
  *
- * This set `color: var(--muted)` and, being later in the file at equal
+ * This set `color: var(--text-faint)` and, being later in the file at equal
  * specificity, quietly beat the `.gold` class on the very same element — the
  * price was grey no matter what. Only the "no free place" case, which is not a
  * price at all, is muted now.
@@ -3696,7 +3729,7 @@ input[type='range'] {
 }
 
 .tavern-card-price:not(.gold) {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /* --------------------------------------------------------- hero dialog */
@@ -3733,7 +3766,7 @@ input[type='range'] {
 
 .hero-info-blurb {
   margin: 0;
-  color: var(--ink-2);
+  color: var(--text-dim);
   font-size: 0.8125rem;
   line-height: 1.5;
 }
@@ -3743,7 +3776,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.625rem;
-  background: var(--sunken);
+  background: var(--bg-inset);
   border-radius: var(--radius);
 }
 
@@ -3782,7 +3815,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.5rem 0;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--border);
 }
 
 .decor-spot {
@@ -3816,7 +3849,7 @@ input[type='range'] {
   gap: 0.25rem;
   margin-top: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--border);
 }
 
 .order-line {
@@ -3849,9 +3882,9 @@ input[type='range'] {
 
 .merchant {
   padding: 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--amber);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warn);
   border-radius: var(--radius);
 }
 
@@ -3916,7 +3949,7 @@ input[type='range'] {
   padding: 0.0625rem 0.375rem;
   font-size: 0.75rem;
   font-weight: 700;
-  border-color: var(--muted);
+  border-color: var(--text-faint);
 }
 
 /* A caption carrying a badge and two words needs the room to wrap onto two. */
@@ -3933,7 +3966,7 @@ input[type='range'] {
  * exactly what the caption has to say at a glance, before it is read.
  */
 .barter-cost {
-  color: var(--barter);
+  color: var(--value-barter);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -3943,18 +3976,18 @@ input[type='range'] {
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.375rem 0.625rem;
-  background: var(--sunken);
-  border: 1px solid var(--rule);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 0.75rem;
 }
 
 .upcoming-name {
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 .upcoming-when {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /* ----------------------------------------------------- ingredient details */
@@ -3984,8 +4017,8 @@ input[type='range'] {
   justify-content: center;
   width: 3.25rem;
   height: 3.25rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
@@ -4016,7 +4049,7 @@ input[type='range'] {
   width: 0.625rem;
   height: 0.625rem;
   border-radius: 2px;
-  background: var(--muted);
+  background: var(--text-faint);
 }
 
 .essence-swatch.ignis { background: #d4703c; }
@@ -4042,7 +4075,7 @@ input[type='range'] {
 .ingredient-info-note {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-faint);
   line-height: 1.45;
 }
 
@@ -4065,7 +4098,7 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.625rem;
-  background: var(--sunken);
+  background: var(--bg-inset);
   border-radius: var(--radius);
   font-size: 0.75rem;
 }
@@ -4078,16 +4111,16 @@ input[type='range'] {
 }
 
 .freshness-stage {
-  color: var(--ink);
+  color: var(--text);
   font-weight: 600;
 }
 
 .freshness-when {
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .freshness-effect {
-  color: var(--ink-2);
+  color: var(--text-dim);
 }
 
 /* --------------------------------------------------------------- ledger */
@@ -4176,8 +4209,8 @@ input[type='range'] {
   flex-direction: column;
   gap: 0.125rem;
   padding: 0.625rem 0.75rem;
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
@@ -4185,7 +4218,7 @@ input[type='range'] {
   font-size: 0.625rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 .stat-card-value {
@@ -4217,7 +4250,7 @@ input[type='range'] {
 .log-rows {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -4228,8 +4261,8 @@ input[type='range'] {
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.75rem;
-  border-bottom: 1px solid var(--rule);
-  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-raised);
 }
 
 .log-row:last-child {
@@ -4237,12 +4270,12 @@ input[type='range'] {
 }
 
 .log-row[data-kind='sold'] {
-  border-left: 2px solid var(--verd);
+  border-left: 2px solid var(--good);
 }
 
 .log-row[data-kind='brewReady'],
 .log-row[data-kind='bottled'] {
-  border-left: 2px solid var(--amber);
+  border-left: 2px solid var(--warn);
 }
 
 .log-row[data-kind='seedFound'] {
@@ -4251,7 +4284,7 @@ input[type='range'] {
 
 .log-day {
   flex: none;
-  color: var(--muted);
+  color: var(--text-faint);
   font-size: 0.6875rem;
   min-width: 2.25rem;
 }
@@ -4270,7 +4303,7 @@ input[type='range'] {
 
 .pager-label {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-faint);
 }
 
 /* ------------------------------------------------------------------ toast */
@@ -4291,9 +4324,9 @@ input[type='range'] {
 }
 
 .toast {
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--verd);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--good);
   border-radius: var(--radius);
   padding: 0.5rem 0.75rem;
   font-size: 0.75rem;
@@ -4330,10 +4363,10 @@ input[type='range'] {
   padding: 0 0.5rem;
   font-size: 0.8125rem;
   line-height: 1;
-  background: var(--surface);
-  border: 1px solid var(--rule);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--ink-2);
+  color: var(--text-dim);
   box-shadow: 0 2px 10px rgb(0 0 0 / 35%);
 }
 
@@ -4344,8 +4377,8 @@ input[type='range'] {
 }
 
 .view-button:hover {
-  border-color: var(--verd);
-  color: var(--ink);
+  border-color: var(--good);
+  color: var(--text);
 }
 
 /* Sits above the debug panel, so the same button that opens it also closes it. */
@@ -4358,8 +4391,8 @@ input[type='range'] {
   padding: 0 0.5rem;
   font-size: 0.625rem;
   background: transparent;
-  border: 1px solid var(--rule);
-  color: var(--muted);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
   border-radius: var(--radius);
 }
 
@@ -4369,8 +4402,8 @@ input[type='range'] {
   right: 0;
   bottom: 0;
   width: min(20rem, 88%);
-  background: var(--surface);
-  border-left: 1px solid var(--rule);
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
   z-index: 16;
   overflow-y: auto;
   padding: 0.875rem;
@@ -4478,8 +4511,8 @@ input[type='range'] {
     bottom: 0;
     z-index: 1;
     padding-block: 0.5rem;
-    background: var(--surface);
-    border-top: 1px solid var(--rule);
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border);
   }
 
   /*
@@ -4591,7 +4624,7 @@ input[type='range'] {
     grid-auto-columns: auto;
     grid-auto-rows: min-content;
     border-top: 0;
-    border-right: 1px solid var(--rule);
+    border-right: 1px solid var(--border);
     width: 5.5rem;
     padding-top: 0.5rem;
     overflow-x: visible;
@@ -4605,7 +4638,7 @@ input[type='range'] {
 
   .nav button[aria-current='true'] {
     border-top-color: transparent;
-    border-left-color: var(--verd);
+    border-left-color: var(--good);
   }
 
   /*
@@ -4639,7 +4672,7 @@ input[type='range'] {
     /* The base rule caps a docked sheet at 68% of the stage; up here the panel
        IS the stage, so the cap has to be lifted as well as the height set. */
     max-height: none;
-    border: 1px solid var(--rule);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
   }
 

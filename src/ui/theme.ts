@@ -12,19 +12,19 @@
 import type { Essence } from '@/sim/types';
 
 export const palette = {
-  ground: 0x0f1412,
-  surface: 0x161d1a,
-  surface2: 0x1e2723,
-  sunken: 0x0b0f0e,
-  ink: 0xe2e7e0,
-  ink2: 0xb4bfb8,
-  muted: 0x87938c,
-  rule: 0x2b3632,
-  verd: 0x5cb3a0,
-  verdInk: 0x8fd4c3,
-  verdSoft: 0x15302a,
-  amber: 0xd9a441,
-  amberSoft: 0x302614,
+  bgPage: 0x0f1412,
+  bgPanel: 0x161d1a,
+  bgRaised: 0x1e2723,
+  bgInset: 0x0b0f0e,
+  text: 0xe2e7e0,
+  textDim: 0xb4bfb8,
+  textFaint: 0x87938c,
+  border: 0x2b3632,
+  good: 0x5cb3a0,
+  goodText: 0x8fd4c3,
+  goodWash: 0x15302a,
+  warn: 0xd9a441,
+  warnWash: 0x302614,
 } as const;
 
 export const essenceColors: Record<Essence, number> = {

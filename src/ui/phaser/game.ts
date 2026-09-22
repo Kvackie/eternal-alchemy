@@ -27,7 +27,7 @@ export function createGame(parent: HTMLElement, sim: Simulation): GameHandle {
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
-    backgroundColor: palette.ground,
+    backgroundColor: palette.bgPage,
     scale: {
       mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.NO_CENTER,

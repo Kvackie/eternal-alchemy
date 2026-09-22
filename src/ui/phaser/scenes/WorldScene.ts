@@ -104,7 +104,7 @@ export class WorldScene extends Phaser.Scene {
     // sprite the loader brought in keeps its painted art.
     generatePlaceholders(this);
 
-    this.sky = this.add.rectangle(0, 0, 10, 10, palette.ground).setOrigin(0);
+    this.sky = this.add.rectangle(0, 0, 10, 10, palette.bgPage).setOrigin(0);
     this.content = this.add.container(0, 0);
     this.lighting = this.add
       .rectangle(0, 0, 10, 10, 0xffffff, 0)
@@ -786,7 +786,7 @@ export class WorldScene extends Phaser.Scene {
     }
 
     if (ready) {
-      const halo = this.add.circle(x, y, Math.max(innerW, innerH) * 0.5, palette.verd, 0.1);
+      const halo = this.add.circle(x, y, Math.max(innerW, innerH) * 0.5, palette.good, 0.1);
       this.content.addAt(halo, Math.max(0, this.content.length - count * 2));
     }
 

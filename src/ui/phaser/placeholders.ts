@@ -122,7 +122,7 @@ function makeIngredientBadge(scene: Phaser.Scene, id: string, essence: Essence):
   const { g, commit } = made;
   const color = essenceColors[essence];
 
-  g.fillStyle(palette.surface2, 1);
+  g.fillStyle(palette.bgRaised, 1);
   g.fillCircle(CELL / 2, CELL / 2, CELL * 0.44);
   g.lineStyle(2, color, 0.9);
   g.strokeCircle(CELL / 2, CELL / 2, CELL * 0.44);
@@ -178,7 +178,7 @@ export function drawGlyphShape(
     case 'umbra':
       g.fillStyle(color, 1);
       g.fillCircle(ox + 5 * s, oy + 5 * s, 4.2 * s);
-      g.fillStyle(palette.surface2, 1);
+      g.fillStyle(palette.bgRaised, 1);
       g.fillCircle(ox + 6.9 * s, oy + 5 * s, 3.3 * s);
       break;
   }
@@ -241,9 +241,9 @@ function makeCauldron(scene: Phaser.Scene): void {
   g.lineStyle(3, 0x36423d, 1);
   g.strokeEllipse(cx, CELL * 1.9, CELL * 2.4, CELL * 2);
 
-  g.fillStyle(palette.verdSoft, 1);
+  g.fillStyle(palette.goodWash, 1);
   g.fillEllipse(cx, CELL * 1.25, CELL * 2.05, CELL * 0.7);
-  g.lineStyle(2, palette.verd, 0.8);
+  g.lineStyle(2, palette.good, 0.8);
   g.strokeEllipse(cx, CELL * 1.25, CELL * 2.05, CELL * 0.7);
 
   commit();
@@ -325,6 +325,6 @@ export function blendColor(vector: EssenceVector): number {
     total += weight;
   }
 
-  if (total === 0) return palette.muted;
+  if (total === 0) return palette.textFaint;
   return ((r / total) << 16) | ((g / total) << 8) | (b / total);
 }
