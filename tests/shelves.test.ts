@@ -215,3 +215,27 @@ describe('rearranging the floor', () => {
     expect(sim.world.shelf[0]!.item).not.toBeNull();
   });
 });
+
+describe('the count a caller already has', () => {
+  it('agrees with counting the bottles again', () => {
+    const sim = shopWith([
+      { count: 7, recipeId: 'healthTonic', vesselId: 'clayVial' },
+      { count: 3, recipeId: 'emberDraught', vesselId: 'waxedPouch' },
+    ], 6);
+
+    for (const item of sim.world.bottled) {
+      const counted = sim.world.bottled.filter(
+        (entry) =>
+          entry.recipeId === item.recipeId &&
+          entry.vesselId === item.vesselId &&
+          entry.grade === item.grade,
+      ).length;
+      expect(sim.placeable(item, counted)).toBe(sim.placeable(item));
+    }
+  });
+
+  it('still honours the shelf room when handed a count', () => {
+    const sim = shopWith([{ count: 20, vesselId: 'clayVial' }], 3);
+    expect(sim.placeable(sim.world.bottled[0]!, 20)).toBe(3);
+  });
+});

@@ -40,8 +40,11 @@ function signature(node: Element): string {
 function walk(root: Element, visit: (node: Element, key: string) => void): void {
   visit(root, '');
   const descend = (node: Element, prefix: string): void => {
+    const children = node.children;
+    if (children.length === 0) return;
     const seen = new Map<string, number>();
-    for (const child of node.children) {
+    for (let i = 0; i < children.length; i += 1) {
+      const child = children[i]!;
       const sig = signature(child);
       const ordinal = seen.get(sig) ?? 0;
       seen.set(sig, ordinal + 1);
@@ -54,9 +57,30 @@ function walk(root: Element, visit: (node: Element, key: string) => void): void 
   descend(root, '');
 }
 
-/** What is scrolled, and by how much. Cheap: most renders find nothing. */
+/** Is anything under here scrolled at all? Reads properties, builds nothing. */
+function anyScrolled(node: Element): boolean {
+  if (node.scrollTop > 0 || node.scrollLeft > 0) return true;
+  // Indexed rather than `for...of`: this runs over every node in the panel on
+  // every render, and an iterator per node is the bulk of what that costs.
+  const children = node.children;
+  for (let i = 0; i < children.length; i += 1) {
+    if (anyScrolled(children[i]!)) return true;
+  }
+  return false;
+}
+
+/**
+ * What is scrolled, and by how much.
+ *
+ * The cheap pass comes first because most renders find nothing: a panel sitting
+ * at the top has no position to keep, and building a key for every node in it
+ * to discover that was the whole cost. On a fifty-shelf shop that pass was a
+ * twentieth of every rebuild, spent on an empty answer.
+ */
 export function captureScroll(root: Element): ScrollMemory {
   const memory: ScrollMemory = new Map();
+  if (!anyScrolled(root)) return memory;
+
   walk(root, (node, key) => {
     if (node.scrollTop > 0 || node.scrollLeft > 0) {
       memory.set(key, { top: node.scrollTop, left: node.scrollLeft });

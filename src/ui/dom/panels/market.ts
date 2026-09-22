@@ -6,10 +6,10 @@
  * day/night cycle finally has consequences a player can act on.
  */
 
-import { button, chip, el, goldText, ingredientIcon, panelHeader, portrait, quantityAction, modal, slot, slotGrid, stat } from '../components';
+import { button, chip, el, goldText, ingredientIcon, panelHeader, portrait, quantityAction, modal, slot, slotGrid } from '../components';
 import type { QuantityActionSpec } from '../components';
 import { formatDuration, has, t } from '@/i18n';
-import { getCrop, getDecor, getEquipment, getMerchant } from '@/sim/config';
+import { getCrop, getDecor, getEquipment } from '@/sim/config';
 import { decorAvailability } from '@/sim/decor';
 import { artUrlIf } from '@/ui/art';
 import { showIngredientInfo } from '../ingredientInfo';
@@ -113,7 +113,6 @@ function leavingChip(leavesAt: number, leaving: number): HTMLElement {
 }
 
 function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
-  const def = getMerchant(visit.merchantId);
   const leaving = Math.max(0, visit.leavesAt - sim.now);
 
   const face = portrait('merchant', visit.merchantId);

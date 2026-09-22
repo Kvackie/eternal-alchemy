@@ -10,9 +10,9 @@
  */
 
 import Phaser from 'phaser';
-import { blendColor, ensureTexture, generatePlaceholders, preloadArt } from '../placeholders';
+import { ensureTexture, generatePlaceholders, preloadArt } from '../placeholders';
 import { artUrlIf, hasArt } from '@/ui/art';
-import { essenceColors, palette, phaseTint } from '@/ui/theme';
+import { palette, phaseTint } from '@/ui/theme';
 import { dayStateAt, phaseProgress } from '@/sim/clock';
 
 /**
@@ -50,55 +50,39 @@ function axisPan(offset: number, from: number, to: number, min: number, max: num
   // Overflows: the usual scroll range, opened up by the same slack.
   return Phaser.Math.Clamp(offset, max - to - slack, min - from + slack);
 }
-import { config, getRecipe } from '@/sim/config';
 import { harvestSize, isReady } from '@/sim/garden';
-import { formatGold, t } from '@/i18n';
-import { bus, type ScreenId } from '@/ui/bus';
+import type { ScreenId } from '@/ui/bus';
 import type { Simulation } from '@/sim/sim';
 
 /**
- * Placeholder colour for a furnishing.
+ * The screens with something behind the panel.
  *
- * Keyed on the piece rather than the spot so an upgrade visibly reads as an
- * upgrade — a gilded sign should not look like the painted one it replaced.
- */
-/**
- * Where each spot's art sits, relative to the shop's centre.
+ * One, for now. The Cauldron left when brewing moved into its own station, and
+ * the Market never had a scene of its own — it borrowed the Shop's, so standing
+ * in the market drew your own shelves behind another trader's stock.
  *
- * `x` is a fraction of the shop's width so the layout holds at any size; `y` and
- * the box are pixels, because a banner should not grow to the size of a phone.
+ * The Shop left last and is expected back. A painted wall of fifty shelves was
+ * rebuilt from nothing, text objects and all, on every press — and the Shop is
+ * the screen where presses happen. It returns when it can be drawn from the
+ * shelf grid instead of rebuilt each time.
+ *
+ * Named here rather than inferred, because `redraw` has to know whether to draw
+ * before it measures: measuring means asking the panel where it is, and the
+ * panel has just been rebuilt.
  */
-const DECOR_BOX: Record<string, { x: number; y: number; w: number; h: number }> = {
-  wall: { x: 0, y: -78, w: 74, h: 74 },
-  window: { x: -0.38, y: -34, w: 62, h: 62 },
-  counter: { x: 0.3, y: 70, w: 54, h: 54 },
-  nook: { x: 0.4, y: -8, w: 48, h: 48 },
-  floor: { x: -0.28, y: 92, w: 56, h: 56 },
-};
-
-function decorTone(decorId: string): number {
-  // Literals rather than the UI palette: these have to carry against the dark
-  // ground at low alpha, which the surface tones do not.
-  const tones: Record<string, number> = {
-    paintedSign: 0x6f9c74,
-    gildedSign: palette.amber,
-    displayCase: essenceColors.aqua,
-    lanternDisplay: 0xf0c368,
-    polishedCounter: 0x8a6a4a,
-    alchemistsBench: 0xb08654,
-    curioCabinet: essenceColors.umbra,
-    incenseBurner: essenceColors.ignis,
-    wovenRug: 0xa2564a,
-    mosaicFloor: essenceColors.aer,
-  };
-  return tones[decorId] ?? palette.ink2;
-}
+const DRAWN_SCREENS = new Set<ScreenId>(['grounds']);
 
 export class WorldScene extends Phaser.Scene {
   static readonly KEY = 'world';
 
   private sim!: Simulation;
   private screen: ScreenId = 'grounds';
+
+  /** The garden as last drawn — see `redraw`. Cleared to force a redraw. */
+  private drawn = '';
+
+  /** The panel's box as last seen — see `watchPanel`. */
+  private panelBox = '';
   private content!: Phaser.GameObjects.Container;
   private lighting!: Phaser.GameObjects.Rectangle;
   private sky!: Phaser.GameObjects.Rectangle;
@@ -127,11 +111,58 @@ export class WorldScene extends Phaser.Scene {
       .setOrigin(0)
       .setBlendMode(Phaser.BlendModes.MULTIPLY);
 
-    this.scale.on('resize', () => this.redraw());
+    // A resize changes the layout without changing the world, and `redraw`
+    // compares against the world — so the record of what was drawn is thrown
+    // away rather than argued with.
+    this.scale.on('resize', () => {
+      this.drawn = '';
+      this.redraw();
+    });
+    this.watchPanel();
     this.enablePanning();
     // The first screen gets the same prefetch a later switch would.
     this.prefetchFor(this.screen);
     this.redraw();
+  }
+
+  /**
+   * Redraw when the panel moves, because the panel decides where the world goes.
+   *
+   * `contentArea` lays the scene out in whatever the panel leaves over, and the
+   * panel is rebuilt by code that knows nothing about this scene. Watching the
+   * DOM for that is the only signal that does not depend on the order two
+   * unrelated modules happen to run in — which is exactly what went wrong
+   * before: the scene was told the screen had changed *before* the new screen's
+   * panel existed to be measured, so the first draw was laid out against the
+   * whole stage and, with nothing to correct it, stayed there. A quarter of the
+   * garden sat behind the panel for the rest of the session.
+   *
+   * The box is compared rather than the rebuild counted. A press rebuilds the
+   * panel without moving it, and relaying out the garden for that would undo
+   * the point of drawing it once. One measurement per rebuild is the cost, and
+   * a rebuild is already a measurement's worth of work.
+   */
+  private watchPanel(): void {
+    const panels = document.getElementById('panels');
+    if (!panels || typeof MutationObserver === 'undefined') return;
+
+    const observer = new MutationObserver(() => {
+      if (this.panelMoved()) this.redraw(true);
+    });
+    observer.observe(panels, { childList: true });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => observer.disconnect());
+  }
+
+  /** Has the panel's box changed since the scene last looked? */
+  private panelMoved(): boolean {
+    const rect = document.querySelector<HTMLElement>('.panel')?.getBoundingClientRect();
+    const box = rect
+      ? `${Math.round(rect.left)},${Math.round(rect.top)},${Math.round(rect.width)},${Math.round(rect.height)}`
+      : '';
+
+    if (box === this.panelBox) return false;
+    this.panelBox = box;
+    return true;
   }
 
   /**
@@ -285,7 +316,6 @@ export class WorldScene extends Phaser.Scene {
    */
   private prefetchFor(screen: ScreenId): void {
     const ingredientIds: string[] = [];
-    const potionIds: string[] = [];
 
     if (screen === 'grounds') {
       for (const plot of this.sim.world.plots) {
@@ -298,17 +328,8 @@ export class WorldScene extends Phaser.Scene {
         for (const unit of pot.contents.units) ingredientIds.push(unit.ingredientId);
       }
     }
-    if (screen === 'shop') {
-      for (const slot of this.sim.world.shelf) {
-        if (slot.item) potionIds.push(slot.item.recipeId);
-      }
-    }
-
     for (const id of new Set(ingredientIds)) {
       this.wantTexture(`ingredient:${id}`, artUrlIf('ingredient', id));
-    }
-    for (const id of new Set(potionIds)) {
-      this.wantTexture(`potion:${id}`, artUrlIf('potion', id));
     }
   }
 
@@ -334,39 +355,99 @@ export class WorldScene extends Phaser.Scene {
    * rather than waiting — the world is never blank while art is in flight.
    */
   private wantTexture(key: string, url: string | null): boolean {
-    return ensureTexture(this, key, url, () => this.redraw());
+    /*
+     * `true`, because a texture landing is exactly the case the signature
+     * cannot see: nothing in the world changed, only what there is to draw it
+     * with. Without it a bed kept its placeholder until the crop crossed into
+     * its next twentieth of growth — over a minute for most crops — which is
+     * the same stale-placeholder symptom `generatePlaceholders` was written to
+     * cure.
+     */
+    return ensureTexture(this, key, url, () => this.redraw(true));
   }
 
   /** Called whenever the world changes; cheap enough at this scale to rebuild. */
-  redraw(): void {
+  /**
+   * Draw the world.
+   *
+   * `layoutChanged` is for the callers who know the panel has been rebuilt —
+   * the scene is laid out around wherever the panel is, and the signature below
+   * is made of the world rather than of the page, so it cannot notice that the
+   * shape of the free area has moved under it.
+   */
+  redraw(layoutChanged = false): void {
     if (!this.content) return;
-    this.content.removeAll(true);
+    if (layoutChanged) this.drawn = '';
 
     const { width, height } = this.scale.gameSize;
     this.sky.setSize(width, height);
     this.lighting.setSize(width, height);
 
-    const area = this.contentArea();
-
-    switch (this.screen) {
-      case 'grounds':
-        this.drawGarden(area);
-        break;
-      case 'shop':
-        this.drawShop(area);
-        break;
-      case 'market':
-      case 'ledger':
-      case 'settings':
-        /*
-         * No scene. The market used to borrow `drawShop` as a stand-in until
-         * stall art arrived, which meant the Market drew your own shop behind a
-         * list of other people's stock — the same picture as the Shop screen,
-         * saying something untrue about where you were. The market is the
-         * merchants and what they have; it is a document like the other two.
-         */
-        break;
+    /*
+     * A screen that draws nothing measures nothing.
+     *
+     * `contentArea` asks the panel where it is, and asking runs head-first into
+     * a panel the shell has just rebuilt — so the browser lays the whole thing
+     * out there and then, synchronously, inside the click handler. On the Shop
+     * at fifty shelves that one call was an eighth of the frame budget, spent
+     * on a screen with nothing behind it. See `DRAWN_SCREENS`.
+     */
+    if (!DRAWN_SCREENS.has(this.screen)) {
+      /*
+       * And what was drawn has to go.
+       *
+       * The teardown used to be the unconditional first line of this method;
+       * moving it under the signature check left this branch returning without
+       * it, so walking from the Grounds to the Shop left the garden painted on
+       * the canvas — and the canvas is behind every panel, so two beds sat in
+       * plain sight either side of a panel that does not fill the stage. It is
+       * the same "one picture claiming to be two places" this file already
+       * records for the market borrowing the shop's drawing.
+       *
+       * Guarded, so the four-times-a-second call does not keep clearing a
+       * container that is already empty.
+       */
+      if (this.drawn !== '') {
+        this.content.removeAll(true);
+        this.drawn = '';
+      }
+      this.applyLighting();
+      return;
     }
+
+    /*
+     * Redraw the picture only when the picture has changed.
+     *
+     * `redraw` is called four times a second by the frame loop as well as on
+     * every world change, and it tears the whole scene down and builds it again
+     * — every bed, every plant, every heap of earth. Almost none of that is
+     * different from the last time: a crop's growth is the only continuously
+     * moving thing in it, and a twenty-five minute crop grows by two parts in a
+     * hundred thousand between one of those calls and the next.
+     *
+     * So growth is counted in twentieths. The garden is redrawn when a bed is
+     * planted or harvested, when a crop crosses into its next twentieth, when
+     * the window changes shape, and whenever the panel beside it is rebuilt —
+     * and left alone the rest of the time.
+     *
+     * That last one is not optional. The signature is made of the world, so it
+     * cannot see the panel move; without it the very first draw — taken before
+     * the panel existed to be measured, and so laid out against the whole
+     * stage — was the one that stuck, and a quarter of the garden sat behind
+     * the panel for the rest of the session.
+     *
+     * The light is not part of this. It moves continuously and costs two
+     * property writes on one rectangle, so it is applied below on every call.
+     */
+    const signature = this.gardenSignature();
+    if (signature === this.drawn) {
+      this.applyLighting();
+      return;
+    }
+
+    this.drawn = signature;
+    this.content.removeAll(true);
+    this.drawGarden(this.contentArea());
 
     /*
      * Re-check the pan against what was just drawn.
@@ -375,9 +456,51 @@ export class WorldScene extends Phaser.Scene {
      * scene's size afterwards — bottling the brew in the fourth cauldron,
      * resizing the window, the panel growing — could leave a pan that had been
      * legal stranded well outside the new bounds, with no way back.
+     *
+     * It sits under the signature check rather than above it because it
+     * measures: `applyView` asks for the content area, and `clampPan` asks
+     * again, so a pan that nothing has moved cost two `getBoundingClientRect`
+     * calls against the panel, four times a second, for the whole session.
      */
     this.applyView();
     this.applyLighting();
+  }
+
+  /**
+   * What the garden currently looks like, as one comparable string.
+   *
+   * Everything the drawing reads, and nothing it does not: how many beds there
+   * are, what is in each, whether it can be picked, how full it will be, and
+   * how far along it is to the nearest twentieth. The canvas size is in it too,
+   * because the beds are laid out to fit the space.
+   *
+   * Deliberately not the panel's measured rectangle — measuring is a
+   * `getBoundingClientRect` against a panel the shell has just rebuilt, which
+   * is the thing this check exists to avoid doing four times a second.
+   */
+  private gardenSignature(): string {
+    const { width, height } = this.scale.gameSize;
+    const parts = [`${Math.round(width)}x${Math.round(height)}`];
+
+    for (const plot of this.sim.world.plots) {
+      const crop = plot.crop;
+      if (!crop) {
+        parts.push('-');
+        continue;
+      }
+      const span = Math.max(1, crop.readyAt - crop.plantedAt);
+      const growth = Math.min(1, (this.sim.now - crop.plantedAt) / span);
+      parts.push(
+        [
+          crop.cropId,
+          Math.floor(growth * 20),
+          isReady(plot, this.sim.now) ? 'r' : '-',
+          harvestSize(this.sim.world, plot),
+        ].join(':'),
+      );
+    }
+
+    return parts.join('|');
   }
 
   /**
@@ -674,198 +797,6 @@ export class WorldScene extends Phaser.Scene {
   }
 
 
-  /**
-   * The furnishings, each in its own place in the room.
-   *
-   * Painted art is drawn where the spot's box says; anything without art falls
-   * back to a tinted block of roughly the right shape and size, so a bought
-   * piece still visibly changes the room rather than doing nothing until the
-   * art lands. The tint is keyed on the piece rather than the spot, so an
-   * upgrade reads as an upgrade.
-   */
-  private drawDecor(area: { cx: number; cy: number; width: number; height: number }): void {
-    const { cx, cy, width } = area;
-    const room = Math.min(width - 40, 460);
-
-    for (const view of this.sim.decorSpots()) {
-      if (!view.placed) continue;
-
-      const key = `decor:${view.placed.id}`;
-      if (this.textures.exists(key)) {
-        const box = DECOR_BOX[view.spot];
-        if (box) {
-          const shrink = Math.min(1, area.height / 260);
-          const node = this.add
-            .image(cx + room * box.x, cy + box.y * shrink, key)
-            .setDisplaySize(box.w * shrink, box.h * shrink);
-          this.content.add(node);
-          continue;
-        }
-      }
-
-      const tone = decorTone(view.placed.id);
-      switch (view.spot) {
-        case 'wall':
-          this.content.add(this.add.rectangle(cx, cy - 74, room * 0.34, 20, tone, 0.75));
-          break;
-        case 'window':
-          this.content.add(this.add.rectangle(cx - room * 0.38, cy - 30, 40, 54, tone, 0.55));
-          break;
-        case 'counter':
-          this.content.add(this.add.rectangle(cx, cy + 76, room * 0.62, 10, tone, 0.8));
-          break;
-        case 'nook':
-          this.content.add(this.add.rectangle(cx + room * 0.4, cy - 6, 26, 40, tone, 0.6));
-          break;
-        case 'floor':
-          this.content.add(this.add.ellipse(cx, cy + 96, room * 0.7, 26, tone, 0.4));
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  private drawShop(area: { cx: number; cy: number; width: number; height: number }): void {
-    // Furnishings first, so the shelves stand in front of them.
-    this.drawDecor(area);
-
-    /*
-     * A shelving unit, built upward.
-     *
-     * Laying every shelf in one row meant each new one made all of them
-     * narrower — six shelves and the bottles were thumbnails. Stacking keeps a
-     * bottle the same size however many shelves you own, and it looks like
-     * furniture rather than a row of planks: two posts, boards between them,
-     * rising from the floor.
-     */
-    const slots = this.sim.world.shelf;
-
-    /*
-     * How many rows the space can actually hold decides the shape.
-     *
-     * On a phone the world is a band about a third of the screen tall, and a
-     * fixed two-row unit simply hid its top row behind the panel. Rows are
-     * budgeted from the height available and the columns follow, so the unit
-     * stacks where there is room to stack and spreads where there is not.
-     */
-    /*
-     * A wall of shelves, laid out as a grid.
-     *
-     * A shop can own a great many — the aim is something like ten by ten — so
-     * this picks a column count from the free area's shape and lets the grid run
-     * as deep as it needs. What does not fit on screen is reached by dragging;
-     * shrinking a hundred shelves until they all fit would make every bottle a
-     * speck.
-     */
-    const aspect = Math.max(0.4, area.width / Math.max(1, area.height));
-    const cols = Math.max(1, Math.min(slots.length, Math.round(Math.sqrt(slots.length * aspect))));
-    const rows = Math.ceil(slots.length / cols);
-
-    const spacing = Math.max(64, Math.min(118, (area.width - 40) / cols));
-    const rowHeight = Math.max(96, Math.min(126, (area.height - 24) / rows));
-
-    const startX = area.cx - ((cols - 1) * spacing) / 2;
-    // Row 0 at the top, reading like any other grid.
-    const startY = area.cy - ((rows - 1) * rowHeight) / 2;
-
-    /*
-     * The cell is divided top-down: bottle, then board, then a band reserved for
-     * the label. Deriving the bottle's height from what is left over — rather
-     * than sizing it independently and hoping — is what stops a tall bottle
-     * sitting on top of its own price.
-     */
-    const TEXT_BAND = 26;
-    const boardH = Math.min(26, rowHeight * 0.2);
-    const bottleH = Math.max(24, Math.min(74, rowHeight - TEXT_BAND - boardH - 8, spacing * 0.8));
-    const bottleW = bottleH * 0.66;
-
-    slots.forEach((slot, index) => {
-      const col = index % cols;
-      const row = Math.floor(index / cols);
-      const x = startX + col * spacing;
-      const shelfY = startY + row * rowHeight;
-
-      /*
-       * The plank is anchored by its TOP, which is the board's surface — so the
-       * number the bottles stand on and the number the board is drawn at are the
-       * same one, and they cannot drift apart.
-       */
-      const cellTop = shelfY - rowHeight / 2;
-      const boardY = cellTop + bottleH + 4;
-      const key = `shelf:${slot.quality}`;
-      const plank = this.add
-        .image(x, boardY, this.textures.exists(key) ? key : 'shelf')
-        .setOrigin(0.5, 0);
-      plank.setDisplaySize(spacing - 4, boardH);
-      this.content.add(plank);
-
-      if (!slot.item) {
-        const ghost = this.add
-          .rectangle(x, boardY, bottleW * 0.7, bottleH * 0.8, palette.surface2, 0.28)
-          .setOrigin(0.5, 1);
-        this.content.add(ghost);
-        return;
-      }
-
-      /*
-       * The recipe's own painted bottle where there is one. Only when there
-       * isn't does this fall back to the generic shape tinted by essence — a
-       * tint is a poor stand-in for a picture, but it still says at a glance
-       * that a shelf of tonics is not a shelf of draughts.
-       */
-      // Stood ON the board — its foot at the board's top edge — rather than
-      // centred on the line, which is what makes a bottle look placed.
-      const potionKey = `potion:${slot.item.recipeId}`;
-      // Standing ON the surface: the board's top is `boardY`, plus a pixel so
-      // the bottle's base overlaps the wood rather than hovering over its edge.
-      const footY = boardY + 1;
-      if (this.wantTexture(potionKey, artUrlIf('potion', slot.item.recipeId))) {
-        const painted = this.add.image(x, footY, potionKey).setOrigin(0.5, 1);
-        painted.setDisplaySize(bottleW, bottleH);
-        this.content.add(painted);
-      } else {
-        const bottle = this.add.image(x, footY, 'bottle').setOrigin(0.5, 1);
-        bottle.setDisplaySize(bottleW * 0.95, bottleH * 0.95);
-        bottle.setTint(blendColor(getRecipe(slot.item.recipeId).target));
-        this.content.add(bottle);
-      }
-
-      /*
-       * What is on the shelf and what it costs — the two things a shopkeeper
-       * glancing at a wall of shelves actually wants. A bare grade letter told
-       * you nothing about which shelf held the Night Glass.
-       *
-       * Long names are trimmed to the cell rather than wrapped, so the grid's
-       * rows stay level.
-       */
-      const name = t(`recipe.${slot.item.recipeId}`);
-      const room = Math.max(6, Math.floor((spacing - 8) / 5.4));
-      const shown = name.length > room ? `${name.slice(0, room - 1)}…` : name;
-      const asking = Math.round(slot.item.fairValue * slot.priceRatio);
-      const detail =
-        (slot.quantity > 1 ? `x${slot.quantity}  ` : '') + formatGold(asking);
-
-      // Centred on the plank and clear of it, in the band the cell reserved.
-      const title = this.add
-        .text(x, boardY + boardH + 4, shown, {
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '10px',
-          color: '#cdd6cf',
-        })
-        .setOrigin(0.5, 0);
-      this.content.add(title);
-
-      const price = this.add
-        .text(x, boardY + boardH + 16, detail, {
-          fontFamily: 'ui-monospace, monospace',
-          fontSize: '10px',
-          color: '#8fd4c3',
-        })
-        .setOrigin(0.5, 0);
-      this.content.add(price);
-    });
-  }
 
 }
 

@@ -12,7 +12,7 @@
  * customer is drawn on both, because a customer leaves and the shelves do not.
  */
 
-import { button, chip, el, goldText, gradeBadge, makeDropTarget, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
+import { button, chip, clear, el, goldText, gradeBadge, modal, panelHeader, potionIcon, slot, slotGrid } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance, sameGoods } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
@@ -25,16 +25,31 @@ import type { BottledItem, ShelfSlot } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
-/**
- * A stocked shelf being dragged to another one.
+/*
+ * There is no dragging here.
  *
- * The payload is the shelf's id, not the bottle's: what is being moved is the
- * whole slot — its goods, however many of them, and the price you set — and the
- * shelf it lands on is the other half of a swap.
+ * Rearranging by dragging one row of a list onto another was a poor fit for
+ * what the gesture is for: you drag a thing to a place you can see. That place
+ * is the painted shop, which is out of the build for now, so the tap route —
+ * pick the shelf, pick where it goes — is the only route until the picture is
+ * back to drag onto.
  */
-const SHELF_DRAG = 'application/x-eternal-shelf';
 
 type Tab = 'floor' | 'store';
+
+type StackSort = 'value' | 'count';
+
+/**
+ * How many stacks one page of the store room holds.
+ *
+ * Chosen to land the grid at roughly the node count the floor settles at, so
+ * the two halves of the screen cost about the same to draw.
+ */
+const STACK_PAGE = 60;
+
+let stackSort: StackSort = 'value';
+
+let stackPage = 1;
 
 /**
  * Which half is showing.
@@ -76,7 +91,13 @@ export function renderShop(sim: Simulation): HTMLElement {
     body.append(renderInventory(sim), renderBoards(sim));
   }
 
-  return el('div', { class: 'panel' }, [
+  /*
+   * `panel-roomy`, like the Board and the Market: there is no scene behind this
+   * screen any more, so it is a full-stage page on a phone and a centred card
+   * given room above the breakpoint, rather than a sheet docked to one side of
+   * a picture that is no longer drawn.
+   */
+  return el('div', { class: 'panel panel-roomy' }, [
     panelHeader(t('shop.title'), t(`shop.${tab}.subtitle`)),
     body,
   ]);
@@ -95,59 +116,158 @@ function itemIcon(item: BottledItem): Node {
   return potionIcon(item.recipeId);
 }
 
-/** What a shelf is called when it has to be named — "Shelf 3". */
-function shelfName(sim: Simulation, shelfSlot: ShelfSlot): string {
-  const index = sim.world.shelf.indexOf(shelfSlot);
-  return t('shop.shelf.numbered', { number: index + 1 });
-}
-
 // -- The floor ---------------------------------------------------------------
 
+type ShelfSort = 'selling' | 'price';
+
+let shelfSort: ShelfSort = 'selling';
+
+/** A shelf and the number it is known by, which sorting must not change. */
+interface ShelfRef {
+  slot: ShelfSlot;
+  number: number;
+}
+
+/**
+ * A shelf on the floor, with what the grid sorts and reads it by.
+ *
+ * `rate` and `ask` are worked out once per render and carried, rather than
+ * recomputed inside the comparator. `saleChance` sweeps every equipment
+ * definition twice — once itself and once through `footfallAt` — and a sort
+ * asks its comparator a few hundred questions for a hundred shelves, each
+ * costing two of those. The tile needs the same two numbers anyway, so
+ * carrying them turns several hundred sweeps into one per shelf.
+ */
+interface NumberedShelf extends ShelfRef {
+  /** How briskly it sells. Empty shelves sell nothing, which is not slowly. */
+  rate: number;
+  /** What it is asking, or -1 for an empty shelf. */
+  ask: number;
+}
+
+/**
+ * The shelves, as a grid of tiles rather than a column of cards.
+ *
+ * A card per shelf gave each one a board line, a name, two buttons, three
+ * chips and a slider — about fifteen elements and a couple of inches of page.
+ * That is a fine way to show four shelves and an unusable way to show fifty:
+ * seven hundred nodes to lay out on every press, and a floor you could only
+ * read by scrolling past it.
+ *
+ * A tile says what a shopkeeper glances at — what it is, what grade, what it is
+ * asking, whether it is moving — and the rest is one tap away. Same shape as
+ * every other grid in the game, and it fits a whole shop on a screen.
+ */
 function renderShelves(sim: Simulation): HTMLElement {
+  const numbered: NumberedShelf[] = sim.world.shelf.map((slot, index) => ({
+    slot,
+    number: index + 1,
+    /*
+     * Sorted ascending, so an empty shelf's sentinel has to be larger than any
+     * real chance rather than smaller — as a negative it put every empty shelf
+     * at the head of the list, which is the opposite of what the sort is for.
+     */
+    rate: slot.item ? saleChance(sim.world, slot, sim.now, true) : Number.POSITIVE_INFINITY,
+    ask: slot.item ? slot.item.fairValue * slot.priceRatio : -1,
+  }));
+  const full = numbered.filter((entry) => entry.slot.item).length;
+
+  const sorted = [...numbered].sort(comparators[shelfSort]);
+
   const section = el('section', { class: 'shelves' }, [
     el('div', { class: 'stores-head' }, [
       el('span', { class: 'field-label', text: t('shop.shelves') }),
-      el('span', { class: 'field-note', text: t('shop.shelves.hint') }),
+      el('span', {
+        class: 'field-note',
+        text: t('shop.shelves.count', { full, total: numbered.length }),
+      }),
     ]),
   ]);
 
-  for (const shelfSlot of sim.world.shelf) {
-    section.append(renderSlot(sim, shelfSlot));
-  }
+  // Only worth offering once there is enough to lose track of.
+  if (numbered.length > 4) section.append(sortRow());
 
+  section.append(
+    slotGrid(
+      sorted.map((entry) => shelfTile(sim, entry)),
+      t('shop.shelves.none'),
+    ),
+  );
   return section;
 }
 
 /**
- * The board this shelf is made of, said rather than badged.
+ * Two ways to read the floor.
  *
- * Fitting is done from the store room now — which of your shelves gets the good
- * wood is a decision about the board you own, not about the shelf you happen to
- * be looking at — so this row only reports.
+ * What needs attention, which is the question a hundred shelves actually
+ * raise, and what is worth most. Shelf order was a third, and was dropped: it
+ * is the order the list happens to be stored in, which answers nothing you
+ * would come to this screen to ask. The number is still on every shelf, in its
+ * details and its tooltip, for finding one you have in mind.
+ *
+ * Empty shelves sink to the bottom of both, because an empty shelf is not a
+ * problem with a shelf.
  */
-function boardRow(shelfSlot: ShelfSlot): HTMLElement {
-  const current = getShelfTier(shelfSlot.quality);
-  const art = artUrlIf('shelf', shelfSlot.quality);
+const comparators: Record<ShelfSort, (a: NumberedShelf, b: NumberedShelf) => number> = {
+  selling: (a, b) => a.rate - b.rate || a.number - b.number,
+  price: (a, b) => b.ask - a.ask || a.number - b.number,
+};
 
-  return el('div', { class: 'board-row' }, [
-    ...(art ? [el('img', { class: 'board-thumb', src: art, alt: '', width: '46', height: '12' })] : []),
-    el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
-    /*
-     * What the board does, in a sentence.
-     *
-     * "Appeal +8%" in green reads as a rosette the shelf has been awarded. The
-     * number is the same; the sentence is about the goods standing on it, which
-     * is the thing the player is actually deciding about.
-     */
-    ...(current.appealBonus > 0
-      ? [
-          el('span', {
-            class: 'field-note',
-            text: t('shop.board.appealNote', { percent: Math.round(current.appealBonus * 100) }),
-          }),
-        ]
-      : []),
-  ]);
+function sortRow(): HTMLElement {
+  const row = el('div', { class: 'sort-row' });
+  for (const id of ['selling', 'price'] as ShelfSort[]) {
+    const node = el('button', { class: 'sort-chip', type: 'button', text: t(`shop.sort.${id}`) });
+    node.setAttribute('aria-pressed', String(shelfSort === id));
+    node.addEventListener('click', () => {
+      shelfSort = id;
+      changed();
+    });
+    row.append(node);
+  }
+  return row;
+}
+
+function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
+  const { slot: shelfSlot, number } = entry;
+  const board = getShelfTier(shelfSlot.quality);
+  const item = shelfSlot.item;
+
+  if (!item) {
+    return slot({
+      id: shelfSlot.id,
+      icon: el('span', { class: 'slot-glyph', text: '🪵' }),
+      label: t('shop.shelf.numbered', { number }),
+      caption: t(`board.${shelfSlot.quality}`),
+      dimmed: true,
+      title: t('shop.slot.empty'),
+      onActivate: () => openShelfDetails(sim, entry),
+    });
+  }
+
+  const asking = Math.round(entry.ask);
+  const chance = entry.rate;
+
+  return slot({
+    id: shelfSlot.id,
+    icon: potionIcon(item.recipeId),
+    label: t(`recipe.${item.recipeId}`),
+    count: shelfSlot.quantity > 1 ? shelfSlot.quantity : undefined,
+    caption: [gradeBadge(item.grade), goldText(asking)],
+    // A shelf nobody is buying from is the one thing on this screen worth
+    // colouring: it is the shelf you came here to do something about.
+    tone: chance > 0.05 ? 'default' : 'warn',
+    title: [
+      t('shop.shelf.numbered', { number }),
+      t(`board.${shelfSlot.quality}`),
+      paceLabel(chance),
+      board.appealBonus > 0
+        ? t('shop.board.appealNote', { percent: Math.round(board.appealBonus * 100) })
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
+    onActivate: () => openShelfDetails(sim, entry),
+  });
 }
 
 /**
@@ -159,11 +279,11 @@ function boardRow(shelfSlot: ShelfSlot): HTMLElement {
  * readouts it feeds are three short strings, so they are written where they
  * stand; the rebuild waits for the drag to end.
  */
-function priceSlider(sim: Simulation, shelfSlot: ShelfSlot, readouts: {
-  asking: HTMLElement;
-  percent: HTMLElement;
-  pace: HTMLElement;
-}): HTMLElement {
+function priceSlider(
+  sim: Simulation,
+  shelfSlot: ShelfSlot,
+  readouts: { asking: HTMLElement; percent: HTMLElement; pace: HTMLElement },
+): HTMLElement {
   const slider = el('input', {
     type: 'range',
     min: '40',
@@ -186,113 +306,120 @@ function priceSlider(sim: Simulation, shelfSlot: ShelfSlot, readouts: {
     slider.setAttribute('aria-label', t('shop.price', { percent: formatPercent(shelfSlot.priceRatio) }));
   });
 
-  // Once the thumb is let go — the rest of the shop (the ledger's takings, the
-  // scene) can catch up now that there is nothing being held.
+  // Once the thumb is let go — the rest of the shop can catch up now that there
+  // is nothing being held.
   slider.addEventListener('change', () => changed());
 
   return slider;
 }
 
-function renderSlot(sim: Simulation, shelfSlot: ShelfSlot): HTMLElement {
-  const node = el('div', { class: 'shelf' });
+/**
+ * One shelf, in full.
+ *
+ * Everything the card used to carry, on the one shelf being looked at instead
+ * of on all fifty at once: what is standing on it, what board it is, what it is
+ * asking, and the three things you can do about any of that.
+ */
+function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
+  const { slot: shelfSlot, number } = entry;
+  const board = getShelfTier(shelfSlot.quality);
+  const art = artUrlIf('shelf', shelfSlot.quality);
 
-  /*
-   * Every shelf takes a dragged shelf, empty or not.
-   *
-   * Dropping onto a full one swaps the two, which is what "organise them
-   * visually" means in practice — the good bottles at eye level and the cheap
-   * ones at the back is a rearrangement, not an unstock and a restock.
-   */
-  makeDropTarget(node, SHELF_DRAG, (fromId) => {
-    if (sim.moveStock(fromId, shelfSlot.id)) changed();
-  });
-
-  if (!shelfSlot.item) {
-    node.classList.add('shelf-empty');
-    node.append(
-      boardRow(shelfSlot),
-      el('span', { class: 'shelf-empty-label', text: t('shop.slot.empty') }),
-      el('span', { class: 'field-note', text: t('shop.slot.emptyHint') }),
-    );
-    return node;
-  }
+  const boardLine = el('div', { class: 'board-row' }, [
+    ...(art ? [el('img', { class: 'board-thumb', src: art, alt: '', width: '46', height: '12' })] : []),
+    el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
+    /*
+     * What the board does, in a sentence.
+     *
+     * "Appeal +8%" in green reads as a rosette the shelf has been awarded. The
+     * number is the same; the sentence is about the goods standing on it, which
+     * is the thing the player is actually deciding about.
+     */
+    ...(board.appealBonus > 0
+      ? [
+          el('span', {
+            class: 'field-note',
+            text: t('shop.board.appealNote', { percent: Math.round(board.appealBonus * 100) }),
+          }),
+        ]
+      : []),
+  ]);
 
   const item = shelfSlot.item;
-  const chance = saleChance(sim.world, shelfSlot, sim.now, true);
 
-  const asking = el('span', {
-    class: 'price-gold num',
-    text: formatGold(Math.round(item.fairValue * shelfSlot.priceRatio)),
+  if (!item) {
+    modal({
+      content: (dismiss) => [
+        el('h2', { text: t('shop.shelf.numbered', { number }) }),
+        boardLine,
+        el('p', { class: 'grid-empty', text: t('shop.slot.empty') }),
+        el('div', { class: 'dialog-actions' }, [
+          button(t('common.close'), dismiss, { variant: 'quiet' }),
+          button(t('shop.slot.stockThis'), () => {
+            dismiss();
+            openStackPicker(sim, shelfSlot);
+          }),
+        ]),
+      ],
+    });
+    return;
+  }
+
+  modal({
+    content: (dismiss) => {
+      const chance = saleChance(sim.world, shelfSlot, sim.now, true);
+      const asking = el('span', {
+        class: 'price-gold num',
+        text: formatGold(Math.round(item.fairValue * shelfSlot.priceRatio)),
+      });
+      const percent = chip(formatPercent(shelfSlot.priceRatio));
+      const pace = chip(paceLabel(chance), chance > 0.15 ? 'plain' : 'warn');
+
+      return [
+        el('h2', { text: t('shop.shelf.numbered', { number }) }),
+        boardLine,
+        el('div', { class: 'shelf-head' }, [
+          gradeBadge(item.grade),
+          el('span', { class: 'shelf-name', text: t(`recipe.${item.recipeId}`) }),
+          chip(t(`form.${item.formId}`)),
+          // A stacked slot has to say so, or it looks like one bottle that will
+          // not sell out.
+          ...(shelfSlot.quantity > 1
+            ? [chip(t('shop.stacked', { count: shelfSlot.quantity }), 'good')]
+            : []),
+        ]),
+        el('div', { class: 'shelf-price' }, [asking, percent, pace]),
+        priceSlider(sim, shelfSlot, { asking, percent, pace }),
+        el('div', { class: 'dialog-actions' }, [
+          button(t('common.close'), dismiss, { variant: 'quiet' }),
+          button(
+            t('shop.slot.remove'),
+            () => {
+              dismiss();
+              sim.unstock(shelfSlot.id);
+              changed();
+            },
+            { variant: 'quiet' },
+          ),
+          button(
+            t('shop.shelf.move'),
+            () => {
+              dismiss();
+              openMovePicker(sim, entry);
+            },
+            { disabled: sim.world.shelf.length < 2 },
+          ),
+        ]),
+      ];
+    },
   });
-  const percent = chip(formatPercent(shelfSlot.priceRatio));
-  const pace = chip(paceLabel(chance), chance > 0.15 ? 'plain' : 'warn');
-
-  /*
-   * A grip rather than the whole card.
-   *
-   * The card holds a range input, and a draggable ancestor and a slider inside
-   * it fight over the same gesture. The grip is also the only honest place to
-   * hang the affordance: it says this row can be picked up, where a whole
-   * draggable card says nothing at all until you try.
-   */
-  const grip = el('span', {
-    class: 'shelf-grip',
-    text: '⠿',
-    title: t('shop.shelf.dragHint'),
-    'aria-hidden': 'true',
-  });
-  grip.draggable = true;
-  grip.addEventListener('dragstart', (event) => {
-    event.dataTransfer?.setData(SHELF_DRAG, shelfSlot.id);
-    // A plain-text fallback keeps the drag valid in browsers that ignore custom
-    // types until drop, which is most of them during dragover.
-    event.dataTransfer?.setData('text/plain', shelfSlot.id);
-    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
-    node.dataset.dragging = 'true';
-  });
-  grip.addEventListener('dragend', () => delete node.dataset.dragging);
-
-  node.append(
-    boardRow(shelfSlot),
-    el('div', { class: 'shelf-head' }, [
-      grip,
-      gradeBadge(item.grade),
-      el('span', { class: 'shelf-name', text: t(`recipe.${item.recipeId}`) }),
-      chip(t(`form.${item.formId}`)),
-      // The tap route to the same rearrangement. Drag does not exist on a
-      // phone, and this screen is used on one.
-      button(t('shop.shelf.move'), () => openMovePicker(sim, shelfSlot), {
-        variant: 'quiet',
-        small: true,
-        disabled: sim.world.shelf.length < 2,
-      }),
-      button(
-        t('shop.slot.remove'),
-        () => {
-          sim.unstock(shelfSlot.id);
-          changed();
-        },
-        { variant: 'quiet', small: true },
-      ),
-    ]),
-    el('div', { class: 'shelf-price' }, [
-      asking,
-      percent,
-      pace,
-      // A stacked slot has to say so, or it looks like one bottle that will not sell out.
-      ...(shelfSlot.quantity > 1
-        ? [chip(t('shop.stacked', { count: shelfSlot.quantity }), 'good')]
-        : []),
-    ]),
-    priceSlider(sim, shelfSlot, { asking, percent, pace }),
-  );
-
-  return node;
 }
 
-/** Where should this go? The same swap a drag does, for a thumb. */
-function openMovePicker(sim: Simulation, from: ShelfSlot): void {
-  const others = sim.world.shelf.filter((entry) => entry.id !== from.id);
+/** Where should this go? Pick a shelf; a full one swaps with this one. */
+function openMovePicker(sim: Simulation, from: ShelfRef): void {
+  const others = sim.world.shelf
+    .map((slot, index) => ({ slot, number: index + 1 }))
+    .filter((entry) => entry.slot.id !== from.slot.id);
 
   modal({
     content: (dismiss) => [
@@ -303,15 +430,17 @@ function openMovePicker(sim: Simulation, from: ShelfSlot): void {
         { class: 'shelf-picker' },
         others.map((target) =>
           button(
-            target.item
+            target.slot.item
               ? t('shop.shelf.swapWith', {
-                  shelf: shelfName(sim, target),
-                  recipe: t(`recipe.${target.item.recipeId}`),
+                  shelf: t('shop.shelf.numbered', { number: target.number }),
+                  recipe: t(`recipe.${target.slot.item.recipeId}`),
                 })
-              : t('shop.shelf.moveTo', { shelf: shelfName(sim, target) }),
+              : t('shop.shelf.moveTo', {
+                  shelf: t('shop.shelf.numbered', { number: target.number }),
+                }),
             () => {
               dismiss();
-              if (sim.moveStock(from.id, target.id)) changed();
+              if (sim.moveStock(from.slot.id, target.slot.id)) changed();
             },
             { variant: 'quiet' },
           ),
@@ -321,6 +450,93 @@ function openMovePicker(sim: Simulation, from: ShelfSlot): void {
         button(t('common.close'), dismiss, { variant: 'quiet' }),
       ]),
     ],
+  });
+}
+
+/**
+ * Fill this one shelf, from whatever is in the store room.
+ *
+ * Paged, for the same reason the store room itself is: a finished Codex is
+ * very nearly two hundred kinds of potion, and building all of them into a
+ * dialog is the cost that grid was paged to avoid — inside a click handler,
+ * where it is felt most. Ordered by the same chip the store room is set to, so
+ * the page you are shown is the one you were just looking at.
+ *
+ * The grid is redrawn in place rather than the dialog reopened, so paging does
+ * not blink the whole thing away and back.
+ */
+function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
+  const stacks = stacksOf(sim.world.bottled)
+    .map(({ item, count }) => ({ item, count, room: 0 }))
+    .sort(stackSorts[stackSort]);
+
+  const pageCount = Math.max(1, Math.ceil(stacks.length / STACK_PAGE));
+  let page = 1;
+
+  modal({
+    content: (dismiss) => {
+      const body = el('div');
+
+      const draw = (): void => {
+        clear(body);
+        const shown = stacks.slice((page - 1) * STACK_PAGE, page * STACK_PAGE);
+        body.append(
+          slotGrid(
+            shown.map(({ item, count }) =>
+              slot({
+                id: item.uid,
+                icon: potionIcon(item.recipeId),
+                label: t(`recipe.${item.recipeId}`),
+                count,
+                caption: [gradeBadge(item.grade), goldText(item.fairValue)],
+                onActivate: () => {
+                  dismiss();
+                  if (sim.stock(shelfSlot.id, item.uid)) changed();
+                },
+              }),
+            ),
+            t('shop.inventory.empty'),
+          ),
+        );
+
+        if (pageCount > 1) {
+          body.append(
+            el('div', { class: 'pager' }, [
+              button(
+                t('shop.inventory.prev'),
+                () => {
+                  page = Math.max(1, page - 1);
+                  draw();
+                },
+                { variant: 'quiet', small: true, disabled: page <= 1 },
+              ),
+              el('span', {
+                class: 'pager-label num',
+                text: t('ledger.page.of', { page, count: pageCount }),
+              }),
+              button(
+                t('shop.inventory.next'),
+                () => {
+                  page = Math.min(pageCount, page + 1);
+                  draw();
+                },
+                { variant: 'quiet', small: true, disabled: page >= pageCount },
+              ),
+            ]),
+          );
+        }
+      };
+
+      draw();
+
+      return [
+        el('h2', { text: t('shop.slot.stockThis') }),
+        body,
+        el('div', { class: 'dialog-actions' }, [
+          button(t('common.close'), dismiss, { variant: 'quiet' }),
+        ]),
+      ];
+    },
   });
 }
 
@@ -414,58 +630,156 @@ function stacksOf(items: BottledItem[]): Array<{ item: BottledItem; count: numbe
   return stacks;
 }
 
-function renderInventory(sim: Simulation): HTMLElement {
-  const tiles = stacksOf(sim.world.bottled).map(({ item, count }) => {
-    const room = sim.placeable(item);
+/** A stack, with the two numbers the grid sorts and reads it by. */
+interface Stack {
+  item: BottledItem;
+  /** How many interchangeable bottles are in the store room. */
+  count: number;
+  /** How many of them could go out right now — see `placeableCount`. */
+  room: number;
+}
 
-    return slot({
-      id: item.uid,
-      icon: itemIcon(item),
-      label: t(`recipe.${item.recipeId}`),
-      count,
-      caption: [gradeBadge(item.grade), goldText(item.fairValue)],
-      dimmed: room === 0,
-      title:
-        `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
-        `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
-      /*
-       * How many, in one press.
-       *
-       * Putting eight bottles out was eight presses, each of which began by
-       * finding a free shelf. The count is the only part of that worth
-       * deciding, so it is the only part asked for — the shelves fill in
-       * order, and the ceiling is however many the shop has room for.
-       */
-      onActivate: () =>
-        showPotionInfo(sim, item, count, {
-          label: t('shop.slot.putOut'),
-          max: Math.max(1, room),
-          blocked: room === 0 ? t('shop.noShelf') : undefined,
-          run: (quantity) => {
-            const placed = sim.stockMany(item.uid, quantity);
-            if (placed === 0) {
-              toast(t('shop.noShelf'));
-              return;
-            }
-            toast(
-              t('shop.putOut', {
-                count: placed,
-                recipe: t(`recipe.${item.recipeId}`),
-              }),
-            );
-            changed();
-          },
-        }),
+/**
+ * Two ways to read the store room.
+ *
+ * What is worth putting out, and what there is most of — the same two
+ * questions the floor raises, asked of the other side of the shop. The recipe
+ * name breaks ties so the order is stable between renders rather than left to
+ * whatever the sort happened to do with equal keys.
+ *
+ * Deliberately no "can it go out" term, unlike the floor's empty shelves. Room
+ * is the free shelf count shared by every stack, so either all of them can go
+ * out or none can — sinking the ones that cannot would never move anything.
+ * The tiles still dim when the shop is full, which is the part that says so.
+ */
+const stackSorts: Record<StackSort, (a: Stack, b: Stack) => number> = {
+  value: (a, b) =>
+    b.item.fairValue - a.item.fairValue || a.item.recipeId.localeCompare(b.item.recipeId),
+  count: (a, b) => b.count - a.count || a.item.recipeId.localeCompare(b.item.recipeId),
+};
+
+function stackSortRow(): HTMLElement {
+  const row = el('div', { class: 'sort-row' });
+  for (const id of ['value', 'count'] as StackSort[]) {
+    const node = el('button', { class: 'sort-chip', type: 'button', text: t(`shop.stackSort.${id}`) });
+    node.setAttribute('aria-pressed', String(stackSort === id));
+    node.addEventListener('click', () => {
+      stackSort = id;
+      stackPage = 1;
+      changed();
     });
-  });
+    row.append(node);
+  }
+  return row;
+}
 
-  return el('section', { class: 'inventory' }, [
+/**
+ * The store room, given the treatment the floor got.
+ *
+ * A count at the head, a way to order it, and only a screenful drawn at a
+ * time. The tiles were already tiles — what made this the slowest thing left
+ * in the game was simply how many of them there are: a finished Codex is very
+ * nearly two hundred kinds of potion, and two hundred tiles is sixteen hundred
+ * elements for the browser to lay out on every single press.
+ *
+ * Paged, not truncated. Sorting decides what reaches the first page, so the
+ * page you land on is the one worth looking at, and the rest is two presses
+ * away rather than gone.
+ */
+function renderInventory(sim: Simulation): HTMLElement {
+  const stacks: Stack[] = stacksOf(sim.world.bottled).map(({ item, count }) => ({
+    item,
+    count,
+    // The stack already counted them; see `placeableCount`.
+    room: sim.placeable(item, count),
+  }));
+  stacks.sort(stackSorts[stackSort]);
+
+  const bottles = stacks.reduce((total, stack) => total + stack.count, 0);
+  const pageCount = Math.max(1, Math.ceil(stacks.length / STACK_PAGE));
+  stackPage = Math.min(Math.max(1, stackPage), pageCount);
+  const shown = stacks.slice((stackPage - 1) * STACK_PAGE, stackPage * STACK_PAGE);
+
+  const section = el('section', { class: 'inventory' }, [
     el('div', { class: 'stores-head' }, [
       el('span', { class: 'field-label', text: t('shop.inventory') }),
-      el('span', { class: 'field-note', text: t('shop.inventory.hint') }),
+      el('span', {
+        class: 'field-note',
+        text: t('shop.inventory.count', { kinds: stacks.length, bottles }),
+      }),
     ]),
-    slotGrid(tiles, t('shop.inventory.empty')),
   ]);
+
+  // Only worth offering once there is enough to lose track of.
+  if (stacks.length > 4) section.append(stackSortRow());
+
+  section.append(slotGrid(shown.map((stack) => stackTile(sim, stack)), t('shop.inventory.empty')));
+
+  if (pageCount > 1) {
+    section.append(
+      el('div', { class: 'pager' }, [
+        button(
+          t('shop.inventory.prev'),
+          () => {
+            stackPage = Math.max(1, stackPage - 1);
+            changed();
+          },
+          { variant: 'quiet', small: true, disabled: stackPage <= 1 },
+        ),
+        el('span', {
+          class: 'pager-label num',
+          text: t('ledger.page.of', { page: stackPage, count: pageCount }),
+        }),
+        button(
+          t('shop.inventory.next'),
+          () => {
+            stackPage = Math.min(pageCount, stackPage + 1);
+            changed();
+          },
+          { variant: 'quiet', small: true, disabled: stackPage >= pageCount },
+        ),
+      ]),
+    );
+  }
+
+  return section;
+}
+
+function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
+  return slot({
+    id: item.uid,
+    icon: itemIcon(item),
+    label: t(`recipe.${item.recipeId}`),
+    count,
+    caption: [gradeBadge(item.grade), goldText(item.fairValue)],
+    dimmed: room === 0,
+    title:
+      `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
+      `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
+    /*
+     * How many, in one press.
+     *
+     * Putting eight bottles out was eight presses, each of which began by
+     * finding a free shelf. The count is the only part of that worth deciding,
+     * so it is the only part asked for — the shelves fill in order, and the
+     * ceiling is however many the shop has room for.
+     */
+    onActivate: () =>
+      showPotionInfo(sim, item, count, {
+        label: t('shop.slot.putOut'),
+        max: Math.max(1, room),
+        blocked: room === 0 ? t('shop.noShelf') : undefined,
+        run: (quantity) => {
+          const placed = sim.stockMany(item.uid, quantity);
+          if (placed === 0) {
+            toast(t('shop.noShelf'));
+            return;
+          }
+          toast(t('shop.putOut', { count: placed, recipe: t(`recipe.${item.recipeId}`) }));
+          changed();
+        },
+      }),
+  });
 }
 
 /**
@@ -481,9 +795,9 @@ function renderBoards(sim: Simulation): HTMLElement {
 
   const tiles = owned.map((tier) => {
     const art = artUrlIf('shelf', tier.id);
-    const fits = sim.world.shelf.filter(
-      (shelfSlot) => getShelfTier(shelfSlot.quality).appealBonus < tier.appealBonus,
-    );
+    const fits = sim.world.shelf
+      .map((shelfSlot, index) => ({ slot: shelfSlot, number: index + 1 }))
+      .filter((entry) => getShelfTier(entry.slot.quality).appealBonus < tier.appealBonus);
 
     return slot({
       id: tier.id,
@@ -511,7 +825,7 @@ function renderBoards(sim: Simulation): HTMLElement {
 }
 
 /** Which shelf should this board go on? */
-function openBoardPicker(sim: Simulation, tierId: string, fits: ShelfSlot[]): void {
+function openBoardPicker(sim: Simulation, tierId: string, fits: ShelfRef[]): void {
   modal({
     content: (dismiss) => [
       el('h2', { text: t('shop.board.fitTo', { board: t(`board.${tierId}`) }) }),
@@ -520,10 +834,10 @@ function openBoardPicker(sim: Simulation, tierId: string, fits: ShelfSlot[]): vo
         : el(
             'div',
             { class: 'shelf-picker' },
-            fits.map((shelfSlot) =>
+            fits.map(({ slot: shelfSlot, number }) =>
               button(
                 t('shop.board.onShelf', {
-                  shelf: shelfName(sim, shelfSlot),
+                  shelf: t('shop.shelf.numbered', { number }),
                   board: t(`board.${shelfSlot.quality}`),
                 }),
                 () => {
