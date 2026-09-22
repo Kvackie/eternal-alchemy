@@ -66,6 +66,22 @@ export interface ShellDeps {
  */
 const SCENE_SCREENS = new Set<ScreenId>(['grounds']);
 
+type StageView = 'split' | 'manage' | 'scene';
+
+/**
+ * The stylesheet's breakpoint, in the one place the shell has to agree with it.
+ *
+ * The stylesheet still decides every measurement; this only decides which two
+ * of the three views the toggle moves between, because on a narrow window
+ * `split` is not one of them — the panel and the picture cannot both fit, so
+ * offering to show both would be offering nothing.
+ */
+const DESKTOP = '(min-width: 960px)';
+
+function bothFit(): boolean {
+  return window.matchMedia(DESKTOP).matches;
+}
+
 const SCREENS: Array<{ id: ScreenId; icon: string }> = [
   { id: 'shop', icon: '🏪' },
   { id: 'board', icon: '📋' },
@@ -94,13 +110,18 @@ export class Shell {
   private renderDebug: typeof import('@/debug/timePanel').renderDebugPanel | null = null;
 
   /**
-   * The scene, with the panel out of the way.
+   * How the stage is divided between the picture and the panel.
    *
-   * Only meaningful on the three screens that draw a world, and only below the
-   * desktop breakpoint — above it the panel and the scene already fit side by
-   * side and the toggle is hidden.
+   * `split` draws both, which only a desktop window has room for; below the
+   * breakpoint it renders the same as `manage`, because the two never fit.
+   * `manage` gives the panel the whole stage, `scene` gives it to the picture.
+   *
+   * Only meaningful on a screen that draws a world. It was a single
+   * `sceneOnly` boolean while `split` was a desktop-only accident of the
+   * stylesheet; making it a state the player can reach is what gives a desktop
+   * window a management view instead of a 28rem column beside empty ground.
    */
-  private sceneOnly = false;
+  private view: StageView = 'split';
 
   /** The market's cast as it was last drawn — see `marketCastChanged`. */
   private marketCast = '';
@@ -222,8 +243,8 @@ export class Shell {
     // remember opening, on a screen you reached by another route, is a trap.
     if (this.screen === 'cauldron' && screen !== 'cauldron' && isStationOpen()) closeStation();
     // Arriving somewhere with the panel already hidden is arriving at a screen
-    // that looks empty, so the scene-only view lasts only as long as the screen.
-    if (screen !== this.screen) this.sceneOnly = false;
+    // that looks empty, so a chosen view lasts only as long as the screen.
+    if (screen !== this.screen) this.view = 'split';
     this.screen = screen;
     this.deps.onScreenChange(screen);
     this.render();
@@ -628,14 +649,13 @@ export class Shell {
     /*
      * Which of the two this screen is showing.
      *
-     * CSS decides whether either means anything: above the desktop breakpoint
-     * the panel and the scene both fit, so the flags are ignored and the toggle
-     * is hidden. Below it they pick one of two whole-stage views — the scene
-     * with no panel, or the panel with no scene.
+     * CSS decides what each one means at each width: above the breakpoint
+     * `split` docks the panel beside the picture, below it there is no room to
+     * and it reads as `manage`.
      */
     const hasScene = SCENE_SCREENS.has(this.screen) && !isStationOpen();
     this.panels.dataset.scene = String(hasScene);
-    this.panels.dataset.sceneOnly = String(this.sceneOnly && hasScene);
+    this.panels.dataset.view = hasScene ? this.view : 'manage';
 
     if (this.renderDebug) {
       this.panels.append(this.buildDebugToggle());
@@ -836,16 +856,33 @@ export class Shell {
      * of them.
      */
     const place = t(`nav.${this.screen}`);
+
+    /*
+     * One button, two meanings, and the same two words at either width.
+     *
+     * "Manage" always hands the stage to the panel. "View" always shows the
+     * place — which on a phone means the panel goes away, and on a desktop
+     * means the picture comes back beside it. Both answer "show me the
+     * garden", which is what the word is for; the difference is only in how
+     * much room the window had to begin with.
+     */
+    /*
+     * Below the breakpoint `split` is drawn as `manage`, so it has to read as
+     * `manage` too. Taking the state at face value made the first press on a
+     * phone a press that changed nothing: the button offered to do what the
+     * screen was already doing.
+     */
+    const managing = this.view === 'manage' || (this.view === 'split' && !bothFit());
     const peek = el('button', {
       class: 'view-button view-peek',
       type: 'button',
-      text: this.sceneOnly
-        ? t('world.manageScreen', { screen: place })
-        : t('world.viewScreen', { screen: place }),
+      text: managing
+        ? t('world.viewScreen', { screen: place })
+        : t('world.manageScreen', { screen: place }),
     });
-    peek.setAttribute('aria-pressed', String(this.sceneOnly));
+    peek.setAttribute('aria-pressed', String(managing));
     peek.addEventListener('click', () => {
-      this.sceneOnly = !this.sceneOnly;
+      this.view = managing ? (bothFit() ? 'split' : 'scene') : 'manage';
       this.renderPanels();
     });
 

@@ -4045,7 +4045,7 @@ input[type='range'] {
  */
 @media (max-width: 959.98px) {
   .panel-roomy,
-  #panels[data-scene='true'][data-scene-only='false'] > .panel {
+  #panels[data-scene='true']:not([data-view='scene']) > .panel {
     width: 100%;
     max-width: none;
     margin: 0;
@@ -4060,13 +4060,13 @@ input[type='range'] {
   }
 
   .panel-roomy > .panel-body,
-  #panels[data-scene='true'][data-scene-only='false'] > .panel > .panel-body {
+  #panels[data-scene='true']:not([data-view='scene']) > .panel > .panel-body {
     overflow: visible;
   }
 
   /* A folded section inside a scrolling page must not scroll on its own. */
   .panel-roomy .collapsible-body,
-  #panels[data-scene='true'][data-scene-only='false'] > .panel .collapsible-body {
+  #panels[data-scene='true']:not([data-view='scene']) > .panel .collapsible-body {
     max-height: none;
     overflow: visible;
   }
@@ -4156,8 +4156,8 @@ input[type='range'] {
    * the point of showing the scene should not still be catching the taps meant
    * for it, and the point of the toggle is the room, not the animation.
    */
-  #panels[data-scene-only='true'] > .panel,
-  #panels[data-scene-only='true'] > .panel-pair {
+  #panels[data-scene='true'][data-view='scene'] > .panel,
+  #panels[data-scene='true'][data-view='scene'] > .panel-pair {
     display: none;
   }
 
@@ -4171,7 +4171,7 @@ input[type='range'] {
    * nothing in the world is clickable — every interaction is in the panel — so
    * the scene is a picture, and a picture can wait its turn.
    */
-  #panels[data-scene='true'][data-scene-only='false'] .view-button:not(.view-peek) {
+  #panels[data-scene='true']:not([data-view='scene']) .view-button:not(.view-peek) {
     display: none;
   }
 
@@ -4182,7 +4182,7 @@ input[type='range'] {
    * the page ends above it rather than behind it — a shelf you cannot reach
    * because a button is parked on it is the same bug in a smaller place.
    */
-  #panels[data-scene='true'][data-scene-only='false'] > .panel > .panel-body {
+  #panels[data-scene='true']:not([data-view='scene']) > .panel > .panel-body {
     padding-bottom: 3.75rem;
   }
 }
@@ -4280,9 +4280,64 @@ input[type='range'] {
     max-width: 68rem;
   }
 
-  /* Both fit at this size, so there is nothing to take turns over. */
-  .view-peek {
+  /*
+   * The picture and the panel take turns here too.
+   *
+   * This used to read "both fit at this size, so there is nothing to take turns
+   * over", and hid the toggle. Both do fit — but fitting is not the same as
+   * being usable: the Grounds gave its panel 28rem of a 1352px stage and left
+   * 890px of empty ground beside it, with the seed names hyphenating down the
+   * middle. Managing wants the width; looking at the garden wants the room.
+   * They are still two jobs, so the button that separates them belongs at every
+   * size.
+   *
+   * Scoped to `[data-scene='true']`, which is the screens that have a picture
+   * to take turns with. Every other screen carries `data-view='manage'` too —
+   * it is the honest description of a screen with nothing behind it — and
+   * without the guard this rule stripped the Shop, the Board, the Market and
+   * Settings of the width bounds that keep them readable, and ran all four
+   * edge to edge.
+   */
+  #panels[data-scene='true'][data-view='manage'] > .panel {
+    margin-inline: auto;
+    max-width: none;
+  }
+
+  /*
+   * And the picture, with the panel out of the way.
+   *
+   * `display: none` for the same reason as below the breakpoint: a panel that
+   * is off should not still be catching the presses meant for what is behind
+   * it.
+   */
+  #panels[data-view='scene'] > .panel,
+  #panels[data-view='scene'] > .panel-pair {
     display: none;
+  }
+
+  /*
+   * Room under the last row for the floating toggle, once the panel owns the
+   * stage — the same reach problem the narrow layout has, at a bigger size.
+   */
+  #panels[data-scene='true'][data-view='manage'] > .panel > .panel-body {
+    padding-bottom: 3.75rem;
+  }
+
+  /*
+   * Given the whole stage, spend some of it on the words.
+   *
+   * The default tile is as narrow as a name can survive, which is the right
+   * trade in a docked panel where columns are scarce. With the stage to itself
+   * the grid was fitting fourteen columns and still hyphenating "Emberroot"
+   * down the middle — paying for columns nobody asked for with the one thing
+   * on the tile you have to read.
+   *
+   * Only here: only a screen that has a picture to take turns with, only on a
+   * window wide enough for the turn to be worth taking, and only once the
+   * player has actually asked to manage.
+   */
+  #panels[data-scene='true'][data-view='manage'] .slot-grid {
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
   }
 
   /* Given room, a full-stage page still reads better bounded and centred. */
