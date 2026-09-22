@@ -18,6 +18,7 @@ import {
   makeDropTarget,
   meter,
   modal,
+  outcomeCard,
   panelHeader,
   row,
   sectionHead,
@@ -489,19 +490,19 @@ function renderGreenhouse(sim: Simulation): HTMLElement {
   if (a && b) {
     const preview = previewCross(a.essence, b.essence);
     section.append(
-      el('div', { class: 'outcome' }, [
-        el('div', { class: 'outcome-head' }, [
-          el('span', { class: 'outcome-name', text: t('greenhouse.preview') }),
-        ]),
-        el(
-          'div',
-          { class: 'chips' },
-          ESSENCES.filter((e) => preview[e] > 0).map((e) =>
-            chip(`${t(`essence.${e}.short`)} ${Math.round(preview[e])}`),
+      outcomeCard({
+        name: t('greenhouse.preview'),
+        body: [
+          el(
+            'div',
+            { class: 'chips' },
+            ESSENCES.filter((e) => preview[e] > 0).map((e) =>
+              chip(`${t(`essence.${e}.short`)} ${Math.round(preview[e])}`),
+            ),
           ),
-        ),
-        el('span', { class: 'field-note', text: t('greenhouse.mutationNote') }),
-      ]),
+          el('span', { class: 'field-note', text: t('greenhouse.mutationNote') }),
+        ],
+      }),
     );
   }
 

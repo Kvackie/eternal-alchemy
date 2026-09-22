@@ -7,14 +7,15 @@
  */
 
 import {
-  VALUE_MARK,
   button,
   clear,
   el,
   modal,
+  outcomeCard,
   panelHeader,
-  toggleSwitch,
   splitOnValue,
+  toggleSwitch,
+  VALUE_MARK,
 } from '../components';
 import { debugEnabled, setDebugEnabled } from '@/platform/debugFlag';
 import { formatGold, formatNumber, t } from '@/i18n';
@@ -171,10 +172,9 @@ function renderCodex(deps: SettingsDeps): HTMLElement {
   // Retirement is offered only at the top, and never without the numbers.
   if (sim.canRetire) {
     section.append(
-      el('div', { class: 'outcome' }, [
-        el('div', { class: 'outcome-head' }, [
-          el('span', { class: 'outcome-name', text: t('prestige.title') }),
-        ]),
+      outcomeCard({
+        name: t('prestige.title'),
+        body: [
         el('span', { class: 'field-note', text: t('prestige.body') }),
         /*
          * One sentence, not a label with the number pushed to the far margin.
@@ -233,7 +233,8 @@ function renderCodex(deps: SettingsDeps): HTMLElement {
             { variant: 'gold', disabled: chosenTown === null },
           ),
         ]),
-      ]),
+        ],
+      }),
     );
   } else {
     section.append(el('span', { class: 'field-note', text: t('prestige.locked') }));

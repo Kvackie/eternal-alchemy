@@ -33,6 +33,7 @@ import {
   meter,
   modal,
   optionGroup,
+  outcomeCard,
   pager,
   searchField,
   sectionHead,
@@ -909,17 +910,18 @@ function renderOutcome(sim: Simulation): HTMLElement {
     return section;
   }
 
-  const card = el('div', { class: 'outcome' }, [
-    el('div', { class: 'outcome-head' }, [
-      gradeBadge(outcome.grade),
-      el('span', { class: 'outcome-name', text: t(`recipe.${outcome.recipeId}`) }),
-      chip(t(`potency.${outcome.potencyTier}`)),
-    ]),
-    stat(t('cauldron.readout.purity'), `${Math.round(outcome.purity)} / 100`),
-    temperatureLine(sim, outcome),
-  ]);
-  if (outcome.isFallback) card.dataset.tone = 'warn';
-  section.append(card);
+  section.append(
+    outcomeCard({
+      badge: gradeBadge(outcome.grade),
+      name: t(`recipe.${outcome.recipeId}`),
+      chips: [chip(t(`potency.${outcome.potencyTier}`))],
+      body: [
+        stat(t('cauldron.readout.purity'), `${Math.round(outcome.purity)} / 100`),
+        temperatureLine(sim, outcome),
+      ],
+      ...(outcome.isFallback ? { tone: 'warn' } : {}),
+    }),
+  );
 
   const problems = outcomeProblems(outcome);
   if (problems.length > 0) {
@@ -977,15 +979,12 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
   }
 
   return el('section', { class: 'station-block' }, [
-    el('div', { class: 'outcome' }, [
-      el('div', { class: 'outcome-head' }, [
-        gradeBadge(brewing.outcome.grade),
-        el('span', { class: 'outcome-name', text: t(`recipe.${brewing.outcome.recipeId}`) }),
-        chip(t(`potency.${brewing.outcome.potencyTier}`)),
-      ]),
-      stat(t('cauldron.brewing.remaining'), remaining),
-      bar,
-    ]),
+    outcomeCard({
+      badge: gradeBadge(brewing.outcome.grade),
+      name: t(`recipe.${brewing.outcome.recipeId}`),
+      chips: [chip(t(`potency.${brewing.outcome.potencyTier}`))],
+      body: [stat(t('cauldron.brewing.remaining'), remaining), bar],
+    }),
   ]);
 }
 
@@ -1018,14 +1017,12 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
   }
 
   section.append(
-    el('div', { class: 'outcome' }, [
-      el('div', { class: 'outcome-head' }, [
-        gradeBadge(brew.grade),
-        el('span', { class: 'outcome-name', text: t(`recipe.${brew.recipeId}`) }),
-        chip(t(`potency.${brew.potencyTier}`)),
-      ]),
-      stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`),
-    ]),
+    outcomeCard({
+      badge: gradeBadge(brew.grade),
+      name: t(`recipe.${brew.recipeId}`),
+      chips: [chip(t(`potency.${brew.potencyTier}`))],
+      body: [stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`)],
+    }),
     el('div', { class: 'field' }, [
       el('span', { class: 'field-label', text: t('workbench.form') }),
       optionGroup(
@@ -1157,17 +1154,17 @@ export function openBottling(sim: Simulation): void {
 function renderReadyCard(sim: Simulation): HTMLElement {
   const brew = sim.pendingBrew!;
   return el('section', { class: 'station-block' }, [
-    el('div', { class: 'outcome' }, [
-      el('div', { class: 'outcome-head' }, [
-        gradeBadge(brew.grade),
-        el('span', { class: 'outcome-name', text: t(`recipe.${brew.recipeId}`) }),
-        chip(t(`potency.${brew.potencyTier}`), 'good'),
-      ]),
-      stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`),
-      el('div', { class: 'row-actions center' }, [
-        button(t('cauldron.bottle.open'), () => openBottling(sim), { variant: 'gold' }),
-      ]),
-    ]),
+    outcomeCard({
+      badge: gradeBadge(brew.grade),
+      name: t(`recipe.${brew.recipeId}`),
+      chips: [chip(t(`potency.${brew.potencyTier}`), 'good')],
+      body: [
+        stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`),
+        el('div', { class: 'row-actions center' }, [
+          button(t('cauldron.bottle.open'), () => openBottling(sim), { variant: 'gold' }),
+        ]),
+      ],
+    }),
   ]);
 }
 

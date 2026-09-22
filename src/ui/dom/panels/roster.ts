@@ -22,6 +22,7 @@ import {
   portrait,
   potionIcon,
   searchField,
+  outcomeCard,
   row,
   slot,
   slotGrid,
@@ -580,22 +581,22 @@ function renderSendButton(sim: Simulation): HTMLElement {
   if (ready) {
     const estimate = sim.estimate(selectedBiome!, selectedHeroes, selectedSupplies);
     section.append(
-      el('div', { class: 'outcome' }, [
-        el('div', { class: 'outcome-head' }, [
-          el('span', { class: 'outcome-name', text: t(`biome.${selectedBiome}`) }),
-          chip(formatDuration(estimate.durationMs)),
-        ]),
-        stat(t('roster.success'), formatPercent(estimate.success), 'good'),
-        stat(t('roster.rareFind'), formatPercent(estimate.rareFind)),
-        stat(
-          t('roster.injury'),
-          formatPercent(estimate.injury),
-          estimate.injury > 0.2 ? 'bad' : undefined,
-        ),
-        ...(estimate.favouriteSupplied
-          ? [stat(t('roster.favourite'), t('roster.favourite.yes'), 'good')]
-          : []),
-      ]),
+      outcomeCard({
+        name: t(`biome.${selectedBiome}`),
+        chips: [chip(formatDuration(estimate.durationMs))],
+        body: [
+          stat(t('roster.success'), formatPercent(estimate.success), 'good'),
+          stat(t('roster.rareFind'), formatPercent(estimate.rareFind)),
+          stat(
+            t('roster.injury'),
+            formatPercent(estimate.injury),
+            estimate.injury > 0.2 ? 'bad' : undefined,
+          ),
+          ...(estimate.favouriteSupplied
+            ? [stat(t('roster.favourite'), t('roster.favourite.yes'), 'good')]
+            : []),
+        ],
+      }),
     );
   }
 

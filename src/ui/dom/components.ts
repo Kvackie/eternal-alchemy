@@ -563,6 +563,35 @@ export function chipRow<T extends string>(spec: {
   );
 }
 
+/**
+ * A named result, with its figures under it.
+ *
+ * What a brew came out as, what a cross would come out as, what retiring
+ * would earn — four of these, all built the same way out of an `.outcome`
+ * wrapping an `.outcome-head` wrapping an `.outcome-name`.
+ */
+export function outcomeCard(spec: {
+  /** Before the name: a grade badge, usually. */
+  badge?: HTMLElement | null;
+  name: string;
+  /** After the name: potency, or whatever qualifies it. */
+  chips?: HTMLElement[];
+  body: Array<Node | string>;
+  /** `warn` for a result that is not the one that was asked for. */
+  tone?: string;
+}): HTMLElement {
+  const card = el('div', { class: 'outcome' }, [
+    el('div', { class: 'outcome-head' }, [
+      ...(spec.badge ? [spec.badge] : []),
+      el('span', { class: 'outcome-name', text: spec.name }),
+      ...(spec.chips ?? []),
+    ]),
+    ...spec.body,
+  ]);
+  if (spec.tone) card.dataset.tone = spec.tone;
+  return card;
+}
+
 export function clear(node: HTMLElement): void {
   while (node.firstChild) node.firstChild.remove();
 }
