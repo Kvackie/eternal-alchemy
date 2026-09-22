@@ -72,7 +72,6 @@ describe('the garden sustains itself', () => {
       sim.world.seeds.dewcap = 5;
       if (!sim.plant(plot.id, 'dewcap')) break;
       planted += 1;
-      sim.tend(plot.id);
       sim.advanceBy(HOUR);
       recovered += sim.harvest(plot.id)!.seeds;
     }
@@ -101,7 +100,6 @@ describe('the garden sustains itself', () => {
       sim.world.seeds.dewcap = 5;
       if (!sim.plant(plot.id, 'dewcap')) break;
       planted += 1;
-      sim.tend(plot.id);
       sim.advanceBy(HOUR);
       recovered += sim.harvest(plot.id)!.seeds;
     }

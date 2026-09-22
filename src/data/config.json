@@ -1,13 +1,24 @@
 {
   "$comment": "Every duration, cost and curve in the game. Tunable at runtime via the debug panel; never hard-coded in game logic.",
-
   "clock": {
     "dayLengthMs": 10800000,
     "phases": [
-      { "id": "dawn", "startFraction": 0.0 },
-      { "id": "day", "startFraction": 0.0833 },
-      { "id": "dusk", "startFraction": 0.6667 },
-      { "id": "night", "startFraction": 0.75 }
+      {
+        "id": "dawn",
+        "startFraction": 0.0
+      },
+      {
+        "id": "day",
+        "startFraction": 0.0833
+      },
+      {
+        "id": "dusk",
+        "startFraction": 0.6667
+      },
+      {
+        "id": "night",
+        "startFraction": 0.75
+      }
     ],
     "weekdays": [
       "toilday",
@@ -19,19 +30,16 @@
       "templeday"
     ]
   },
-
   "garden": {
     "startingPlots": 4,
     "maxPlots": 16,
-    "tendedYieldMultiplier": 1.3,
-    "untendedYieldMultiplier": 1.0,
-    "tendWindowFraction": 0.6,
+    "$yieldComment": "Tending is gone, so there is one multiplier. It keeps the tended figure because the seed economy is balanced against a four-unit harvest; dropping to the untended 1.0 would have cut every harvest by a quarter.",
+    "yieldMultiplier": 1.3,
     "$seedDropComment": "Rolled once per unit harvested, not once per plot. Per-plot drains the garden; per-unit is roughly break-even.",
     "seedDropChance": 0.25,
     "$soilComment": "Extra units when a crop sits in the soil it wants. A bonus rather than a penalty, so the wrong plot is a missed opportunity and never a punishment.",
     "suitedSoilBonus": 1
   },
-
   "$freshnessComment": "Ageing is a property of the category, not of the individual ingredient. Herbs run the plain schedule; stone, expedition finds and reagents never age at all; fungus keeps twice as long, which is what makes a cave worth farming when you cannot get to the pot today.",
   "freshness": {
     "dewfreshUntilMs": 43200000,
@@ -39,15 +47,19 @@
     "dewfreshEssenceMultiplier": 1.1,
     "freshEssenceMultiplier": 1.0,
     "driedEssenceMultiplier": 0.8,
-    "agelessCategories": ["mineral", "exotic", "reagent"],
-    "categoryAgeMultiplier": { "fungus": 2 }
+    "agelessCategories": [
+      "mineral",
+      "exotic",
+      "reagent"
+    ],
+    "categoryAgeMultiplier": {
+      "fungus": 2
+    }
   },
-
   "$cauldronComment": "Capacity and ingredient count moved to cauldrons.json when the shop stopped having exactly one pot — they are properties of a particular cauldron now, not of the game. What is left here is the rule that applies to every pot alike.",
   "cauldron": {
     "unstableGrade": "D"
   },
-
   "brewing": {
     "$comment": "Temperature is a live gauge in degrees. Heat and chill push it; left alone it drifts back toward the room. A tap applies one step, a hold applies the per-second rate.",
     "ambientTemperature": 20,
@@ -67,7 +79,6 @@
       "sovereign": 2700000
     }
   },
-
   "grading": {
     "purityFloor": 20,
     "purityPerRadian": 36,
@@ -81,26 +92,65 @@
       "sovereign": "S"
     },
     "bands": [
-      { "grade": "S", "minPurity": 96 },
-      { "grade": "A", "minPurity": 88 },
-      { "grade": "B", "minPurity": 76 },
-      { "grade": "C", "minPurity": 64 },
-      { "grade": "D", "minPurity": 52 },
-      { "grade": "E", "minPurity": 30 },
-      { "grade": "F", "minPurity": 0 }
+      {
+        "grade": "S",
+        "minPurity": 96
+      },
+      {
+        "grade": "A",
+        "minPurity": 88
+      },
+      {
+        "grade": "B",
+        "minPurity": 76
+      },
+      {
+        "grade": "C",
+        "minPurity": 64
+      },
+      {
+        "grade": "D",
+        "minPurity": 52
+      },
+      {
+        "grade": "E",
+        "minPurity": 30
+      },
+      {
+        "grade": "F",
+        "minPurity": 0
+      }
     ]
   },
-
   "potency": {
     "tiers": [
-      { "id": "minor", "minEssence": 20, "valueMultiplier": 0.6 },
-      { "id": "common", "minEssence": 45, "valueMultiplier": 1.0 },
-      { "id": "greater", "minEssence": 100, "valueMultiplier": 2.2 },
-      { "id": "grand", "minEssence": 180, "valueMultiplier": 4.5 },
-      { "id": "sovereign", "minEssence": 300, "valueMultiplier": 9.0 }
+      {
+        "id": "minor",
+        "minEssence": 20,
+        "valueMultiplier": 0.6
+      },
+      {
+        "id": "common",
+        "minEssence": 45,
+        "valueMultiplier": 1.0
+      },
+      {
+        "id": "greater",
+        "minEssence": 100,
+        "valueMultiplier": 2.2
+      },
+      {
+        "id": "grand",
+        "minEssence": 180,
+        "valueMultiplier": 4.5
+      },
+      {
+        "id": "sovereign",
+        "minEssence": 300,
+        "valueMultiplier": 9.0
+      }
     ]
   },
-
   "market": {
     "tickMs": 300000,
     "baseFootfall": 1.0,
@@ -125,28 +175,36 @@
       "templeday": 1.15
     }
   },
-
   "shop": {
     "startingShelves": 4
   },
-
   "greenhouse": {
     "$comment": "Crossing produces a seed, not a plant — you still have to grow it. That keeps breeding a project rather than a button.",
     "mutationChance": 0.22,
     "seedsPerCross": 2,
     "maxStrains": 24,
-    "crossableCrops": ["sunleaf", "emberroot", "dewcap"]
+    "crossableCrops": [
+      "sunleaf",
+      "emberroot",
+      "dewcap"
+    ]
   },
-
   "economy": {
     "startingGold": 60,
     "startingRenown": 0,
     "renownPerSale": 0.5,
-    "renownPerGradeBonus": { "S": 6, "A": 4, "B": 2, "C": 1, "D": 0, "E": 0, "F": 0 },
+    "renownPerGradeBonus": {
+      "S": 6,
+      "A": 4,
+      "B": 2,
+      "C": 1,
+      "D": 0,
+      "E": 0,
+      "F": 0
+    },
     "relationshipPerGold": 1,
     "relationshipPerPotion": 1
   },
-
   "save": {
     "slots": 3,
     "autosaveDebounceMs": 1500,

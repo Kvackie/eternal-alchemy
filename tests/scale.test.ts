@@ -169,7 +169,6 @@ describe('a shop at scale', () => {
         const span = bed.crop.readyAt - bed.crop.plantedAt;
         bed.crop.plantedAt -= Math.round((span * i) / PLOTS);
         bed.crop.readyAt -= Math.round((span * i) / PLOTS);
-        bed.crop.tended = i % 3 === 0;
       }
     });
 

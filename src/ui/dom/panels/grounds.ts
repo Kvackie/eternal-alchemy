@@ -5,7 +5,7 @@
  * to the same question — where do ingredients come from — and because eight
  * top-level destinations is already one too many on a phone.
  *
- * Each keeps its own verb: the garden you plant, the cave you tend, the shaft
+ * Each keeps its own verb: the garden you plant, the cave you seed, the quarry
  * you dig.
  */
 
@@ -16,6 +16,7 @@ import {
   ingredientIcon,
   makeDropTarget,
   meter,
+  modal,
   panelHeader,
   slot,
   slotGrid,
@@ -24,7 +25,7 @@ import {
 import { formatDuration, t } from '@/i18n';
 import { showIngredientInfo } from '../ingredientInfo';
 import { caveConfig, crops, getCrop, getIngredient, shaftConfig } from '@/sim/config';
-import { canTend, isReady } from '@/sim/garden';
+import { isReady } from '@/sim/garden';
 import { isMature, maturityOf } from '@/sim/cave';
 import { previewCross } from '@/sim/greenhouse';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
@@ -40,7 +41,6 @@ export const SEED_DRAG = 'application/x-eternal-seed';
 type Tab = 'garden' | 'cave' | 'shaft';
 
 let tab: Tab = 'garden';
-let selectedCrop: string | null = null;
 let selectedSpecies: string | null = null;
 let caveTool: 'seed' | 'lantern' | 'tray' = 'seed';
 
@@ -147,7 +147,6 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
       label,
       count,
       caption: formatDuration(growMs),
-      selected: selectedCrop === id,
       dragType: SEED_DRAG,
       tone: strain ? 'good' : 'default',
       title: `${label}\n${t('garden.tip.seed', {
@@ -173,7 +172,7 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
        * matters; this is for when it does not.
        */
       onActivate: () => {
-        const free = sim.world.plots.find((plot) => !plot.crop);
+        const free = sim.world.plots.filter((plot) => !plot.crop);
         showIngredientInfo(sim, crop.yields, {
           // A bred strain carries its own vector, not the wild plant's.
           essence: strain?.essence,
@@ -181,12 +180,8 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
           action: {
             label: t('garden.seed.plant'),
             max: 1,
-            blocked: free ? undefined : t('garden.seed.noPlot'),
-            run: () => {
-              selectedCrop = id;
-              if (free) sim.plant(free.id, id);
-              changed();
-            },
+            blocked: free.length > 0 ? undefined : t('garden.seed.noPlot'),
+            run: () => openSoilPicker(sim, id, crop.soil),
           },
         });
       },
@@ -203,10 +198,34 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
     ]),
   );
 
+  /*
+   * Harvest all at the top, where the list starts.
+   *
+   * It used to sit under the last plot, which on sixteen beds is a scroll to
+   * the bottom to press the button that empties the thing you just scrolled
+   * past. Nothing else here is a bulk action: tending is gone, and planting
+   * asks which soil.
+   */
+  const ready = sim.world.plots.filter((plot) => isReady(plot, sim.now)).length;
   const plots = el('section', { class: 'plots' }, [
     el('div', { class: 'stores-head' }, [
       el('span', { class: 'field-label', text: t('garden.plots') }),
       el('span', { class: 'field-note', text: t('garden.plots.hint') }),
+      ...(ready > 0
+        ? [
+            button(
+              t('garden.action.harvestAll', { count: ready }),
+              () => {
+                const results = sim.harvestAll();
+                const total = results.reduce((sum, r) => sum + r.count, 0);
+                const seeds = results.reduce((sum, r) => sum + r.seeds, 0);
+                toast(harvestToast(results, total, seeds));
+                changed();
+              },
+              { small: true, variant: 'good' },
+            ),
+          ]
+        : []),
     ]),
   ]);
   for (const plot of sim.world.plots) plots.append(renderPlot(sim, plot));
@@ -214,28 +233,113 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
 
   if (sim.hasGreenhouse) body.append(renderGreenhouse(sim));
 
-  const ready = sim.world.plots.filter((plot) => isReady(plot, sim.now)).length;
-  if (ready > 1) {
-    body.append(
-      el('div', { class: 'row-actions' }, [
-        button(t('garden.action.harvestAll'), () => {
-          const results = sim.harvestAll();
-          const total = results.reduce((sum, r) => sum + r.count, 0);
-          const seeds = results.reduce((sum, r) => sum + r.seeds, 0);
-          toast(harvestToast(results, total, seeds));
-          changed();
-        }),
-      ]),
-    );
-  }
 }
 
-/** Which crop a soil chip should judge itself against, if any is chosen. */
-function soilChipFor(plot: Plot, cropId: string | null): HTMLElement {
-  const wanted = cropId ? soilWantedBy(cropId) : null;
-  // Marked good only when there is a crop to compare against, so an idle plot
-  // never claims to suit something nobody picked.
-  return chip(t(`soil.${plot.soil}`), wanted && wanted === plot.soil ? 'good' : 'plain');
+/** Seeds and strains you actually hold, in the order the tray shows them. */
+function seedsOnHand(sim: Simulation): Array<{ id: string; label: string; count: number }> {
+  const wild = crops
+    .map((crop) => ({ id: crop.id, label: t(`crop.${crop.id}`), count: sim.world.seeds[crop.id] ?? 0 }))
+    .filter((entry) => entry.count > 0);
+
+  const bred = sim.world.strains
+    .map((strain) => ({
+      id: strain.id,
+      label: t('greenhouse.strain', {
+        crop: t(`crop.${strain.baseCropId}`),
+        gen: strain.generation,
+      }),
+      count: sim.world.seeds[strain.id] ?? 0,
+    }))
+    .filter((entry) => entry.count > 0);
+
+  return [...wild, ...bred];
+}
+
+/** The nearest empty plot of a given soil, counting from the first bed. */
+function nearestFreePlot(sim: Simulation, soil: string): Plot | undefined {
+  return sim.world.plots.find((plot) => !plot.crop && plot.soil === soil);
+}
+
+/**
+ * Which ground, rather than which bed.
+ *
+ * Plots are interchangeable except for their soil, so asking "plot 7 or plot
+ * 11" is asking a player to hold a map of their own garden in their head to
+ * answer a question about dirt. The soil is the decision; the bed is
+ * bookkeeping, and the nearest empty one of that soil is as good as any.
+ *
+ * The soil a crop wants is marked and sorted first, and a soil with no empty
+ * bed left is still listed, greyed, so the picker is a picture of the garden
+ * rather than a list that silently loses options.
+ */
+function openSoilPicker(sim: Simulation, seedId: string, wanted: string): void {
+  const soils = [...new Set(sim.world.plots.map((plot) => plot.soil))].sort((a, b) => {
+    const pick = Number(b === wanted) - Number(a === wanted);
+    return pick || t(`soil.${a}`).localeCompare(t(`soil.${b}`));
+  });
+
+  modal({
+    content: (dismiss) => [
+      el('h2', { text: t('garden.soil.title') }),
+      el('p', { text: t('garden.soil.hint', { soil: t(`soil.${wanted}`) }) }),
+      el(
+        'div',
+        { class: 'shelf-picker' },
+        soils.map((soil) => {
+          const free = sim.world.plots.filter((plot) => !plot.crop && plot.soil === soil).length;
+          return button(
+            free > 0
+              ? t('garden.soil.option', { soil: t(`soil.${soil}`), count: free })
+              : t('garden.soil.full', { soil: t(`soil.${soil}`) }),
+            () => {
+              dismiss();
+              const plot = nearestFreePlot(sim, soil);
+              if (plot && sim.plant(plot.id, seedId)) changed();
+            },
+            { variant: soil === wanted ? 'good' : 'quiet', disabled: free === 0 },
+          );
+        }),
+      ),
+      el('div', { class: 'dialog-actions' }, [
+        button(t('common.cancel'), dismiss, { variant: 'quiet' }),
+      ]),
+    ],
+  });
+}
+
+/** The other way round: this bed, which seed? */
+function openSeedPicker(sim: Simulation, plot: Plot): void {
+  const seeds = seedsOnHand(sim);
+
+  modal({
+    content: (dismiss) => [
+      el('h2', { text: t('garden.seedPicker.title') }),
+      el('p', { text: t('garden.seedPicker.hint', { soil: t(`soil.${plot.soil}`) }) }),
+      el(
+        'div',
+        { class: 'shelf-picker' },
+        seeds.map((seed) => {
+          const suits = soilWantedBy(seed.id) === plot.soil;
+          return button(
+            t('garden.seedPicker.option', { seed: seed.label, count: seed.count }),
+            () => {
+              dismiss();
+              if (sim.plant(plot.id, seed.id)) changed();
+            },
+            { variant: suits ? 'good' : 'quiet' },
+          );
+        }),
+      ),
+      el('div', { class: 'dialog-actions' }, [
+        button(t('common.cancel'), dismiss, { variant: 'quiet' }),
+      ]),
+    ],
+  });
+}
+
+/** A planted plot's soil, marked good where it is the soil that crop wants. */
+function soilChipFor(plot: Plot, cropId: string): HTMLElement {
+  return chip(t(`soil.${plot.soil}`), soilWantedBy(cropId) === plot.soil ? 'good' : 'plain');
 }
 
 /** A strain keeps its parent's soil; an unknown seed id simply has no opinion. */
@@ -256,20 +360,27 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
       if (sim.plant(plot.id, cropId)) changed();
     });
 
-    const canPlant = selectedCrop !== null && (sim.world.seeds[selectedCrop] ?? 0) > 0;
-    // With a seed in hand the chip says whether this is the plot for it.
-    const soil = soilChipFor(plot, selectedCrop);
+    /*
+     * The plot asks which seed; the seed asks which soil.
+     *
+     * Nothing stays selected between the two any more. Choosing a seed used to
+     * leave it in hand so the next plot's button would plant the same thing,
+     * which meant every tap on a seed quietly armed the garden — and a plot
+     * whose button did nothing until you had been somewhere else first.
+     */
+    const seeds = seedsOnHand(sim);
     node.append(
       el('div', { class: 'plot-main' }, [
         el('span', { class: 'plot-title', text: t('garden.plot.empty') }),
-        el('div', { class: 'row-sub' }, [soil, el('span', { text: t('garden.plot.emptyHint') })]),
+        el('div', { class: 'row-sub' }, [
+          chip(t(`soil.${plot.soil}`), 'plain'),
+          el('span', { text: t('garden.plot.emptyHint') }),
+        ]),
       ]),
       button(
         t('garden.action.plant'),
-        () => {
-          if (selectedCrop && sim.plant(plot.id, selectedCrop)) changed();
-        },
-        { disabled: !canPlant, small: true },
+        () => openSeedPicker(sim, plot),
+        { disabled: seeds.length === 0, small: true },
       ),
     );
     return node;
@@ -283,7 +394,6 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
 
   const sub: Array<Node | string> = [soilChipFor(plot, crop.id)];
   if (plot.soil === crop.soil) sub.push(chip(t('garden.suited'), 'good'));
-  if (plot.crop.tended) sub.push(chip(t('garden.tended'), 'warn'));
 
   const actions: HTMLElement[] = [];
   if (ready) {
@@ -298,16 +408,6 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
           }
         },
         { small: true },
-      ),
-    );
-  } else if (canTend(sim.world, plot.id)) {
-    actions.push(
-      button(
-        t('garden.action.tend'),
-        () => {
-          if (sim.tend(plot.id)) changed();
-        },
-        { variant: 'ghost', small: true },
       ),
     );
   }

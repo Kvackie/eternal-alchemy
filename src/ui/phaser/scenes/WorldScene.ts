@@ -790,10 +790,6 @@ export class WorldScene extends Phaser.Scene {
       this.content.addAt(halo, Math.max(0, this.content.length - count * 2));
     }
 
-    if (crop.tended) {
-      const mark = this.add.circle(x + tileW * 0.34, y - tileH * 0.32, 4, palette.amber, 1);
-      this.content.add(mark);
-    }
   }
 
 

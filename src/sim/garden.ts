@@ -2,7 +2,8 @@
  * The garden.
  *
  * Crops finish on a schedule and then wait indefinitely. Nothing wilts, nothing
- * dies, and an untended plot still yields — tending is a bonus, never a duty.
+ * dies. There is no tending: a plot you planted is a plot that will be ready,
+ * and the only decision it carries is which soil you put the seed in.
  * That is what makes the garden safe to leave for a week.
  */
 
@@ -18,7 +19,6 @@ export interface HarvestResult {
   plotId: string;
   ingredientId: string;
   count: number;
-  tended: boolean;
   /** Seeds recovered from this harvest. */
   seeds: number;
 }
@@ -80,28 +80,7 @@ export function plant(world: World, plotId: string, seedId: string): boolean {
     readyAt:
       world.now +
       seed.growMs * codexBonuses(world).timerMultiplier * cropGrowthMultiplier(world),
-    tended: false,
   };
-  return true;
-}
-
-/**
- * Tending is available for the first part of a crop's life. Late tending does
- * nothing rather than failing loudly — the UI simply stops offering it.
- */
-export function canTend(world: World, plotId: string): boolean {
-  const plot = plotById(world, plotId);
-  if (!plot?.crop || plot.crop.tended) return false;
-  const crop = getCrop(plot.crop.cropId);
-  const elapsed = world.now - plot.crop.plantedAt;
-  return elapsed <= crop.growMs * config.garden.tendWindowFraction;
-}
-
-export function tend(world: World, plotId: string): boolean {
-  if (!canTend(world, plotId)) return false;
-  const plot = plotById(world, plotId);
-  if (!plot?.crop) return false;
-  plot.crop.tended = true;
   return true;
 }
 
@@ -110,15 +89,15 @@ export function tend(world: World, plotId: string): boolean {
  *
  * Seeds roll per unit harvested, not per plot. That distinction is the whole
  * garden economy: at one roll per plot the garden drains, because planting costs
- * a seed and returns a quarter of one. Rolling against each unit puts a tended
+ * a seed and returns a quarter of one. Rolling against each unit puts a
  * four-unit harvest at roughly break-even, so the garden sustains itself and
  * merchants become a way to expand rather than a life-support machine.
  */
 /**
  * How many units this plot will give up when picked.
  *
- * Shared with the world view, which draws one plant per unit — so a tended bed
- * on its right soil is visibly fuller than a neglected one, and the picture
+ * Shared with the world view, which draws one plant per unit — so a bed on its
+ * right soil is visibly fuller than one on the wrong soil, and the picture
  * cannot promise a different harvest from the one you get.
  *
  * Ground it likes yields one more. Every crop declared a soil and every plot had
@@ -133,12 +112,22 @@ export function harvestSize(world: World, plot: Plot): number {
     ? world.strains.find((entry) => entry.id === plot.crop!.strainId)
     : undefined;
 
-  const multiplier = plot.crop.tended
-    ? config.garden.tendedYieldMultiplier
-    : config.garden.untendedYieldMultiplier;
+  /*
+   * One multiplier, set at what a tended plot used to give.
+   *
+   * Tending is gone, and the seed economy above is balanced against a four-unit
+   * harvest — the figure a tended plot produced. Keeping the untended 1.0
+   * instead would have quietly cut every harvest by a quarter and left the
+   * garden draining seeds, which is a different change from removing a chore.
+   */
   const suited = plot.soil === crop.soil ? config.garden.suitedSoilBonus : 0;
 
-  return Math.max(1, Math.round(crop.yieldCount * multiplier) + (strain?.yieldBonus ?? 0) + suited);
+  return Math.max(
+    1,
+    Math.round(crop.yieldCount * config.garden.yieldMultiplier) +
+      (strain?.yieldBonus ?? 0) +
+      suited,
+  );
 }
 
 export function harvest(world: World, plotId: string, rng: Rng): HarvestResult | null {
@@ -150,7 +139,6 @@ export function harvest(world: World, plotId: string, rng: Rng): HarvestResult |
   const strain = strainId ? world.strains.find((entry) => entry.id === strainId) : undefined;
 
   const count = harvestSize(world, plot);
-  const tended = plot.crop.tended;
 
   // A bred line drops its own seed, not its wild parent's — otherwise a strain
   // could only ever be planted as many times as it was crossed.
@@ -169,7 +157,7 @@ export function harvest(world: World, plotId: string, rng: Rng): HarvestResult |
   world.statistics.cropsHarvested += count;
   world.statistics.seedsRecovered += seeds;
 
-  return { plotId, ingredientId: crop.yields, count, tended, seeds };
+  return { plotId, ingredientId: crop.yields, count, seeds };
 }
 
 export function harvestAllReady(world: World, rng: Rng): HarvestResult[] {

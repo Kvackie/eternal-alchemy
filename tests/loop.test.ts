@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { availableForms, availableVessels } from '@/sim/bottling';
-import { config, getRecipe } from '@/sim/config';
+import { config, getCrop, getRecipe } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
 import type { BrewMethod } from '@/sim/types';
 
@@ -41,32 +41,29 @@ describe('garden', () => {
     expect(sim.harvest(plot.id)).toBeNull();
   });
 
-  it('yields more from a tended plot, and an untended plot still yields', () => {
-    const tended = new Simulation(createWorld(1));
-    const plain = new Simulation(createWorld(1));
+  it('yields more from a plot on the soil its crop wants', () => {
+    // Tending is gone, so soil is the whole of what a plot decides. Sunleaf
+    // wants loam; the same seed on anything else gives one unit less.
+    const suited = new Simulation(createWorld(1));
+    const wrong = new Simulation(createWorld(1));
 
-    const a = tended.world.plots[0]!;
-    const b = plain.world.plots[0]!;
-    tended.plant(a.id, 'sunleaf');
-    plain.plant(b.id, 'sunleaf');
-    tended.tend(a.id);
+    const a = suited.world.plots[0]!;
+    const b = wrong.world.plots[0]!;
+    const wanted = getCrop('sunleaf').soil;
+    a.soil = wanted;
+    b.soil = wanted === 'ash' ? 'silt' : 'ash';
+    expect(b.soil).not.toBe(a.soil);
 
-    tended.advanceBy(HOUR);
-    plain.advanceBy(HOUR);
+    suited.plant(a.id, 'sunleaf');
+    wrong.plant(b.id, 'sunleaf');
+    suited.advanceBy(HOUR);
+    wrong.advanceBy(HOUR);
 
-    const tendedYield = tended.harvest(a.id)!.count;
-    const plainYield = plain.harvest(b.id)!.count;
+    const suitedYield = suited.harvest(a.id)!.count;
+    const wrongYield = wrong.harvest(b.id)!.count;
 
-    expect(plainYield).toBeGreaterThan(0);
-    expect(tendedYield).toBeGreaterThan(plainYield);
-  });
-
-  it('closes the tending window partway through growth', () => {
-    const sim = new Simulation(createWorld(1));
-    const plot = sim.world.plots[0]!;
-    sim.plant(plot.id, 'emberroot');
-    sim.advanceBy(config.garden.tendWindowFraction * 1_800_000 + 1000);
-    expect(sim.tend(plot.id)).toBe(false);
+    expect(wrongYield).toBeGreaterThan(0);
+    expect(suitedYield).toBeGreaterThan(wrongYield);
   });
 
   it('rolls for seeds once per unit harvested, not once per plot', () => {
@@ -78,7 +75,6 @@ describe('garden', () => {
       const plot = sim.world.plots[0]!;
       sim.world.seeds.dewcap = 5;
       sim.plant(plot.id, 'dewcap');
-      sim.tend(plot.id);
       sim.advanceBy(HOUR);
       best = Math.max(best, sim.harvest(plot.id)!.seeds);
     }
@@ -87,7 +83,7 @@ describe('garden', () => {
   });
 
   it('keeps the garden roughly self-sustaining over many harvests', () => {
-    // Planting costs 1 seed; a tended 4-unit harvest at 25% returns ~1. The
+    // Planting costs 1 seed; a 4-unit harvest at 25% returns ~1. The
     // garden should not drain to nothing, which is what a per-plot roll would do.
     const sim = new Simulation(createWorld(2468));
     const plot = sim.world.plots[0]!;
@@ -98,7 +94,6 @@ describe('garden', () => {
       sim.world.seeds.dewcap = 5;
       if (!sim.plant(plot.id, 'dewcap')) break;
       planted += 1;
-      sim.tend(plot.id);
       sim.advanceBy(HOUR);
       recovered += sim.harvest(plot.id)!.seeds;
     }
@@ -321,7 +316,6 @@ describe('the whole loop', () => {
     const plot = sim.world.plots[0]!;
 
     sim.plant(plot.id, 'dewcap');
-    sim.tend(plot.id);
     sim.advanceBy(HOUR);
     sim.harvest(plot.id);
 

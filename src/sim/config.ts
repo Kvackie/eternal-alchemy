@@ -493,9 +493,7 @@ export interface GameConfig {
   garden: {
     startingPlots: number;
     maxPlots: number;
-    tendedYieldMultiplier: number;
-    untendedYieldMultiplier: number;
-    tendWindowFraction: number;
+    yieldMultiplier: number;
     seedDropChance: number;
     /** Extra units harvested when a crop sits in the soil it wants. */
     suitedSoilBonus: number;

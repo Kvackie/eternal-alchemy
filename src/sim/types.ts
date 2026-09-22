@@ -41,7 +41,6 @@ export interface Plot {
     cropId: string;
     plantedAt: number;
     readyAt: number;
-    tended: boolean;
     /** Set when a crossbred seed was planted rather than a wild one. */
     strainId?: string | null;
   } | null;

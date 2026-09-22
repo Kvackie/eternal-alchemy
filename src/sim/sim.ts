@@ -42,7 +42,7 @@ import {
 } from './cauldrons';
 import type { Cauldron } from './types';
 import { dayStateAt } from './clock';
-import { harvest, harvestAllReady, isReady, makePlots, plant, tend } from './garden';
+import { harvest, harvestAllReady, isReady, makePlots, plant } from './garden';
 import { addIngredient, returnUnit, takeUnit } from './inventory';
 import { record } from './log';
 import {
@@ -275,9 +275,6 @@ export class Simulation {
     return ok;
   }
 
-  tend(plotId: string): boolean {
-    return tend(this.world, plotId);
-  }
 
   harvest(plotId: string) {
     const result = harvest(this.world, plotId, this.rng);
