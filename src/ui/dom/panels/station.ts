@@ -28,8 +28,10 @@ import {
   gradeBadge,
   ingredientIcon,
   makeDropTarget,
+  matchesSearch,
   meter,
   modal,
+  searchField,
   optionGroup,
   stat,
 } from '../components';
@@ -71,6 +73,23 @@ function scroller(key: string, className: string, children: HTMLElement[]): HTML
 
 const CATEGORIES: IngredientCategory[] = ['herb', 'fungus', 'mineral', 'exotic', 'reagent'];
 
+/**
+ * How many ingredient tiles one page of the stores holds.
+ *
+ * A finished larder is nearly four hundred kinds, and a tile carries a picture,
+ * a name, a freshness and up to five essence readings — around fifteen elements
+ * each. Drawn whole that is 5,800 of the station's 6,800 elements, rebuilt on
+ * every press, which is where the hundred-odd milliseconds a redraw costs
+ * actually goes. The recipe book, long suspected, is 992: its rows build their
+ * bodies only when opened, and always did.
+ *
+ * Same figure the store room uses, for the same reason.
+ */
+const STORE_PAGE = 60;
+
+/** The same idea for the book, which is 196 rows on a finished Codex. */
+const RECIPE_PAGE = 60;
+
 /** Freshest first, which is also the order it decays in. */
 const FRESHNESSES: Freshness[] = ['dewfresh', 'fresh', 'dried'];
 
@@ -90,6 +109,10 @@ let ingredientCategories = new Set<IngredientCategory>();
 let ingredientEssences = new Set<Essence>();
 let ingredientFreshness = new Set<Freshness>();
 
+/** What the stores are narrowed to, and which page of the result is showing. */
+let storeQuery = '';
+let storePage = 1;
+
 /**
  * Whether the filter rows are showing.
  *
@@ -104,6 +127,10 @@ function filtersShown(): boolean {
   return filtersOpen ?? !isSplit();
 }
 let recipeEssences = new Set<Essence>();
+
+/** What the book is narrowed to, and which page of the result is showing. */
+let recipeQuery = '';
+let recipePage = 1;
 /** The auto-filter: hide recipes the pot has already ruled out. */
 let matchPot = true;
 
@@ -310,6 +337,16 @@ function renderStores(sim: Simulation): HTMLElement {
 
   const rows = inventoryRows(sim.world, sim.now).filter((entry) => {
     const def = getIngredient(entry.ingredientId);
+    if (
+      !matchesSearch(
+        storeQuery,
+        t(`ingredient.${entry.ingredientId}`),
+        t(`category.${def.category}`),
+        t(`freshness.${entry.freshness}`),
+      )
+    ) {
+      return false;
+    }
     if (ingredientCategories.size > 0 && !ingredientCategories.has(def.category)) return false;
     /*
      * Freshness is an axis of its own, not a shade of the others.
@@ -328,7 +365,10 @@ function renderStores(sim: Simulation): HTMLElement {
     return [...ingredientEssences].every((essence) => profile[essence] > 0);
   });
 
-  const tiles = rows.map((entry) => ingredientCard(sim, entry, full));
+  const pageCount = Math.max(1, Math.ceil(rows.length / STORE_PAGE));
+  storePage = Math.min(Math.max(1, storePage), pageCount);
+  const onThisPage = rows.slice((storePage - 1) * STORE_PAGE, storePage * STORE_PAGE);
+  const tiles = onThisPage.map((entry) => ingredientCard(sim, entry, full));
 
   /*
    * The filters fold away, because they are not what the screen is for.
@@ -392,14 +432,55 @@ function renderStores(sim: Simulation): HTMLElement {
     );
   }
 
+  const search = searchField({
+    name: 'station-stores',
+    value: storeQuery,
+    placeholder: t('cauldron.stores.search'),
+    onInput: (query) => {
+      storeQuery = query;
+      storePage = 1;
+      changed();
+    },
+  });
+
+  const empty = storeQuery.trim() ? t('common.search.none') : t('cauldron.stores.empty');
+
   const body = [
+    search,
     filters,
     scroller('stores', 'station-scroll', [
       tiles.length > 0
         ? el('div', { class: 'ingredient-grid' }, tiles)
-        : el('p', { class: 'grid-empty', text: t('cauldron.stores.empty') }),
+        : el('p', { class: 'grid-empty', text: empty }),
     ]),
   ];
+
+  if (pageCount > 1) {
+    body.push(
+      el('div', { class: 'pager' }, [
+        button(
+          t('shop.inventory.prev'),
+          () => {
+            storePage = Math.max(1, storePage - 1);
+            changed();
+          },
+          { variant: 'quiet', small: true, disabled: storePage <= 1 },
+        ),
+        el('span', {
+          class: 'pager-label num',
+          text: t('ledger.page.of', { page: storePage, count: pageCount }),
+        }),
+        button(
+          t('shop.inventory.next'),
+          () => {
+            storePage = Math.min(pageCount, storePage + 1);
+            changed();
+          },
+          { variant: 'quiet', small: true, disabled: storePage >= pageCount },
+        ),
+      ]),
+    );
+  }
 
   return collapsible({
     className: 'station-block',
@@ -1171,6 +1252,9 @@ function renderRight(sim: Simulation): HTMLElement {
    * be hiding exactly what you need to see.
    */
   const recipes = sim.knownRecipes().filter((recipe) => {
+    // A typed query is the player naming what they want, and outranks every
+    // other narrowing — including a pin, which is the opposite instruction.
+    if (recipeQuery.trim()) return matchesSearch(recipeQuery, t(`recipe.${recipe.id}`));
     if (pinned.has(recipe.id)) return true;
     if (recipeEssences.size > 0) {
       if (![...recipeEssences].every((essence) => recipe.target[essence] > 0)) return false;
@@ -1184,7 +1268,19 @@ function renderRight(sim: Simulation): HTMLElement {
     return pin || t(`recipe.${a.id}`).localeCompare(t(`recipe.${b.id}`));
   });
 
-  const rows = recipes.map((recipe) => renderRecipe(sim, recipe, blend));
+  /*
+   * A screenful at a time, like the stores and the store room.
+   *
+   * A finished Codex is 196 recipes. Each row is cheap — the bars and the chips
+   * are built only when one is opened — but a thousand elements rebuilt on
+   * every press is still half of what the station costs to draw, and nobody
+   * reads past the first screen of a list they can search.
+   */
+  const pageCount = Math.max(1, Math.ceil(recipes.length / RECIPE_PAGE));
+  recipePage = Math.min(Math.max(1, recipePage), pageCount);
+  const rows = recipes
+    .slice((recipePage - 1) * RECIPE_PAGE, recipePage * RECIPE_PAGE)
+    .map((recipe) => renderRecipe(sim, recipe, blend));
 
   return scroller('right', 'station-col station-right', [
     el('section', { class: 'station-block' }, [
@@ -1206,11 +1302,54 @@ function renderRight(sim: Simulation): HTMLElement {
           filterChip(t(`essence.${essence}.short`), recipeEssences, essence),
         ),
       ]),
+      searchField({
+        name: 'station-recipes',
+        value: recipeQuery,
+        placeholder: t('station.search'),
+        onInput: (query) => {
+          recipeQuery = query;
+          recipePage = 1;
+          changed();
+        },
+      }),
       scroller(
         'recipes',
         'station-scroll',
-        rows.length > 0 ? rows : [el('p', { class: 'grid-empty', text: t('station.noRecipes') })],
+        rows.length > 0
+          ? rows
+          : [
+              el('p', {
+                class: 'grid-empty',
+                text: recipeQuery.trim() ? t('common.search.none') : t('station.noRecipes'),
+              }),
+            ],
       ),
+      ...(pageCount > 1
+        ? [
+            el('div', { class: 'pager' }, [
+              button(
+                t('shop.inventory.prev'),
+                () => {
+                  recipePage = Math.max(1, recipePage - 1);
+                  changed();
+                },
+                { variant: 'quiet', small: true, disabled: recipePage <= 1 },
+              ),
+              el('span', {
+                class: 'pager-label num',
+                text: t('ledger.page.of', { page: recipePage, count: pageCount }),
+              }),
+              button(
+                t('shop.inventory.next'),
+                () => {
+                  recipePage = Math.min(pageCount, recipePage + 1);
+                  changed();
+                },
+                { variant: 'quiet', small: true, disabled: recipePage >= pageCount },
+              ),
+            ]),
+          ]
+        : []),
     ]),
   ]);
 }
