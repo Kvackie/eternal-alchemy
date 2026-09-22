@@ -25,7 +25,6 @@ import type { QuantityActionSpec } from './components';
 import { t } from '@/i18n';
 import { config, getIngredient, realRecipes } from '@/sim/config';
 import { agingRateFor, angleBetween, applyFreshness, totalEssence } from '@/sim/essences';
-import { dominantEssence } from '@/ui/art';
 import { isDiscovered } from '@/sim/discovery';
 import type { Simulation } from '@/sim/sim';
 import { ESSENCES } from '@/sim/types';
@@ -195,7 +194,6 @@ export function showIngredientInfo(
   const def = getIngredient(ingredientId);
   const essence = options.essence ?? def.essence;
   const total = totalEssence(essence);
-  const dominant = dominantEssence(essence);
 
   const tags: HTMLElement[] = [chip(t(`category.${def.category as IngredientCategory}`))];
   for (const trait of def.traits ?? []) {

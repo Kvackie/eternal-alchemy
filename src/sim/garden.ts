@@ -136,8 +136,6 @@ export function harvest(world: World, plotId: string, rng: Rng): HarvestResult |
 
   const crop = getCrop(plot.crop.cropId);
   const strainId = plot.crop.strainId ?? null;
-  const strain = strainId ? world.strains.find((entry) => entry.id === strainId) : undefined;
-
   const count = harvestSize(world, plot);
 
   // A bred line drops its own seed, not its wild parent's — otherwise a strain

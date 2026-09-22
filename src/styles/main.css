@@ -141,7 +141,6 @@ button {
   outline-offset: 2px;
 }
 
-.mono,
 .num {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   font-variant-numeric: tabular-nums;
@@ -826,10 +825,6 @@ button {
 /* Pot names are long — "Jewelled Cauldron" wants a wider floor than a method
    or a filter does, so the strip settles on two columns rather than three
    cramped ones. */
-.pot-switcher .options {
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-}
-
 /*
  * Chosen, whichever way the control says so.
  *
@@ -1349,15 +1344,6 @@ input[type='range'] {
 
 /* ------------------------------------------------------------------- pot */
 
-.pot-drop {
-  min-height: 5.5rem;
-  padding: 0.5rem;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-inset);
-}
-
-.capacity-head,
 .stores-head,
 .log-head {
   display: flex;
@@ -1367,7 +1353,6 @@ input[type='range'] {
   flex-wrap: wrap;
 }
 
-.blend-row,
 .capacity,
 .stores,
 .seeds,
@@ -1597,17 +1582,6 @@ input[type='range'] {
   gap: 0.375rem;
 }
 
-.shelf-empty {
-  border-style: dashed;
-  align-items: center;
-  text-align: center;
-}
-
-.shelf-empty-label {
-  font-size: 0.8125rem;
-  color: var(--text-faint);
-}
-
 .shelf-head {
   display: flex;
   align-items: center;
@@ -1663,11 +1637,6 @@ input[type='range'] {
 }
 
 /* The grade keeps the colour of the grade; the chip only holds it. */
-.chip.term-grade {
-  gap: 0.3125rem;
-  color: var(--text-dim);
-}
-
 /* Something under way, as opposed to something finished. Amber, not green. */
 .chip.warm {
   color: var(--warn);
@@ -2000,10 +1969,6 @@ input[type='range'] {
 .collapsible-head .stores-head {
   flex: 1;
   min-width: 0;
-}
-
-.collapsible-head:has(.step-head) {
-  align-items: center;
 }
 
 /* Selected out of a stack, beside the grade and the price. */
@@ -2598,11 +2563,6 @@ input[type='range'] {
   transform: translateY(-2px);
 }
 
-.pot-empty {
-  color: var(--text-faint);
-  font-size: 0.8125rem;
-}
-
 /*
  * The surface, only while it is genuinely cooking.
  *
@@ -2956,18 +2916,6 @@ input[type='range'] {
   font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-}
-
-.reward-quality.is-bountiful {
-  color: var(--value-gold);
-}
-
-.reward-quality.is-successful {
-  color: var(--good-text);
-}
-
-.reward-quality.is-meagre {
-  color: var(--text-faint);
 }
 
 .reward-haul {
@@ -3863,37 +3811,8 @@ input[type='range'] {
   gap: 0.5rem;
 }
 
-.decor-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.5rem 0;
-  border-top: 1px solid var(--border);
-}
-
-.decor-spot {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* The spot's name sits left, what is in it sits right. */
-.decor-spot .field-note {
-  margin-left: auto;
-}
-
-.decor-thumb {
-  flex: none;
-  object-fit: contain;
-}
-
 /* Options wrap rather than scroll: a spot with four choices is still one glance. */
-.decor-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
 /* -------------------------------------------------------- standing order */
 
 .standing {
@@ -3903,24 +3822,6 @@ input[type='range'] {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px solid var(--border);
-}
-
-.order-line {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-}
-
-.order-name {
-  flex: 1;
-  min-width: 0;
-}
-
-.order-count {
-  min-width: 1.5rem;
-  text-align: center;
-  font-weight: 700;
 }
 
 /* --------------------------------------------------------------- market */
@@ -4062,8 +3963,8 @@ input[type='range'] {
  * The top of any details dialog.
  *
  * An ingredient, a bottle, a hero and a market entry all draw this, and for a
- * while they drew it three different ways: `.ingredient-info-head` with a
- * framed icon, `.hero-info-head` with a portrait, and a nameless div in
+ * while they drew it three different ways: a head with a framed
+ * icon, a head with a portrait, and a nameless div in
  * between holding the heading.
  */
 .info-head {

@@ -5,14 +5,13 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, getRecipe, realRecipes } from '@/sim/config';
+import { getRecipe, realRecipes } from '@/sim/config';
 import { bandHint, isDiscovered, knowledgeFor } from '@/sim/discovery';
 import { onboardingSteps, onboardingComplete } from '@/sim/onboarding';
 import { SaveManager, memoryAdapter } from '@/platform/save';
 import type { BrewMethod } from '@/sim/types';
 
 const HOUR = 3_600_000;
-const DAY = config.clock.dayLengthMs;
 
 /** Load the pot with something that makes a Wind Draught, at a chosen heat. */
 function windPot(temperature: number, seed = 5): Simulation {

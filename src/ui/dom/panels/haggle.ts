@@ -24,9 +24,8 @@ import {
   stat,
 } from '../components';
 import { formatGold, t } from '@/i18n';
-import { customersConfig, getCustomer, getRecipe } from '@/sim/config';
+import { customersConfig, getCustomer } from '@/sim/config';
 
-import { dominantEssence } from '@/ui/art';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
@@ -78,7 +77,6 @@ export function renderHaggle(sim: Simulation): HTMLElement {
 
     const tiles = walkIn.wantedUids.map((uid) => {
       const item = sim.world.bottled.find((entry) => entry.uid === uid)!;
-      const essence = dominantEssence(getRecipe(item.recipeId).target);
       return slot({
         id: uid,
         icon: potionIcon(item.recipeId),

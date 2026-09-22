@@ -178,7 +178,7 @@ function clamp(value: number, min: number, max: number): number {
  * supply rack that is also three deep. It never belonged to the roster, where it
  * only meant that every bunk past the third was money spent on a bench.
  */
-export function canSend(world: World, biomeId: string, heroIds: string[]): boolean {
+export function canSend(world: World, heroIds: string[]): boolean {
   if (heroIds.length === 0 || heroIds.length > heroesConfig.partySize) return false;
   if (world.missions.some((mission) => mission.heroIds.some((id) => heroIds.includes(id)))) {
     return false;
@@ -196,7 +196,7 @@ export function sendMission(
   heroIds: string[],
   supplyUids: string[],
 ): Mission | null {
-  if (!canSend(world, biomeId, heroIds)) return null;
+  if (!canSend(world, heroIds)) return null;
 
   const estimate = estimateMission(world, biomeId, heroIds, supplyUids);
   const used = supplyUids.slice(0, heroesConfig.supplies.slots);

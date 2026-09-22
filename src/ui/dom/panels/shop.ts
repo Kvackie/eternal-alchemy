@@ -237,7 +237,6 @@ function sortRow(): HTMLElement {
 
 function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
   const { slot: shelfSlot, number } = entry;
-  const board = getShelfTier(shelfSlot.quality);
   const item = shelfSlot.item;
 
   if (!item) {

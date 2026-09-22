@@ -226,7 +226,7 @@ describe('a haggle', () => {
   });
 
   it('pays more for a silver-clasped bottle', () => {
-    const { sim, customerId } = shopWithCustomer();
+    const { customerId } = shopWithCustomer();
     const def = getCustomer(customerId);
 
     const plain = ceilingFor(bottle('p'), def);

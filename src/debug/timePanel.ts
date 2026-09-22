@@ -188,13 +188,21 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
   ]);
 
   // Pinning the seed is what makes a bug report reproducible.
+  /*
+   * Styled by the same class every other text box uses.
+   *
+   * It carried its own `cssText`, naming `--sunken`, `--ink` and `--rule` —
+   * three colour tokens that stopped existing when they were renamed for what
+   * they mean, so the box had been drawing with no background, no text colour
+   * and no border since. Its 2.25rem floor was also under the 44px the rest of
+   * the project holds to.
+   */
   const seedInput = el('input', {
+    class: 'search-input',
     type: 'number',
     value: String(sim.world.rngSeed),
     'aria-label': t('debug.seed'),
   }) as HTMLInputElement;
-  seedInput.style.cssText =
-    'background:var(--sunken);color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:0 .5rem;min-height:2.25rem;width:100%';
   seedInput.addEventListener('change', () => {
     const value = Number.parseInt(seedInput.value, 10);
     if (Number.isFinite(value)) {

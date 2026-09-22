@@ -10,8 +10,7 @@ import { essenceGlyphSvg } from '@/ui/theme';
 import { artUrlIf, dominantEssence } from '@/ui/art';
 import { getIngredient, getRecipe } from '@/sim/config';
 import { formatGold, t } from '@/i18n';
-import { ESSENCES } from '@/sim/types';
-import type { Essence, EssenceVector, Grade } from '@/sim/types';
+import type { Essence, Grade } from '@/sim/types';
 
 export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -125,13 +124,6 @@ export function essenceChip(essence: Essence, value: number): HTMLElement {
     el('span', { html: essenceGlyphSvg(essence, 10) }),
     el('span', { text: `${t(`essence.${essence}.short`)} ${Math.round(value)}` }),
   ]);
-}
-
-/** Every non-zero essence in a blend, in a stable order. */
-export function essenceChips(vector: EssenceVector, threshold = 0.5): HTMLElement[] {
-  return ESSENCES.filter((essence) => vector[essence] >= threshold).map((essence) =>
-    essenceChip(essence, vector[essence]),
-  );
 }
 
 export function chip(text: string, variant = 'plain'): HTMLElement {
@@ -288,13 +280,6 @@ export function emptyState(title: string, hint: string): HTMLElement {
   return el('div', { class: 'empty-state' }, [
     el('strong', { text: title }),
     el('span', { text: hint }),
-  ]);
-}
-
-export function field(label: string, control: HTMLElement): HTMLElement {
-  return el('div', { class: 'field' }, [
-    el('span', { class: 'field-label', text: label }),
-    control,
   ]);
 }
 
@@ -851,7 +836,7 @@ export interface QuantityActionSpec {
  * owned one. The count lives here instead, next to the total it costs and the
  * description it belongs to.
  */
-export function quantityAction(spec: QuantityActionSpec): HTMLElement {
+function quantityAction(spec: QuantityActionSpec): HTMLElement {
   let quantity = 1;
   const row = el('div', { class: 'quantity-action' });
 
