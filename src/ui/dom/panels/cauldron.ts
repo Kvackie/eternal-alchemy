@@ -18,8 +18,8 @@ import type { CauldronActivity } from '@/sim/cauldrons';
 import { findCauldronTier } from '@/sim/config';
 import type { BrewInProgress, Cauldron } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
-import { changed, toast } from '@/ui/bus';
-import { isStationOpen, openStation, renderStation } from './station';
+import { changed, confirm, toast } from '@/ui/bus';
+import { isStationOpen, openBottling, openStation, renderStation } from './station';
 
 export { INGREDIENT_DRAG } from './station';
 
@@ -136,6 +136,20 @@ function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
   if (stored) {
     // A stored pot has nothing to open — its only move is back onto the bench.
     face.disabled = true;
+  } else if (activity === 'ready') {
+    /*
+     * A finished pot asks one question, and the card answers it here.
+     *
+     * The card already says Ready; pressing it used to open the station and
+     * leave the player to find the bottling controls in a column. Opening the
+     * window directly is the same route the drawn pot takes inside the station,
+     * so "it is done" and "here is what to do about it" are one press apart
+     * wherever you are standing.
+     */
+    face.addEventListener('click', () => {
+      sim.setActiveCauldron(pot.id);
+      openBottling(sim);
+    });
   } else {
     face.addEventListener('click', () => openStation(sim, pot.id));
   }
@@ -148,12 +162,33 @@ function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
    * go away either, or the workshop becomes a screen with nothing on it.
    */
   const canStore = !stored && activity === 'idle' && sim.cauldrons.length > 1;
+
+  /*
+   * Asked before the pot leaves the bench.
+   *
+   * Putting one away is reversible — it comes back from this same section — but
+   * it is the one control on a card whose face you press to start working, and
+   * it sits directly under that face at thumb size. Bringing a pot back out
+   * needs no question: there is nothing to undo.
+   */
   const move = button(
     stored ? t('cauldron.storage.place') : t('cauldron.storage.store'),
     () => {
-      if (sim.setCauldronStored(pot.id, !stored)) changed();
+      if (stored) {
+        if (sim.setCauldronStored(pot.id, false)) changed();
+        return;
+      }
+      confirm({
+        title: t('cauldron.storage.store.title'),
+        body: t('cauldron.storage.store.body', { tier: t(`cauldronTier.${pot.tierId}`) }),
+        confirm: t('cauldron.storage.store'),
+        danger: true,
+        onConfirm: () => {
+          if (sim.setCauldronStored(pot.id, true)) changed();
+        },
+      });
     },
-    { small: true, variant: stored ? 'ghost' : 'quiet', disabled: !stored && !canStore },
+    { small: true, variant: stored ? 'good' : 'danger', disabled: !stored && !canStore },
   );
 
   return el('div', { class: 'bench-tile' }, [face, move]);
@@ -200,10 +235,16 @@ function renderStorage(sim: Simulation): HTMLElement {
       : el('p', { class: 'grid-empty', text: t('cauldron.storage.empty') }),
   );
 
-  if (atCauldronLimit(sim.world)) {
-    section.append(el('p', { class: 'grid-empty', text: t('cauldron.buy.full') }));
-    return section;
-  }
+  /*
+   * Nothing said when there is nothing left to buy.
+   *
+   * "The bench is full. There is nowhere to put another." was drawn at the
+   * ownership cap, which has nothing to do with the bench — a shop at the cap
+   * with five pots in storage has a bench with room on it, and the sentence
+   * read as a lie about the screen it was on. The absent Buy section is the
+   * whole of what there is to say.
+   */
+  if (atCauldronLimit(sim.world)) return section;
 
   const offers = buyableTiers(sim.world);
   if (offers.length === 0) {

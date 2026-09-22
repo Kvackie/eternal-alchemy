@@ -825,7 +825,7 @@ export class Shell {
           button(request.confirm, () => {
             close();
             request.onConfirm();
-          }, { variant: 'warm' }),
+          }, { variant: request.danger ? 'danger' : 'warm' }),
         ]),
       ]),
     ]);

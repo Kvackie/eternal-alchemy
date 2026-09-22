@@ -1416,9 +1416,23 @@ input[type='range'] {
   gap: 0.5rem;
 }
 
+/*
+ * A held burner is a gesture the platform must keep its hands off.
+ *
+ * `touch-action` and `user-select` stop the scroll and the text selection, but
+ * neither stops the long-press callout — the selection and link menu a phone
+ * raises after about half a second, which is well inside the hold this button
+ * exists for. It opened over the gauge and swallowed the pointerup that would
+ * have released the burner, so the pot kept ramping. The `contextmenu`
+ * listener in `burnerButton` is the other half; this is the half that has to
+ * be in the stylesheet, because the callout is raised before any event fires.
+ */
 .burner {
   touch-action: none;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .burner[data-held='true'] {
@@ -2667,7 +2681,15 @@ input[type='range'] {
   text-align: center;
 }
 
-/* One column at a time on a phone: three of these side by side is none of them. */
+/*
+ * One half at a time on a phone.
+ *
+ * Three columns will not fit, and stacking them made one scroll five screens
+ * long — stores, burners, method, pot, book — so picking a herb and seeing what
+ * it did to the blend were a screen apart, which is the thing the station
+ * exists to avoid. The switcher at the top decides which half is up; see
+ * `renderStation`.
+ */
 @media (max-width: 900px) {
   .station-cols {
     grid-template-columns: minmax(0, 1fr);
@@ -2678,6 +2700,49 @@ input[type='range'] {
   .station-col {
     overflow: visible;
   }
+
+  .station-views {
+    margin: 0 0.875rem;
+  }
+
+  /*
+   * The stores list is capped so the burners stay in reach.
+   *
+   * On the brew half the list is one of five blocks in a single column, and an
+   * uncapped grid of two hundred ingredients puts Prepare below the fold for
+   * ever. 34vh leaves the gauge and the method on screen with it.
+   */
+  .station[data-view='brew'] .station-scroll {
+    max-height: 34vh;
+  }
+
+  /*
+   * The pot shares its half with the book rather than filling it.
+   *
+   * At its natural size the bowl took the whole viewport and pushed the recipe
+   * list off the bottom — which on the half of the screen whose job is "choose
+   * what to make" leaves only the thing you are not choosing.
+   */
+  .station[data-view='pot'] .pot-stage {
+    max-height: 34vh;
+  }
+}
+
+/* The switcher is a phone control; above the split there is nothing to switch. */
+@media (min-width: 900.02px) {
+  .station-views {
+    display: none;
+  }
+}
+
+/*
+ * A pinned recipe sits in the brew half rather than in the book.
+ *
+ * Same row the book draws, so the bars and the chips read identically in both
+ * places — it is the same recipe, seen from the bench instead of the shelf.
+ */
+.station-pinned .recipe {
+  background: var(--surface-2);
 }
 
 /* ------------------------------------------------------------ mission haul */

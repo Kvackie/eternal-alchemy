@@ -67,8 +67,8 @@
     "maxTemperature": 300,
     "heatRatePerSecond": 55,
     "chillRatePerSecond": 55,
-    "$driftComment": "Slow on purpose. A recipe band is ~35 degrees wide, so 4/s emptied it in nine seconds and reading the outcome cost you the temperature. At 1.2/s the pot still cools if you wander off, but deliberating is free.",
-    "driftRatePerSecond": 1.2,
+    "$driftComment": "Slow on purpose. A recipe band is ~35 degrees wide, so 4/s emptied it in nine seconds and reading the outcome cost you the temperature. At 0.5/s the pot still cools if you wander off, but choosing a method and reading the book are free.",
+    "driftRatePerSecond": 0.5,
     "tapStepDegrees": 14,
     "purityPerDegreeOutside": 0.9,
     "brewDuration": {

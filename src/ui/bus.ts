@@ -31,6 +31,13 @@ export interface ConfirmRequest {
   body: string;
   /** The label on the button that goes through with it. */
   confirm: string;
+  /**
+   * Red rather than amber on the button that goes through.
+   *
+   * For the questions where the answer takes something away, so the dialog
+   * wears the colour the control that raised it already wore.
+   */
+  danger?: boolean;
   onConfirm: () => void;
 }
 

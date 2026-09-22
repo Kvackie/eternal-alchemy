@@ -20,6 +20,7 @@
 import {
   button,
   chip,
+  clear,
   collapsible,
   el,
   emptyState,
@@ -28,6 +29,7 @@ import {
   ingredientIcon,
   makeDropTarget,
   meter,
+  modal,
   optionGroup,
   stat,
 } from '../components';
@@ -69,6 +71,9 @@ function scroller(key: string, className: string, children: HTMLElement[]): HTML
 
 const CATEGORIES: IngredientCategory[] = ['herb', 'fungus', 'mineral', 'exotic', 'reagent'];
 
+/** Freshest first, which is also the order it decays in. */
+const FRESHNESSES: Freshness[] = ['dewfresh', 'fresh', 'dried'];
+
 /** An essence counts as present in the pot once it is worth a bar. */
 const PRESENT = 0.5;
 
@@ -83,9 +88,43 @@ let sealId = 'cork';
 /** Filters, held here so they survive the panel being rebuilt. */
 let ingredientCategories = new Set<IngredientCategory>();
 let ingredientEssences = new Set<Essence>();
+let ingredientFreshness = new Set<Freshness>();
 let recipeEssences = new Set<Essence>();
 /** The auto-filter: hide recipes the pot has already ruled out. */
 let matchPot = true;
+
+/**
+ * Below this width the station cannot show three columns at once.
+ *
+ * Stacked, it was one scroll five screens long — stores, burners, method, pot,
+ * book — so choosing a herb and seeing what it did to the blend were a screen
+ * apart, which is the exact problem the station was built to solve.
+ */
+const SPLIT = '(max-width: 900px)';
+
+type StationView = 'brew' | 'pot';
+
+/** Which half a phone is showing. Brew is where the work is, so it is first. */
+let stationView: StationView = 'brew';
+
+let splitWatched = false;
+
+function isSplit(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia(SPLIT).matches;
+}
+
+/**
+ * Crossing the width has to redraw, and nothing else makes it.
+ *
+ * The panel is rebuilt on world changes; a rotation is not one. Registered once
+ * for the life of the module, because the panel that would own it is thrown
+ * away on every press.
+ */
+function watchSplit(): void {
+  if (splitWatched || typeof window === 'undefined') return;
+  splitWatched = true;
+  window.matchMedia(SPLIT).addEventListener('change', () => changed());
+}
 
 const pinned = new Set<string>();
 const expanded = new Set<string>();
@@ -110,7 +149,10 @@ export function closeStation(): void {
 // -- the station -------------------------------------------------------------
 
 export function renderStation(sim: Simulation): HTMLElement {
-  return el('div', { class: 'station' }, [
+  watchSplit();
+  const split = isSplit();
+
+  const children: HTMLElement[] = [
     el('div', { class: 'station-bar' }, [
       button(t('station.back'), () => closeStation(), { variant: 'quiet', small: true }),
       el('span', { class: 'station-title', text: t(`cauldronTier.${sim.cauldron.tierId}`) }),
@@ -119,11 +161,86 @@ export function renderStation(sim: Simulation): HTMLElement {
         text: `${Math.round(sim.assess()?.totalEssence ?? 0)} / ${sim.cauldronCapacity}`,
       }),
     ]),
-    el('div', { class: 'station-cols' }, [
-      renderLeft(sim),
-      renderMiddle(sim),
-      renderRight(sim),
-    ]),
+  ];
+
+  /*
+   * Two halves on a phone, and the work is the first of them.
+   *
+   * Brew holds everything a blend is built out of — what is in store, how hot,
+   * how it is worked, and what it would come out as — plus whatever recipes
+   * have been starred, so the ratio you are aiming at is on screen while you
+   * pick. The pot and the whole book are the reference half: you go there to
+   * choose what to make, and come back here to make it.
+   */
+  if (split) {
+    children.push(viewSwitch());
+    children.push(
+      el(
+        'div',
+        { class: 'station-cols' },
+        stationView === 'brew'
+          ? [
+              scroller('left', 'station-col station-left', [
+                renderPinned(sim),
+                renderStores(sim),
+                renderHeat(sim),
+                renderMethod(sim),
+                renderVerdict(sim),
+              ]),
+            ]
+          : [
+              scroller('middle', 'station-col station-middle', [renderPot(sim)]),
+              renderRight(sim),
+            ],
+      ),
+    );
+  } else {
+    children.push(
+      el('div', { class: 'station-cols' }, [renderLeft(sim), renderMiddle(sim), renderRight(sim)]),
+    );
+  }
+
+  const node = el('div', { class: 'station' }, children);
+  node.dataset.view = split ? stationView : 'all';
+  return node;
+}
+
+function viewSwitch(): HTMLElement {
+  return el(
+    'div',
+    { class: 'options tabs station-views' },
+    (['brew', 'pot'] as StationView[]).map((id) => {
+      const node = el('button', { class: 'option', type: 'button' }, [
+        el('span', { text: t(`station.view.${id}`) }),
+      ]);
+      node.setAttribute('aria-pressed', String(stationView === id));
+      node.addEventListener('click', () => {
+        stationView = id;
+        changed();
+      });
+      return node;
+    }),
+  );
+}
+
+/**
+ * The recipes you said you were working toward, kept beside the stores.
+ *
+ * The star already existed in the book and already floated a recipe to the top
+ * of it — but on a phone the book is the other half of the screen, so a pin was
+ * a promise the layout could not keep. Here it is what it sounds like: the
+ * thing you are aiming at, next to the things you are aiming it with.
+ */
+function renderPinned(sim: Simulation): HTMLElement {
+  const blend = sim.assess()?.total ?? null;
+  const rows = sim
+    .knownRecipes()
+    .filter((recipe) => pinned.has(recipe.id))
+    .map((recipe) => renderRecipe(sim, recipe, blend));
+
+  return el('section', { class: 'station-block station-pinned' }, [
+    el('span', { class: 'field-label', text: t('station.pinnedHere') }),
+    ...(rows.length > 0 ? rows : [el('p', { class: 'grid-empty', text: t('station.pinnedHint') })]),
   ]);
 }
 
@@ -168,6 +285,15 @@ function renderStores(sim: Simulation): HTMLElement {
   const rows = inventoryRows(sim.world, sim.now).filter((entry) => {
     const def = getIngredient(entry.ingredientId);
     if (ingredientCategories.size > 0 && !ingredientCategories.has(def.category)) return false;
+    /*
+     * Freshness is an axis of its own, not a shade of the others.
+     *
+     * A dewfresh Sunleaf and a dried one are different ingredients as far as
+     * the pot is concerned, and a store room late in a run holds both of most
+     * things — so "show me only what is still dewfresh" is the question this
+     * list could not be asked.
+     */
+    if (ingredientFreshness.size > 0 && !ingredientFreshness.has(entry.freshness)) return false;
     if (ingredientEssences.size === 0) return true;
     const strain = entry.strainId
       ? sim.world.strains.find((s) => s.id === entry.strainId)
@@ -191,6 +317,13 @@ function renderStores(sim: Simulation): HTMLElement {
       { class: 'sort-row' },
       ESSENCES.map((essence) =>
         filterChip(t(`essence.${essence}.short`), ingredientEssences, essence),
+      ),
+    ),
+    el(
+      'div',
+      { class: 'sort-row' },
+      FRESHNESSES.map((freshness) =>
+        filterChip(t(`freshness.${freshness}`), ingredientFreshness, freshness),
       ),
     ),
     scroller('stores', 'station-scroll', [
@@ -363,8 +496,8 @@ function renderHeat(sim: Simulation): HTMLElement {
     ]),
     // Coarse above, fine below: hold to travel, tap to land.
     el('div', { class: 'burner-row burner-fine' }, [
-      stepButton(sim, 'chill', '−1°'),
-      stepButton(sim, 'heat', '+1°'),
+      stepButton(sim, 'chill', `−${FINE_STEP}°`),
+      stepButton(sim, 'heat', `+${FINE_STEP}°`),
     ]),
   ]);
 }
@@ -434,6 +567,18 @@ function burnerButton(
   });
 
   /*
+   * Holding is the gesture; the platform must not read it as its own.
+   *
+   * A long press on a phone raises the text-selection and link menu, which is
+   * exactly the gesture this button is for — so ramping the temperature opened
+   * a context menu over the gauge and the pointerup that should have released
+   * the burner went to the menu instead. Cancelling the event here is half of
+   * it; `touch-action` and `user-select` in the stylesheet are the other half,
+   * because the callout is raised before any event reaches this listener.
+   */
+  node.addEventListener('contextmenu', (event) => event.preventDefault());
+
+  /*
    * No `changed()` on the tap.
    *
    * Holding already redraws every frame, and a redraw here would replace the
@@ -445,16 +590,21 @@ function burnerButton(
 }
 
 /**
- * One degree at a time.
+ * The fine step, in fives.
  *
  * A band can be four degrees wide and the ramp moves faster than that, so
  * without this the only way onto a narrow target is to overshoot repeatedly and
- * hope. Safe to redraw on, because there is no hold to interrupt.
+ * hope. One degree made that true in the other direction: crossing the 280
+ * degrees this gauge spans a degree at a time is not a control, it is a chore,
+ * and nothing in the game rewards that last degree. Safe to redraw on, because
+ * there is no hold to interrupt.
  */
+const FINE_STEP = 5;
+
 function stepButton(sim: Simulation, burner: 'heat' | 'chill', label: string): HTMLElement {
   const node = el('button', { class: 'btn quiet small burner-step', type: 'button' }, [label]);
   node.addEventListener('click', () => {
-    sim.nudge(burner, 1);
+    sim.nudge(burner, FINE_STEP);
     changed();
   });
   return node;
@@ -463,13 +613,21 @@ function stepButton(sim: Simulation, burner: 'heat' | 'chill', label: string): H
 // -- middle: the pot ---------------------------------------------------------
 
 function renderMiddle(sim: Simulation): HTMLElement {
-  const col = scroller('middle', 'station-col station-middle', [renderPot(sim)]);
+  return scroller('middle', 'station-col station-middle', [renderPot(sim), renderVerdict(sim)]);
+}
 
-  if (sim.pendingBrew) col.append(renderBottling(sim));
-  else if (sim.brewing) col.append(renderBrewingTimer(sim));
-  else col.append(renderOutcome(sim));
-
-  return col;
+/**
+ * What the pot is about to give you, whatever stage it is at.
+ *
+ * Pulled out of the middle column so the split view can keep it beside the
+ * burners: the reading — grade, purity, how far off the band — is what you act
+ * on while you are still adding things, and on a phone it used to live under
+ * the picture of the cauldron, on the half of the screen you were not on.
+ */
+function renderVerdict(sim: Simulation): HTMLElement {
+  if (sim.pendingBrew) return renderReadyCard(sim);
+  if (sim.brewing) return renderBrewingTimer(sim);
+  return renderOutcome(sim);
 }
 
 /**
@@ -539,6 +697,26 @@ function renderPot(sim: Simulation): HTMLElement {
 
   // Only while it is genuinely cooking.
   if (brewing) vessel.append(el('div', { class: 'pot-brewing' }));
+
+  /*
+   * A finished pot is a door.
+   *
+   * The pot is the thing a player looks at, so it is the thing they press when
+   * it is done — pressing it used to do nothing at all, and the way to bottle
+   * was a stack of option groups that had appeared somewhere below.
+   */
+  if (sim.pendingBrew) {
+    stage.dataset.ready = 'true';
+    stage.setAttribute('role', 'button');
+    stage.setAttribute('tabindex', '0');
+    stage.title = t('cauldron.bottle.open');
+    stage.addEventListener('click', () => openBottling(sim));
+    stage.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openBottling(sim);
+    });
+  }
 
   stage.append(fire, vessel);
 
@@ -664,7 +842,17 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
   ]);
 }
 
-function renderBottling(sim: Simulation): HTMLElement {
+/**
+ * Bottling, in a window of its own.
+ *
+ * It used to unfold inside the middle column, under the pot: three option
+ * groups, a value line and two buttons appended to the column you were already
+ * reading the outcome in — on a phone that is most of a screen of controls
+ * arriving unannounced under a cauldron, and the thing it is asking about
+ * scrolls off the top while you answer. A finished brew is a decision of its
+ * own, so it gets a window, and the column keeps a card that opens it.
+ */
+function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void): HTMLElement {
   const brew = sim.pendingBrew!;
   const section = el('section', { class: 'station-block' });
 
@@ -701,7 +889,7 @@ function renderBottling(sim: Simulation): HTMLElement {
           disabled: !form.available,
           onSelect: () => {
             formId = form.formId;
-            changed();
+            redraw();
           },
         })),
       ),
@@ -718,7 +906,7 @@ function renderBottling(sim: Simulation): HTMLElement {
           disabled: !vessel.available,
           onSelect: () => {
             vesselId = vessel.vesselId;
-            changed();
+            redraw();
           },
         })),
       ),
@@ -736,7 +924,7 @@ function renderBottling(sim: Simulation): HTMLElement {
           disabled: !seal.available,
           onSelect: () => {
             sealId = seal.sealId;
-            changed();
+            redraw();
           },
         })),
       ),
@@ -758,16 +946,18 @@ function renderBottling(sim: Simulation): HTMLElement {
       button(
         t('workbench.action.discard'),
         () => {
+          dismiss();
           sim.discardPending();
           changed();
         },
-        { variant: 'quiet' },
+        { variant: 'danger' },
       ),
       button(
         t('workbench.action.bottle'),
         () => {
           const item = sim.bottlePending({ formId, vesselId, sealId });
           if (item) {
+            dismiss();
             toast(t('toast.bottled', { recipe: t(`recipe.${item.recipeId}`), grade: item.grade }));
             changed();
           }
@@ -778,6 +968,60 @@ function renderBottling(sim: Simulation): HTMLElement {
   );
 
   return section;
+}
+
+/**
+ * Open it, wherever the finished pot was pressed.
+ *
+ * Exported because the bench opens it too: a card that says Ready is a pot
+ * asking to be bottled, and making the player open the station to find that
+ * out puts a screen between the question and the answer.
+ */
+export function openBottling(sim: Simulation): void {
+  if (!sim.pendingBrew) return;
+
+  /*
+   * The dialog redraws itself, rather than riding the panel's render.
+   *
+   * A modal is mounted on the stage precisely so a rebuild of `#panels` cannot
+   * tear it out — which also means `changed()` does not redraw it. Picking a
+   * vessel has to change what the vessel row looks like, so the body is rebuilt
+   * in place, the way the shop's stack picker pages in place.
+   */
+  modal({
+    className: 'bottling-dialog',
+    content: (dismiss) => {
+      const brew = sim.pendingBrew!;
+      const body = el('div', { class: 'bottling-body' });
+      const redraw = () => {
+        clear(body);
+        body.append(bottlingBody(sim, dismiss, redraw));
+      };
+      redraw();
+      return [
+        el('h2', { text: t('cauldron.ready.title', { recipe: t(`recipe.${brew.recipeId}`) }) }),
+        body,
+      ];
+    },
+  });
+}
+
+/** The card the middle column keeps while a pot is waiting to be bottled. */
+function renderReadyCard(sim: Simulation): HTMLElement {
+  const brew = sim.pendingBrew!;
+  return el('section', { class: 'station-block' }, [
+    el('div', { class: 'outcome' }, [
+      el('div', { class: 'outcome-head' }, [
+        gradeBadge(brew.grade),
+        el('span', { class: 'outcome-name', text: t(`recipe.${brew.recipeId}`) }),
+        chip(t(`potency.${brew.potencyTier}`), 'good'),
+      ]),
+      stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`),
+      el('div', { class: 'row-actions center' }, [
+        button(t('cauldron.bottle.open'), () => openBottling(sim), { variant: 'gold' }),
+      ]),
+    ]),
+  ]);
 }
 
 // -- right: the recipe book --------------------------------------------------
