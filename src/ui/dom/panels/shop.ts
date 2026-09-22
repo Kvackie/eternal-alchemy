@@ -37,6 +37,20 @@ import { changed, toast } from '@/ui/bus';
 
 type Tab = 'floor' | 'store';
 
+type StackSort = 'value' | 'count';
+
+/**
+ * How many stacks one page of the store room holds.
+ *
+ * Chosen to land the grid at roughly the node count the floor settles at, so
+ * the two halves of the screen cost about the same to draw.
+ */
+const STACK_PAGE = 60;
+
+let stackSort: StackSort = 'value';
+
+let stackPage = 1;
+
 /**
  * Which half is showing.
  *
@@ -553,59 +567,156 @@ function stacksOf(items: BottledItem[]): Array<{ item: BottledItem; count: numbe
   return stacks;
 }
 
-function renderInventory(sim: Simulation): HTMLElement {
-  const tiles = stacksOf(sim.world.bottled).map(({ item, count }) => {
-    // The stack already counted them; see `placeableCount`.
-    const room = sim.placeable(item, count);
+/** A stack, with the two numbers the grid sorts and reads it by. */
+interface Stack {
+  item: BottledItem;
+  /** How many interchangeable bottles are in the store room. */
+  count: number;
+  /** How many of them could go out right now — see `placeableCount`. */
+  room: number;
+}
 
-    return slot({
-      id: item.uid,
-      icon: itemIcon(item),
-      label: t(`recipe.${item.recipeId}`),
-      count,
-      caption: [gradeBadge(item.grade), goldText(item.fairValue)],
-      dimmed: room === 0,
-      title:
-        `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
-        `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
-      /*
-       * How many, in one press.
-       *
-       * Putting eight bottles out was eight presses, each of which began by
-       * finding a free shelf. The count is the only part of that worth
-       * deciding, so it is the only part asked for — the shelves fill in
-       * order, and the ceiling is however many the shop has room for.
-       */
-      onActivate: () =>
-        showPotionInfo(sim, item, count, {
-          label: t('shop.slot.putOut'),
-          max: Math.max(1, room),
-          blocked: room === 0 ? t('shop.noShelf') : undefined,
-          run: (quantity) => {
-            const placed = sim.stockMany(item.uid, quantity);
-            if (placed === 0) {
-              toast(t('shop.noShelf'));
-              return;
-            }
-            toast(
-              t('shop.putOut', {
-                count: placed,
-                recipe: t(`recipe.${item.recipeId}`),
-              }),
-            );
-            changed();
-          },
-        }),
+/**
+ * Two ways to read the store room.
+ *
+ * What is worth putting out, and what there is most of — the same two
+ * questions the floor raises, asked of the other side of the shop. The recipe
+ * name breaks ties so the order is stable between renders rather than left to
+ * whatever the sort happened to do with equal keys.
+ *
+ * Deliberately no "can it go out" term, unlike the floor's empty shelves. Room
+ * is the free shelf count shared by every stack, so either all of them can go
+ * out or none can — sinking the ones that cannot would never move anything.
+ * The tiles still dim when the shop is full, which is the part that says so.
+ */
+const stackSorts: Record<StackSort, (a: Stack, b: Stack) => number> = {
+  value: (a, b) =>
+    b.item.fairValue - a.item.fairValue || a.item.recipeId.localeCompare(b.item.recipeId),
+  count: (a, b) => b.count - a.count || a.item.recipeId.localeCompare(b.item.recipeId),
+};
+
+function stackSortRow(): HTMLElement {
+  const row = el('div', { class: 'sort-row' });
+  for (const id of ['value', 'count'] as StackSort[]) {
+    const node = el('button', { class: 'sort-chip', type: 'button', text: t(`shop.stackSort.${id}`) });
+    node.setAttribute('aria-pressed', String(stackSort === id));
+    node.addEventListener('click', () => {
+      stackSort = id;
+      stackPage = 1;
+      changed();
     });
-  });
+    row.append(node);
+  }
+  return row;
+}
 
-  return el('section', { class: 'inventory' }, [
+/**
+ * The store room, given the treatment the floor got.
+ *
+ * A count at the head, a way to order it, and only a screenful drawn at a
+ * time. The tiles were already tiles — what made this the slowest thing left
+ * in the game was simply how many of them there are: a finished Codex is very
+ * nearly two hundred kinds of potion, and two hundred tiles is sixteen hundred
+ * elements for the browser to lay out on every single press.
+ *
+ * Paged, not truncated. Sorting decides what reaches the first page, so the
+ * page you land on is the one worth looking at, and the rest is two presses
+ * away rather than gone.
+ */
+function renderInventory(sim: Simulation): HTMLElement {
+  const stacks: Stack[] = stacksOf(sim.world.bottled).map(({ item, count }) => ({
+    item,
+    count,
+    // The stack already counted them; see `placeableCount`.
+    room: sim.placeable(item, count),
+  }));
+  stacks.sort(stackSorts[stackSort]);
+
+  const bottles = stacks.reduce((total, stack) => total + stack.count, 0);
+  const pageCount = Math.max(1, Math.ceil(stacks.length / STACK_PAGE));
+  stackPage = Math.min(Math.max(1, stackPage), pageCount);
+  const shown = stacks.slice((stackPage - 1) * STACK_PAGE, stackPage * STACK_PAGE);
+
+  const section = el('section', { class: 'inventory' }, [
     el('div', { class: 'stores-head' }, [
       el('span', { class: 'field-label', text: t('shop.inventory') }),
-      el('span', { class: 'field-note', text: t('shop.inventory.hint') }),
+      el('span', {
+        class: 'field-note',
+        text: t('shop.inventory.count', { kinds: stacks.length, bottles }),
+      }),
     ]),
-    slotGrid(tiles, t('shop.inventory.empty')),
   ]);
+
+  // Only worth offering once there is enough to lose track of.
+  if (stacks.length > 4) section.append(stackSortRow());
+
+  section.append(slotGrid(shown.map((stack) => stackTile(sim, stack)), t('shop.inventory.empty')));
+
+  if (pageCount > 1) {
+    section.append(
+      el('div', { class: 'pager' }, [
+        button(
+          t('shop.inventory.prev'),
+          () => {
+            stackPage = Math.max(1, stackPage - 1);
+            changed();
+          },
+          { variant: 'quiet', small: true, disabled: stackPage <= 1 },
+        ),
+        el('span', {
+          class: 'pager-label num',
+          text: t('ledger.page.of', { page: stackPage, count: pageCount }),
+        }),
+        button(
+          t('shop.inventory.next'),
+          () => {
+            stackPage = Math.min(pageCount, stackPage + 1);
+            changed();
+          },
+          { variant: 'quiet', small: true, disabled: stackPage >= pageCount },
+        ),
+      ]),
+    );
+  }
+
+  return section;
+}
+
+function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
+  return slot({
+    id: item.uid,
+    icon: itemIcon(item),
+    label: t(`recipe.${item.recipeId}`),
+    count,
+    caption: [gradeBadge(item.grade), goldText(item.fairValue)],
+    dimmed: room === 0,
+    title:
+      `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
+      `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
+    /*
+     * How many, in one press.
+     *
+     * Putting eight bottles out was eight presses, each of which began by
+     * finding a free shelf. The count is the only part of that worth deciding,
+     * so it is the only part asked for — the shelves fill in order, and the
+     * ceiling is however many the shop has room for.
+     */
+    onActivate: () =>
+      showPotionInfo(sim, item, count, {
+        label: t('shop.slot.putOut'),
+        max: Math.max(1, room),
+        blocked: room === 0 ? t('shop.noShelf') : undefined,
+        run: (quantity) => {
+          const placed = sim.stockMany(item.uid, quantity);
+          if (placed === 0) {
+            toast(t('shop.noShelf'));
+            return;
+          }
+          toast(t('shop.putOut', { count: placed, recipe: t(`recipe.${item.recipeId}`) }));
+          changed();
+        },
+      }),
+  });
 }
 
 /**
