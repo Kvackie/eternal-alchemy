@@ -57,6 +57,21 @@ function shiftStance(current: HaggleStance, def: CustomerDef, rng: Rng): HaggleS
   return others[0] ?? current;
 }
 
+/**
+ * Nobody comes to the counter while there is no counter.
+ *
+ * The haggle is a whole system — stances, pitches, patience, a session that
+ * lives in the save — and the screen it was played on has been taken off the
+ * Shop while customers move to a scene of their own. Left running it would put
+ * a customer in a shop with no way to serve them, and a half-finished haggle
+ * into every save made in the meantime.
+ *
+ * Paused rather than deleted, because none of it is wrong — it is early. One
+ * line to bring back, and `clearStrandedHaggle` below tidies the sessions this
+ * pause would otherwise abandon.
+ */
+export const WALK_INS_PAUSED = true;
+
 export interface WalkIn {
   customerId: string;
   /** Bottled items in storage this customer would actually buy. */
@@ -70,6 +85,17 @@ export interface WalkIn {
  * missed by closing the app — and a reload brings the same person back.
  */
 export function walkInsToday(world: World): WalkIn[] {
+  return WALK_INS_PAUSED ? [] : scheduledWalkIns(world);
+}
+
+/**
+ * Who the day would bring, pause or no pause.
+ *
+ * Separate from the door being shut, so the haggle's own tests keep exercising
+ * the schedule rather than passing because nobody turns up. A paused system
+ * whose tests quietly stop testing anything is how a system comes back broken.
+ */
+export function scheduledWalkIns(world: World): WalkIn[] {
   const day = dayStateAt(world.now);
   const rank = rankIndexFor(world.renown);
   const night = day.phase === 'night';
@@ -266,4 +292,16 @@ export function suggestedAsk(world: World): number {
   if (!session) return 0;
   const item = world.bottled.find((entry) => entry.uid === session.itemUid);
   return Math.round(item?.fairValue ?? session.baseCeiling);
+}
+
+/**
+ * Drop a haggle nothing can finish.
+ *
+ * A session saved before the counter came off the Shop would sit in the world
+ * for ever: the customer is mid-negotiation, the bottle is spoken for, and
+ * there is no screen on which to answer them. Called once when a world is
+ * loaded, and a no-op the moment walk-ins are running again.
+ */
+export function clearStrandedHaggle(world: World): void {
+  if (WALK_INS_PAUSED) world.haggle = null;
 }

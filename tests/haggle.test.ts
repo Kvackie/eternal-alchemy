@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config, customersConfig, getCustomer } from '@/sim/config';
-import { ceilingFor, previewPitch } from '@/sim/haggle';
+import { WALK_INS_PAUSED, ceilingFor, previewPitch, scheduledWalkIns } from '@/sim/haggle';
 import type { BottledItem, Grade, HaggleStance } from '@/sim/types';
 
 const DAY = config.clock.dayLengthMs;
@@ -38,7 +38,9 @@ function shopWithCustomer(): { sim: Simulation; customerId: string } {
     const sim = new Simulation(createWorld(77));
     sim.advanceTo(day * DAY + DAY * 0.4);
     sim.world.bottled.push(bottle('a'), bottle('b'));
-    const walkIns = sim.walkIns();
+    // The schedule directly: walk-ins are paused behind the counter's UI, and
+    // a test that asked the paused door would find nobody and prove nothing.
+    const walkIns = scheduledWalkIns(sim.world);
     if (walkIns.length > 0) return { sim, customerId: walkIns[0]!.customerId };
   }
   throw new Error('no customer turned up in 40 days');
@@ -200,16 +202,27 @@ describe('a haggle', () => {
     expect(sim.walkIns().some((w) => w.customerId === customerId)).toBe(false);
   });
 
-  it('survives a reload mid-negotiation', () => {
+  it('keeps the whole negotiation in the world, so a save carries it', () => {
     const { sim, customerId } = shopWithCustomer();
     sim.beginHaggle(customerId, 'a');
     sim.pitch('demonstrate');
-    const stance = sim.haggle!.stance;
-    const ceiling = sim.haggle!.ceiling;
 
+    // Through a save and back: nothing about a haggle lives outside the world,
+    // which is what lets one survive a reload once the counter is back.
+    const reloaded = JSON.parse(JSON.stringify(sim.world)) as typeof sim.world;
+    expect(reloaded.haggle).toEqual(sim.haggle);
+  });
+
+  it('drops a stranded negotiation while the counter is out of the build', () => {
+    const { sim, customerId } = shopWithCustomer();
+    sim.beginHaggle(customerId, 'a');
+    expect(sim.haggle).not.toBeNull();
+
+    // There is no screen to answer a customer on, so loading a save that still
+    // holds one lets them go rather than freezing a bottle for ever.
     const clone = new Simulation(JSON.parse(JSON.stringify(sim.world)));
-    expect(clone.haggle?.stance).toBe(stance);
-    expect(clone.haggle?.ceiling).toBe(ceiling);
+    expect(WALK_INS_PAUSED).toBe(true);
+    expect(clone.haggle).toBeNull();
   });
 
   it('pays more for a silver-clasped bottle', () => {

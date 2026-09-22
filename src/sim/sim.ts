@@ -95,6 +95,7 @@ import { abandon, deliver, runContracts } from './contracts';
 import {
   abandonHaggle,
   beginHaggle,
+  clearStrandedHaggle,
   close,
   pitch,
   previewPitch,
@@ -164,6 +165,9 @@ export class Simulation {
   constructor(world: World = createWorld()) {
     this.world = world;
     this.rng = new Rng(world.rngSeed);
+    // A save made while the counter existed can carry a negotiation there is
+    // now no screen to finish. See `clearStrandedHaggle`.
+    clearStrandedHaggle(world);
   }
 
   get now(): number {
