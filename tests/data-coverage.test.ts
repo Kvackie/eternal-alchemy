@@ -181,8 +181,9 @@ describe('every data id can be shown to a player', () => {
     }
     for (const x of merchants) {
       need(`merchant.${x.id}`);
+      // No blurb: the Market draws a trader's name and their tag, and nothing
+      // reads a sentence of character about them any more.
       need(`merchant.${x.id}.tag`);
-      need(`merchant.${x.id}.blurb`);
     }
     for (const x of equipment) {
       need(`equipment.${x.id}`);
