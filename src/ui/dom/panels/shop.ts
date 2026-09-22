@@ -30,6 +30,8 @@ import {
   searchField,
   slot,
   slotGrid,
+  tabPanel,
+  tabStrip,
 } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance, sameGoods } from '@/sim/market';
@@ -83,28 +85,24 @@ export function renderShop(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
 
   body.append(
-    el(
-      'div',
-      { class: 'options tabs' },
-      (['floor', 'store'] as Tab[]).map((id) => {
-        const node = el('button', { class: 'option', type: 'button' }, [
-          el('span', { text: t(`shop.tab.${id}`) }),
-        ]);
-        node.setAttribute('aria-pressed', String(tab === id));
-        node.addEventListener('click', () => {
-          tab = id;
-          changed();
-        });
-        return node;
-      }),
-    ),
+    tabStrip({
+      name: 'shop',
+      current: tab,
+      tabs: (['floor', 'store'] as Tab[]).map((id) => ({ id, label: t(`shop.tab.${id}`) })),
+      onSelect: (id) => {
+        tab = id as Tab;
+        changed();
+      },
+    }),
   );
 
-  if (tab === 'floor') {
-    body.append(renderShelves(sim));
-  } else {
-    body.append(renderInventory(sim), renderBoards(sim));
-  }
+  body.append(
+    tabPanel(
+      'shop',
+      tab,
+      tab === 'floor' ? [renderShelves(sim)] : [renderInventory(sim), renderBoards(sim)],
+    ),
+  );
 
   /*
    * `panel-roomy`, like the Board and the Market: there is no scene behind this

@@ -303,6 +303,96 @@ export function optionGroup(options: OptionSpec[]): HTMLElement {
   return el('div', { class: 'options' }, nodes);
 }
 
+export interface TabSpec {
+  id: string;
+  label: string;
+}
+
+/**
+ * A strip of tabs, with the semantics a strip of tabs is supposed to have.
+ *
+ * Three screens built one of these by hand out of buttons carrying
+ * `aria-pressed`, which is the markup for a toggle — it tells a screen reader
+ * "this button is pushed in", not "this is one of four views and you are on the
+ * second". A tab list also answers the arrow keys, which is how anyone
+ * navigating by keyboard expects to move between them: a strip where Tab has
+ * to be pressed four times to reach the fourth view is a strip of buttons
+ * wearing a tab's clothes.
+ *
+ * Selection follows focus, which is the right choice when switching is cheap
+ * and reversible — every one of these swaps a panel that is already built.
+ *
+ * `aria-controls` points every tab at the one panel, because only the selected
+ * view is in the document. See `tabPanel`.
+ */
+export function tabStrip(spec: {
+  name: string;
+  tabs: TabSpec[];
+  current: string;
+  onSelect: (id: string) => void;
+  className?: string;
+}): HTMLElement {
+  const strip = el('div', {
+    class: spec.className ? `options tabs ${spec.className}` : 'options tabs',
+    role: 'tablist',
+  });
+
+  const buttons = spec.tabs.map((tab) => {
+    const selected = tab.id === spec.current;
+    const node = el('button', { class: 'option', type: 'button', role: 'tab' }, [
+      el('span', { text: tab.label }),
+    ]);
+    node.id = `${spec.name}-tab-${tab.id}`;
+    node.setAttribute('aria-selected', String(selected));
+    node.setAttribute('aria-controls', `${spec.name}-panel`);
+    /*
+     * Named for the shell's focus memory, so the caret comes back.
+     *
+     * Choosing a tab rebuilds the panel, which throws away the button that was
+     * focused — after one arrow press the focus was on nothing and a second
+     * press went to the document. See `captureFocus`.
+     */
+    node.dataset.keepFocus = `${spec.name}-tab-${tab.id}`;
+    // Roving: one stop for the whole strip, and the arrows move within it.
+    node.tabIndex = selected ? 0 : -1;
+    node.addEventListener('click', () => spec.onSelect(tab.id));
+    return node;
+  });
+
+  buttons.forEach((node, index) => {
+    node.addEventListener('keydown', (event) => {
+      const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+      let next = -1;
+      if (step !== 0) next = (index + step + spec.tabs.length) % spec.tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = spec.tabs.length - 1;
+      if (next < 0) return;
+
+      event.preventDefault();
+      /*
+       * Focus moves before the selection does.
+       *
+       * The shell records where the caret is at the start of a render and puts
+       * it back afterwards, so the tab that is about to be selected has to be
+       * the focused one *now* for it to be the focused one after.
+       */
+      buttons[next]!.focus();
+      spec.onSelect(spec.tabs[next]!.id);
+    });
+  });
+
+  strip.append(...buttons);
+  return strip;
+}
+
+/** The view a strip of tabs is showing, named by the tab that chose it. */
+export function tabPanel(name: string, current: string, children: HTMLElement[]): HTMLElement {
+  const panel = el('div', { class: 'tab-panel', role: 'tabpanel' }, children);
+  panel.id = `${name}-panel`;
+  panel.setAttribute('aria-labelledby', `${name}-tab-${current}`);
+  return panel;
+}
+
 export interface CollapsibleSpec {
   /** Extra classes for the section, so existing per-section styling still lands. */
   className?: string;

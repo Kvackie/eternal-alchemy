@@ -21,6 +21,8 @@ import {
   slot,
   slotGrid,
   stat,
+  tabPanel,
+  tabStrip,
 } from '../components';
 import { formatDuration, t } from '@/i18n';
 import { showIngredientInfo } from '../ingredientInfo';
@@ -52,26 +54,25 @@ export function renderGrounds(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
 
   body.append(
-    el(
-      'div',
-      { class: 'options tabs' },
-      (['garden', 'cave', 'shaft'] as Tab[]).map((id) => {
-        const node = el('button', { class: 'option', type: 'button' }, [
-          el('span', { text: t(`grounds.tab.${id}`) }),
-        ]);
-        node.setAttribute('aria-pressed', String(tab === id));
-        node.addEventListener('click', () => {
-          tab = id;
-          changed();
-        });
-        return node;
-      }),
-    ),
+    tabStrip({
+      name: 'grounds',
+      current: tab,
+      tabs: (['garden', 'cave', 'shaft'] as Tab[]).map((id) => ({
+        id,
+        label: t(`grounds.tab.${id}`),
+      })),
+      onSelect: (id) => {
+        tab = id as Tab;
+        changed();
+      },
+    }),
   );
 
-  if (tab === 'garden') renderGarden(sim, body);
-  else if (tab === 'cave') renderCave(sim, body);
-  else renderShaft(sim, body);
+  const view = el('div', { class: 'panel-body' });
+  if (tab === 'garden') renderGarden(sim, view);
+  else if (tab === 'cave') renderCave(sim, view);
+  else renderShaft(sim, view);
+  body.append(tabPanel('grounds', tab, [...view.children] as HTMLElement[]));
 
   return el('div', { class: 'panel' }, [
     panelHeader(t('grounds.title'), t(`grounds.${tab}.subtitle`)),

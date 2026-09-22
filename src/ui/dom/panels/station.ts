@@ -34,6 +34,7 @@ import {
   searchField,
   optionGroup,
   stat,
+  tabStrip,
 } from '../components';
 import { formatDuration, formatGold, t } from '@/i18n';
 import { config, getIngredient, getSeal } from '@/sim/config';
@@ -235,6 +236,11 @@ export function renderStation(sim: Simulation): HTMLElement {
             ],
       ),
     );
+    // The columns above are the view this strip chose; name them as one.
+    const cols = children[children.length - 1]!;
+    cols.id = 'station-panel';
+    cols.setAttribute('role', 'tabpanel');
+    cols.setAttribute('aria-labelledby', `station-tab-${stationView}`);
   } else {
     children.push(
       el('div', { class: 'station-cols' }, [renderLeft(sim), renderMiddle(sim), renderRight(sim)]),
@@ -247,21 +253,19 @@ export function renderStation(sim: Simulation): HTMLElement {
 }
 
 function viewSwitch(): HTMLElement {
-  return el(
-    'div',
-    { class: 'options tabs station-views' },
-    (['brew', 'pot'] as StationView[]).map((id) => {
-      const node = el('button', { class: 'option', type: 'button' }, [
-        el('span', { text: t(`station.view.${id}`) }),
-      ]);
-      node.setAttribute('aria-pressed', String(stationView === id));
-      node.addEventListener('click', () => {
-        stationView = id;
-        changed();
-      });
-      return node;
-    }),
-  );
+  return tabStrip({
+    name: 'station',
+    className: 'station-views',
+    current: stationView,
+    tabs: (['brew', 'pot'] as StationView[]).map((id) => ({
+      id,
+      label: t(`station.view.${id}`),
+    })),
+    onSelect: (id) => {
+      stationView = id as StationView;
+      changed();
+    },
+  });
 }
 
 /**
@@ -847,27 +851,32 @@ function renderPot(sim: Simulation): HTMLElement {
   // Only while it is genuinely cooking.
   if (brewing) vessel.append(el('div', { class: 'pot-brewing' }));
 
+  stage.append(fire, vessel);
+
   /*
-   * A finished pot is a door.
+   * A finished pot is a door, and the door is a real button.
    *
    * The pot is the thing a player looks at, so it is the thing they press when
-   * it is done — pressing it used to do nothing at all, and the way to bottle
-   * was a stack of option groups that had appeared somewhere below.
+   * it is done. It was the stage itself carrying `role="button"` and a keydown
+   * handler — a hand-built button, which is only ever worth doing when a real
+   * one is impossible. Here it is not: the pot holds a grid of ingredient
+   * buttons while you are filling it, and a button may not contain a button,
+   * but accepting a brew empties that grid. So the one moment this is pressable
+   * is the one moment nothing is nested inside it, and a transparent button
+   * laid over the bowl is both honest markup and a bigger target than the
+   * bowl's own outline.
    */
   if (sim.pendingBrew) {
     stage.dataset.ready = 'true';
-    stage.setAttribute('role', 'button');
-    stage.setAttribute('tabindex', '0');
-    stage.title = t('cauldron.bottle.open');
-    stage.addEventListener('click', () => openBottling(sim));
-    stage.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      openBottling(sim);
+    const door = el('button', {
+      class: 'pot-door',
+      type: 'button',
+      'aria-label': t('cauldron.bottle.open'),
+      title: t('cauldron.bottle.open'),
     });
+    door.addEventListener('click', () => openBottling(sim));
+    stage.append(door);
   }
-
-  stage.append(fire, vessel);
 
   const blend = sim.assess();
   const chips = blend

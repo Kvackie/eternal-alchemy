@@ -809,7 +809,15 @@ button {
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
 }
 
-.option[aria-pressed='true'] {
+/*
+ * Chosen, whichever way the control says so.
+ *
+ * A tab reports `aria-selected` and a toggle reports `aria-pressed`; they look
+ * the same and they are the same state, so the style answers to both rather
+ * than to whichever attribute a given strip happens to use.
+ */
+.option[aria-pressed='true'],
+.option[aria-selected='true'] {
   border-color: var(--good);
   background: var(--good-wash);
   color: var(--good-text);
@@ -2497,6 +2505,26 @@ input[type='range'] {
     rgba(120, 40, 20, 0) 72%
   );
   filter: blur(calc(2px + var(--heat, 0) * 6px));
+}
+
+/*
+ * The whole bowl, as one target, when there is something to bottle.
+ *
+ * Laid over the stage rather than wrapped around it: the pot is a drop target
+ * and holds its own controls while filling, and a button cannot contain those.
+ */
+.pot-door {
+  position: absolute;
+  inset: 0;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.pot-door:focus-visible {
+  outline: 2px solid var(--good);
+  outline-offset: -4px;
 }
 
 .pot-vessel {
