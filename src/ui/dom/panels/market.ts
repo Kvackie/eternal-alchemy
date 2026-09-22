@@ -172,10 +172,7 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
     ]),
   ]);
 
-  const section = el('section', { class: 'merchant' }, [header, ...renderStock(sim, visit)]);
-
-  if (sim.canSetStandingOrders) section.append(renderStandingOrder(sim, visit));
-  return section;
+  return el('section', { class: 'merchant' }, [header, ...renderStock(sim, visit)]);
 }
 
 /**
@@ -208,8 +205,8 @@ function renderStock(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
   /*
    * The index is carried, not recomputed.
    *
-   * Everything downstream — buying, the standing order, the tile's own id —
-   * addresses an entry by its position in the merchant's pack, so grouping must
+   * Everything downstream — buying, and the tile's own id — addresses
+   * an entry by its position in the merchant's pack, so grouping must
    * not renumber them.
    */
   const byKind = new Map<StockEntry['kind'], HTMLElement[]>();
@@ -233,61 +230,6 @@ function renderStock(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
     );
   }
   return out;
-}
-
-/**
- * The standing order for one merchant.
- *
- * Repeatable stock only — equipment is a one-off decision and never belongs on
- * a recurring order. Deliberately no discount: this exists to stop you repeating
- * a purchase you have already decided on, not to make it cheaper.
- */
-function renderStandingOrder(sim: Simulation, visit: MerchantVisit): HTMLElement {
-  const order = sim.standingOrderFor(visit.merchantId);
-  // One-off purchases never belong on a recurring order.
-  const repeatable = visit.entries.filter(
-    (entry) => entry.kind !== 'equipment' && entry.kind !== 'decor',
-  );
-
-  const rows = repeatable.map((entry) => {
-    const line = order?.lines.find((l) => l.kind === entry.kind && l.id === entry.id);
-    const count = line?.count ?? 0;
-
-    const step = (delta: number) =>
-      button(
-        delta > 0 ? '+' : '−',
-        () => {
-          sim.setStandingOrderLine(
-            visit.merchantId,
-            entry.kind as 'seed' | 'ingredient' | 'vessel' | 'seal',
-            entry.id,
-            Math.max(0, count + delta),
-          );
-          changed();
-        },
-        { variant: 'quiet', small: true, disabled: delta < 0 && count === 0 },
-      );
-
-    return el('div', { class: 'order-line' }, [
-      el('span', { class: 'order-name', text: entryLabel(entry) }),
-      step(-1),
-      el('span', { class: 'num order-count', text: String(count) }),
-      step(1),
-    ]);
-  });
-
-  const lines = order?.lines.length ?? 0;
-
-  return el('div', { class: 'standing' }, [
-    el('div', { class: 'stores-head' }, [
-      el('span', { class: 'field-label', text: t('market.standing') }),
-      el('span', {
-        class: 'field-note',
-        text: lines > 0 ? t('market.standing.set', { count: lines }) : t('market.standing.hint'),
-      }),
-    ]),
-    ...rows,
-  ]);
 }
 
 /**

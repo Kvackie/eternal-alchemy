@@ -8,7 +8,6 @@ import { createWorld } from '@/sim/state';
 import { config, getRecipe, realRecipes } from '@/sim/config';
 import { bandHint, isDiscovered, knowledgeFor } from '@/sim/discovery';
 import { onboardingSteps, onboardingComplete } from '@/sim/onboarding';
-import { MAX_ORDER_LINES } from '@/sim/standingOrders';
 import { SaveManager, memoryAdapter } from '@/platform/save';
 import type { BrewMethod } from '@/sim/types';
 
@@ -153,93 +152,6 @@ describe('narrowing a band by hand', () => {
     steady.world.codex.deftHands = 1;
     // 8 degrees of slack per tier puts +6 back inside.
     expect(steady.temperatureVerdict('windDraught')).toBe('inRange');
-  });
-});
-
-describe('standing orders', () => {
-  function atBramm(): Simulation {
-    const sim = new Simulation(createWorld(3));
-    sim.advanceTo(2 * DAY + DAY * 0.35);
-    sim.world.gold = 5000;
-    sim.world.equipment.standingOrders = 1;
-    return sim;
-  }
-
-  it('needs the order book before one can be set', () => {
-    const sim = new Simulation(createWorld(3));
-    expect(sim.canSetStandingOrders).toBe(false);
-    expect(sim.setStandingOrderLine('bramm', 'seed', 'dewcap', 3)).toBe(false);
-  });
-
-  it('delivers on the next visit and takes the gold', () => {
-    const sim = atBramm();
-    // Ordered from the catalogue, so it arrives whether or not this visit's
-    // shelf happened to roll it.
-    sim.setStandingOrderLine('bramm', 'seed', 'dewcap', 2);
-
-    const goldBefore = sim.world.gold;
-    const seedsBefore = sim.world.seeds.dewcap ?? 0;
-
-    // Bramm's next visit is two days later.
-    sim.advanceTo(4 * DAY + DAY * 0.35);
-
-    expect(sim.world.gold).toBeLessThan(goldBefore);
-    expect(sim.world.seeds.dewcap).toBe(seedsBefore + 2);
-    expect(sim.world.log.some((e) => e.kind === 'standingOrder')).toBe(true);
-  });
-
-  it('arrives even when that visit did not stock it', () => {
-    const sim = atBramm();
-    sim.setStandingOrderLine('bramm', 'seed', 'emberroot', 1);
-
-    // Whatever the shelf rolled, the order is the merchant sourcing it for you.
-    sim.advanceTo(4 * DAY + DAY * 0.35);
-    const stocked = sim
-      .merchants()[0]!
-      .entries.some((e) => e.kind === 'seed' && e.id === 'emberroot');
-
-    expect(sim.world.log.some((e) => e.kind === 'standingOrder')).toBe(true);
-    void stocked;
-  });
-
-  it('fulfils once per visit, not once per tick', () => {
-    const sim = atBramm();
-    const entry = sim.merchants()[0]!.entries.find((e) => e.kind !== 'equipment')!;
-    sim.setStandingOrderLine('bramm', entry.kind as 'seed', entry.id, 1);
-
-    sim.advanceTo(4 * DAY + DAY * 0.30);
-    const after = sim.world.gold;
-    // Several more ticks inside the same visit must cost nothing further.
-    sim.advanceTo(4 * DAY + DAY * 0.45);
-    sim.advanceTo(4 * DAY + DAY * 0.55);
-    expect(sim.world.gold).toBe(after);
-  });
-
-  it('never spends money the shop does not have', () => {
-    const sim = atBramm();
-    const entry = sim.merchants()[0]!.entries.find((e) => e.kind !== 'equipment')!;
-    sim.setStandingOrderLine('bramm', entry.kind as 'seed', entry.id, 99);
-    sim.world.gold = 1;
-
-    sim.advanceTo(4 * DAY + DAY * 0.35);
-    expect(sim.world.gold).toBeGreaterThanOrEqual(0);
-  });
-
-  it('caps how many lines one order can carry', () => {
-    const sim = atBramm();
-    const kinds = ['dewcap', 'sunleaf', 'emberroot'] as const;
-    for (const id of kinds) sim.setStandingOrderLine('bramm', 'seed', id, 1);
-    sim.setStandingOrderLine('bramm', 'vessel', 'clayVial', 1);
-    // The fifth is refused.
-    expect(sim.setStandingOrderLine('bramm', 'seal', 'waxRibbon', 1)).toBe(false);
-    expect(sim.standingOrderFor('bramm')!.lines).toHaveLength(MAX_ORDER_LINES);
-  });
-
-  it('removes a line when its count reaches zero', () => {
-    const sim = atBramm();
-    sim.setStandingOrderLine('bramm', 'seed', 'dewcap', 2);
-    sim.setStandingOrderLine('bramm', 'seed', 'dewcap', 0);
-    expect(sim.standingOrderFor('bramm')!.lines).toHaveLength(0);
   });
 });
 

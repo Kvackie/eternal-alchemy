@@ -314,7 +314,6 @@ const MIGRATIONS: Record<number, Migration> = {
    * making for hours would be taking something away, not adding a system.
    */
   7: (world) => {
-    world.standingOrders ??= [];
     world.onboardingDismissed ??= true;
 
     if (!world.recipes) {

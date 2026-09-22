@@ -110,7 +110,6 @@ import {
   verdictFor,
   type TemperatureVerdict,
 } from './discovery';
-import { ordersFor, runStandingOrders, setOrderLine } from './standingOrders';
 import {
   currentStep,
   dismissOnboarding,
@@ -197,14 +196,6 @@ export class Simulation {
     this.runGrounds();
     this.runExpeditions();
     this.runBoard(delta, online);
-
-    for (const filled of runStandingOrders(this.world)) {
-      record(this.world, 'standingOrder', {
-        merchant: filled.merchantId,
-        count: filled.delivered.reduce((sum, line) => sum + line.count, 0),
-        gold: filled.gold,
-      });
-    }
 
     this.advanceTemperature(delta, online);
     this.noticeRankUp();
@@ -1207,25 +1198,6 @@ export class Simulation {
    */
   knownRecipes(): RecipeDef[] {
     return discoveredRecipes(this.world);
-  }
-
-  // -- Standing orders ------------------------------------------------------
-
-  get canSetStandingOrders(): boolean {
-    return this.stats.standingOrders;
-  }
-
-  standingOrderFor(merchantId: string) {
-    return ordersFor(this.world, merchantId);
-  }
-
-  setStandingOrderLine(
-    merchantId: string,
-    kind: 'seed' | 'ingredient' | 'vessel' | 'seal',
-    id: string,
-    count: number,
-  ): boolean {
-    return setOrderLine(this.world, merchantId, kind, id, count);
   }
 
   // -- Onboarding -----------------------------------------------------------

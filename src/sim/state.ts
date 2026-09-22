@@ -89,7 +89,6 @@ export function createWorld(seed = freshSeed()): World {
     townId: 'mossvale',
 
     recipes: {},
-    standingOrders: [],
     onboardingDismissed: false,
 
     statistics: {

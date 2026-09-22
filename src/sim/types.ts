@@ -213,8 +213,7 @@ export type LogKind =
   | 'strainBred'
   | 'retired'
   | 'recipeFound'
-  | 'bandLearned'
-  | 'standingOrder';
+  | 'bandLearned';
 
 export interface LogEntry {
   id: number;
@@ -324,13 +323,6 @@ export interface RecipeKnowledge {
   /** True once the band has been hit; the book then prints it. */
   bandKnown: boolean;
   timesBrewed: number;
-}
-
-export interface StandingOrder {
-  merchantId: string;
-  lines: Array<{ kind: 'seed' | 'ingredient' | 'vessel' | 'seal'; id: string; count: number }>;
-  /** Day number of the last delivery, so one visit fulfils once. */
-  lastFulfilledDay: number;
 }
 
 export type HaggleStance = 'sceptical' | 'haughty' | 'impatient';
@@ -522,7 +514,6 @@ export interface World {
 
   /** What is known about each recipe, keyed by recipe id. */
   recipes: Record<string, RecipeKnowledge>;
-  standingOrders: StandingOrder[];
   onboardingDismissed: boolean;
 
   statistics: {

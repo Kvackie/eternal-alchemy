@@ -1386,12 +1386,6 @@
       },
       {
         "kind": "equipment",
-        "id": "standingOrders",
-        "weight": 4,
-        "tier": 1
-      },
-      {
-        "kind": "equipment",
         "id": "humidityWard",
         "weight": 3,
         "tier": 1

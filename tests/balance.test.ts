@@ -891,7 +891,6 @@ describe('nothing sold is inert', () => {
       ['dryingRack', 'canForceDry'],
       ['vesselMoulds', 'craftsVessels'],
       ['sealPress', 'craftsSeals'],
-      ['standingOrders', 'standingOrders'],
     ] as const) {
       const world = createWorld(1);
       expect(derivedStats(world)[flag]).toBe(false);

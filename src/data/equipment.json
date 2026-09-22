@@ -93,16 +93,6 @@
     }
   },
   {
-    "id": "standingOrders",
-    "tree": "shop",
-    "cost": 480,
-    "requiresRank": 2,
-    "repeatable": 1,
-    "effect": {
-      "standingOrders": true
-    }
-  },
-  {
     "id": "caveBeds",
     "tree": "cave",
     "cost": 200,

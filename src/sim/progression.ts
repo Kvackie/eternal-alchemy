@@ -112,7 +112,6 @@ export interface DerivedStats {
   canForceDry: boolean;
   craftsVessels: boolean;
   craftsSeals: boolean;
-  standingOrders: boolean;
 }
 
 export function derivedStats(world: World): DerivedStats {
@@ -134,7 +133,6 @@ export function derivedStats(world: World): DerivedStats {
     canForceDry: false,
     craftsVessels: false,
     craftsSeals: false,
-    standingOrders: false,
   };
 
   for (const def of equipment) {
@@ -211,7 +209,6 @@ function apply(stats: DerivedStats, effect: EquipmentEffect, count: number): voi
   if (effect.canForceDry) stats.canForceDry = true;
   if (effect.craftsVessels) stats.craftsVessels = true;
   if (effect.craftsSeals) stats.craftsSeals = true;
-  if (effect.standingOrders) stats.standingOrders = true;
 }
 
 /**

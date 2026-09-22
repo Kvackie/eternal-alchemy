@@ -165,7 +165,6 @@ export interface EquipmentEffect {
   canForceDry?: boolean;
   craftsVessels?: boolean;
   craftsSeals?: boolean;
-  standingOrders?: boolean;
 }
 
 export interface EquipmentDef {
