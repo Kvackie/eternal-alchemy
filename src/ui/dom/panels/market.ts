@@ -6,7 +6,20 @@
  * day/night cycle finally has consequences a player can act on.
  */
 
-import { button, chip, el, goldText, ingredientIcon, panelHeader, portrait, quantityAction, modal, slot, slotGrid } from '../components';
+import {
+  button,
+  chip,
+  el,
+  goldText,
+  gradeBadge,
+  ingredientIcon,
+  panelHeader,
+  portrait,
+  quantityAction,
+  modal,
+  slot,
+  slotGrid,
+} from '../components';
 import type { QuantityActionSpec } from '../components';
 import { formatDuration, has, t } from '@/i18n';
 import { getCrop, getDecor, getEquipment } from '@/sim/config';
@@ -53,6 +66,17 @@ export function renderMarket(sim: Simulation): HTMLElement {
   ]);
 }
 
+/**
+ * The picture on a merchant's tile, at the size a merchant's tile needs.
+ *
+ * Half again as big as the one on a tile you own something on. Everywhere else
+ * the icon is a reminder of a thing already known — you brewed it, you planted
+ * it — and the label carries the identification. Here it is the identification:
+ * a pack is eleven unfamiliar names, and telling a seed from a seal from a
+ * shelf board at a glance is the whole job of the grid.
+ */
+const MARKET_ICON = 34;
+
 function entryIcon(entry: StockEntry): Node {
   if (entry.kind === 'equipment') {
     return el('span', { class: 'slot-glyph', text: '⚒' });
@@ -62,19 +86,39 @@ function entryIcon(entry: StockEntry): Node {
   if (entry.kind === 'decor') {
     const url = artUrlIf('decor', entry.id);
     return url
-      ? el('img', { class: 'art-icon', src: url, alt: '', width: '24', height: '24' })
+      ? el('img', { class: 'art-icon', src: url, alt: '', width: '40', height: '40' })
       : el('span', { class: 'slot-glyph', text: '🪟' });
   }
   if (entry.kind === 'board') {
     const url = artUrlIf('shelf', entry.id);
     return url
-      ? el('img', { class: 'art-icon', src: url, alt: '', width: '30', height: '18' })
+      ? el('img', { class: 'art-icon', src: url, alt: '', width: '48', height: '29' })
       : el('span', { class: 'slot-glyph', text: '🪵' });
   }
 
   // A seed is named for its crop; a spore cluster is named for the mushroom itself.
   const ingredientId = entry.kind === 'seed' ? getCrop(entry.id).yields : entry.id;
-  return ingredientIcon(ingredientId);
+  return ingredientIcon(ingredientId, MARKET_ICON);
+}
+
+/**
+ * What a barter costs, in the colours the rest of the game says it in.
+ *
+ * "1 × grade D or better" left the noun out — grade D *what* — and printed the
+ * grade as plain text, which is the one thing in this game that always carries
+ * its own colour. The badge is the same one the shelf, the store room and the
+ * contract board use, so a grade reads as a grade wherever it appears.
+ */
+function barterCaption(count: number, grade: string): Array<Node | string> {
+  return [
+    el('span', { text: t('market.barter.pay', { count }) }),
+    // The badge and the words it qualifies wrap as one thing, or a narrow tile
+    // leaves the grade stranded at the end of the line above "or better".
+    el('span', { class: 'barter-grade' }, [
+      gradeBadge(grade as never),
+      el('span', { text: t('market.barter.orBetter') }),
+    ]),
+  ];
 }
 
 function entryLabel(entry: StockEntry): string {
@@ -129,7 +173,6 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
         ? [chip(t('market.discount', { percent: Math.round(visit.discount * 100) }), 'good')]
         : []),
     ]),
-    el('p', { class: 'merchant-blurb', text: t(`merchant.${visit.merchantId}.blurb`) }),
   ]);
 
   const section = el('section', { class: 'merchant' }, [header, ...renderStock(sim, visit)]);
@@ -279,9 +322,12 @@ function buildEntry(
     icon: entryIcon(entry),
     label: entryLabel(entry),
     caption: blockedKey
-      ? t(blockedKey)
+      // A reason in a chip, the way a blocked thing is marked everywhere else —
+      // it was loose amber text sitting where the price goes, which reads as a
+      // strangely coloured price rather than as "you cannot have this yet".
+      ? [chip(t(blockedKey), 'warn')]
       : entry.barter
-        ? [t('market.barter', { count: entry.barter.potions, grade: entry.barter.minGrade })]
+        ? barterCaption(entry.barter.potions, entry.barter.minGrade)
         // Gold is gold on every other screen; it was plain grey only here.
         : [goldText(entry.price ?? 0)],
     count: entry.remaining > 1 ? entry.remaining : undefined,

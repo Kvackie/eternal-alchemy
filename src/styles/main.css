@@ -1239,6 +1239,18 @@ input[type='range'] {
   gap: 0.25rem;
 }
 
+/*
+ * A reason is a sentence, and a tile is 8.5rem wide.
+ *
+ * `.chip` is an inline-flex pill, which does not wrap — so "Needs an earlier
+ * upgrade first" ran straight out of the tile and across the one beside it.
+ */
+.slot-caption .chip {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
 /* A grade badge in a caption is a caption-sized badge. */
 .slot-caption .grade {
   min-width: 1rem;
@@ -3665,15 +3677,48 @@ input[type='range'] {
   font-size: 1rem;
 }
 
-.merchant-blurb {
-  margin: 0;
-  font-size: 0.75rem;
-  color: var(--muted);
-}
-
 .slot-glyph {
   font-size: 1.125rem;
   line-height: 1;
+}
+
+/*
+ * A merchant's tile is read, not recognised.
+ *
+ * On every other grid the picture reminds you of something you already own, so
+ * a 28px square beside the name is enough. A pack is eleven things you have
+ * never seen, so the picture is doing the identifying — and the number in the
+ * corner, which is how many are left to buy, was 9px in a 15px pill.
+ */
+.slot-grid.roomy .slot-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.slot-grid.roomy .slot-glyph {
+  font-size: 1.75rem;
+}
+
+.slot-grid.roomy .slot-count {
+  top: 0.25rem;
+  right: 0.25rem;
+  padding: 0.0625rem 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-color: var(--muted);
+}
+
+/* A caption carrying a badge and two words needs the room to wrap onto two. */
+.slot-grid.roomy .slot-caption {
+  flex-wrap: wrap;
+  gap: 0.1875rem;
+}
+
+.barter-grade {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  white-space: nowrap;
 }
 
 .upcoming-row {
