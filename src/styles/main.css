@@ -4245,10 +4245,18 @@ input[type='range'] {
    *
    * `auto` on the left margin is what pushes it over; `.panel-roomy` below
    * puts that margin back for the screens that have no scene to make room for.
+   *
+   * The width grows with the window rather than sitting at a fixed 28rem. That
+   * figure was set when half the screens docked here, and it had stopped being
+   * a sensible default: the Grounds is the only screen left with a picture
+   * beside it, and 28rem of a 1352px stage left 890px of empty ground next to a
+   * column too narrow to work in. The floor is above the old fixed width, so
+   * this is wider at every size and narrower at none; the ceiling keeps the
+   * picture worth having on a very wide monitor.
    */
   .panel {
     margin: 0.875rem 0.875rem 0.875rem auto;
-    max-width: 28rem;
+    max-width: clamp(30rem, 42%, 40rem);
     max-height: calc(100% - 1.75rem);
     border: 1px solid var(--rule);
     border-radius: var(--radius);
@@ -4338,6 +4346,23 @@ input[type='range'] {
    */
   #panels[data-scene='true'][data-view='manage'] .slot-grid {
     grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  }
+
+  /*
+   * And enough for a name in the docked column too.
+   *
+   * Widening the panel on its own does not buy readable tiles — `auto-fill`
+   * spends the extra width on another column rather than on the columns it
+   * has, so the tile stays at its floor and the name still breaks. Measured
+   * across three window widths, going from 28rem to 32 and 36 made it *worse*:
+   * 22 broken names, then 28, then 33.
+   *
+   * Raising the floor is what actually fixes it. With the width above, the
+   * grid settles at four or five columns of about 100px and a seed name fits
+   * on one line: 22 broken names to none at 1440 and 1100, and one at 1920.
+   */
+  #panels[data-scene='true'][data-view='split'] .slot-grid {
+    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
   }
 
   /* Given room, a full-stage page still reads better bounded and centred. */
