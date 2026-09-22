@@ -97,7 +97,44 @@ describe('merchant stock', () => {
     expect(new Set(visits).size).toBeGreaterThan(1);
   });
 
-  it('survives a reload, because nothing about it is stored', () => {
+  it('does not re-deal the pack when something is bought out of it', () => {
+    // The draw reads the world — which upgrades are owned, what rank you are —
+    // and all of that moves while a trader is in town. Buying the one-off used
+    // to take it out of the pool and re-deal everything else around it.
+    const sim = new Simulation(createWorld(3));
+    sim.advanceTo(midday(2));
+    sim.world.gold = 500_000;
+    sim.world.renown = 20_000;
+
+    const before = sim.merchants()[0]!;
+    const upgrade = before.entries.findIndex((e) => e.kind === 'equipment' || e.kind === 'decor');
+    expect(upgrade, 'this visit carries no one-off to buy').toBeGreaterThanOrEqual(0);
+
+    expect(sim.buy(before.merchantId, upgrade).ok).toBe(true);
+
+    const after = sim.merchants()[0]!;
+    expect(after.entries.map((e) => `${e.kind}:${e.id}`)).toEqual(
+      before.entries.map((e) => `${e.kind}:${e.id}`),
+    );
+    // The bought one is spent, and nothing else moved.
+    expect(after.entries[upgrade]!.remaining).toBe(0);
+  });
+
+  it('re-deals on the next visit, not on this one', () => {
+    const sim = new Simulation(createWorld(3));
+    sim.advanceTo(midday(2));
+    const first = sim.merchants()[0]!.entries.map((e) => e.id).join(',');
+
+    sim.advanceTo(midday(2) + 90_000);
+    expect(sim.merchants()[0]!.entries.map((e) => e.id).join(',')).toBe(first);
+
+    // Two days on is Bramm's next visit, and that one is packed afresh.
+    sim.advanceTo(midday(4));
+    const second = sim.merchants()[0]!.entries.map((e) => e.id).join(',');
+    expect(second).not.toBe(first);
+  });
+
+  it('survives a reload, because the pack travels with the save', () => {
     const original = worldAt(midday(2));
     const clone = new Simulation(JSON.parse(JSON.stringify(original.world)));
 

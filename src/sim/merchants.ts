@@ -122,6 +122,29 @@ function generateEntries(
   const rng = new Rng(visitSeed(def.id, dayNumber));
   const rank = rankIndexFor(world.renown);
 
+  /*
+   * A pack is packed once, when the trader arrives.
+   *
+   * The draw below reads the world: which upgrades you already own, what rank
+   * you are, what your standing with this trader is. All three move while a
+   * trader is in town — buying the cauldron is what takes it out of the pool —
+   * so re-running the draw on the next render dealt a different pack, and a
+   * player who bought one thing watched the other four turn into other things.
+   *
+   * The ids that were dealt are therefore kept on the visit record, and a visit
+   * that already has them deals exactly those again. A save from before this
+   * change has none, so its current visit settles on its next redraw and every
+   * visit after it is stable from the moment it opens.
+   */
+  const remembered = rememberedPicks(world, def.id, dayNumber);
+  if (remembered) {
+    const byId = new Map(def.pool.map((item) => [item.id, item]));
+    const kept = remembered.map((id) => byId.get(id)).filter((item) => item !== undefined);
+    // An id that no longer exists in the pool — a content edit between sessions
+    // — simply drops out rather than taking the rest of the pack with it.
+    if (kept.length > 0) return priceEntries(world, def, dayNumber, tier, kept);
+  }
+
   const pool = def.pool.filter((item) => {
     if (item.tier > tier) return false;
     if (item.kind !== 'equipment' && item.kind !== 'decor') return true;
@@ -209,6 +232,18 @@ function generateEntries(
     if (!dealt) break;
   }
 
+  rememberPicks(world, def.id, dayNumber, chosen.map((item) => item.id));
+  return priceEntries(world, def, dayNumber, tier, chosen);
+}
+
+/** What the dealt goods cost, which is read fresh every time. */
+function priceEntries(
+  world: World,
+  def: MerchantDef,
+  dayNumber: number,
+  tier: number,
+  chosen: MerchantStockDef[],
+): StockEntry[] {
   const bought = boughtRecord(world, def.id, dayNumber);
   const discount = tier * def.discountPerTier;
   // Hollowreach trades cheap and Highmarch does not; the town moves every price.
@@ -260,6 +295,38 @@ function boughtRecord(world: World, merchantId: string, dayNumber: number): Reco
   const record = world.merchantVisits[merchantId];
   if (!record || record.dayNumber !== dayNumber) return {};
   return record.bought;
+}
+
+/** The ids this visit was packed with, if it has been packed. */
+function rememberedPicks(
+  world: World,
+  merchantId: string,
+  dayNumber: number,
+): string[] | undefined {
+  const record = world.merchantVisits[merchantId];
+  if (!record || record.dayNumber !== dayNumber) return undefined;
+  return record.picks;
+}
+
+/**
+ * Write down what this visit is carrying.
+ *
+ * Only ever for the visit happening now: a record for another day is a stale
+ * visit, and it is replaced rather than merged, which is also what clears the
+ * purchases made on it.
+ */
+function rememberPicks(
+  world: World,
+  merchantId: string,
+  dayNumber: number,
+  picks: string[],
+): void {
+  const record = world.merchantVisits[merchantId];
+  if (record && record.dayNumber === dayNumber) {
+    record.picks = picks;
+    return;
+  }
+  world.merchantVisits[merchantId] = { dayNumber, bought: {}, picks };
 }
 
 /** Every merchant currently in town, with their stock for this visit. */

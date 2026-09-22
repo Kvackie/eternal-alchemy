@@ -459,7 +459,18 @@ export interface World {
    * Stock itself isn't stored — it regenerates from a seed derived from
    * (merchant, day) — so this only has to remember what's gone.
    */
-  merchantVisits: Record<string, { dayNumber: number; bought: Record<string, number> }>;
+  /**
+   * What each merchant is carrying this visit, and what has been taken from it.
+   *
+   * `picks` is the pack, written when the trader arrives and read for as long
+   * as they are in town — without it the draw re-ran against a world that had
+   * changed underneath it, so buying one thing re-dealt the other four.
+   * Optional because a save from before it simply gets packed on its next look.
+   */
+  merchantVisits: Record<
+    string,
+    { dayNumber: number; bought: Record<string, number>; picks?: string[] }
+  >;
 
   /** The rank the player has already been told about, so a rank-up fires once. */
   acknowledgedRank: number;
