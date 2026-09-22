@@ -568,7 +568,6 @@
   "garden.action.plant": "Plant",
   "garden.action.harvest": "Harvest",
   "garden.action.harvestAll": "Harvest all ({count})",
-  "garden.tip.seed": "Grows in {time}. Prefers {soil}.",
   "cauldron.title": "Alchemy",
   "cauldron.workshop": "Workshop",
   "cauldron.inventory": "Inventory",

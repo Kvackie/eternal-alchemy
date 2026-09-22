@@ -276,7 +276,8 @@ function codexCard(deps: SettingsDeps, node: CodexNodeDef): HTMLElement {
    * disabling it would only stop a player reading what they are saving toward,
    * which is exactly when they most want to read it.
    */
-  card.title = t('codex.tierOf', { tier, total: node.tiers });
+  // No tooltip: the stars are the picture of this and carry the same words as
+  // their label, and the card opens a dialog that writes it out in full.
   card.addEventListener('click', () => openCodex(deps, node));
   return card;
 }

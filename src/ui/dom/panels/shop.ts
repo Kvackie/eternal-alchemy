@@ -252,9 +252,13 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
       id: shelfSlot.id,
       icon: el('span', { class: 'slot-glyph', text: '🪵' }),
       label: t('shop.shelf.numbered', { number }),
-      caption: t(`board.${shelfSlot.quality}`),
+      // "Empty shelf" was the tooltip, which is the one thing this tile had to
+      // say and the one place it could not be read.
+      caption: [
+        el('span', { text: t('shop.slot.empty') }),
+        el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
+      ],
       dimmed: true,
-      title: t('shop.slot.empty'),
       onActivate: () => openShelfDetails(sim, entry),
     });
   }
@@ -271,16 +275,10 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
     // A shelf nobody is buying from is the one thing on this screen worth
     // colouring: it is the shelf you came here to do something about.
     tone: chance > 0.05 ? 'default' : 'warn',
-    title: [
-      t('shop.shelf.numbered', { number }),
-      t(`board.${shelfSlot.quality}`),
-      paceLabel(chance),
-      board.appealBonus > 0
-        ? t('shop.board.appealNote', { percent: Math.round(board.appealBonus * 100) })
-        : '',
-    ]
-      .filter(Boolean)
-      .join('\n'),
+    // No tooltip: the shelf number, the board, the pace and the appeal are all
+    // in the dialog this tile opens, and a tooltip is a thing a touchscreen
+    // never shows. Saying it twice for a mouse is not worth saying it nowhere
+    // for a finger.
     onActivate: () => openShelfDetails(sim, entry),
   });
 }
@@ -701,9 +699,7 @@ function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
     count,
     caption: [gradeBadge(item.grade), goldText(item.fairValue)],
     dimmed: room === 0,
-    title:
-      `${t(`recipe.${item.recipeId}`)} · ${t(`form.${item.formId}`)}\n` +
-      `${t(`vessel.${item.vesselId}`)} · ${t(`seal.${item.sealId}`)}`,
+    // Form, vessel and seal are three of the lines in the card this opens.
     /*
      * How many, in one press.
      *

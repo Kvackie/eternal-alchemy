@@ -135,24 +135,25 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
       ? t('greenhouse.strain', { crop: t(`crop.${crop.id}`), gen: strain.generation })
       : t(`crop.${crop.id}`);
 
-    const essences = strain
-      ? ESSENCES.filter((e) => strain.essence[e] > 0)
-          .map((e) => `${t(`essence.${e}.short`)} ${Math.round(strain.essence[e])}`)
-          .join(' · ')
-      : '';
-
     return slot({
       id,
       icon: iconFor(crop.yields),
       label,
       count,
-      caption: formatDuration(growMs),
+      /*
+       * The soil is on the tile, not in a tooltip.
+       *
+       * Planting asks which ground, so which ground a seed wants is the whole
+       * of the decision — and it lived in a `title`, which a touchscreen never
+       * shows. The grow time was there too and was already in the caption,
+       * which is the sort of thing a tooltip full of facts hides.
+       */
+      caption: [
+        el('span', { text: formatDuration(growMs) }),
+        chip(t(`soil.${crop.soil}`), 'plain'),
+      ],
       dragType: SEED_DRAG,
       tone: strain ? 'good' : 'default',
-      title: `${label}\n${t('garden.tip.seed', {
-        time: formatDuration(growMs),
-        soil: t(`soil.${crop.soil}`),
-      })}${essences ? `\n${essences}` : ''}`,
       /*
        * The tile opens what it grows into; the panel picks it up.
        *
@@ -461,9 +462,11 @@ function renderGreenhouse(sim: Simulation): HTMLElement {
       label: strain
         ? t('greenhouse.strain', { crop: t(`crop.${candidate.cropId}`), gen: strain.generation })
         : t(`crop.${candidate.cropId}`),
-      caption: essences,
+      caption: [
+        el('span', { text: essences }),
+        ...(strain?.traits ?? []).map((trait) => chip(t(`trait.${trait}`), 'good')),
+      ],
       selected: key === parentA || key === parentB,
-      title: `${essences}${strain?.traits.length ? `\n${strain.traits.join(', ')}` : ''}`,
       onActivate: () => {
         if (key === parentA) parentA = null;
         else if (key === parentB) parentB = null;

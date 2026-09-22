@@ -88,6 +88,16 @@ function buildHeroInfo(
   ]);
 
   const actions: HTMLElement[] = [];
+
+  /*
+   * Why a button is greyed out, written where it can be read.
+   *
+   * It was the button's `title`, and a tooltip on a disabled control is the
+   * least reachable thing in a user interface: a touchscreen never shows one,
+   * and several browsers suppress it on a disabled element even with a mouse.
+   * So "you cannot afford this" was information the game had and never gave.
+   */
+  const reasons: string[] = [];
   if (hero) {
     const away = hero.onMission;
     actions.push(
@@ -100,9 +110,10 @@ function buildHeroInfo(
             changed();
           }
         },
-        { variant: 'warm', disabled: away, title: away ? t('roster.away') : undefined },
+        { variant: 'warm', disabled: away },
       ),
     );
+    if (away) reasons.push(t('roster.away'));
   } else {
     const full = sim.world.heroes.length >= sim.heroSlots;
     const cost = recruitCostOf(heroId);
@@ -117,12 +128,11 @@ function buildHeroInfo(
             changed();
           }
         },
-        {
-          disabled: full || poor,
-          title: full ? t('roster.full') : poor ? t('heroInfo.tooPoor') : undefined,
-        },
+        { disabled: full || poor },
       ),
     );
+    if (full) reasons.push(t('roster.full'));
+    else if (poor) reasons.push(t('heroInfo.tooPoor'));
   }
   actions.push(button(t('common.cancel'), dismiss, { variant: 'quiet' }));
 
@@ -139,6 +149,7 @@ function buildHeroInfo(
 
     facts,
 
+    ...reasons.map((reason) => el('p', { class: 'field-note dialog-reason', text: reason })),
     el('div', { class: 'dialog-actions' }, actions),
   ]);
 

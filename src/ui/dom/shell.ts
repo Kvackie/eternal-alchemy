@@ -841,6 +841,9 @@ export class Shell {
   private buildViewControls(): HTMLElement {
     const zoom = (label: string, factor: number, title: string) => {
       const node = el('button', { class: 'view-button', type: 'button', title, text: label });
+      // The face is "+" or "−"; the tooltip is the only thing that says what
+      // it does, and a tooltip is not a name.
+      node.setAttribute('aria-label', title);
       node.addEventListener('click', () => this.deps.onZoom(factor));
       return node;
     };

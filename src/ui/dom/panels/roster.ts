@@ -352,7 +352,6 @@ function renderDestinations(sim: Simulation): HTMLElement {
       caption: locked ? t('market.reason.rank') : formatDuration(biome.durationMs),
       selected: selectedBiome === biome.id,
       disabled: locked,
-      title: t(`biome.${biome.id}.blurb`),
       onActivate: () => {
         selectedBiome = selectedBiome === biome.id ? null : biome.id;
         changed();
@@ -391,16 +390,21 @@ function renderDestinations(sim: Simulation): HTMLElement {
       .sort((a, b) => b.chance - a.chance)
       .slice(0, FINDS_SHOWN)
       .map((entry) => {
+        const name = t(`ingredient.${entry.ingredientId}`);
         const node = el('button', { class: 'find', type: 'button' }, [
           ingredientIcon(entry.ingredientId, 34),
+          el('span', { class: 'find-name', text: name }),
           el('span', { class: 'find-odds', text: formatPercent(entry.chance) }),
         ]);
-        node.title = t(`ingredient.${entry.ingredientId}`);
+        node.setAttribute('aria-label', name);
         node.addEventListener('click', () => showIngredientInfo(sim, entry.ingredientId));
         return node;
       });
 
     body.push(
+      // What the place is like, where it can actually be read. It was the
+      // chosen tile's `title`, which is to say: nowhere, on a phone.
+      el('p', { class: 'field-note', text: t(`biome.${chosen.id}.blurb`) }),
       el('span', { class: 'field-label', text: t('roster.finds') }),
       el('div', { class: 'find-row' }, finds),
     );

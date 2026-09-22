@@ -3470,6 +3470,12 @@ input[type='range'] {
  * Wraps rather than scrolls: a hidden find is the same as no find, and the
  * whole point is being able to compare two destinations at a glance.
  */
+/* The reason a dialog's action is greyed out, above the row it belongs to. */
+.dialog-reason {
+  margin: 0;
+  text-align: right;
+}
+
 .find-row {
   display: flex;
   flex-wrap: wrap;
@@ -3486,6 +3492,22 @@ input[type='range'] {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
+}
+
+/*
+ * A find says what it is, not just how likely it is.
+ *
+ * The name was the button's `title`, so on a phone a row of finds was twelve
+ * pictures and twelve percentages with nothing to tell you which was which.
+ */
+.find-name {
+  max-width: 5.5rem;
+  font-size: 0.625rem;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .find:hover {
