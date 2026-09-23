@@ -344,6 +344,9 @@ function weightedPick<T extends { weight: number }>(entries: T[], rng: Rng): T |
   return entries[entries.length - 1];
 }
 
+/** The potion that mends an injured hero: water and earth, as the old tonic was. */
+export const HEALING_RECIPE = 'aquaTerra';
+
 /**
  * Heal an injured hero with a Restorative rather than leaving them to rest.
  *
@@ -357,7 +360,7 @@ export function healHero(world: World, heroId: string, itemUid: string): boolean
   const index = world.bottled.findIndex((item) => item.uid === itemUid);
   if (index < 0) return false;
   const item = world.bottled[index]!;
-  if (item.recipeId !== 'healthTonic') return false;
+  if (item.recipeId !== HEALING_RECIPE) return false;
 
   world.bottled.splice(index, 1);
   hero.injuredUntil = null;

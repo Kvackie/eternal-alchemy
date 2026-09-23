@@ -52,15 +52,11 @@ export interface CauldronContents {
   units: Array<{ ingredientId: string; harvestedAt: number | null; strainId?: string | null }>;
 }
 
-/** Stirred melds a blend; simmered boils it. A recipe wants one or the other. */
-export type BrewMethod = 'stirred' | 'simmered';
-
 /**
  * One pot, and everything happening in it.
  *
- * Temperature and method live here rather than on the world because two pots
- * can be at different heats doing different things — which is the entire reason
- * to own two.
+ * A pot's state lives here rather than on the world because two pots can be
+ * doing different things at once — which is the entire reason to own two.
  */
 export interface Cauldron {
   /** Stable per pot, so the UI can keep pointing at the same one. */
@@ -68,12 +64,6 @@ export interface Cauldron {
   /** Which tier of pot this is, from cauldrons.json. */
   tierId: string;
   contents: CauldronContents;
-  /**
-   * Live preparation state. Persisted, so a closed tab doesn't reset a pot
-   * someone spent a minute bringing up to heat.
-   */
-  temperature: number;
-  method: BrewMethod | null;
   /** An accepted brew, counting down. */
   brewing: BrewInProgress | null;
   /** A finished brew waiting to be bottled. */
@@ -88,20 +78,13 @@ export interface Cauldron {
   stored: boolean;
 }
 
-/** What the cauldron would produce, given its contents, temperature and method. */
+/** What the cauldron would produce, given what is in it. */
 export interface BrewOutcome {
   recipeId: string;
-  /** True when nothing matched and this is Murk. */
-  isFallback: boolean;
   total: EssenceVector;
   totalEssence: number;
   /** Angular distance from the recipe's ideal ratio, in radians. */
   offIdealRad: number;
-  contaminantPoints: number;
-  temperature: number;
-  /** How far outside the recipe's band the temperature sits. Zero when inside. */
-  degreesOutsideBand: number;
-  method: BrewMethod | null;
   purity: number;
   potencyTier: PotencyTierId;
   overCapacity: boolean;
@@ -213,8 +196,7 @@ export type LogKind =
   | 'haggleLost'
   | 'strainBred'
   | 'retired'
-  | 'recipeFound'
-  | 'bandLearned';
+  | 'recipeFound';
 
 export interface LogEntry {
   id: number;
@@ -308,21 +290,9 @@ export interface Strain {
   yieldBonus: number;
 }
 
-/**
- * What the player has worked out about a recipe.
- *
- * Deliberately not "the recipe is unlocked" — knowledge is a spectrum here. You
- * can know a potion exists and still be hunting its temperature, and the bounds
- * are the record of that hunt.
- */
+/** What the player has worked out about a recipe: whether they have made it, and how often. */
 export interface RecipeKnowledge {
   discovered: boolean;
-  /** The hottest temperature proven to be below the band. */
-  coldestKnownTooCold: number | null;
-  /** The coldest temperature proven to be above the band. */
-  hottestKnownTooHot: number | null;
-  /** True once the band has been hit; the book then prints it. */
-  bandKnown: boolean;
   timesBrewed: number;
 }
 

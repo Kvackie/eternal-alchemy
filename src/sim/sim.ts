@@ -17,7 +17,7 @@ import {
   getEquipment,
   getSeal,
   ranks,
-  realRecipes,
+  recipes,
   type RecipeDef,
 } from './config';
 import {
@@ -106,13 +106,7 @@ import {
 } from './haggle';
 import { cross, crossCandidates, hasGreenhouse, type CrossCandidate } from './greenhouse';
 import { buyCodex, canRetire, masteryFor, retire } from './prestige';
-import {
-  bandHint,
-  discoveredRecipes,
-  learnFrom,
-  verdictFor,
-  type TemperatureVerdict,
-} from './discovery';
+import { discoveredRecipes, isDiscovered, learnFrom } from './discovery';
 import {
   currentStep,
   dismissOnboarding,
@@ -122,18 +116,12 @@ import {
 import { agingRateFor, freshnessOf } from './essences';
 import { Rng } from './rng';
 import { createWorld } from './state';
-import {
-  applyBurner,
-  assessOutcome,
-  brewDurationFor,
-  driftTemperature,
-  nudgeTemperature,
-} from './brewing';
+import { assessOutcome, brewDurationFor } from './brewing';
 import { bottle, nextUid, type BottleRequest } from './bottling';
 import type {
   BottledItem,
-  BrewMethod,
   BrewOutcome,
+  EssenceVector,
   Freshness,
   Grade,
   SaleRecord,
@@ -160,9 +148,6 @@ export interface AwaySummary {
 export class Simulation {
   world: World;
   private rng: Rng;
-
-  /** Which burner the player is holding, if any. Not persisted — it's an input. */
-  burner: 'heat' | 'chill' | null = null;
 
   constructor(world: World = createWorld()) {
     this.world = world;
@@ -208,7 +193,6 @@ export class Simulation {
     this.runExpeditions();
     this.runBoard(delta, online);
 
-    this.advanceTemperature(delta, online);
     this.noticeRankUp();
     this.world.rngSeed = this.rng.seed;
     return sales;
@@ -388,7 +372,7 @@ export class Simulation {
   }
 
   buyCauldron(tierId: string): Cauldron | null {
-    const pot = buyCauldron(this.world, tierId, config.brewing.ambientTemperature);
+    const pot = buyCauldron(this.world, tierId);
     if (pot) record(this.world, 'cauldronBought', { tier: tierId });
     return pot;
   }
@@ -426,70 +410,25 @@ export class Simulation {
     while (pot.contents.units.length > 0) this.removeFromCauldron(0, pot.id);
   }
 
-  // -- Cauldron: step 2, temperature and method -----------------------------
+  // -- Cauldron: step 2, outcome -------------------------------------------
 
-  get temperature(): number {
-    return this.cauldron.temperature;
-  }
-
-  get method(): BrewMethod | null {
-    return this.cauldron.method;
-  }
-
-  setMethod(method: BrewMethod | null, cauldronId?: string): void {
-    const pot = this.pot(cauldronId);
-    if (pot.brewing || pot.pendingBrew) return;
-    pot.method = pot.method === method ? null : method;
-  }
-
-  /**
-   * A single tap of the burner, for players who would rather not hold a button.
-   *
-   * `degrees` is the fine control: a recipe band can be a handful of degrees
-   * wide, and landing on one by holding a ramp is a reflex test rather than a
-   * decision.
-   */
-  nudge(burner: 'heat' | 'chill', degrees?: number, cauldronId?: string): void {
-    const pot = this.pot(cauldronId);
-    if (pot.brewing || pot.pendingBrew) return;
-    pot.temperature = nudgeTemperature(pot.temperature, burner, degrees);
-  }
-
-  /**
-   * Temperature only moves while the player is present.
-   *
-   * A pot cannot be left heating overnight and found still hot, but neither
-   * should twelve hours away silently cost the heat someone was holding when
-   * they got interrupted — so offline stretches leave it exactly as it was.
-   */
-  private advanceTemperature(deltaMs: number, online: boolean): void {
-    if (!online) return;
-    /*
-     * The burner is held over ONE pot — the one on screen — but every idle pot
-     * still drifts back toward the room. A shop of six cauldrons should not keep
-     * five of them at temperature for free.
-     */
-    for (const pot of this.world.cauldrons) {
-      if (pot.brewing || pot.pendingBrew) continue;
-      const active = pot.id === this.world.activeCauldronId;
-      let temperature = applyBurner(pot.temperature, active ? this.burner : null, deltaMs);
-      if (!active || !this.burner) {
-        temperature = driftTemperature(temperature, deltaMs, this.stats.driftMultiplier);
-      }
-      pot.temperature = temperature;
-    }
-  }
-
-  // -- Cauldron: step 3, outcome -------------------------------------------
-
-  /** What the pot would make right now. Recomputed on demand; nothing is cached. */
-  assess(cauldronId?: string): BrewOutcome | null {
+  /** What the pot adds up to right now, or null while it is empty. */
+  blend(cauldronId?: string): EssenceVector | null {
     const pot = this.pot(cauldronId);
     if (pot.contents.units.length === 0) return null;
+    return cauldronVector(pot.contents, this.world.now, this.strainEssence);
+  }
+
+  /**
+   * What the pot would make right now, or null when it would make nothing —
+   * empty, or a blend no recipe claims. Recomputed on demand; nothing is cached.
+   */
+  assess(cauldronId?: string): BrewOutcome | null {
+    const pot = this.pot(cauldronId);
+    const blend = this.blend(pot.id);
+    if (!blend) return null;
     return assessOutcome({
-      blend: cauldronVector(pot.contents, this.world.now, this.strainEssence),
-      temperature: pot.temperature,
-      method: pot.method,
+      blend,
       // This pot's own capacity, not the shop's best: brewing a heavy blend in
       // the starter bowl should boil over even when a great pot sits beside it.
       capacity: capacityOf(pot),
@@ -518,33 +457,17 @@ export class Simulation {
     // Only *accepting* teaches. Rejecting is free so that experimenting is free;
     // letting a rejected pot leak the answer would make the free option
     // strictly better than committing to one.
-    if (!outcome.isFallback) {
-      const learned = learnFrom(this.world, outcome.recipeId, pot.temperature);
-      if (learned.newlyDiscovered) {
-        record(this.world, 'recipeFound', { recipe: outcome.recipeId });
-      }
-      if (learned.bandLearned) {
-        record(this.world, 'bandLearned', { recipe: outcome.recipeId });
-      }
+    const learned = learnFrom(this.world, outcome.recipeId);
+    if (learned.newlyDiscovered) {
+      record(this.world, 'recipeFound', { recipe: outcome.recipeId });
     }
     return true;
-  }
-
-  /** What the book can honestly print about a recipe's temperature. */
-  bandHint(recipeId: string) {
-    return bandHint(this.world, recipeId);
-  }
-
-  /** Too cold, too hot, or right — without leaking the band itself. */
-  temperatureVerdict(recipeId: string, cauldronId?: string): TemperatureVerdict {
-    return verdictFor(this.world, recipeId, this.pot(cauldronId).temperature);
   }
 
   /**
    * Reject the outcome: every ingredient goes back to stores, unchanged.
    *
-   * This is what makes a hidden temperature band fair to hunt for. Experimenting
-   * has to be free or nobody experiments.
+   * Experimenting has to be free or nobody experiments.
    */
   rejectBrew(cauldronId?: string): boolean {
     const pot = this.pot(cauldronId);
@@ -552,7 +475,6 @@ export class Simulation {
     if (pot.contents.units.length === 0) return false;
     const returned = pot.contents.units.length;
     this.emptyCauldron(pot.id);
-    pot.method = null;
     record(this.world, 'brewRejected', { count: returned });
     return true;
   }
@@ -598,7 +520,6 @@ export class Simulation {
     const item = bottle(this.world, brew, req, this.rankIndex);
     if (item) {
       pot.pendingBrew = null;
-      pot.method = null;
       record(this.world, 'bottled', {
         recipe: item.recipeId,
         grade: item.grade,
@@ -611,7 +532,6 @@ export class Simulation {
   discardPending(cauldronId?: string): void {
     const pot = this.pot(cauldronId);
     pot.pendingBrew = null;
-    pot.method = null;
   }
 
   // -- Cave, shaft, missions, board -----------------------------------------
@@ -1208,14 +1128,14 @@ export class Simulation {
     return clearSpot(this.world, spot);
   }
 
-  /**
-   * The recipe book, for the cauldron's reference panel.
-   *
-   * M1 knows everything from the start; recipe discovery arrives with merchants
-   * in M2, at which point this filters on what the player has actually learned.
-   */
+  /** The recipes the player has made, which the book shows in full. */
   knownRecipes(): RecipeDef[] {
     return discoveredRecipes(this.world);
+  }
+
+  /** The rest, which the book shows only as a hint. */
+  unknownRecipes(): RecipeDef[] {
+    return recipes.filter((recipe) => !isDiscovered(this.world, recipe.id));
   }
 
   // -- Onboarding -----------------------------------------------------------
@@ -1310,15 +1230,13 @@ export class Simulation {
    * look alike until you read them.
    *
    * Drawn from every recipe rather than from the discovered ones. A new game
-   * knows two, so a grant that respected discovery handed over ten bottles of
-   * the same two things — which is a shelf that proves nothing. Discovery is
-   * what the Codex is for; this is for having something to look at.
+   * knows only the five single-essence potions, so a grant that respected
+   * discovery handed over a shelf of the plainest things there are — which
+   * proves nothing. This is for having something to look at.
    */
   private grantBottles(kinds: number, each: number): void {
     const grades: Grade[] = ['S', 'A', 'B', 'C', 'D'];
-    const recipes = realRecipes().slice(0, kinds);
-
-    recipes.forEach((recipe, index) => {
+    recipes.slice(0, kinds).forEach((recipe, index) => {
       for (let copy = 0; copy < each; copy += 1) {
         const item: BottledItem = {
           uid: nextUid(this.world.now),
@@ -1353,11 +1271,7 @@ export class Simulation {
     for (const tier of cauldronTiers) {
       if (!this.world.cauldrons.some((pot) => pot.tierId === tier.id)) {
         this.world.cauldrons.push(
-          makeCauldron(
-            `cauldron-${this.world.nextCauldronId}`,
-            tier.id,
-            config.brewing.ambientTemperature,
-          ),
+          makeCauldron(`cauldron-${this.world.nextCauldronId}`, tier.id),
         );
         this.world.nextCauldronId += 1;
       }
@@ -1383,7 +1297,7 @@ export class Simulation {
       );
     }
 
-    for (const recipe of realRecipes()) {
+    for (const recipe of recipes) {
       for (let i = 0; i < 5; i += 1) {
         const item: BottledItem = {
           uid: `debug-${recipe.id}-${i}`,
@@ -1404,13 +1318,7 @@ export class Simulation {
 
         // Bottling normally discovers a recipe; a shelf full of potions the
         // book has never heard of would break every screen that names them.
-        this.world.recipes[recipe.id] ??= {
-          discovered: true,
-          coldestKnownTooCold: null,
-          hottestKnownTooHot: null,
-          bandKnown: true,
-          timesBrewed: 0,
-        };
+        this.world.recipes[recipe.id] ??= { discovered: true, timesBrewed: 0 };
         this.world.recipes[recipe.id]!.discovered = true;
       }
     }

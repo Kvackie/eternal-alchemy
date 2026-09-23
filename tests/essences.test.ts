@@ -6,13 +6,12 @@ import {
   freshnessOf,
   gradeFor,
   potencyTierFor,
-  purityFor,
   totalEssence,
   zeroVector,
 } from '@/sim/essences';
 import { assessOutcome } from '@/sim/brewing';
-import { config, getIngredient, getRecipe } from '@/sim/config';
-import type { BrewMethod, CauldronContents } from '@/sim/types';
+import { config, getIngredient, getRecipe, recipes } from '@/sim/config';
+import type { CauldronContents, EssenceVector } from '@/sim/types';
 
 const HOUR = 3_600_000;
 
@@ -20,15 +19,13 @@ function contents(...ids: string[]): CauldronContents {
   return { units: ids.map((ingredientId) => ({ ingredientId, harvestedAt: 0 })) };
 }
 
-/** Assess a pot at the right temperature and method for a given recipe. */
-function assess(recipeId: string, ...ids: string[]) {
-  const recipe = getRecipe(recipeId);
-  return assessOutcome({
-    blend: cauldronVector(contents(...ids), 0),
-    temperature: (recipe.temperature.min + recipe.temperature.max) / 2,
-    method: (recipe.method === 'any' ? 'stirred' : recipe.method) as BrewMethod,
-    capacity: 60,
-  });
+/** Assess a pot of these ingredients, fresh, in a 60-essence cauldron. */
+function assess(...ids: string[]) {
+  return assessOutcome({ blend: cauldronVector(contents(...ids), 0), capacity: 60 });
+}
+
+function assessBlend(blend: EssenceVector) {
+  return assessOutcome({ blend, capacity: 1000 });
 }
 
 describe('essence vectors', () => {
@@ -112,32 +109,85 @@ describe('freshness', () => {
   });
 });
 
+describe('the recipe book', () => {
+  it('has one recipe for every set of essences', () => {
+    expect(recipes).toHaveLength(31);
+    const sets = new Set(recipes.map((recipe) => [...recipe.elements].sort().join('+')));
+    expect(sets.size).toBe(31);
+  });
+
+  it('asks for each essence in equal measure', () => {
+    for (const recipe of recipes) {
+      const parts = Object.values(recipe.target).filter((value) => value > 0);
+      expect(parts).toHaveLength(recipe.elements.length);
+      expect(new Set(parts).size).toBe(1);
+    }
+  });
+
+  // Half the angle to the nearest neighbour: 45° apart for a single essence and
+  // its pairs, about 26.6° for a four and the five.
+  it('sizes each cone halfway to its nearest neighbour', () => {
+    expect(getRecipe('ignis').toleranceDeg).toBeCloseTo(22.5, 5);
+    expect(getRecipe('ignisAquaTerraAer').toleranceDeg).toBeCloseTo(13.28, 2);
+    expect(getRecipe('ignisAquaTerraAerUmbra').toleranceDeg).toBeCloseTo(13.28, 2);
+  });
+});
+
 describe('purity', () => {
-  it('is highest when the blend sits exactly on the recipe ratio', () => {
-    const onTarget = { ignis: 0, aqua: 20, terra: 10, aer: 0, umbra: 0 };
+  it('is 100 when the blend sits exactly on the recipe ratio', () => {
+    const brew = assessBlend({ ignis: 0, aqua: 20, terra: 20, aer: 0, umbra: 0 });
+    expect(brew?.recipeId).toBe('aquaTerra');
     // acos of a dot product lands a few ulps short of exactly zero radians.
-    expect(purityFor(onTarget, 'healthTonic').purity).toBeCloseTo(100, 5);
+    expect(brew?.purity).toBeCloseTo(100, 3);
   });
 
-  it('is penalised by essences the recipe does not want', () => {
-    const clean = { ignis: 0, aqua: 20, terra: 10, aer: 0, umbra: 0 };
-    const dirty = { ignis: 6, aqua: 20, terra: 10, aer: 0, umbra: 0 };
-    expect(purityFor(dirty, 'healthTonic').purity).toBeLessThan(purityFor(clean, 'healthTonic').purity);
+  it('falls as the ratio drifts, whatever essence moves it', () => {
+    const exact = assessBlend({ ignis: 0, aqua: 20, terra: 20, aer: 0, umbra: 0 })!;
+    const lopsided = assessBlend({ ignis: 0, aqua: 24, terra: 20, aer: 0, umbra: 0 })!;
+    const stray = assessBlend({ ignis: 4, aqua: 20, terra: 20, aer: 0, umbra: 0 })!;
+    expect(lopsided.recipeId).toBe('aquaTerra');
+    expect(stray.recipeId).toBe('aquaTerra');
+    expect(lopsided.purity).toBeLessThan(exact.purity);
+    expect(stray.purity).toBeLessThan(exact.purity);
   });
 
-  it('never falls below the configured floor', () => {
-    const awful = { ignis: 100, aqua: 0, terra: 0, aer: 100, umbra: 100 };
-    expect(purityFor(awful, 'healthTonic').purity).toBe(config.grading.purityFloor);
+  it('reaches 0 at the edge of the cone, and nothing is made beyond it', () => {
+    const edge = (getRecipe('ignis').toleranceDeg * Math.PI) / 180;
+    const inside = assessBlend({ ignis: 1, aqua: Math.tan(edge * 0.999), terra: 0, aer: 0, umbra: 0 });
+    expect(inside?.recipeId).toBe('ignis');
+    expect(inside?.purity).toBeLessThan(1);
+
+    const outside = assessBlend({ ignis: 1, aqua: Math.tan(edge * 1.001), terra: 0, aer: 0, umbra: 0 });
+    expect(outside).toBeNull();
+  });
+
+  /*
+   * The grade is the ratio and nothing else: potency does not cap it, and a
+   * great pot does not rescue it.
+   */
+  it('grades a small exact brew S and a huge sloppy one poorly', () => {
+    const small = assessBlend({ ignis: 10, aqua: 0, terra: 0, aer: 0, umbra: 0 })!;
+    expect(small.potencyTier).toBe('minor');
+    expect(small.grade).toBe('S');
+
+    const huge = assessBlend({ ignis: 400, aqua: 120, terra: 0, aer: 0, umbra: 0 })!;
+    expect(huge.recipeId).toBe('ignis');
+    expect(huge.potencyTier).toBe('sovereign');
+    expect(huge.grade).toBe('F');
   });
 });
 
 describe('potency tiers', () => {
-  it('buckets by total essence', () => {
-    expect(potencyTierFor(30)).toBe('minor');
-    expect(potencyTierFor(57)).toBe('common');
-    expect(potencyTierFor(120)).toBe('greater');
-    expect(potencyTierFor(200)).toBe('grand');
-    expect(potencyTierFor(400)).toBe('sovereign');
+  it('buckets by total essence, matching the pots', () => {
+    expect(potencyTierFor(1)).toBe('minor');
+    expect(potencyTierFor(60)).toBe('minor');
+    expect(potencyTierFor(61)).toBe('common');
+    expect(potencyTierFor(110)).toBe('common');
+    expect(potencyTierFor(111)).toBe('greater');
+    expect(potencyTierFor(190)).toBe('greater');
+    expect(potencyTierFor(191)).toBe('grand');
+    expect(potencyTierFor(320)).toBe('grand');
+    expect(potencyTierFor(321)).toBe('sovereign');
   });
 });
 
@@ -153,58 +203,43 @@ describe('grading bands', () => {
 });
 
 describe('identifying a brew from real ingredients', () => {
-  it('identifies the health tonic from dewcaps', () => {
-    const brew = assess('healthTonic', 'dewcap', 'dewcap', 'dewcap');
-    expect(brew?.recipeId).toBe('healthTonic');
-    expect(brew?.isFallback).toBe(false);
+  it('makes an Aqua–Terra potion from bilberry and broadleaf', () => {
+    const brew = assess('bilberry', 'broadleaf');
+    expect(brew?.recipeId).toBe('aquaTerra');
+    expect(brew?.grade).toBe('S');
   });
 
-  it('identifies the ember draught from emberroot', () => {
-    const brew = assess('emberDraught', 'emberroot', 'emberroot');
-    expect(brew?.recipeId).toBe('emberDraught');
+  it('makes an Ignis potion from pepper', () => {
+    expect(assess('pepper', 'pepper')?.recipeId).toBe('ignis');
   });
 
-  it('identifies the wind draught from gale thistle', () => {
-    const brew = assess('windDraught', 'galeThistle', 'galeThistle');
-    expect(brew?.recipeId).toBe('windDraught');
+  it('makes an Aer potion from gale thistle', () => {
+    expect(assess('galeThistle', 'galeThistle')?.recipeId).toBe('aer');
   });
 
-  it('falls back to murk when nothing matches', () => {
-    // Sunleaf spreads its essence across Ignis, Aqua and Aer at once, which
+  it('makes nothing when the blend sits between recipes', () => {
+    // Sunleaf spreads its essence across Ignis, Aqua and Aer unevenly, which
     // points at no recipe's ratio in particular.
-    const brew = assess('healthTonic', 'sunleaf', 'sunleaf');
-    expect(brew?.isFallback).toBe(true);
-    expect(brew?.recipeId).toBe('murk');
+    expect(assess('sunleaf', 'sunleaf')).toBeNull();
   });
 
   it('caps an over-capacity brew at the unstable grade', () => {
-    // Six chalk nodules is 156 essence against a capacity of 60.
-    const brew = assess('healthTonic', ...Array(6).fill('chalkNodule'));
+    // Three chalk nodules is 78 essence against a capacity of 60.
+    const brew = assess('chalkNodule', 'chalkNodule', 'chalkNodule');
+    expect(brew?.recipeId).toBe('terra');
     expect(brew?.overCapacity).toBe(true);
-    expect(['D', 'E', 'F']).toContain(brew?.grade);
+    expect(brew?.grade).toBe(config.cauldron.unstableGrade);
   });
 
   it('does not cap a brew that fits', () => {
-    const brew = assess('healthTonic', 'dewcap', 'dewcap', 'dewcap');
-    expect(brew?.overCapacity).toBe(false);
+    expect(assess('bilberry', 'broadleaf')?.overCapacity).toBe(false);
   });
 
   it('shows minerals are too coarse to correct a small brew', () => {
-    // Three emberroot sit at 3.5:1 Ignis:Terra against an ideal of 3:1 — close.
-    const plain = assess('emberDraught', 'emberroot', 'emberroot', 'emberroot');
-    expect(plain?.recipeId).toBe('emberDraught');
-
-    // One chalk nodule is 26 Terra in a single unit. It doesn't nudge the ratio,
-    // it slams past it — far enough that the brew stops being an Ember Draught.
-    // This is the intended shape: minerals carry mass, herbs do the steering.
-    const overshot = assess(
-      'emberDraught',
-      'emberroot',
-      'emberroot',
-      'emberroot',
-      'chalkNodule',
-    );
-    expect(overshot?.isFallback).toBe(true);
-    expect(overshot?.recipeId).toBe('murk');
+    // One chalk nodule is 26 Terra in a single unit. It doesn't nudge the
+    // ratio, it slams past it — far enough that the brew stops being the
+    // Aqua–Terra potion. Minerals carry mass; herbs do the steering.
+    const overshot = assess('bilberry', 'broadleaf', 'chalkNodule');
+    expect(overshot?.recipeId).not.toBe('aquaTerra');
   });
 });

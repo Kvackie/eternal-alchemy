@@ -53,11 +53,6 @@ export function onboardingSteps(world: World): OnboardingStep[] {
       done: world.cauldrons.some((pot) => pot.contents.units.length > 0) || stats.brewsStarted > 0,
     },
     {
-      id: 'prepare',
-      screen: 'cauldron',
-      done: world.cauldrons.some((pot) => pot.method !== null) || stats.brewsStarted > 0,
-    },
-    {
       id: 'brew',
       screen: 'cauldron',
       done: stats.brewsStarted > 0,

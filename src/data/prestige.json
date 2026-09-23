@@ -3,59 +3,65 @@
   "requiresRank": 9,
   "$masteryComment": "Earned from lifetime renown at the moment you retire, so retiring later is worth more. Square root, so the first run is not worthless and the tenth is not absurd.",
   "masteryPerRenownRoot": 0.55,
-
   "codex": [
-    {
-      "$comment": "Was '+1 action at the cauldron' for the alembic wheel, which no longer exists. A steadier hand now means a wider temperature band — the direct analogue in the system that replaced it.",
-      "id": "deftHands",
-      "tiers": 6,
-      "costPerTier": 3,
-      "effect": { "temperatureToleranceBonus": 8 }
-    },
     {
       "id": "greenThumb",
       "tiers": 6,
       "costPerTier": 2,
-      "effect": { "timerMultiplier": -0.1 }
+      "effect": {
+        "timerMultiplier": -0.1
+      }
     },
     {
       "id": "deepVeins",
       "tiers": 6,
       "costPerTier": 3,
-      "effect": { "oreBatchBonus": 1, "startingDepthBonus": 20 }
+      "effect": {
+        "oreBatchBonus": 1,
+        "startingDepthBonus": 20
+      }
     },
     {
       "id": "oldFriends",
       "tiers": 6,
       "costPerTier": 4,
-      "effect": { "startingMerchantTier": 1 }
+      "effect": {
+        "startingMerchantTier": 1
+      }
     },
     {
       "id": "rememberedRecipes",
       "tiers": 6,
       "costPerTier": 3,
-      "effect": { "keptRecipes": 3 }
+      "effect": {
+        "keptRecipes": 3
+      }
     },
     {
       "id": "loyalCompanion",
       "tiers": 6,
       "costPerTier": 6,
-      "effect": { "keptHeroes": 1 }
+      "effect": {
+        "keptHeroes": 1
+      }
     },
     {
       "id": "fullPurse",
       "tiers": 6,
       "costPerTier": 2,
-      "effect": { "startingGold": 250 }
+      "effect": {
+        "startingGold": 250
+      }
     },
     {
       "id": "reputationPrecedesYou",
       "tiers": 6,
       "costPerTier": 4,
-      "effect": { "startingRenown": 200 }
+      "effect": {
+        "startingRenown": 200
+      }
     }
   ],
-
   "$townComment": "A town's modifier reshapes which of the three gathering sites carries the run, so the Codex nodes you picked get tested differently each time.",
   "$townComment2": "Mossvale is the baseline: no modifiers at all, and where a new game opens. It is the town every other one is a deviation from, so it is also the honest 'no thanks' when branching out — and it is what makes a first run readable, since nothing in it is being quietly scaled.",
   "towns": [

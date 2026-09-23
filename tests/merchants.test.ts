@@ -247,7 +247,7 @@ describe('bartering with the Ashwalker', () => {
   function bottle(uid: string, grade: Grade, value: number): BottledItem {
     return {
       uid,
-      recipeId: 'healthTonic',
+      recipeId: 'aquaTerra',
       formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',

@@ -120,16 +120,13 @@ export function scheduledWalkIns(world: World): WalkIn[] {
  * Would this customer buy this potion at all?
  *
  * Named wants first, then taste. The list alone meant a walk-in could only ever
- * be interested in one or two of the seventy-odd recipes, so anything else you
+ * be interested in one or two of the 31 recipes, so anything else you
  * brewed had no buyer but the shelf — the palate is what opens the rest of the
  * book to them.
  */
 export function buys(def: CustomerDef, recipeId: string): boolean {
   if (def.wants.includes(recipeId)) return true;
-  const recipe = getRecipe(recipeId);
-  // Nobody haggles over Murk.
-  if (recipe.isFallback) return false;
-  const off = angleBetween(recipe.target, def.palate);
+  const off = angleBetween(getRecipe(recipeId).target, def.palate);
   return off < (def.spreadDeg * Math.PI) / 180;
 }
 

@@ -25,7 +25,6 @@ import { renderOnboarding } from './panels/onboarding';
 import { countdown, formatDuration, formatGold, formatLongDuration, formatNumber, t } from '@/i18n';
 import { activityOf } from '@/sim/cauldrons';
 import { dayStateAt } from '@/sim/clock';
-import { config } from '@/sim/config';
 import { bus, changed, type ConfirmRequest, type ScreenId } from '@/ui/bus';
 import { debugEnabled } from '@/platform/debugFlag';
 import type { AwaySummary, Simulation } from '@/sim/sim';
@@ -139,8 +138,6 @@ export class Shell {
   private liveClocks: HTMLElement[] = [];
 
   private liveBars: HTMLElement[] = [];
-
-  private liveGauge: HTMLElement | null = null;
 
   private hud = el('div', { class: 'hud' });
 
@@ -268,47 +265,13 @@ export class Shell {
   /**
    * Runs every frame.
    *
-   * The HUD clock and any live timer need to tick, and the cauldron's gauge
-   * moves continuously while a burner is held — so that screen rebuilds each
-   * frame while it is open, and the others only on change.
+   * The HUD clock and any live timer need to tick; panels rebuild only when
+   * something they show has changed.
    */
   tick(): void {
     this.updateHud();
     this.updateCountdowns();
-    this.updateTemperature();
     if (this.needsLiveRedraw()) this.renderPanels();
-  }
-
-  /**
-   * Move the brewing station's gauge without rebuilding the station.
-   *
-   * A pot cools continuously whether or not anything is being pressed, and
-   * nothing on that screen forces a redraw while it does — so the reading went
-   * stale and the first tap on a burner made the number jump twenty degrees as
-   * the display caught up. Rebuilding every frame is not the answer: that is
-   * exactly what made the roster unclickable, because a click needs mousedown
-   * and mouseup to land on the same element.
-   */
-  private updateTemperature(): void {
-    const value = this.liveGauge;
-    if (!value) return;
-
-    const { sim } = this.deps;
-    const b = config.brewing;
-    const temperature = sim.temperature;
-    const share = (temperature - b.minTemperature) / (b.maxTemperature - b.minTemperature);
-    const percent = Math.min(100, Math.max(0, share * 100));
-
-    value.textContent = `${Math.round(temperature)}°`;
-
-    const fill = this.panels.querySelector<HTMLElement>('[data-live-temp-fill]');
-    if (fill) fill.style.width = `${percent}%`;
-    const needle = this.panels.querySelector<HTMLElement>('[data-live-temp-needle]');
-    if (needle) needle.style.left = `${percent}%`;
-
-    // The fire answers to the same number, so it goes stale in the same way.
-    const fire = this.panels.querySelector<HTMLElement>('[data-live-fire]');
-    if (fire) fire.style.setProperty('--heat', Math.min(1, Math.max(0, share)).toFixed(3));
   }
 
   /*
@@ -361,7 +324,6 @@ export class Shell {
   private collectLiveNodes(): void {
     this.liveClocks = [...this.panels.querySelectorAll<HTMLElement>('[data-countdown-at]')];
     this.liveBars = [...this.panels.querySelectorAll<HTMLElement>('[data-progress-from]')];
-    this.liveGauge = this.panels.querySelector<HTMLElement>('[data-live-temp]');
   }
 
   /**
@@ -396,13 +358,8 @@ export class Shell {
      * instead, so they move on their own. What is left worth a rebuild is a pot
      * changing what it is doing — filling, brewing, ready — which is a string
      * this can compare.
-     *
-     * A held burner still redraws every frame: the readout it feeds is the
-     * whole point of holding it, and it lasts as long as a finger is down.
      */
-    if (this.screen === 'cauldron') {
-      return this.deps.sim.burner !== null || this.cauldronShapeChanged();
-    }
+    if (this.screen === 'cauldron') return this.cauldronShapeChanged();
     /*
      * The market redraws when its cast changes, not when its clock moves.
      *

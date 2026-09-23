@@ -99,7 +99,6 @@ export interface DerivedStats {
   plots: number;
   shelves: number;
   seedDropChance: number;
-  driftMultiplier: number;
   footfallBonus: number;
   nightFootfallBonus: number;
   caveTiles: number;
@@ -120,7 +119,6 @@ export function derivedStats(world: World): DerivedStats {
     plots: config.garden.startingPlots,
     shelves: config.shop.startingShelves,
     seedDropChance: config.garden.seedDropChance,
-    driftMultiplier: 1,
     footfallBonus: 0,
     nightFootfallBonus: 0,
     caveTiles: caveConfig.startingTiles,
@@ -190,9 +188,6 @@ function apply(stats: DerivedStats, effect: EquipmentEffect, count: number): voi
   if (effect.footfallBonus !== undefined) stats.footfallBonus += effect.footfallBonus * count;
   if (effect.nightFootfallBonus !== undefined) {
     stats.nightFootfallBonus += effect.nightFootfallBonus * count;
-  }
-  if (effect.driftMultiplier !== undefined) {
-    stats.driftMultiplier = Math.min(stats.driftMultiplier, effect.driftMultiplier);
   }
   if (effect.addCaveTiles !== undefined) stats.caveTiles += effect.addCaveTiles * count;
   if (effect.caveSpreadBonus !== undefined) stats.caveSpreadBonus += effect.caveSpreadBonus * count;

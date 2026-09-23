@@ -7,8 +7,8 @@ import { describe, expect, it } from 'vitest';
 import { SaveManager, memoryAdapter } from '@/platform/save';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, getRecipe } from '@/sim/config';
-import type { BrewMethod } from '@/sim/types';
+import { config } from '@/sim/config';
+import type { BottledItem } from '@/sim/types';
 
 const HOUR = 3_600_000;
 
@@ -18,10 +18,6 @@ function brewing(seed = 606): Simulation {
   sim.addToCauldron('dewcap');
   sim.addToCauldron('dewcap');
   sim.addToCauldron('dewcap');
-
-  const recipe = getRecipe('healthTonic');
-  sim.cauldron.temperature = (recipe.temperature.min + recipe.temperature.max) / 2;
-  sim.setMethod(recipe.method as BrewMethod);
   sim.acceptBrew();
   return sim;
 }
@@ -39,7 +35,7 @@ describe('a brew still in the pot', () => {
     expect(resumed.brewing!.readyAt).toBe(readyAt);
 
     resumed.advanceTo(readyAt + 1);
-    expect(resumed.pendingBrew?.recipeId).toBe('healthTonic');
+    expect(resumed.pendingBrew?.recipeId).toBe('aquaTerra');
   });
 
   it('finishes across an absence rather than pausing', () => {
@@ -53,22 +49,18 @@ describe('a brew still in the pot', () => {
 });
 
 describe('an unaccepted pot', () => {
-  it('keeps its ingredients, temperature and method across a save', () => {
+  it('keeps its ingredients across a save', () => {
     const saves = new SaveManager(memoryAdapter());
     const original = new Simulation(createWorld(11));
     original.grant({ ingredient: { id: 'dewcap', count: 2 } });
     original.addToCauldron('dewcap');
-    original.cauldron.temperature = 165;
-    original.setMethod('stirred');
 
     saves.save(original.world);
     const resumed = new Simulation(saves.load()!);
 
-    // Bringing a pot up to heat takes real seconds; losing that to a tab switch
-    // would make experimenting expensive, which is exactly what it must not be.
+    // Losing a half-filled pot to a tab switch would make experimenting
+    // expensive, which is exactly what it must not be.
     expect(resumed.cauldron.contents.units).toHaveLength(1);
-    expect(resumed.temperature).toBe(165);
-    expect(resumed.method).toBe('stirred');
   });
 });
 
@@ -142,13 +134,13 @@ describe('migrating a save from the alembic era', () => {
     /*
      * Read off the pot, not the world.
      *
-     * v3 filled these as loose fields; v13 folded them into the cauldron list.
-     * A save imported today runs the whole chain, so what it ends up with is
-     * one starter pot carrying the defaults v3 supplied.
+     * v3 filled these as loose fields; v13 folded them into the cauldron list,
+     * and v14 took the heat back out. A save imported today runs the whole
+     * chain, so what it ends up with is one plain starter pot.
      */
-    const pot = world.cauldrons[0]!;
-    expect(pot.temperature).toBe(config.brewing.ambientTemperature);
-    expect(pot.method).toBeNull();
+    const pot = world.cauldrons[0]! as unknown as Record<string, unknown>;
+    expect('temperature' in pot).toBe(false);
+    expect('method' in pot).toBe(false);
     expect(pot.brewing).toBeNull();
     expect(world.log).toEqual([]);
     expect(world.nextLogId).toBe(1);
@@ -168,6 +160,8 @@ describe('migrating a save from the alembic era', () => {
     const sim = new Simulation(world);
 
     expect(sim.pendingBrew?.grade).toBe('A');
+    // The tonic it was brewing is the Aqua–Terra potion now.
+    expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
     expect(
       sim.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' }),
     ).not.toBeNull();
@@ -203,5 +197,63 @@ describe('a stocked shelf', () => {
     expect(resumed.world.shelf[0]?.item?.uid).toBe(item.uid);
     resumed.advanceBy(12 * HOUR, false);
     expect(resumed.world.gold).toBeGreaterThan(original.world.gold);
+  });
+});
+
+describe('migrating a save from the 197-recipe book', () => {
+  function bottle(uid: string, recipeId: string): BottledItem {
+    return {
+      uid,
+      recipeId,
+      formId: 'potion',
+      vesselId: 'clayVial',
+      sealId: 'cork',
+      grade: 'B',
+      purity: 80,
+      potencyTier: 'common',
+      totalEssence: 70,
+      fairValue: 20,
+    } as BottledItem;
+  }
+
+  function v13Save(): string {
+    const world = createWorld(1);
+    world.recipes = {
+      healthTonic: { discovered: true, timesBrewed: 4 },
+      brineflintTincture: { discovered: true, timesBrewed: 2 },
+      emberMinor: { discovered: false, timesBrewed: 0 },
+      murk: { discovered: true, timesBrewed: 9 },
+    };
+    world.bottled = [bottle('a', 'healthTonic'), bottle('b', 'murk'), bottle('c', 'nightGlass')];
+    world.shelf[0]!.item = bottle('d', 'murk');
+    world.shelf[0]!.quantity = 1;
+    world.shelf[1]!.item = bottle('e', 'windDraught');
+    world.shelf[1]!.quantity = 1;
+    world.log = [
+      { id: 1, at: 0, kind: 'recipeFound', params: { recipe: 'shadowPhiltre' } },
+      { id: 2, at: 0, kind: 'brewStarted', params: { recipe: 'murk', grade: 'F' } },
+    ];
+    world.nextLogId = 3;
+    return JSON.stringify({ schemaVersion: 13, savedAt: Date.now(), world });
+  }
+
+  it('folds every old recipe into the potion made of the same essences', () => {
+    const world = new SaveManager(memoryAdapter()).import(v13Save())!;
+
+    // A Health Tonic and a Brineflint Tincture were both Aqua and Terra.
+    expect(world.recipes.aquaTerra).toEqual({ discovered: true, timesBrewed: 6 });
+    expect(world.recipes.ignis?.discovered).toBe(true);
+    expect(world.bottled.map((item) => item.recipeId)).toEqual(['aquaTerra', 'umbra']);
+    expect(world.shelf[1]!.item?.recipeId).toBe('aquaAer');
+    expect(world.log.map((entry) => entry.params.recipe)).toEqual(['terraUmbra']);
+  });
+
+  it('pours the Murk away, since nothing replaces it', () => {
+    const world = new SaveManager(memoryAdapter()).import(v13Save())!;
+
+    expect(world.recipes.murk).toBeUndefined();
+    expect(world.bottled.some((item) => item.recipeId === 'murk')).toBe(false);
+    expect(world.shelf[0]!.item).toBeNull();
+    expect(world.shelf[0]!.quantity).toBe(0);
   });
 });

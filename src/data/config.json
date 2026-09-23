@@ -61,16 +61,6 @@
     "unstableGrade": "D"
   },
   "brewing": {
-    "$comment": "Temperature is a live gauge in degrees. Heat and chill push it; left alone it drifts back toward the room. A tap applies one step, a hold applies the per-second rate.",
-    "ambientTemperature": 20,
-    "minTemperature": 20,
-    "maxTemperature": 300,
-    "heatRatePerSecond": 55,
-    "chillRatePerSecond": 55,
-    "$driftComment": "Slow on purpose. A recipe band is ~35 degrees wide, so 4/s emptied it in nine seconds and reading the outcome cost you the temperature. At 0.5/s the pot still cools if you wander off, but choosing a method and reading the book are free.",
-    "driftRatePerSecond": 0.5,
-    "tapStepDegrees": 14,
-    "purityPerDegreeOutside": 0.9,
     "brewDuration": {
       "minor": 30000,
       "common": 120000,
@@ -80,17 +70,7 @@
     }
   },
   "grading": {
-    "purityFloor": 20,
-    "purityPerRadian": 36,
-    "contaminantPenaltyPerPoint": 2,
-    "$capComment": "A single ingredient cannot miss its own ratio, so without a ceiling it scored a perfect S for no skill at all. Potency is what earns the top letters — which also gives cauldron capacity a second reason to exist.",
-    "maxGradeByPotency": {
-      "minor": "C",
-      "common": "A",
-      "greater": "S",
-      "grand": "S",
-      "sovereign": "S"
-    },
+    "$comment": "Purity is 100 at a recipe's exact ratio and 0 at the edge of its cone, and the letter is read straight off it. Potency is a separate axis: a small pot on the ratio is an S, a huge one off it is an F.",
     "bands": [
       {
         "grade": "S",
@@ -126,27 +106,27 @@
     "tiers": [
       {
         "id": "minor",
-        "minEssence": 20,
+        "minEssence": 1,
         "valueMultiplier": 0.6
       },
       {
         "id": "common",
-        "minEssence": 45,
+        "minEssence": 61,
         "valueMultiplier": 1.0
       },
       {
         "id": "greater",
-        "minEssence": 100,
+        "minEssence": 111,
         "valueMultiplier": 2.2
       },
       {
         "id": "grand",
-        "minEssence": 180,
+        "minEssence": 191,
         "valueMultiplier": 4.5
       },
       {
         "id": "sovereign",
-        "minEssence": 300,
+        "minEssence": 321,
         "valueMultiplier": 9.0
       }
     ]
@@ -208,6 +188,6 @@
   "save": {
     "slots": 3,
     "autosaveDebounceMs": 1500,
-    "schemaVersion": 13
+    "schemaVersion": 14
   }
 }

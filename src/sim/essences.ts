@@ -3,12 +3,12 @@
  *
  * The whole crafting system reduces to one idea: an ingredient is a vector in
  * 5-space, a recipe is a direction in that space, and purity is how close your
- * blend's direction is to the recipe's. Potency is the vector's magnitude,
- * bucketed into tiers. Those two numbers are independent, which is what makes
- * the alembic wheel's angle/radius split meaningful.
+ * blend's direction is to the recipe's. Potency is the blend's total essence,
+ * bucketed into tiers. Those two numbers are independent: the grade reads the
+ * first, the potency the second.
  */
 
-import { config, getIngredient, getRecipe } from './config';
+import { config, getIngredient } from './config';
 import { ESSENCES } from './types';
 import type {
   CauldronContents,
@@ -175,51 +175,11 @@ export function gradeFor(purity: number): Grade {
   return 'F';
 }
 
-/**
- * The best letter a given potency can reach.
- *
- * A single ingredient cannot miss its own ratio, so without a ceiling it scored
- * a perfect S for no skill at all — and a trivial brew outranked a carefully
- * balanced full cauldron. Tying the top letters to potency fixes that and gives
- * cauldron capacity a second reason to exist.
- */
-export function gradeCeilingFor(tier: PotencyTierId): Grade {
-  return config.grading.maxGradeByPotency[tier] ?? 'S';
-}
-
 /** Grades are ordered S..F; lower index is better. Used to clamp an Unstable brew. */
 const GRADE_ORDER: Grade[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
 
 export function worseOf(a: Grade, b: Grade): Grade {
   return GRADE_ORDER.indexOf(a) >= GRADE_ORDER.indexOf(b) ? a : b;
-}
-
-/**
- * Purity from angular error and contamination.
- *
- * Contaminants are essences the recipe explicitly doesn't want; each point costs
- * a flat penalty. That is deliberately harsher than the angular term, because it
- * is the lever the player controls most directly through ingredient choice.
- */
-export function purityFor(
-  blend: EssenceVector,
-  recipeId: string,
-  offIdealRad?: number,
-): { purity: number; offIdealRad: number; contaminantPoints: number } {
-  const recipe = getRecipe(recipeId);
-  const angle = offIdealRad ?? angleBetween(blend, recipe.target);
-
-  let contaminantPoints = 0;
-  for (const essence of recipe.contaminants) {
-    contaminantPoints += blend[essence];
-  }
-
-  const g = config.grading;
-  const angular = 100 - angle * g.purityPerRadian;
-  const penalty = contaminantPoints * g.contaminantPenaltyPerPoint;
-  const purity = Math.max(g.purityFloor, Math.min(100, angular - penalty));
-
-  return { purity, offIdealRad: angle, contaminantPoints };
 }
 
 /**

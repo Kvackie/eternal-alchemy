@@ -2,7 +2,7 @@
  * The opening checklist.
  *
  * Not a tutorial: it never takes the controls, never blocks a screen, and never
- * forces an order. It is a list of eight things that add up to one complete
+ * forces an order. It is a list of seven things that add up to one complete
  * loop, each ticking itself off when the world says it happened.
  *
  * On the screen it is two things. A pill in the corner, which is the whole of

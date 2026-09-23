@@ -34,7 +34,7 @@ function shopWith(bottles: Array<Partial<BottledItem> & { count: number }>, shel
     for (let i = 0; i < spec.count; i += 1) {
       sim.world.bottled.push({
         uid: `b${n++}`,
-        recipeId: spec.recipeId ?? 'healthTonic',
+        recipeId: spec.recipeId ?? 'aquaTerra',
         formId: 'potion',
         vesselId: spec.vesselId ?? 'clayVial',
         sealId: 'cork',
@@ -112,16 +112,16 @@ describe('putting several out at once', () => {
 
   it('only ever puts out bottles that match the one asked for', () => {
     const sim = shopWith([
-      { count: 2, recipeId: 'healthTonic', grade: 'A' },
-      { count: 5, recipeId: 'emberDraught', grade: 'C' },
+      { count: 2, recipeId: 'aquaTerra', grade: 'A' },
+      { count: 5, recipeId: 'ignisTerra', grade: 'C' },
     ]);
-    const ember = sim.world.bottled.find((item) => item.recipeId === 'emberDraught')!;
+    const ember = sim.world.bottled.find((item) => item.recipeId === 'ignisTerra')!;
 
     expect(sim.stockMany(ember.uid, 4)).toBe(4);
     for (const slot of sim.world.shelf) {
-      if (slot.item) expect(slot.item.recipeId).toBe('emberDraught');
+      if (slot.item) expect(slot.item.recipeId).toBe('ignisTerra');
     }
-    expect(sim.world.bottled.filter((item) => item.recipeId === 'healthTonic')).toHaveLength(2);
+    expect(sim.world.bottled.filter((item) => item.recipeId === 'aquaTerra')).toHaveLength(2);
   });
 });
 
@@ -159,17 +159,17 @@ describe('how many could go out', () => {
 describe('rearranging the floor', () => {
   it('swaps two full shelves, goods and asking price together', () => {
     const sim = shopWith([
-      { count: 1, recipeId: 'healthTonic' },
-      { count: 1, recipeId: 'emberDraught' },
+      { count: 1, recipeId: 'aquaTerra' },
+      { count: 1, recipeId: 'ignisTerra' },
     ], 2);
-    sim.stock('shelf-1', sim.world.bottled.find((i) => i.recipeId === 'healthTonic')!.uid);
-    sim.stock('shelf-2', sim.world.bottled.find((i) => i.recipeId === 'emberDraught')!.uid);
+    sim.stock('shelf-1', sim.world.bottled.find((i) => i.recipeId === 'aquaTerra')!.uid);
+    sim.stock('shelf-2', sim.world.bottled.find((i) => i.recipeId === 'ignisTerra')!.uid);
     sim.setPrice('shelf-1', 1.6);
     sim.setPrice('shelf-2', 0.8);
 
     expect(sim.moveStock('shelf-1', 'shelf-2')).toBe(true);
-    expect(sim.world.shelf[0]!.item?.recipeId).toBe('emberDraught');
-    expect(sim.world.shelf[1]!.item?.recipeId).toBe('healthTonic');
+    expect(sim.world.shelf[0]!.item?.recipeId).toBe('ignisTerra');
+    expect(sim.world.shelf[1]!.item?.recipeId).toBe('aquaTerra');
     expect(sim.world.shelf[0]!.priceRatio).toBeCloseTo(0.8);
     expect(sim.world.shelf[1]!.priceRatio).toBeCloseTo(1.6);
   });
@@ -219,8 +219,8 @@ describe('rearranging the floor', () => {
 describe('the count a caller already has', () => {
   it('agrees with counting the bottles again', () => {
     const sim = shopWith([
-      { count: 7, recipeId: 'healthTonic', vesselId: 'clayVial' },
-      { count: 3, recipeId: 'emberDraught', vesselId: 'waxedPouch' },
+      { count: 7, recipeId: 'aquaTerra', vesselId: 'clayVial' },
+      { count: 3, recipeId: 'ignisTerra', vesselId: 'waxedPouch' },
     ], 6);
 
     for (const item of sim.world.bottled) {

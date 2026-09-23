@@ -15,7 +15,7 @@ import type { BottledItem, Grade, HaggleStance } from '@/sim/types';
 
 const DAY = config.clock.dayLengthMs;
 
-function bottle(uid: string, recipeId = 'healthTonic', grade: Grade = 'B', sealId = 'cork'): BottledItem {
+function bottle(uid: string, recipeId = 'aquaTerra', grade: Grade = 'B', sealId = 'cork'): BottledItem {
   return {
     uid,
     recipeId,
@@ -108,10 +108,10 @@ describe('a haggle', () => {
 
   it('refuses an item the customer does not want', () => {
     const { sim, customerId } = shopWithCustomer();
-    sim.world.bottled.push(bottle('unwanted', 'shadowPhiltre'));
+    sim.world.bottled.push(bottle('unwanted', 'terraUmbra'));
     // Villagers want tonics, not philtres.
     const def = getCustomer(customerId);
-    if (def.wants.includes('shadowPhiltre')) return;
+    if (def.wants.includes('terraUmbra')) return;
     expect(sim.beginHaggle(customerId, 'unwanted')).toBeNull();
   });
 
@@ -230,7 +230,7 @@ describe('a haggle', () => {
     const def = getCustomer(customerId);
 
     const plain = ceilingFor(bottle('p'), def);
-    const clasped = ceilingFor(bottle('c', 'healthTonic', 'B', 'silverClasp'), def);
+    const clasped = ceilingFor(bottle('c', 'aquaTerra', 'B', 'silverClasp'), def);
     expect(clasped).toBeGreaterThan(plain);
   });
 

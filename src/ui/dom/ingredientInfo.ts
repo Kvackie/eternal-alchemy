@@ -23,7 +23,7 @@ import {
 } from './components';
 import type { QuantityActionSpec } from './components';
 import { t } from '@/i18n';
-import { config, getIngredient, realRecipes } from '@/sim/config';
+import { config, getIngredient, recipes } from '@/sim/config';
 import { agingRateFor, angleBetween, applyFreshness, totalEssence } from '@/sim/essences';
 import { isDiscovered } from '@/sim/discovery';
 import type { Simulation } from '@/sim/sim';
@@ -106,7 +106,7 @@ function freshnessTable(essence: EssenceVector, rate: number): HTMLElement {
  * naming it would hand over the discovery.
  */
 function pointsToward(sim: Simulation, essence: EssenceVector) {
-  const matches = realRecipes()
+  const matches = recipes
     .map((recipe) => ({
       recipe,
       deg: (angleBetween(essence, recipe.target) * 180) / Math.PI,
@@ -115,29 +115,9 @@ function pointsToward(sim: Simulation, essence: EssenceVector) {
     .filter((entry) => entry.deg <= entry.recipe.toleranceDeg + 12)
     .sort((a, b) => a.deg - b.deg);
 
-  /*
-   * One entry per DIRECTION, not per recipe.
-   *
-   * An ingredient's essence is a direction, so it sits at exactly the same
-   * angle from every rung of a ladder — listing Faint, Strong, Grand and
-   * Sovereign Ember separately filled the panel with four identical lines at
-   * four identical angles. Which rung you get is decided by how much you put
-   * in, and that is the pot's business, not the ingredient's.
-   *
-   * A known recipe wins its direction over an unknown one, so the panel names
-   * what it can.
-   */
-  const byDirection = new Map<string, (typeof matches)[number]>();
-  for (const entry of matches) {
-    const key = JSON.stringify(entry.recipe.target);
-    const held = byDirection.get(key);
-    if (!held || (entry.known && !held.known)) byDirection.set(key, entry);
-  }
-
-  const distinct = [...byDirection.values()].sort((a, b) => a.deg - b.deg);
   return {
-    known: distinct.filter((entry) => entry.known).slice(0, SUGGESTIONS),
-    unknown: distinct.filter((entry) => !entry.known).length,
+    known: matches.filter((entry) => entry.known).slice(0, SUGGESTIONS),
+    unknown: matches.filter((entry) => !entry.known).length,
   };
 }
 

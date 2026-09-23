@@ -21,25 +21,24 @@ import {
   decorPieces,
   equipment,
   getMerchant,
-  getRecipe,
   getEquipment,
   getSeal,
   ingredients,
   merchants,
   prestigeConfig,
-  realRecipes,
+  recipes,
+  cauldronTiers,
   shaftConfig,
 } from '@/sim/config';
 import { grantDecor, placeDecor } from '@/sim/decor';
-import { angleBetween, gradeFor, potencyTierFor } from '@/sim/essences';
+import { angleBetween, gradeFor, potencyMultiplier, potencyTierFor } from '@/sim/essences';
 import { assessOutcome } from '@/sim/brewing';
 import { appealOf, fairValue } from '@/sim/market';
 import { isMature, spreadChanceFor } from '@/sim/cave';
 import { derivedStats, equipmentAvailability } from '@/sim/progression';
 import { codexBonuses } from '@/sim/prestige';
-import { effectiveBand } from '@/sim/discovery';
 import { tierOf } from '@/sim/merchants';
-import type { BottledItem, BrewMethod, EssenceVector, Grade } from '@/sim/types';
+import type { BottledItem, EssenceVector, Grade } from '@/sim/types';
 
 const HOUR = 3_600_000;
 const DAY = config.clock.dayLengthMs;
@@ -47,7 +46,7 @@ const DAY = config.clock.dayLengthMs;
 function bottle(uid: string, grade: Grade, value = 60): BottledItem {
   return {
     uid,
-    recipeId: 'healthTonic',
+    recipeId: 'aquaTerra',
     formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
@@ -138,94 +137,42 @@ describe('the cave is generous, not free', () => {
 });
 
 describe('grade reflects effort, not luck', () => {
-  const tonic = getRecipe('healthTonic');
-  const midBand = (tonic.temperature.min + tonic.temperature.max) / 2;
-
-  /**
-   * A perfectly-on-ratio blend, scaled by what is in the pot, brewed at the
-   * right heat for whatever it turns out to be.
-   *
-   * Two passes, because size is part of a recipe's identity now: the same ratio
-   * at one unit and at twelve are two different recipes with two different
-   * bands. Holding the Health Tonic's band for both would be testing that you
-   * cannot brew at the wrong temperature, which is a different test.
-   */
+  /** A perfectly on-ratio Aqua–Terra blend, `units` ingredients' worth. */
   function assess(units: number) {
-    const per = { ignis: 0, aqua: 12, terra: 6, aer: 0, umbra: 0 };
-    const blend = {
-      ignis: 0,
-      aqua: per.aqua * units,
-      terra: per.terra * units,
-      aer: 0,
-      umbra: 0,
-    };
+    const blend = { ignis: 0, aqua: 12 * units, terra: 12 * units, aer: 0, umbra: 0 };
     const composition = { driedShare: 0, mineralShare: 0, traits: [], unitCount: units };
-    const total = 18 * units;
-
-    /*
-     * Find the recipe this blend IS, then brew it properly.
-     *
-     * Not by trial identification, because identification needs the method up
-     * front and the method is one of the things being looked up: a direction has
-     * exactly one correct preparation, and the wrong one makes Murk on purpose.
-     * So the recipe is found the way the book would show it — cone, method-free
-     * — and the brew is then set up to suit.
-     */
-    const match = realRecipes()
-      .filter((recipe) => {
-        const within =
-          !recipe.essence ||
-          (total >= recipe.essence.min &&
-            (recipe.essence.max === null || total < recipe.essence.max));
-        if (!within) return false;
-        return (angleBetween(blend, recipe.target) * 180) / Math.PI <= recipe.toleranceDeg;
-      })
-      // Same precedence the identifier uses: a signature beats a generated one.
-      .sort((a, b) => Number(Boolean(a.generated)) - Number(Boolean(b.generated)))[0]!;
-
-    const band = match.temperature;
-    return assessOutcome({
-      blend,
-      temperature: (band.min + band.max) / 2,
-      method: match.method as BrewMethod,
-      capacity: 400,
-      composition,
-    })!;
+    return assessOutcome({ blend, capacity: 400, composition })!;
   }
 
-  it('leaves a trivial one-ingredient brew worth almost nothing', () => {
+  /*
+   * The guard is potency, not grade.
+   *
+   * A single ingredient cannot miss its own ratio, so it scores S — by design:
+   * the grade is the ratio and nothing else. What keeps a trivial brew from
+   * being worth anything is that it is Minor, and Minor is priced accordingly.
+   */
+  it('leaves a trivial one-ingredient brew worth little, however clean', () => {
     const single = assess(1);
-    expect(single.potencyTier).toBe('minor');
-
-    /*
-     * The guard moved from grade to value.
-     *
-     * A single ingredient cannot miss its own ratio, so the grade used to be
-     * capped or it scored a perfect S for no skill. Now it cannot even be the
-     * Health Tonic — that recipe names a minimum — and what it CAN be is the
-     * faintest rung of the generated ladder, priced accordingly. Scoring well on
-     * something worth a handful of gold is no longer worth guarding against.
-     */
-    expect(single.recipeId).not.toBe('healthTonic');
     const full = assess(12);
-    expect(getRecipe(single.recipeId).baseValue).toBeLessThan(
-      getRecipe(full.recipeId).baseValue,
+    expect(single.recipeId).toBe(full.recipeId);
+    expect(single.grade).toBe('S');
+    expect(single.potencyTier).toBe('minor');
+    expect(potencyMultiplier(single.potencyTier)).toBeLessThan(
+      potencyMultiplier(full.potencyTier),
     );
   });
 
   it('lets a properly filled cauldron reach the top', () => {
     const full = assess(12);
     expect(full.potencyTier).not.toBe('minor');
-    expect(['S', 'A']).toContain(full.grade);
+    expect(full.grade).toBe('S');
   });
 
   it('still rewards a clean ratio at every size', () => {
-    // Whatever the cap, a better ratio must never score worse than a worse one.
+    // A better ratio must never score worse than a worse one.
     const clean = assess(6).purity;
     const dirty = assessOutcome({
-      blend: { ignis: 20, aqua: 72, terra: 36, aer: 0, umbra: 0 },
-      temperature: midBand,
-      method: tonic.method as BrewMethod,
+      blend: { ignis: 10, aqua: 72, terra: 60, aer: 0, umbra: 0 },
       capacity: 400,
     })!.purity;
     expect(clean).toBeGreaterThan(dirty);
@@ -270,7 +217,7 @@ describe('the selling channels stay in their lanes', () => {
     // Use the *real* fair value, not the helper's placeholder — comparing a
     // contract's payout against a made-up shelf price measures nothing.
     const shelfValue = fairValue({
-      recipeId: 'healthTonic',
+      recipeId: 'aquaTerra',
       formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',
@@ -508,57 +455,25 @@ function bestBlendAngle(target: EssenceVector, poolOverride?: EssenceVector[]): 
 }
 
 describe('the recipe book is internally consistent', () => {
-  const real = realRecipes();
+  const real = recipes;
 
-  it('never leaves a blend with two equally good answers', () => {
-    /*
-     * Ambiguity, not overlap.
-     *
-     * The rule used to be that no two same-method cones may overlap at all,
-     * because the identifier picked the closest match and the loser could never
-     * be brewed on purpose. Direction is no longer the whole of a recipe's
-     * identity: an essence window separates the Faint rung from the Sovereign
-     * one on the SAME direction, and a hand-authored recipe outranks a generated
-     * one outright. Overlapping cones are therefore normal and fine.
-     *
-     * What must never happen is a blend that two recipes answer to with nothing
-     * to separate them — same method, overlapping cones, overlapping essence
-     * windows, and neither outranking the other.
-     */
-    const overlapsWindow = (a: (typeof real)[number], b: (typeof real)[number]) => {
-      const wa = a.essence;
-      const wb = b.essence;
-      if (!wa || !wb) return true; // no window means every magnitude
-      return wa.min < (wb.max ?? Infinity) && wb.min < (wa.max ?? Infinity);
-    };
-
+  /*
+   * No blend may have two answers. Each cone is half the angle to its nearest
+   * neighbour, so two cones can at most touch; a pair that overlapped would
+   * leave one of them unbrewable on purpose.
+   */
+  it('never lets two cones overlap', () => {
     for (let i = 0; i < real.length; i += 1) {
       for (let j = i + 1; j < real.length; j += 1) {
         const a = real[i]!;
         const b = real[j]!;
-        if (a.method !== b.method) continue;
-        // A signature always wins over a generated recipe; that pair is settled.
-        if (Boolean(a.generated) !== Boolean(b.generated)) continue;
-        if (!overlapsWindow(a, b)) continue;
-
         const apartDeg = (angleBetween(a.target, b.target) * 180) / Math.PI;
         const combined = a.toleranceDeg + b.toleranceDeg;
         expect(
-          apartDeg,
-          `${a.id} and ${b.id} share a method, ${combined}° of tolerance across ` +
-            `${apartDeg.toFixed(1)}° of separation, and overlapping essence windows — ` +
-            `a blend between them has two equally good answers`,
-        ).toBeGreaterThan(combined);
+          apartDeg + 1e-9,
+          `${a.id} and ${b.id} have ${combined}° of tolerance across ${apartDeg.toFixed(1)}°`,
+        ).toBeGreaterThanOrEqual(combined);
       }
-    }
-  });
-
-  it('gives every recipe a reachable temperature band and a real method', () => {
-    for (const recipe of real) {
-      expect(recipe.temperature.min).toBeGreaterThanOrEqual(config.brewing.minTemperature);
-      expect(recipe.temperature.max).toBeLessThanOrEqual(config.brewing.maxTemperature);
-      expect(recipe.temperature.max).toBeGreaterThan(recipe.temperature.min);
-      expect(['stirred', 'simmered']).toContain(recipe.method);
     }
   });
 
@@ -623,10 +538,16 @@ describe('the recipe book is internally consistent', () => {
     }
   });
 
-  it('prices later recipes above earlier ones', () => {
-    const tonic = getRecipe('healthTonic').baseValue;
-    expect(getRecipe('cinderveilBomb').baseValue).toBeGreaterThan(tonic);
-    expect(getRecipe('featherstoneDraught').baseValue).toBeGreaterThan(tonic);
+  // Placeholder prices, but the one rule they hold to: a recipe that takes
+  // more essences is harder to balance, and worth more for it.
+  it('prices a recipe above every recipe with fewer essences', () => {
+    for (const a of real) {
+      for (const b of real) {
+        if (a.elements.length > b.elements.length) {
+          expect(a.baseValue, `${a.id} vs ${b.id}`).toBeGreaterThan(b.baseValue);
+        }
+      }
+    }
   });
 });
 
@@ -873,14 +794,6 @@ describe('nothing sold is inert', () => {
     quick.plant(quick.world.plots[0]!.id, 'emberroot');
     expect(quick.world.plots[0]!.crop!.readyAt).toBeLessThan(slow.world.plots[0]!.crop!.readyAt);
 
-    // Deft Hands — the temperature band you must hit is wider.
-    const strict = createWorld(1);
-    const steady = createWorld(1);
-    steady.codex.deftHands = 2;
-    const strictBand = effectiveBand(strict, 'healthTonic');
-    const steadyBand = effectiveBand(steady, 'healthTonic');
-    expect(steadyBand.max - steadyBand.min).toBeGreaterThan(strictBand.max - strictBand.min);
-
     // Old Friends — a merchant opens at a deeper tier.
     const stranger = tierOf(getMerchant('bramm'), 0, 0);
     const known = tierOf(getMerchant('bramm'), 0, 1);
@@ -900,12 +813,21 @@ describe('nothing sold is inert', () => {
   });
 });
 
-describe('potency tiers line up with the grade cap', () => {
+describe('potency tiers line up with the pots', () => {
   it('gives every tier a reachable ceiling', () => {
     for (const tier of config.potency.tiers) {
       const essence = tier.minEssence + 1;
       expect(potencyTierFor(essence)).toBe(tier.id);
     }
     expect(gradeFor(100)).toBe('S');
+  });
+
+  // Each pot fills exactly to the top of a tier, so buying the next one is
+  // what opens the next tier.
+  it('tops each tier out at a cauldron’s capacity', () => {
+    const tiers = config.potency.tiers;
+    for (let i = 1; i < tiers.length; i += 1) {
+      expect(tiers[i]!.minEssence - 1).toBe(cauldronTiers[i - 1]!.capacity);
+    }
   });
 });

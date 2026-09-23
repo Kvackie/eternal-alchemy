@@ -30,7 +30,7 @@ export function createWorld(seed = freshSeed()): World {
 
     // One pot to start. More are bought, not upgraded into.
     cauldrons: [
-      makeCauldron('cauldron-1', baseCauldronTier.id, config.brewing.ambientTemperature),
+      makeCauldron('cauldron-1', baseCauldronTier.id),
     ],
     activeCauldronId: 'cauldron-1',
     nextCauldronId: 2,

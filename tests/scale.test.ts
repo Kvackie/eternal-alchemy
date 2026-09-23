@@ -16,14 +16,15 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, crops, getRecipe, ingredients, realRecipes, shelfTiers, vessels } from '@/sim/config';
+import { config, crops, ingredients, recipes, shelfTiers, vessels } from '@/sim/config';
+import type { RecipeDef } from '@/sim/config';
 import { assessOutcome } from '@/sim/brewing';
 import { makePlots } from '@/sim/garden';
 import { makeShelf } from '@/sim/market';
 import { availableForms, availableSeals, availableVessels } from '@/sim/bottling';
 import type { BottleRequest } from '@/sim/bottling';
-import { addVectors, angleBetween, zeroVector } from '@/sim/essences';
-import type { BrewMethod, EssenceVector, Grade, World } from '@/sim/types';
+import { addVectors, angleBetween, totalEssence, zeroVector } from '@/sim/essences';
+import type { Grade, World } from '@/sim/types';
 
 const HOUR = 3_600_000;
 const PLOTS = 25;
@@ -35,9 +36,12 @@ const POTIONS = 100;
  *
  * Greedy: repeatedly add whichever ingredient most reduces the angle to the
  * target. Not the cheapest blend a player would find, but a real one — these
- * are ingredients that exist, added through the real cauldron.
+ * are ingredients that exist, added through the real cauldron. Greed can
+ * corner itself on a mixed ingredient that no single addition improves on;
+ * then it falls back to one clean ingredient per essence the recipe wants,
+ * which is the blend a player would reach for first anyway.
  */
-function blendFor(target: EssenceVector, cap = 7): string[] {
+function blendFor(recipe: RecipeDef, cap = 7): string[] {
   const chosen: string[] = [];
   let sum = zeroVector();
   let best = Infinity;
@@ -47,7 +51,7 @@ function blendFor(target: EssenceVector, cap = 7): string[] {
     let pickSum = sum;
     for (const ing of ingredients) {
       const trial = addVectors(sum, ing.essence);
-      const angle = angleBetween(trial, target);
+      const angle = angleBetween(trial, recipe.target);
       if (angle < best - 1e-9) {
         best = angle;
         pick = ing.id;
@@ -58,7 +62,15 @@ function blendFor(target: EssenceVector, cap = 7): string[] {
     chosen.push(pick);
     sum = pickSum;
   }
-  return chosen;
+  if (best < (recipe.toleranceDeg * Math.PI) / 180) return chosen;
+
+  return recipe.elements.map((essence) => {
+    const clean = ingredients.find(
+      (ing) => ing.essence[essence] === 24 && totalEssence(ing.essence) === 24,
+    );
+    if (!clean) throw new Error(`no clean 24-strength ${essence} ingredient`);
+    return clean.id;
+  });
 }
 
 /**
@@ -80,23 +92,17 @@ function bottleFor(sim: Simulation): BottleRequest {
 
 /** Brew one potion end to end, the way the workbench does. Returns the grade. */
 function brewOne(sim: Simulation, index: number, tally?: Record<string, number>): Grade | null {
-  const recipes = realRecipes();
   const recipe = recipes[index % recipes.length]!;
 
-  for (const id of blendFor(recipe.target)) {
+  /*
+   * Stop the blend at a different number of ingredients each time, so a
+   * hundred brews come out as a spread of grades rather than a hundred
+   * identical S's — which is what a shelf full of real stock looks like.
+   */
+  for (const id of blendFor(recipe, 4 + (index % 4))) {
     sim.grant({ ingredient: { id, count: 1 } });
     sim.addToCauldron(id);
   }
-
-  /*
-   * Vary the temperature within and just outside the band, so a hundred brews
-   * come out as a spread of grades rather than a hundred identical S's — which
-   * is what a shelf full of real stock looks like.
-   */
-  const mid = (recipe.temperature.min + recipe.temperature.max) / 2;
-  const drift = ((index % 5) - 2) * ((recipe.temperature.max - recipe.temperature.min) / 4);
-  sim.cauldron.temperature = mid + drift;
-  sim.setMethod(recipe.method as BrewMethod);
 
   const note = (key: string) => {
     if (tally) tally[key] = (tally[key] ?? 0) + 1;
@@ -212,7 +218,7 @@ describe('a shop at scale', () => {
     expect(sim.world.bottled).toHaveLength(POTIONS);
     expect(
       Object.keys(grades).length,
-      'temperature drift should produce a spread of grades',
+      'blends of different sizes should produce a spread of grades',
     ).toBeGreaterThan(1);
   });
 
@@ -242,7 +248,7 @@ describe('a shop at scale', () => {
     for (const slot of sim.world.shelf) {
       slot.item = {
         uid: `stock-${slot.id}`,
-        recipeId: 'healthTonic',
+        recipeId: 'aquaTerra',
         formId: 'potion',
         vesselId: 'clayVial',
         sealId: 'cork',
@@ -303,8 +309,6 @@ describe('a shop at scale', () => {
     const outcome = assessOutcome({
       // Pure Ignis, well past the Sovereign threshold and still inside the pot.
       blend: { ignis: 420, aqua: 0, terra: 0, aer: 0, umbra: 0 },
-      temperature: (getRecipe('emberSovereign').temperature.min + getRecipe('emberSovereign').temperature.max) / 2,
-      method: getRecipe('emberSovereign').method as BrewMethod,
       capacity: sim.cauldronCapacity,
     })!;
 

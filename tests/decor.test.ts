@@ -28,7 +28,7 @@ import type { World } from '@/sim/types';
 function bottle(uid = 'b') {
   return {
     uid,
-    recipeId: 'healthTonic',
+    recipeId: 'aquaTerra',
     formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
@@ -380,7 +380,7 @@ describe('an older save keeps its fittings', () => {
 describe('shelf boards', () => {
   const bottled = () => ({
     uid: 'x',
-    recipeId: 'healthTonic',
+    recipeId: 'aquaTerra',
     formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',

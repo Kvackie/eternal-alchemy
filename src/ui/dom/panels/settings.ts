@@ -410,11 +410,10 @@ function codexBuffs(node: CodexNodeDef, tier: number): HTMLElement[] {
  * How each effect reads as a figure.
  *
  * Units live here rather than in `en.json` because they are attached to the
- * number, not to the sentence: a translator changes "Temperature band", not the
- * degree sign after the digits.
+ * number, not to the sentence: a translator changes "Starting depth", not the
+ * metre sign after the digits.
  */
 const BUFF_FORMAT: Record<string, (total: number) => string> = {
-  temperatureToleranceBonus: (v) => `+${formatNumber(v)}°`,
   // Stored as a negative step against grow time, so it is a reduction.
   timerMultiplier: (v) => `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 100))}%`,
   oreBatchBonus: (v) => `+${formatNumber(v)}`,

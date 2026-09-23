@@ -1,8 +1,7 @@
 # Eternal Alchemy
 
 A cozy fantasy potion shop for web and mobile. Grow it, raise it, dig it up or send someone braver
-to fetch it — then match essences in the cauldron, bring it to temperature, seal it well, and price
-it right.
+to fetch it — then match essences in the cauldron, seal it well, and price it right.
 
 **M1 — the vertical slice.** Plant → tend → harvest → brew → bottle → seal → stock → price → sell,
 including while the app is closed.
@@ -146,50 +145,37 @@ each other; they talk to the simulation and to `ui/bus.ts`.
 
 ## Recipe discovery
 
-Two recipes are known at the start; the other 194 are found by brewing them. Accepting a pot whose
-ratio and method match an unknown recipe puts it in the book — and then you have to find its
-temperature.
-
-**The book never shows a band you haven't found.** It shows the bounds *you* established: brew too
-cold and it records "hotter than 120"; too hot and "colder than 200"; the entry reads as a range you
-close by bisecting it. Hit the band once and it is yours for good. Step 3 says only "Too cold" or
-"Too hot" until then — the exact distance is the answer.
+There are 31 recipes: one for every set of essences, from a single essence to all five, always in
+equal measure. The five single-essence potions are known at the start. The other 26 are in the book
+only as a hint — no name, no ratio — until a pot comes out as one. Accepting it is what puts it in
+the book.
 
 Only **accepting** teaches. Rejecting stays free precisely so experimenting is free, and a rejected
 pot that leaked the answer would make the free option strictly better than committing to one.
 
-This is what replaces the skill the alembic wheel took with it when it was cut: discovery rather than
-dexterity. *Deft Hands* in the Codex now widens the band you have to hit rather than granting an
-action to a minigame that no longer exists.
-
 ## Brewing
 
-A potion is three things at once, and the cauldron screen is three numbered steps plus bottling —
-all on one page, because they are one continuous act.
+Brewing is mixing and nothing else. There is no heat and no method: what goes in the pot is the
+whole decision.
 
 **1 · Ingredients.** Tap or drag them into the pot. The blend's essence totals and the capacity meter
 update as you go. Nothing is spent yet.
 
-**2 · Prepare.** Bring the pot to temperature — hold Heat or Chill to ramp, tap for a single step, and
-it drifts slowly back toward the room if you leave it. Then choose **Stirred** or **Simmered**.
-
-**3 · Outcome.** What you would make right now, with its grade and the three numbers behind it.
-**Accept** spends the ingredients and starts the brew timer; **Pour it back** returns every ingredient
-unchanged.
+**2 · Outcome.** What you would make right now, with its grade and potency. **Accept** spends the
+ingredients and starts the brew timer; **Pour it back** returns every ingredient unchanged.
 
 Then **Bottle** — form, vessel, seal — once the timer finishes.
 
-How the three parts of a recipe behave is deliberately different:
+The two numbers of a brew are independent:
 
-| Part | Miss it and… |
+| Number | Decided by |
 | --- | --- |
-| **Ratio** | You are making something else. Outside every recipe's tolerance is Murk. |
-| **Method** | You are making something else entirely — simmering a tonic doesn't make a bad tonic. |
-| **Temperature** | You are making the right thing badly. Purity falls in proportion to the miss. |
+| **Grade** | The ratio. Purity is 100 on a recipe's exact ratio and falls to 0 at the edge of its cone, which is halfway to the nearest other recipe. A blend outside every cone makes nothing and cannot be brewed. |
+| **Potency** | The total essence: Minor 1–60, Common 61–110, Greater 111–190, Grand 191–320, Sovereign 321+. |
 
-Recipes state their band as numbers (`140–175°`), so finding the right heat is something you can
-experiment toward. That only works because rejecting is free — nobody experiments when trying costs
-ingredients.
+So a small pot on the ratio is an S, and a Sovereign off it is an F. What makes the ratio hard is
+arithmetic — ingredients come in different strengths, and drying weakens them — and what caps the
+potency is the cauldron's capacity.
 
 ## Debug panel
 
@@ -224,8 +210,8 @@ square, chevron, crescent — used everywhere the colour is.
 engineering project.
 
 **Nothing is lost.** Untended crops still yield. Nothing wilts. Sealed goods never degrade. Rejecting
-a brew returns every ingredient. A pot left mid-preparation keeps its contents, its temperature and
-its method across a reload, and a save from an older schema is migrated rather than dropped.
+a brew returns every ingredient. A pot left mid-preparation keeps its contents across a reload, and a
+save from an older schema is migrated rather than dropped.
 
 ## Haggling
 
@@ -346,14 +332,14 @@ It found four things on its first run, two of them real bugs:
 | Finding | Outcome |
 | --- | --- |
 | One seeded cave bed carpeted all twelve overnight | Spread rate cut; the cave now rewards neglect without replacing the garden |
-| A single ingredient graded S | Top grades tied to potency — a trivial brew now caps at C |
+| A single ingredient graded S | Top grades were tied to potency; since the 31-potion book, grade is the ratio alone by design |
 | Contracts appeared to pay *less* than the shelf | My test compared against a hardcoded price; the real ratio was correct at 1.55× |
 | Renown reached rank 6 in a week | Measures an impossible ceiling (free restocks, perfect uptime); relabelled |
 
-It also checks the recipe book against itself: that no two same-method recipes have overlapping
-tolerance cones (which would make one of them unreachable), that every band is within the cauldron's
-range, and that **every recipe has an ingredient pointing at it**. That last one caught the
-Cinderveil Bomb shipping with nothing gatherable within 46° of it, before it ever reached the game.
+It also checks the recipe book against itself: that no two recipes have overlapping tolerance cones
+(which would make one of them unreachable), and that **every recipe has an ingredient pointing at
+it**. That last one caught the Cinderveil Bomb shipping with nothing gatherable within 46° of it,
+before it ever reached the game.
 
 And it checks that **nothing sold is inert**. Five upgrades and half the Mastery Codex once took the
 player's gold and did nothing — the effect plumbing existed and the far end was never connected. The

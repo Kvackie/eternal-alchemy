@@ -35,6 +35,7 @@ import { showPotionInfo } from '../potionInfo';
 import { countdown, formatDuration, formatPercent, t } from '@/i18n';
 import { getHeroDef, heroesConfig } from '@/sim/config';
 import {
+  HEALING_RECIPE,
   favourBandOf,
   effectiveLevel,
   isAvailable,
@@ -268,7 +269,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
     }
     const actions: HTMLElement[] = [];
     if (hurt) {
-      const tonic = sim.world.bottled.find((item) => item.recipeId === 'healthTonic');
+      const tonic = sim.world.bottled.find((item) => item.recipeId === HEALING_RECIPE);
       actions.push(
         button(
           t('roster.heal'),

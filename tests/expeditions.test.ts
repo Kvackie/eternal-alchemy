@@ -12,7 +12,7 @@ import {
   getHeroDef,
   getRecipe,
   heroesConfig,
-  realRecipes,
+  recipes,
 } from '@/sim/config';
 import { effectiveLevel, favourBandOf, isInjured, recruitCostOf } from '@/sim/heroes';
 import { contractTerms, generateContract, qualifyingItems } from '@/sim/contracts';
@@ -24,7 +24,7 @@ import type { BottledItem, Grade } from '@/sim/types';
 const HOUR = 3_600_000;
 const DAY = config.clock.dayLengthMs;
 
-function bottle(uid: string, grade: Grade, recipeId = 'healthTonic', sealId = 'cork'): BottledItem {
+function bottle(uid: string, grade: Grade, recipeId = 'aquaTerra', sealId = 'cork'): BottledItem {
   return {
     uid,
     recipeId,
@@ -283,7 +283,7 @@ describe('missions', () => {
   it('can be healed with a tonic instead of waiting it out', () => {
     const sim = withHero();
     sim.world.heroes[0]!.injuredUntil = sim.now + 5 * HOUR;
-    sim.world.bottled.push(bottle('tonic', 'B', 'healthTonic'));
+    sim.world.bottled.push(bottle('tonic', 'B', 'aquaTerra'));
     const favourBefore = sim.world.heroes[0]!.favour;
 
     expect(sim.heal('corin', 'tonic')).toBe(true);
@@ -295,7 +295,7 @@ describe('missions', () => {
   it('will not heal with the wrong potion', () => {
     const sim = withHero();
     sim.world.heroes[0]!.injuredUntil = sim.now + 5 * HOUR;
-    sim.world.bottled.push(bottle('wrong', 'B', 'emberDraught'));
+    sim.world.bottled.push(bottle('wrong', 'B', 'ignisTerra'));
     expect(sim.heal('corin', 'wrong')).toBe(false);
   });
 });
@@ -346,14 +346,8 @@ describe('the contract board', () => {
   it('commissions only what the placing faction would actually drink', () => {
     // Walk a shop up to a full book, so every faction has something to choose.
     const sim = withBoard(5);
-    for (const recipe of realRecipes()) {
-      sim.world.recipes[recipe.id] = {
-        discovered: true,
-        bandKnown: true,
-        coldestKnownTooCold: null,
-        hottestKnownTooHot: null,
-        timesBrewed: 1,
-      };
+    for (const recipe of recipes) {
+      sim.world.recipes[recipe.id] = { discovered: true, timesBrewed: 1 };
     }
     sim.world.renown = 100000;
     sim.world.contracts = [];
@@ -377,9 +371,9 @@ describe('the contract board', () => {
     const contract = sim.world.contracts.find((c) => c.templateId === 'barrackTonics');
     if (!contract) return;
 
-    sim.world.bottled.push(bottle('good', 'B', 'healthTonic'));
-    sim.world.bottled.push(bottle('lowGrade', 'F', 'healthTonic'));
-    sim.world.bottled.push(bottle('wrongRecipe', 'S', 'emberDraught'));
+    sim.world.bottled.push(bottle('good', 'B', 'aquaTerra'));
+    sim.world.bottled.push(bottle('lowGrade', 'F', 'aquaTerra'));
+    sim.world.bottled.push(bottle('wrongRecipe', 'S', 'ignisTerra'));
 
     const qualifying = qualifyingItems(sim.world, contract);
     expect(qualifying.map((i) => i.uid)).toEqual(['good']);
@@ -391,7 +385,7 @@ describe('the contract board', () => {
     if (!contract) return;
 
     for (let i = 0; i < contract.quantity; i += 1) {
-      sim.world.bottled.push(bottle(`t${i}`, 'B', 'healthTonic'));
+      sim.world.bottled.push(bottle(`t${i}`, 'B', 'aquaTerra'));
     }
 
     const goldBefore = sim.world.gold;
@@ -410,7 +404,7 @@ describe('the contract board', () => {
     );
     if (!contract) return;
 
-    sim.world.bottled.push(bottle('one', 'B', 'healthTonic'));
+    sim.world.bottled.push(bottle('one', 'B', 'aquaTerra'));
     const result = sim.deliverContract(contract.id)!;
 
     expect(result.complete).toBe(false);
@@ -428,9 +422,9 @@ describe('the contract board', () => {
 
     // One more qualifying bottle than the contract wants, so there is a genuine
     // choice about which to spend.
-    sim.world.bottled.push(bottle('prize', 'S', 'healthTonic'));
+    sim.world.bottled.push(bottle('prize', 'S', 'aquaTerra'));
     for (let i = 0; i < contract.quantity; i += 1) {
-      sim.world.bottled.push(bottle(`plain-${i}`, 'C', 'healthTonic'));
+      sim.world.bottled.push(bottle(`plain-${i}`, 'C', 'aquaTerra'));
     }
 
     const result = sim.deliverContract(contract.id)!;

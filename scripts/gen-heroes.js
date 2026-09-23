@@ -77,10 +77,10 @@ const CRAFT = ['delver', 'hunter', 'forager'];
 
 /** Favourites that suit the place, so a gift reads as thoughtful. */
 const FAVOURITES = {
-  emberwaste: ['emberDraught', 'sunfireTincture', 'scaldPhiltre', 'cinderveilBomb', 'pyrebarkExtract'],
-  mirefen: ['healthTonic', 'mirebloomElixir', 'deepwaterCordial', 'verdantAether', 'mireveilExtract'],
-  sunkenBarrow: ['shadowPhiltre', 'nightGlass', 'embershadeCordial', 'veilmireCordial', 'wraithwindVial'],
-  skyreachSpires: ['windDraught', 'skysalt', 'featherstoneDraught', 'stormfireFlask', 'galeshadeTonic'],
+  emberwaste: ['ignisTerra', 'ignisAqua', 'ignis', 'ignisUmbra', 'ignisTerraAerUmbra'],
+  mirefen: ['aquaTerra', 'aquaUmbra', 'aqua', 'aquaTerraAer', 'aquaUmbra'],
+  sunkenBarrow: ['terraUmbra', 'umbra', 'ignisUmbra', 'aquaAerUmbra', 'aerUmbra'],
+  skyreachSpires: ['aquaAer', 'aer', 'terraAer', 'ignisAer', 'aerUmbra'],
 };
 
 const heroes = JSON.parse(readFileSync('src/data/heroes.json', 'utf8'));

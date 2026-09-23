@@ -59,12 +59,13 @@ export function ingredientIcon(ingredientId: string, size = 18): HTMLElement {
 /**
  * A finished potion's picture, or its recipe's essence glyph.
  *
- * Art for completed products drops into `art/potions/<recipeId>.png` and is
- * picked up here with no further wiring — the same fallback rule as ingredients,
- * so the shelf keeps working while the set is incomplete.
+ * A recipe names the bottle it borrows (`art`), so pictures painted for the old
+ * book keep being used without being renamed — the same fallback rule as
+ * ingredients, so the shelf keeps working if one is missing.
  */
 export function potionIcon(recipeId: string, size = 18): HTMLElement {
-  const url = artUrlIf('potion', recipeId);
+  const recipe = getRecipe(recipeId);
+  const url = artUrlIf('potion', recipe.art);
   if (url) {
     return el('img', {
       class: 'art-icon',
@@ -77,7 +78,7 @@ export function potionIcon(recipeId: string, size = 18): HTMLElement {
     });
   }
 
-  const essence = dominantEssence(getRecipe(recipeId).target);
+  const essence = dominantEssence(recipe.target);
   return el('span', { class: `essence-mark ${essence}`, html: essenceGlyphSvg(essence, size) });
 }
 

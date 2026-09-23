@@ -114,7 +114,7 @@ describe('crossbreeding', () => {
 
     // And the pot reads the strain's essence, not the wild plant's.
     sim.addToCauldron(harvest.ingredientId, 'dewfresh', strain.id);
-    const blend = sim.assess()!.total;
+    const blend = sim.blend()!;
     const wild = getIngredient(harvest.ingredientId).essence;
     expect(JSON.stringify(blend)).not.toBe(JSON.stringify(wild));
   });
@@ -183,10 +183,10 @@ describe('mastery', () => {
     const sim = new Simulation(createWorld(1));
     sim.world.mastery = 3;
 
-    expect(sim.buyCodex('deftHands')).toBe(true);
-    expect(sim.world.codex.deftHands).toBe(1);
+    expect(sim.buyCodex('greenThumb')).toBe(true);
+    expect(sim.world.codex.greenThumb).toBe(1);
     // The next tier costs more than what is left.
-    expect(sim.buyCodex('deftHands')).toBe(false);
+    expect(sim.buyCodex('greenThumb')).toBe(false);
   });
 
   it('will not exceed a node’s tier cap', () => {
@@ -200,13 +200,11 @@ describe('mastery', () => {
 
   it('folds bought tiers into one set of bonuses', () => {
     const sim = new Simulation(createWorld(1));
-    sim.world.codex = { fullPurse: 2, deftHands: 1 };
+    sim.world.codex = { fullPurse: 2, greenThumb: 1 };
 
     const bonuses = codexBonuses(sim.world);
     expect(bonuses.startingGold).toBe(500);
-    // Deft Hands buys temperature tolerance now that the wheel it was written
-    // for no longer exists.
-    expect(bonuses.temperatureToleranceBonus).toBe(8);
+    expect(bonuses.timerMultiplier).toBeCloseTo(0.9, 6);
   });
 });
 
@@ -287,7 +285,7 @@ describe('the Long Distillation', () => {
 describe('the full bottling range', () => {
   it('gates Powder behind dry material', () => {
     const brew = {
-      recipeId: 'healthTonic',
+      recipeId: 'aquaTerra',
       total: { ignis: 0, aqua: 36, terra: 20, aer: 0, umbra: 0 },
       grade: 'B' as const,
       purity: 80,
@@ -308,7 +306,7 @@ describe('the full bottling range', () => {
 
   it('gates Crystal behind stone and potency', () => {
     const brew = {
-      recipeId: 'healthTonic',
+      recipeId: 'aquaTerra',
       total: { ignis: 0, aqua: 120, terra: 90, aer: 0, umbra: 0 },
       grade: 'A' as const,
       purity: 90,
@@ -329,7 +327,7 @@ describe('the full bottling range', () => {
 
   it('gates a Bomb behind something volatile in the pot', () => {
     const brew = {
-      recipeId: 'emberDraught',
+      recipeId: 'ignisTerra',
       total: { ignis: 60, aqua: 0, terra: 20, aer: 0, umbra: 0 },
       grade: 'B' as const,
       purity: 80,
@@ -441,7 +439,7 @@ describe('the town you retire to changes the run', () => {
       sim.world.bottled.push(
         {
           uid: 'a',
-          recipeId: 'healthTonic',
+          recipeId: 'aquaTerra',
           formId: 'potion',
           vesselId: 'clayVial',
           sealId: 'cork',

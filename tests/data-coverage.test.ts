@@ -38,7 +38,6 @@ import {
   shaftConfig,
   caveConfig,
   customersConfig,
-  realRecipes,
 } from '@/sim/config';
 import { angleBetween } from '@/sim/essences';
 import type { EssenceVector } from '@/sim/types';
@@ -273,7 +272,7 @@ describe('the data that only documents itself still has to be true', () => {
   it('gives every recipe somebody who wants it', () => {
     const deg = (a: EssenceVector, b: EssenceVector) => (angleBetween(a, b) * 180) / Math.PI;
 
-    for (const recipe of realRecipes()) {
+    for (const recipe of recipes) {
       const faction = contractsConfig.factions.find(
         (f) => deg(recipe.target, f.palate) < f.spreadDeg,
       );

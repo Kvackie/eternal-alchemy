@@ -9,7 +9,7 @@
  * with one cauldron in it instead of three.
  */
 
-import { config, heroesConfig, ingredients, realRecipes } from '@/sim/config';
+import { config, heroesConfig, ingredients, recipes } from '@/sim/config';
 import { makeCauldron } from '@/sim/cauldrons';
 import { generateContract } from '@/sim/contracts';
 import { addIngredient } from '@/sim/inventory';
@@ -56,20 +56,14 @@ export function buildWorld(clock: Clock = 'night'): World {
 
   // Every recipe known, so the book is at its full size — which is the size
   // that matters for anything measuring how much the station has to draw.
-  for (const recipe of realRecipes()) {
-    world.recipes[recipe.id] = {
-      discovered: true,
-      coldestKnownTooCold: null,
-      hottestKnownTooHot: null,
-      bandKnown: true,
-      timesBrewed: 3,
-    };
+  for (const recipe of recipes) {
+    world.recipes[recipe.id] = { discovered: true, timesBrewed: 3 };
   }
 
   for (const ingredient of ingredients) addIngredient(world, ingredient.id, 6, world.now, null);
 
-  world.cauldrons.push(makeCauldron('cauldron-2', 'cauldronThree', 20, false));
-  world.cauldrons.push(makeCauldron('cauldron-3', 'cauldronFour', 20, true));
+  world.cauldrons.push(makeCauldron('cauldron-2', 'cauldronThree', false));
+  world.cauldrons.push(makeCauldron('cauldron-3', 'cauldronFour', true));
   world.nextCauldronId = 4;
 
   for (const hero of heroesConfig.roster.slice(0, 4)) {

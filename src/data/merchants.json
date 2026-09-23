@@ -104,12 +104,6 @@
       },
       {
         "kind": "equipment",
-        "id": "lagged",
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "equipment",
         "id": "richLoam",
         "weight": 2,
         "tier": 1

@@ -15,13 +15,11 @@ import { rankIndexFor } from './progression';
 import type { Cauldron, World } from './types';
 
 /** A fresh, empty pot of the given tier. Bought pots start put away. */
-export function makeCauldron(id: string, tierId: string, ambient: number, stored = false): Cauldron {
+export function makeCauldron(id: string, tierId: string, stored = false): Cauldron {
   return {
     id,
     tierId,
     contents: { units: [] },
-    temperature: ambient,
-    method: null,
     brewing: null,
     pendingBrew: null,
     stored,
@@ -124,7 +122,7 @@ export function atCauldronLimit(world: World): boolean {
  * the whole point. Upgrading in place would make a second cauldron impossible
  * to express.
  */
-export function buyCauldron(world: World, tierId: string, ambient: number): Cauldron | null {
+export function buyCauldron(world: World, tierId: string): Cauldron | null {
   const tier = getCauldronTier(tierId);
   if (tier.cost <= 0) return null;
   if (atCauldronLimit(world)) return null;
@@ -134,7 +132,7 @@ export function buyCauldron(world: World, tierId: string, ambient: number): Caul
   world.gold -= tier.cost;
   // Bought into storage: a new pot is a thing you own, and putting it on the
   // bench is a separate decision made on the same screen a moment later.
-  const pot = makeCauldron(`cauldron-${world.nextCauldronId}`, tierId, ambient, true);
+  const pot = makeCauldron(`cauldron-${world.nextCauldronId}`, tierId, true);
   world.nextCauldronId += 1;
   world.cauldrons.push(pot);
   return pot;

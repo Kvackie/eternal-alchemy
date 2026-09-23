@@ -7,17 +7,13 @@ import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { availableForms, availableVessels } from '@/sim/bottling';
-import { config, getCrop, getRecipe } from '@/sim/config';
+import { config, getCrop } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
-import type { BrewMethod } from '@/sim/types';
 
 const HOUR = 3_600_000;
 
-/** Set the pot to exactly what a recipe wants, then accept and let it finish. */
-function brewTo(sim: Simulation, recipeId: string): void {
-  const recipe = getRecipe(recipeId);
-  sim.cauldron.temperature = (recipe.temperature.min + recipe.temperature.max) / 2;
-  sim.setMethod(recipe.method as BrewMethod);
+/** Accept whatever is in the pot and let it finish. */
+function brew(sim: Simulation): void {
   sim.acceptBrew();
   sim.finishAllTimers();
 }
@@ -170,18 +166,14 @@ describe('cauldron', () => {
    * This test used to assert the opposite — that dried dewcaps identify as some
    * *other* recipe, because drying moved Aqua into Terra and walked the blend
    * out of the Health Tonic's cone. That rule is gone. Age is one multiplier
-   * now, so the same three dewcaps make the same tonic at every stage, weaker
+   * now, so the same three dewcaps make the same potion at every stage, weaker
    * and eventually a tier lower.
    */
   it('makes a weaker version of the same thing from dried dewcaps', () => {
-    const recipe = getRecipe('healthTonic');
-
     const fresh = new Simulation(createWorld(5));
     fresh.grant({ ingredient: { id: 'dewcap', count: 3 } });
     for (let i = 0; i < 3; i += 1) fresh.addToCauldron('dewcap', 'dewfresh');
-    fresh.cauldron.temperature = (recipe.temperature.min + recipe.temperature.max) / 2;
-    fresh.setMethod('stirred');
-    expect(fresh.assess()!.recipeId).toBe('healthTonic');
+    expect(fresh.assess()!.recipeId).toBe('aquaTerra');
 
     const dried = new Simulation(createWorld(5));
     dried.grant({ ingredient: { id: 'dewcap', count: 3 } });
@@ -189,10 +181,8 @@ describe('cauldron', () => {
     // would leave this stock still Fresh.
     dried.advanceBy(config.freshness.freshUntilMs * 2 + HOUR, false);
     for (let i = 0; i < 3; i += 1) dried.addToCauldron('dewcap', 'dried');
-    dried.cauldron.temperature = (recipe.temperature.min + recipe.temperature.max) / 2;
-    dried.setMethod('stirred');
 
-    expect(dried.assess()!.recipeId).toBe('healthTonic');
+    expect(dried.assess()!.recipeId).toBe('aquaTerra');
     expect(dried.assess()!.totalEssence).toBeLessThan(fresh.assess()!.totalEssence);
   });
 
@@ -206,34 +196,31 @@ describe('cauldron', () => {
     expect(sim.addToCauldron('dewcap')).toBe(false);
   });
 
-  it('assesses a three-dewcap brew as a health tonic', () => {
+  it('assesses a three-dewcap brew as the Aqua–Terra potion', () => {
     const sim = withDewcaps(3);
     sim.addToCauldron('dewcap');
     sim.addToCauldron('dewcap');
     sim.addToCauldron('dewcap');
 
-    const recipe = getRecipe('healthTonic');
-    sim.cauldron.temperature = recipe.temperature.min + 5;
-    sim.setMethod('stirred');
-
-    const brew = sim.assess()!;
-    expect(brew.recipeId).toBe('healthTonic');
-    expect(brew.potencyTier).toBe('common');
+    const outcome = sim.assess()!;
+    expect(outcome.recipeId).toBe('aquaTerra');
+    expect(outcome.potencyTier).toBe('minor');
 
     // 17 each × 3 × the 1.1 dewfresh multiplier is 56.1, inside the starter
     // pot's 60. At 1.2 it came to 61.2 and the opening brew was capped.
-    expect(brew.overCapacity).toBe(false);
+    expect(outcome.overCapacity).toBe(false);
   });
 });
 
 describe('bottling and shelf', () => {
+  /** An exact Aqua–Terra brew — bilberry and broadleaf are 16 of one each. */
   function readyToBottle(): Simulation {
     const sim = new Simulation(createWorld(303));
-    sim.grant({ ingredient: { id: 'dewcap', count: 3 } });
-    sim.addToCauldron('dewcap');
-    sim.addToCauldron('dewcap');
-    sim.addToCauldron('dewcap');
-    brewTo(sim, 'healthTonic');
+    sim.grant({ ingredient: { id: 'bilberry', count: 1 } });
+    sim.grant({ ingredient: { id: 'broadleaf', count: 1 } });
+    sim.addToCauldron('bilberry');
+    sim.addToCauldron('broadleaf');
+    brew(sim);
     return sim;
   }
 
@@ -323,11 +310,10 @@ describe('the whole loop', () => {
       if (sim.cauldron.contents.units.length >= 3) break;
     }
 
-    // The pot is cold and no method is chosen, so right now this is Murk.
-    expect(sim.assess()?.isFallback).toBe(true);
+    expect(sim.assess()?.recipeId).toBe('aquaTerra');
 
-    brewTo(sim, 'healthTonic');
-    expect(sim.pendingBrew?.recipeId).toBe('healthTonic');
+    brew(sim);
+    expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
 
     const item = sim.bottlePending({
       formId: 'potion',

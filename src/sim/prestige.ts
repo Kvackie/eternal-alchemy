@@ -70,8 +70,6 @@ export function buyCodex(world: World, nodeId: string): boolean {
 
 /** Everything the Codex is currently granting, folded into one object. */
 export interface CodexBonuses {
-  /** Degrees of slack added to every recipe's temperature band. */
-  temperatureToleranceBonus: number;
   timerMultiplier: number;
   oreBatchBonus: number;
   startingDepthBonus: number;
@@ -84,7 +82,6 @@ export interface CodexBonuses {
 
 export function codexBonuses(world: World): CodexBonuses {
   const bonuses: CodexBonuses = {
-    temperatureToleranceBonus: 0,
     timerMultiplier: 1,
     oreBatchBonus: 0,
     startingDepthBonus: 0,
@@ -104,9 +101,6 @@ export function codexBonuses(world: World): CodexBonuses {
 }
 
 function fold(out: CodexBonuses, effect: CodexEffect, tier: number): void {
-  if (effect.temperatureToleranceBonus) {
-    out.temperatureToleranceBonus += effect.temperatureToleranceBonus * tier;
-  }
   if (effect.timerMultiplier) out.timerMultiplier += effect.timerMultiplier * tier;
   if (effect.oreBatchBonus) out.oreBatchBonus += effect.oreBatchBonus * tier;
   if (effect.startingDepthBonus) out.startingDepthBonus += effect.startingDepthBonus * tier;

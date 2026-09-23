@@ -27,7 +27,6 @@ import rawCustomers from '@/data/customers.json';
 import rawPrestige from '@/data/prestige.json';
 
 import type {
-  BrewMethod,
   Essence,
   EssenceVector,
   Grade,
@@ -54,34 +53,32 @@ export interface CropDef {
   soil: SoilId;
 }
 
-export interface RecipeDef {
+/** A recipe as written in `recipes.json`: which essences, in equal measure. */
+interface RawRecipe {
   id: string;
-  target: EssenceVector;
-  contaminants: Essence[];
-  toleranceDeg: number;
-  /** The band, in degrees, the pot must be within when the brew is accepted. */
-  temperature: { min: number; max: number };
-  /**
-   * Total-essence window this recipe occupies, if it names one.
-   *
-   * What makes a magnitude part of a recipe's identity rather than something
-   * derived after the fact: one direction can carry a Minor-to-Sovereign ladder,
-   * and a signature recipe can sit at an exact magnitude inside a broad one.
-   * `max: null` means open-topped. Absent means any magnitude, as before.
-   */
-  essence?: { min: number; max: number | null };
-  /**
-   * Laid down by `scripts/gen-recipes.js` rather than written by hand.
-   *
-   * Identification prefers a hand-authored recipe wherever both match, so this
-   * is what keeps the Health Tonic from being read as a generic Aqua brew.
-   */
-  generated?: boolean;
-  /** 'any' only for the Murk fallback, which will take anything. */
-  method: BrewMethod | 'any';
+  elements: Essence[];
   baseValue: number;
   knownFromStart: boolean;
-  isFallback?: boolean;
+  /** The potion picture this recipe borrows, by its art id. */
+  art: string;
+}
+
+/**
+ * A recipe is a set of essences in equal measure — one to all five, 31 in all.
+ *
+ * `target` and `toleranceDeg` are worked out from `elements` when the book
+ * loads rather than written down, because both follow from the set and a
+ * hand-typed copy could only ever disagree with it.
+ */
+export interface RecipeDef extends RawRecipe {
+  /** One of each essence the recipe asks for, none of the rest. */
+  target: EssenceVector;
+  /**
+   * How far off the ratio a blend may sit and still be this recipe: half the
+   * angle to its nearest neighbour, so no two recipes ever claim one blend.
+   * Purity runs from 100 at the exact ratio down to 0 at this edge.
+   */
+  toleranceDeg: number;
 }
 
 export interface VesselDef {
@@ -154,7 +151,6 @@ export interface EquipmentEffect {
   seedDropBonus?: number;
   footfallBonus?: number;
   nightFootfallBonus?: number;
-  driftMultiplier?: number;
   addCaveTiles?: number;
   caveSpreadBonus?: number;
   oreBatchBonus?: number;
@@ -410,7 +406,6 @@ export interface ContractsConfig {
 }
 
 export interface CodexEffect {
-  temperatureToleranceBonus?: number;
   timerMultiplier?: number;
   oreBatchBonus?: number;
   startingDepthBonus?: number;
@@ -510,22 +505,9 @@ export interface GameConfig {
   };
   cauldron: { unstableGrade: Grade };
   brewing: {
-    ambientTemperature: number;
-    minTemperature: number;
-    maxTemperature: number;
-    heatRatePerSecond: number;
-    chillRatePerSecond: number;
-    driftRatePerSecond: number;
-    tapStepDegrees: number;
-    purityPerDegreeOutside: number;
     brewDuration: Record<PotencyTierId, number>;
   };
   grading: {
-    purityFloor: number;
-    purityPerRadian: number;
-    contaminantPenaltyPerPoint: number;
-    /** The best letter each potency tier can reach, however clean the ratio. */
-    maxGradeByPotency: Record<PotencyTierId, Grade>;
     bands: Array<{ grade: Grade; minPurity: number }>;
   };
   potency: { tiers: Array<{ id: PotencyTierId; minEssence: number; valueMultiplier: number }> };
@@ -578,7 +560,7 @@ export function resetConfig(): void {
 
 export const ingredients = rawIngredients as unknown as IngredientDef[];
 export const crops = rawCrops as unknown as CropDef[];
-export const recipes = rawRecipes as unknown as RecipeDef[];
+export const recipes = buildRecipes(rawRecipes as unknown as RawRecipe[]);
 export const vessels = rawVessels as unknown as VesselDef[];
 export const seals = rawSeals as unknown as SealDef[];
 export const forms = rawForms as unknown as FormDef[];
@@ -683,10 +665,32 @@ export function strataFor(depth: number): ShaftStratumDef {
   return stratum;
 }
 
-/** Recipes the identifier should consider, excluding the Murk fallback. */
-export const realRecipes = (): RecipeDef[] => recipes.filter((r) => !r.isFallback);
-export const fallbackRecipe = (): RecipeDef => {
-  const found = recipes.find((r) => r.isFallback);
-  if (!found) throw new Error('recipes.json must contain exactly one entry with isFallback: true');
-  return found;
-};
+function buildRecipes(raw: RawRecipe[]): RecipeDef[] {
+  const targets = raw.map((recipe) => {
+    const target: EssenceVector = { ignis: 0, aqua: 0, terra: 0, aer: 0, umbra: 0 };
+    for (const essence of recipe.elements) target[essence] = 1;
+    return target;
+  });
+
+  // Every target is a set of ones, so the cosine between two of them is the
+  // shared count over the root of both sizes.
+  const angleDeg = (a: EssenceVector, b: EssenceVector) => {
+    let shared = 0;
+    let sizeA = 0;
+    let sizeB = 0;
+    for (const essence of Object.keys(a) as Essence[]) {
+      shared += a[essence] * b[essence];
+      sizeA += a[essence];
+      sizeB += b[essence];
+    }
+    return (Math.acos(Math.min(1, shared / Math.sqrt(sizeA * sizeB))) * 180) / Math.PI;
+  };
+
+  return raw.map((recipe, i) => {
+    let nearest = 90;
+    targets.forEach((other, j) => {
+      if (j !== i) nearest = Math.min(nearest, angleDeg(targets[i]!, other));
+    });
+    return { ...recipe, target: targets[i]!, toleranceDeg: nearest / 2 };
+  });
+}

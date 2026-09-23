@@ -9,13 +9,14 @@
  * above this file knows the difference.
  */
 
-import { baseCauldronTier, baseShelfTier, caveConfig, config, findDecor, realRecipes, shaftConfig } from '@/sim/config';
+import { baseCauldronTier, baseShelfTier, caveConfig, config, findDecor, recipes, shaftConfig } from '@/sim/config';
 import { makeCaveTiles } from '@/sim/cave';
 import { emptySpots } from '@/sim/decor';
 import { rankIndexFor } from '@/sim/progression';
 import { Rng } from '@/sim/rng';
 import { generateVeins } from '@/sim/shaft';
-import type { BrewOutcome, World } from '@/sim/types';
+import type { World } from '@/sim/types';
+import { LEGACY_RECIPES } from './legacyRecipes';
 
 const KEY_PREFIX = 'eternal-alchemy/save';
 const KEY_POINTER = 'eternal-alchemy/slot';
@@ -156,6 +157,14 @@ export class SaveManager {
  */
 type Migration = (world: World) => World;
 
+/**
+ * The room temperature, as it stood while pots had one.
+ *
+ * Steps v3 and v13 write a temperature because the saves they upgrade had one;
+ * v14 is what removes it. The value is only ever an intermediate.
+ */
+const LEGACY_AMBIENT = 20;
+
 const MIGRATIONS: Record<number, Migration> = {
   /**
    * v1 → v2: the alembic's radius axis became relative to cauldron capacity.
@@ -182,7 +191,7 @@ const MIGRATIONS: Record<number, Migration> = {
    */
   3: (world) => {
     const legacy = world as unknown as {
-      pendingBrew?: (BrewOutcome & { distilledPurity?: number }) | null;
+      pendingBrew?: (Record<string, unknown> & { distilledPurity?: number }) | null;
       statistics?: Record<string, number>;
       temperature?: number;
       method?: unknown;
@@ -196,7 +205,7 @@ const MIGRATIONS: Record<number, Migration> = {
      * the version it is upgrading FROM, not on today's — so this step still has
      * to write the flat fields, and v13 is what folds them into a pot.
      */
-    legacy.temperature ??= config.brewing.ambientTemperature;
+    legacy.temperature ??= LEGACY_AMBIENT;
     legacy.method ??= null;
     legacy.brewing ??= null;
     world.log ??= [];
@@ -206,7 +215,7 @@ const MIGRATIONS: Record<number, Migration> = {
     // wanted — it was graded without one, and re-penalising it now would be
     // taking back work that was already done.
     if (legacy.pendingBrew) {
-      legacy.pendingBrew.temperature ??= config.brewing.ambientTemperature;
+      legacy.pendingBrew.temperature ??= LEGACY_AMBIENT;
       legacy.pendingBrew.degreesOutsideBand ??= 0;
       legacy.pendingBrew.method ??= null;
     }
@@ -318,14 +327,9 @@ const MIGRATIONS: Record<number, Migration> = {
 
     if (!world.recipes) {
       world.recipes = {};
-      for (const recipe of realRecipes()) {
-        world.recipes[recipe.id] = {
-          discovered: true,
-          coldestKnownTooCold: null,
-          hottestKnownTooHot: null,
-          bandKnown: true,
-          timesBrewed: 0,
-        };
+      for (const recipe of recipes) {
+        // v7 also wrote the band bounds, which v14 removes along with heat.
+        world.recipes[recipe.id] = { discovered: true, timesBrewed: 0 };
       }
     }
     return world;
@@ -502,8 +506,8 @@ const MIGRATIONS: Record<number, Migration> = {
         id: 'cauldron-1',
         tierId: tierFromEquipment,
         contents: (legacy.cauldron as World['cauldrons'][number]['contents']) ?? { units: [] },
-        temperature: legacy.temperature ?? config.brewing.ambientTemperature,
-        method: (legacy.method as World['cauldrons'][number]['method']) ?? null,
+        // Temperature and method moved into the pot here; v14 then drops them.
+        ...({ temperature: legacy.temperature ?? LEGACY_AMBIENT, method: legacy.method ?? null } as object),
         brewing: (legacy.brewing as World['cauldrons'][number]['brewing']) ?? null,
         pendingBrew: (legacy.pendingBrew as World['cauldrons'][number]['pendingBrew']) ?? null,
         // The one pot a save this old had was the one it was brewing in.
@@ -522,6 +526,103 @@ const MIGRATIONS: Record<number, Migration> = {
     delete legacy.method;
     delete legacy.brewing;
     delete legacy.pendingBrew;
+    return world;
+  },
+
+  /**
+   * v13 → v14: brewing stops being about heat and method, and the book becomes
+   * 31 potions.
+   *
+   * A pot keeps its contents, and a brew in progress or waiting to be bottled
+   * keeps its grade — both were decided already. What goes is the state that
+   * only meant something while there was a burner: the pot's temperature and
+   * chosen method, the band a recipe's knowledge had narrowed down, and the
+   * Ledger lines announcing a band had been found.
+   *
+   * The Lagged upgrade slowed the heat's drift and Deft Hands widened the band.
+   * Neither has anything left to act on, so both are removed from what the
+   * shop owns.
+   *
+   * Every old recipe id — in the book, on bottles and shelves, in pots, on
+   * contracts and in the Ledger — becomes the potion made of the same essences.
+   */
+  14: (world) => {
+    const strip = (outcome: unknown) => {
+      if (!outcome || typeof outcome !== 'object') return;
+      const loose = outcome as Record<string, unknown>;
+      delete loose.temperature;
+      delete loose.degreesOutsideBand;
+      delete loose.method;
+      delete loose.isFallback;
+      delete loose.contaminantPoints;
+    };
+
+    for (const pot of world.cauldrons ?? []) {
+      const loose = pot as unknown as Record<string, unknown>;
+      delete loose.temperature;
+      delete loose.method;
+      strip(pot.brewing?.outcome);
+      strip(pot.pendingBrew);
+    }
+
+    /*
+     * The 197-recipe book became 31 potions. Every old recipe folds into the
+     * one made of the same essences, wherever a save names it; what was known
+     * about any of them is known about the potion they became.
+     */
+    const MURK = 'murk';
+    const renamed = (id: string) => LEGACY_RECIPES.get(id) ?? id;
+    const rename = (node: unknown): void => {
+      if (Array.isArray(node)) return node.forEach(rename);
+      if (!node || typeof node !== 'object') return;
+      const loose = node as Record<string, unknown>;
+      for (const [key, value] of Object.entries(loose)) {
+        if (key === 'recipeId' && typeof value === 'string') loose[key] = renamed(value);
+        else rename(value);
+      }
+    };
+
+    const known: World['recipes'] = {};
+    for (const [id, knowledge] of Object.entries(world.recipes ?? {})) {
+      if (id === MURK) continue;
+      const next = renamed(id);
+      const before = known[next];
+      known[next] = {
+        discovered: (before?.discovered ?? false) || knowledge.discovered,
+        timesBrewed: (before?.timesBrewed ?? 0) + (knowledge.timesBrewed ?? 0),
+      };
+    }
+    // Every shop starts out knowing the five single-essence potions.
+    for (const recipe of recipes) {
+      if (!recipe.knownFromStart) continue;
+      known[recipe.id] = { discovered: true, timesBrewed: known[recipe.id]?.timesBrewed ?? 0 };
+    }
+    world.recipes = known;
+
+    // Murk had no successor, and was worth next to nothing: it is poured away.
+    const isMurk = (item: { recipeId: string } | null | undefined) => item?.recipeId === MURK;
+    world.bottled = (world.bottled ?? []).filter((item) => !isMurk(item));
+    for (const slot of world.shelf ?? []) {
+      if (!isMurk(slot.item)) continue;
+      slot.item = null;
+      slot.quantity = 0;
+    }
+    for (const pot of world.cauldrons ?? []) {
+      if (isMurk(pot.brewing?.outcome)) pot.brewing = null;
+      if (isMurk(pot.pendingBrew)) pot.pendingBrew = null;
+    }
+
+    rename(world);
+
+    world.log = (world.log ?? []).filter(
+      (entry) => (entry.kind as string) !== 'bandLearned' && entry.params.recipe !== MURK,
+    );
+    for (const entry of world.log) {
+      if (typeof entry.params.recipe === 'string') entry.params.recipe = renamed(entry.params.recipe);
+    }
+
+    if (world.equipment) delete world.equipment.lagged;
+    if (world.codex) delete world.codex.deftHands;
     return world;
   },
 };

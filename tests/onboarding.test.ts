@@ -1,7 +1,7 @@
 /**
  * The opening checklist, walked the way a new player would walk it.
  *
- * Its eight steps tick themselves off by reading the world, which means any
+ * Its seven steps tick themselves off by reading the world, which means any
  * change to how the world records an action can quietly orphan one — a step
  * that can no longer be completed is a checklist that never finishes and a
  * first session that never stops being told what to do next. This is the whole
@@ -38,10 +38,6 @@ describe('the opening checklist', () => {
       if (sim.cauldron.contents.units.length >= 3) break;
     }
     expect(ticked(sim)).toContain('fill');
-    expect(ticked(sim)).not.toContain('prepare');
-
-    sim.setMethod('stirred');
-    expect(ticked(sim)).toContain('prepare');
     expect(ticked(sim)).not.toContain('brew');
 
     sim.acceptBrew();
@@ -61,7 +57,7 @@ describe('the opening checklist', () => {
     // Someone comes in and buys it, which is the one step the player waits for.
     sim.advanceBy(HOUR * 24);
     expect(sim.world.statistics.itemsSold).toBeGreaterThan(0);
-    expect(ticked(sim)).toHaveLength(8);
+    expect(ticked(sim)).toHaveLength(7);
     expect(sim.onboarding.visible).toBe(false);
   });
 

@@ -43,16 +43,6 @@
     }
   },
   {
-    "id": "lagged",
-    "tree": "cauldron",
-    "cost": 180,
-    "requiresRank": 1,
-    "repeatable": 1,
-    "effect": {
-      "driftMultiplier": 0.5
-    }
-  },
-  {
     "id": "dryingRack",
     "tree": "garden",
     "cost": 280,

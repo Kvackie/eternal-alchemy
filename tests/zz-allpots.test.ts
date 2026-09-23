@@ -2,22 +2,22 @@
  * Throwaway harness for judging cauldron art.
  *
  *   TIER=cauldronOne  — five pots of that tier, one per brew effect
- *   TIER=all          — one pot of every tier, all lit
+ *   TIER=all          — one pot of every tier, all brewing
  */
 import { describe, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { cauldronTiers, getRecipe, ingredients, vessels } from '@/sim/config';
+import { cauldronTiers, config, getRecipe, ingredients, vessels } from '@/sim/config';
 import { addVectors, angleBetween, zeroVector } from '@/sim/essences';
 import { makeCauldron } from '@/sim/cauldrons';
-import type { BrewMethod, EssenceVector } from '@/sim/types';
+import type { EssenceVector } from '@/sim/types';
 
 const OUT = process.env.ALLPOTS_OUT;
 const TIER = process.env.TIER || 'cauldronOne';
 
 /** One recipe per essence, so all five effects appear. */
-const BY_ESSENCE = ['emberCommon', 'tideCommon', 'loamCommon', 'galeCommon', 'shadeCommon'];
+const BY_ESSENCE = ['ignis', 'aqua', 'terra', 'aer', 'umbra'];
 
 function blendFor(target: EssenceVector, cap: number): string[] {
   const chosen: string[] = [];
@@ -55,7 +55,7 @@ describe('cauldron art harness', () => {
     const tiers =
       TIER === 'all' ? cauldronTiers.map((t) => t.id) : BY_ESSENCE.map(() => TIER);
 
-    world.cauldrons = tiers.map((id, i) => makeCauldron(`cauldron-${i + 1}`, id, 20));
+    world.cauldrons = tiers.map((id, i) => makeCauldron(`cauldron-${i + 1}`, id));
     world.activeCauldronId = 'cauldron-1';
     world.nextCauldronId = tiers.length + 1;
 
@@ -67,9 +67,6 @@ describe('cauldron art harness', () => {
         sim.addToCauldron(id, undefined, null, pot.id);
         sim.addToCauldron(id, undefined, null, pot.id);
       }
-      // Hot, so the fire under the pot is lit.
-      pot.temperature = (recipe.temperature.min + recipe.temperature.max) / 2;
-      sim.setMethod(recipe.method as BrewMethod, pot.id);
       sim.acceptBrew(pot.id);
     });
 
@@ -77,13 +74,13 @@ describe('cauldron art harness', () => {
 
     writeFileSync(
       OUT!,
-      JSON.stringify({ schemaVersion: 13, savedAt: Date.now() + 60000, world: sim.world }),
+      JSON.stringify({ schemaVersion: config.save.schemaVersion, savedAt: Date.now() + 60000, world: sim.world }),
       'utf8',
     );
     // eslint-disable-next-line no-console
     console.log(
       sim.cauldrons
-        .map((p) => `${p.tierId}@${Math.round(p.temperature)}deg=${p.brewing?.outcome.recipeId}`)
+        .map((p) => `${p.tierId}=${p.brewing?.outcome.recipeId}`)
         .join('  '),
     );
   });

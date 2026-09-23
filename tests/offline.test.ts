@@ -18,7 +18,7 @@ function stockedWorld(seed = 12345): World {
   world.gold = 0;
   const item: BottledItem = {
     uid: 'test-item',
-    recipeId: 'healthTonic',
+    recipeId: 'aquaTerra',
     formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
