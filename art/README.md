@@ -30,22 +30,30 @@ Ids are camelCase and case-sensitive: `galeThistle.png`, not `gale-thistle.png`.
 
 ## `ingredients/` — 64 × 64 target
 
-The most valuable batch: these appear in the garden, the cauldron orbit, every
-inventory tile and every merchant stall, so eighteen files change nearly every screen.
+The most valuable batch: these appear in the garden, the cave, the cauldron, every
+inventory tile and every merchant stall.
 
-| Herbs | Fungi | Minerals | Reagents & exotics |
-| --- | --- | --- | --- |
-| `emberroot.png` | `dewcap.png` | `chalkNodule.png` | `salamanderScale.png` |
-| `sunleaf.png` | `gravecrown.png` | `emberstone.png` | `mirefenPearl.png` |
-| `galeThistle.png` | `chalkgill.png` | `deepglass.png` | `barrowAsh.png` |
-| `moonpetal.png` | | `nullstone.png` | `skyreachFeather.png` |
-| `ashfern.png` | | | `cinderwraithAsh.png` |
-| | | | `quicksilverTear.png` |
+There are 151 ingredients — 60 herbs, 30 fungi, 40 minerals and 21 exotics — and all
+but four already have art. The four still on placeholders:
 
-Each ingredient has a dominant essence that currently decides its placeholder tint
-(Ignis red, Aqua blue, Terra gold, Aer violet, Umbra grey). Painted art doesn't have to
-follow those colours, but a Gravecrown that reads as fiery will fight the rest of the
-UI, which labels it Umbra everywhere else.
+| Herbs | Fungi |
+| --- | --- |
+| `featherfern.png` (Aer) | `gloomcap.png` (Umbra) |
+| `windwort.png` (Aer) | |
+| `gloamroot.png` (Umbra) | |
+
+The ids, and the essence each one carries, are in `src/data/ingredients.json`; which
+id fills which strength on the scale is decided by `scripts/gen-ingredients.js`.
+Each ingredient has a dominant essence that decides its placeholder tint (Ignis red,
+Aqua blue, Terra gold, Aer violet, Umbra grey). Painted art doesn't have to follow
+those colours, but a picture that reads as fiery on an Umbra ingredient will fight
+the rest of the UI, which labels it Umbra everywhere else.
+
+## `potions/`
+
+A potion picture is named for the bottle, not the recipe: each of the 31 recipes in
+`src/data/recipes.json` names the picture it uses in its `art` field, so a new bottle
+is wired in by pointing a recipe at it.
 
 ## `scene/` — the world view
 
@@ -84,7 +92,7 @@ last.
 
 ## Suggested order
 
-1. **`ingredients/`** — eighteen files, biggest visible change per file.
+1. **`ingredients/`** — four files left, each changes every screen it appears on.
 2. **`scene/`** — four files, and the world view stops being flat shapes.
 3. **`decor/`** — ten files, and furnishing the shop becomes worth doing.
 4. **`portraits/`** — volume work, safe to leave until the rest is settled.
