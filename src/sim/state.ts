@@ -2,7 +2,7 @@
  * A brand-new world, and the shape every save must deserialise into.
  */
 
-import { baseCauldronTier, caveConfig, config, crops, shaftConfig, vessels, seals } from './config';
+import { baseCauldronTier, caveConfig, config, shaftConfig, vessels, seals } from './config';
 import { makeCauldron } from './cauldrons';
 import { makeCaveTiles } from './cave';
 import { emptySpots } from './decor';
@@ -56,10 +56,11 @@ export function createWorld(seed = freshSeed()): World {
     spores: {},
 
     shaft: {
-      depth: shaftConfig.startingDepth,
+      // The shaft opens at the surface; the first beams' worth is free to dig.
+      depth: 0,
       supportedDepth: shaftConfig.startingDepth,
       workingVeinId: null,
-      veins: generateVeins(seed, shaftConfig.startingDepth, new Rng(seed ^ 0x5eed)),
+      veins: generateVeins(seed, 0, new Rng(seed ^ 0x5eed)),
     },
 
     heroes: [],
@@ -105,11 +106,9 @@ export function createWorld(seed = freshSeed()): World {
     },
   };
 
-  // Opening loadout: enough seeds and vessels to run the whole loop once without
-  // touching a merchant, since merchants don't exist until M2.
-  for (const crop of crops) {
-    world.seeds[crop.id] = 4;
-  }
+  // Opening loadout: enough seeds and vessels to run the whole loop once
+  // without touching a merchant.
+  for (const { id, count } of config.economy.startingSeeds) world.seeds[id] = count;
   for (const vessel of vessels) {
     world.vessels[vessel.id] = vessel.startingStock;
   }
@@ -117,11 +116,11 @@ export function createWorld(seed = freshSeed()): World {
     world.seals[seal.id] = seal.cost === 0 ? 0 : 5;
   }
 
-  // One cluster of the starter mushroom, so the cave is usable the moment it
-  // opens rather than blocked behind a merchant visit.
-  world.spores.dewcap = 2;
+  // A cluster of a starter mushroom, so the cave is usable the moment it opens
+  // rather than blocked behind a merchant visit.
+  for (const { id, count } of config.economy.startingSpores) world.spores[id] = count;
 
-  // Two recipes to start; the rest are found by brewing them.
+  // The five single-essence recipes to start; the rest are found by brewing.
   seedStartingKnowledge(world);
 
   return world;

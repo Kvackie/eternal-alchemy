@@ -297,54 +297,63 @@ describe('the data that only documents itself still has to be true', () => {
   });
 });
 
-describe('clean ingredients', () => {
-  /*
-   * One essence and nothing else, for every essence, at every strength.
-   *
-   * A clean single essence is what makes a lopsided ratio hittable: blending
-   * only ever reaches the hull of what you hold, so a recipe that wants mostly
-   * Umbra needs something that is only Umbra. For a long while Umbra had one —
-   * a mineral 80m down the quarry — and Aer had nothing below the rank-2
-   * expedition, while Terra had thirty-eight.
-   *
-   * "Early" is deliberately generous: any merchant at any relationship tier,
-   * the quarry's first two strata, or an expedition open from the start.
-   */
-  const LEVELS = [
-    { name: 'weak', min: 1, max: 17 },
-    { name: 'middling', min: 18, max: 30 },
-    { name: 'strong', min: 31, max: Infinity },
-  ];
+describe('the ingredient set', () => {
   const ESSENCE_KEYS = ['ignis', 'aqua', 'terra', 'aer', 'umbra'] as const;
+  const SCALE = [4, 6, 8, 10, 12, 16, 24, 32, 36, 48];
 
-  function reachableEarly(): Set<string> {
-    const out = new Set<string>();
-    const sold = new Set(merchants.flatMap((m) => m.pool.map((entry) => entry.id)));
-    for (const id of sold) out.add(id);
-    for (const crop of crops) if (sold.has(crop.id)) out.add(crop.yields);
-    for (const stratum of shaftConfig.strata) {
-      if (stratum.minDepth <= 40) for (const vein of stratum.veins) out.add(vein.ingredientId);
-    }
-    for (const biome of heroesConfig.biomes) {
-      if (biome.requiresRank > 0) continue;
-      for (const drop of [...biome.loot, ...biome.rare]) out.add(drop.ingredientId);
-    }
-    return out;
-  }
-
-  it('offers every essence on its own, weak, middling and strong, early on', () => {
-    const early = reachableEarly();
+  /*
+   * One essence and nothing else, for every essence, at every step of the
+   * scale. A clean single essence is what makes any ratio hittable: blending
+   * only ever reaches the hull of what you hold, and a full set of clean
+   * strengths is what turns balancing a ratio into arithmetic rather than luck.
+   */
+  it('has every essence on its own at every strength on the scale', () => {
     const missing: string[] = [];
     for (const essence of ESSENCE_KEYS) {
-      for (const level of LEVELS) {
-        const found = ingredients.some((ing) => {
-          const vector = ing.essence as EssenceVector;
-          const clean = ESSENCE_KEYS.every((k) => k === essence || vector[k] === 0);
-          return clean && vector[essence] >= level.min && vector[essence] <= level.max && early.has(ing.id);
-        });
-        if (!found) missing.push(`${level.name} ${essence}`);
+      for (const strength of SCALE) {
+        const found = ingredients.some((ing) =>
+          ESSENCE_KEYS.every((k) => ing.essence[k] === (k === essence ? strength : 0)),
+        );
+        if (!found) missing.push(`${essence} ${strength}`);
       }
     }
-    expect(missing, 'no clean single-essence ingredient reachable early for these').toEqual([]);
+    expect(missing, 'no clean ingredient at these strengths').toEqual([]);
+  });
+
+  it('keeps every essence amount on the scale', () => {
+    const off = ingredients.filter((ing) =>
+      ESSENCE_KEYS.some((k) => ing.essence[k] > 0 && !SCALE.includes(ing.essence[k])),
+    );
+    expect(off.map((ing) => ing.id)).toEqual([]);
+  });
+
+  /*
+   * Each kind comes from its own place: every herb grows in the garden, every
+   * fungus in the cave, every mineral somewhere down the quarry, and every
+   * exotic on an expedition.
+   */
+  it('gives every ingredient the source its kind promises', () => {
+    const grown = new Set(crops.map((crop) => crop.yields));
+    const spread = new Set(caveConfig.species.map((species) => species.id));
+    const mined = new Set(shaftConfig.strata.flatMap((s) => s.veins.map((v) => v.ingredientId)));
+    const found = new Set(
+      heroesConfig.biomes.flatMap((b) =>
+        [...b.loot, ...b.rare].filter((d) => (d.kind ?? 'ingredient') === 'ingredient').map((d) => d.ingredientId),
+      ),
+    );
+    const source = { herb: grown, fungus: spread, mineral: mined, exotic: found } as const;
+    const orphans = ingredients.filter((ing) => !source[ing.category].has(ing.id));
+    expect(orphans.map((ing) => `${ing.category} ${ing.id}`)).toEqual([]);
+  });
+
+  it('brings the majority of ingredients back from expeditions', () => {
+    const found = new Set(heroesConfig.biomes.flatMap((b) => [...b.loot, ...b.rare].map((d) => d.ingredientId)));
+    expect(found.size / ingredients.length).toBeGreaterThan(0.5);
+  });
+
+  it('puts a new stratum every five metres', () => {
+    expect(shaftConfig.depthStep).toBe(5);
+    shaftConfig.strata.forEach((stratum, i) => expect(stratum.minDepth).toBe(i * 5));
   });
 });
+

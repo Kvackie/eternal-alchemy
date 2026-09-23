@@ -16,7 +16,7 @@ export type Grade = 'S' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 export type PotencyTierId = 'minor' | 'common' | 'greater' | 'grand' | 'sovereign';
 export type DayPhase = 'dawn' | 'day' | 'dusk' | 'night';
 export type Freshness = 'dewfresh' | 'fresh' | 'dried';
-export type IngredientCategory = 'herb' | 'fungus' | 'mineral' | 'reagent' | 'exotic';
+export type IngredientCategory = 'herb' | 'fungus' | 'mineral' | 'exotic';
 export type SoilId = 'loam' | 'ash' | 'silt' | 'graveEarth';
 
 /** A batch of one ingredient harvested at one moment; freshness is derived from `harvestedAt`. */
@@ -240,11 +240,14 @@ export interface Mission {
   favouriteSupplied: boolean;
 }
 
+/** What an expedition can bring back: the thing itself, or the means to grow it. */
+export type FindKind = 'ingredient' | 'seed' | 'spore';
+
 export interface MissionOutcome {
   missionId: string;
   biomeId: string;
   quality: 'bountiful' | 'successful' | 'meagre';
-  found: Array<{ ingredientId: string; count: number }>;
+  found: Array<{ kind?: FindKind; ingredientId: string; count: number }>;
   injured: string[];
   /*
    * Carried over from the mission, which is gone by the time this is claimed.

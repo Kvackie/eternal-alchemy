@@ -65,18 +65,17 @@ describe('freshness', () => {
     expect(freshnessOf('chalkNodule', 0, 100 * HOUR)).toBe('fresh');
   });
 
-  // `sunleaf` is a herb and `dewcap` a fungus, despite the names.
-  it('gives fungus twice as long in every stage', () => {
+  // `sunleaf` is a herb and `dewcap` a fungus.
+  it('ages fungus twice as fast in every stage', () => {
     const f = config.freshness;
-    const pastHerbDewfresh = f.dewfreshUntilMs + 1;
-    const pastHerbFresh = f.freshUntilMs + 1;
+    const halfHerbDewfresh = f.dewfreshUntilMs / 2 + 1;
+    const halfHerbFresh = f.freshUntilMs / 2 + 1;
 
-    expect(freshnessOf('sunleaf', 0, pastHerbDewfresh)).toBe('fresh');
-    expect(freshnessOf('dewcap', 0, pastHerbDewfresh)).toBe('dewfresh');
+    expect(freshnessOf('sunleaf', 0, halfHerbDewfresh)).toBe('dewfresh');
+    expect(freshnessOf('dewcap', 0, halfHerbDewfresh)).toBe('fresh');
 
-    expect(freshnessOf('sunleaf', 0, pastHerbFresh)).toBe('dried');
-    expect(freshnessOf('dewcap', 0, pastHerbFresh)).toBe('fresh');
-    expect(freshnessOf('dewcap', 0, f.freshUntilMs * 2 + 1)).toBe('dried');
+    expect(freshnessOf('sunleaf', 0, halfHerbFresh)).toBe('fresh');
+    expect(freshnessOf('dewcap', 0, halfHerbFresh)).toBe('dried');
   });
 
   /*
@@ -90,13 +89,16 @@ describe('freshness', () => {
   it('scales essence with age and leaves the blend pointing the same way', () => {
     const base = getIngredient('dewcap').essence;
     const dew = applyFreshness(base, 'dewfresh');
+    const fresh = applyFreshness(base, 'fresh');
     const dried = applyFreshness(base, 'dried');
 
-    expect(totalEssence(dew)).toBeGreaterThan(totalEssence(base));
-    expect(totalEssence(dried)).toBeLessThan(totalEssence(base));
+    // The stated strength is the dewfresh one; drying costs up to a fifth.
+    expect(totalEssence(dew)).toBe(totalEssence(base));
+    expect(totalEssence(fresh)).toBeLessThan(totalEssence(base));
+    expect(totalEssence(dried)).toBeCloseTo(totalEssence(base) * 0.8, 6);
 
     // Same direction: every component keeps its share of the whole.
-    for (const stage of [dew, dried]) {
+    for (const stage of [fresh, dried]) {
       const ratio = totalEssence(stage) / totalEssence(base);
       expect(stage.aqua).toBeCloseTo(base.aqua * ratio, 6);
       expect(stage.terra).toBeCloseTo(base.terra * ratio, 6);
@@ -218,13 +220,13 @@ describe('identifying a brew from real ingredients', () => {
   });
 
   it('makes nothing when the blend sits between recipes', () => {
-    // Sunleaf spreads its essence across Ignis, Aqua and Aer unevenly, which
-    // points at no recipe's ratio in particular.
-    expect(assess('sunleaf', 'sunleaf')).toBeNull();
+    // Autumnmaple is Ignis and Terra at two to one, which is too much Terra
+    // for the Ignis potion and too little for the Ignis–Terra one.
+    expect(assess('autumnmaple', 'autumnmaple')).toBeNull();
   });
 
   it('caps an over-capacity brew at the unstable grade', () => {
-    // Three chalk nodules is 78 essence against a capacity of 60.
+    // Three chalk nodules is 72 essence against a capacity of 60.
     const brew = assess('chalkNodule', 'chalkNodule', 'chalkNodule');
     expect(brew?.recipeId).toBe('terra');
     expect(brew?.overCapacity).toBe(true);
@@ -236,7 +238,7 @@ describe('identifying a brew from real ingredients', () => {
   });
 
   it('shows minerals are too coarse to correct a small brew', () => {
-    // One chalk nodule is 26 Terra in a single unit. It doesn't nudge the
+    // One chalk nodule is 24 Terra in a single unit. It doesn't nudge the
     // ratio, it slams past it — far enough that the brew stops being the
     // Aqua–Terra potion. Minerals carry mass; herbs do the steering.
     const overshot = assess('bilberry', 'broadleaf', 'chalkNodule');

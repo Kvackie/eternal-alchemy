@@ -176,10 +176,10 @@ describe('the town you retire to changes the run', () => {
     // "Water everywhere, stone nowhere" against "Rich rock, poor soil".
     const marsh = new Simulation(inTown('saltmarsh'));
     const cinder = new Simulation(inTown('cinderhold'));
-    for (const sim of [marsh, cinder]) sim.world.seeds.dewcap = 2;
+    for (const sim of [marsh, cinder]) sim.world.seeds.bluepetal = 2;
 
-    marsh.plant(marsh.world.plots[0]!.id, 'dewcap');
-    cinder.plant(cinder.world.plots[0]!.id, 'dewcap');
+    marsh.plant(marsh.world.plots[0]!.id, 'bluepetal');
+    cinder.plant(cinder.world.plots[0]!.id, 'bluepetal');
 
     expect(marsh.world.plots[0]!.crop!.readyAt).toBeLessThan(
       cinder.world.plots[0]!.crop!.readyAt,

@@ -75,7 +75,7 @@ function scroller(key: string, className: string, children: HTMLElement[]): HTML
   return node;
 }
 
-const CATEGORIES: IngredientCategory[] = ['herb', 'fungus', 'mineral', 'exotic', 'reagent'];
+const CATEGORIES: IngredientCategory[] = ['herb', 'fungus', 'mineral', 'exotic'];
 
 /**
  * How many ingredient tiles one page of the stores holds.

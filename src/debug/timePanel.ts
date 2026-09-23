@@ -11,7 +11,7 @@
 
 import { button, el } from '@/ui/dom/components';
 import { nextPhaseStart } from '@/sim/clock';
-import { config } from '@/sim/config';
+import { config, crops, ingredients } from '@/sim/config';
 import { t } from '@/i18n';
 import { bus, changed } from '@/ui/bus';
 import type { Simulation } from '@/sim/sim';
@@ -145,8 +145,10 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
     button(
       t('debug.grant.ingredients'),
       () => {
-        for (const id of ['dewcap', 'emberroot', 'sunleaf', 'chalkNodule', 'galeThistle']) {
-          sim.grant({ ingredient: { id, count: 10 } });
+        // Every single-essence ingredient: enough to brew any recipe at any strength.
+        for (const def of ingredients) {
+          if (Object.values(def.essence).filter((value) => value > 0).length !== 1) continue;
+          sim.grant({ ingredient: { id: def.id, count: 10 } });
         }
         changed();
       },
@@ -155,9 +157,7 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
     button(
       t('debug.grant.seeds'),
       () => {
-        for (const id of ['dewcap', 'emberroot', 'sunleaf']) {
-          sim.grant({ seed: { id, count: 10 } });
-        }
+        for (const crop of crops) sim.grant({ seed: { id: crop.id, count: 10 } });
         changed();
       },
       { variant: 'quiet', small: true },

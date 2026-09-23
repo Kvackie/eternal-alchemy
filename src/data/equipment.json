@@ -103,7 +103,7 @@
     }
   },
   {
-    "$comment": "Ten tiers, because the gem seams run to 220m and depth is the shaft's whole progression. Each is cheap on its own; the ladder is long rather than steep.",
+    "$comment": "Ten tiers, because the quarry's strata run to 195m and depth is the shaft's whole progression. Each is cheap on its own; the ladder is long rather than steep.",
     "id": "supportBeams",
     "tree": "shaft",
     "cost": 240,

@@ -66,8 +66,8 @@ describe('the garden sustains itself', () => {
     let recovered = 0;
 
     for (let i = 0; i < 400; i += 1) {
-      sim.world.seeds.dewcap = 5;
-      if (!sim.plant(plot.id, 'dewcap')) break;
+      sim.world.seeds.bluepetal = 5;
+      if (!sim.plant(plot.id, 'bluepetal')) break;
       planted += 1;
       sim.advanceBy(HOUR);
       recovered += sim.harvest(plot.id)!.seeds;
@@ -94,8 +94,8 @@ describe('the garden sustains itself', () => {
     let recovered = 0;
 
     for (let i = 0; i < 400; i += 1) {
-      sim.world.seeds.dewcap = 5;
-      if (!sim.plant(plot.id, 'dewcap')) break;
+      sim.world.seeds.bluepetal = 5;
+      if (!sim.plant(plot.id, 'bluepetal')) break;
       planted += 1;
       sim.advanceBy(HOUR);
       recovered += sim.harvest(plot.id)!.seeds;
@@ -281,7 +281,7 @@ describe('nothing runs away with itself', () => {
     sim.world.spores.dewcap = 5;
     sim.seedCaveTile(0, 'dewcap');
     sim.workVein(sim.shaft.veins[0]!.id);
-    for (const plot of sim.world.plots) sim.plant(plot.id, 'dewcap');
+    for (const plot of sim.world.plots) sim.plant(plot.id, 'bluepetal');
 
     sim.advanceBy(30 * 24 * HOUR, false);
 
@@ -786,8 +786,8 @@ describe('nothing sold is inert', () => {
     const slow = new Simulation(createWorld(3));
     const quick = new Simulation(createWorld(3));
     quick.world.codex.greenThumb = 2;
-    slow.plant(slow.world.plots[0]!.id, 'emberroot');
-    quick.plant(quick.world.plots[0]!.id, 'emberroot');
+    slow.plant(slow.world.plots[0]!.id, 'curlflame');
+    quick.plant(quick.world.plots[0]!.id, 'curlflame');
     expect(quick.world.plots[0]!.crop!.readyAt).toBeLessThan(slow.world.plots[0]!.crop!.readyAt);
 
     // Old Friends — a merchant opens at a deeper tier.

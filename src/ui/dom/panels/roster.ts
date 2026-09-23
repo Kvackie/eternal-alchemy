@@ -29,11 +29,12 @@ import {
   stat,
 } from '../components';
 import { showHeroInfo } from '../heroInfo';
-import { showMissionReward } from '../missionReward';
+import { findLabel, showMissionReward } from '../missionReward';
 import { showIngredientInfo } from '../ingredientInfo';
 import { showPotionInfo } from '../potionInfo';
 import { countdown, formatDuration, formatPercent, t } from '@/i18n';
-import { getHeroDef, heroesConfig } from '@/sim/config';
+import { getHeroDef, heroesConfig, type LootEntry } from '@/sim/config';
+import type { FindKind } from '@/sim/types';
 import {
   HEALING_RECIPE,
   favourBandOf,
@@ -376,7 +377,7 @@ function renderDestinations(sim: Simulation): HTMLElement {
       .sort((a, b) => b.chance - a.chance)
       .slice(0, FINDS_SHOWN)
       .map((entry) => {
-        const name = t(`ingredient.${entry.ingredientId}`);
+        const name = findLabel(entry.kind, entry.ingredientId);
         const node = el('button', { class: 'find', type: 'button' }, [
           ingredientIcon(entry.ingredientId, 34),
           el('span', { class: 'find-name', text: name }),
@@ -415,12 +416,13 @@ function renderDestinations(sim: Simulation): HTMLElement {
  * caller's function supplies.
  */
 function odds(
-  table: ReadonlyArray<{ ingredientId: string; weight: number }>,
+  table: ReadonlyArray<LootEntry>,
   chanceOf: (share: number) => number,
-): Array<{ ingredientId: string; chance: number }> {
+): Array<{ kind?: FindKind; ingredientId: string; chance: number }> {
   const total = table.reduce((sum, entry) => sum + entry.weight, 0);
   if (total <= 0) return [];
   return table.map((entry) => ({
+    kind: entry.kind,
     ingredientId: entry.ingredientId,
     chance: chanceOf(entry.weight / total),
   }));

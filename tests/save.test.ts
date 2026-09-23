@@ -10,7 +10,7 @@ describe('saving', () => {
   it('round-trips a world through storage', () => {
     const saves = new SaveManager(memoryAdapter());
     const sim = new Simulation(createWorld(4321));
-    sim.plant(sim.world.plots[0]!.id, 'sunleaf');
+    sim.plant(sim.world.plots[0]!.id, 'bluepetal');
     sim.advanceBy(2 * HOUR);
     sim.grant({ gold: 500 });
 
@@ -20,7 +20,7 @@ describe('saving', () => {
     expect(loaded).not.toBeNull();
     expect(loaded!.gold).toBe(sim.world.gold);
     expect(loaded!.now).toBe(sim.world.now);
-    expect(loaded!.plots[0]?.crop?.cropId).toBe('sunleaf');
+    expect(loaded!.plots[0]?.crop?.cropId).toBe('bluepetal');
   });
 
   it('rotates slots so one bad write cannot destroy the game', () => {

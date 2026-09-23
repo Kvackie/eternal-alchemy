@@ -73,29 +73,29 @@ describe('brew duration', () => {
 describe('accepting and rejecting', () => {
   function loadedPot(): Simulation {
     const sim = new Simulation(createWorld(4));
-    sim.grant({ ingredient: { id: 'dewcap', count: 6 } });
-    sim.addToCauldron('dewcap');
-    sim.addToCauldron('dewcap');
-    sim.addToCauldron('dewcap');
+    sim.grant({ ingredient: { id: 'bluecone', count: 6 } });
+    sim.addToCauldron('bluecone');
+    sim.addToCauldron('bluecone');
+    sim.addToCauldron('bluecone');
     return sim;
   }
 
   it('rejecting returns every ingredient, so experimenting is free', () => {
     const sim = loadedPot();
-    const before = countOf(sim.world, 'dewcap');
+    const before = countOf(sim.world, 'bluecone');
 
     expect(sim.rejectBrew()).toBe(true);
 
-    expect(countOf(sim.world, 'dewcap')).toBe(before + 3);
+    expect(countOf(sim.world, 'bluecone')).toBe(before + 3);
     expect(sim.cauldron.contents.units).toHaveLength(0);
   });
 
   it('accepting spends the ingredients and starts the timer', () => {
     const sim = loadedPot();
-    const before = countOf(sim.world, 'dewcap');
+    const before = countOf(sim.world, 'bluecone');
 
     expect(sim.acceptBrew()).toBe(true);
-    expect(countOf(sim.world, 'dewcap')).toBe(before);
+    expect(countOf(sim.world, 'bluecone')).toBe(before);
     expect(sim.cauldron.contents.units).toHaveLength(0);
     expect(sim.brewing).not.toBeNull();
     expect(sim.brewing!.readyAt).toBeGreaterThan(sim.now);
@@ -108,9 +108,9 @@ describe('accepting and rejecting', () => {
 
   it('will not accept a blend that matches no recipe', () => {
     const sim = new Simulation(createWorld(4));
-    sim.grant({ ingredient: { id: 'sunleaf', count: 2 } });
-    sim.addToCauldron('sunleaf');
-    sim.addToCauldron('sunleaf');
+    sim.grant({ ingredient: { id: 'autumnmaple', count: 2 } });
+    sim.addToCauldron('autumnmaple');
+    sim.addToCauldron('autumnmaple');
 
     expect(sim.assess()).toBeNull();
     expect(sim.acceptBrew()).toBe(false);
@@ -123,7 +123,7 @@ describe('accepting and rejecting', () => {
     const sim = loadedPot();
     sim.acceptBrew();
 
-    expect(sim.addToCauldron('dewcap')).toBe(false);
+    expect(sim.addToCauldron('bluecone')).toBe(false);
     expect(sim.rejectBrew()).toBe(false);
   });
 
@@ -138,7 +138,7 @@ describe('accepting and rejecting', () => {
     sim.advanceTo(readyAt + 1);
     expect(sim.brewing).toBeNull();
     expect(sim.pendingBrew).not.toBeNull();
-    expect(sim.pendingBrew!.recipeId).toBe('aquaTerra');
+    expect(sim.pendingBrew!.recipeId).toBe('aqua');
   });
 
   it('finishes a brew that completed while the player was away', () => {

@@ -486,210 +486,375 @@
       "requiresRank": 0,
       "loot": [
         {
-          "ingredientId": "salamanderScale",
+          "ingredientId": "curlflame",
           "min": 1,
           "max": 3,
-          "weight": 5
+          "weight": 1
         },
         {
-          "ingredientId": "emberroot",
-          "min": 2,
-          "max": 4,
-          "weight": 4
-        },
-        {
-          "ingredientId": "emberstone",
+          "kind": "seed",
+          "ingredientId": "curlflame",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
         },
         {
-          "ingredientId": "autumnmaple",
+          "ingredientId": "redSpices",
           "min": 1,
-          "max": 2,
-          "weight": 3
+          "max": 3,
+          "weight": 1
         },
         {
-          "ingredientId": "blossombranch",
+          "kind": "seed",
+          "ingredientId": "redSpices",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "budsprig",
+          "ingredientId": "pepper",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "pepper",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
           "ingredientId": "cinderleaf",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "coilbulb",
+          "kind": "seed",
+          "ingredientId": "cinderleaf",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "commonWeed",
+          "ingredientId": "coalcap",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "curlflame",
+          "kind": "spore",
+          "ingredientId": "coalcap",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "driftbranch",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "flamefrond",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "goldleaf",
+          "ingredientId": "flamefan",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "hairroot",
+          "kind": "spore",
+          "ingredientId": "flamefan",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "ivyleaf",
+          "ingredientId": "emberGarnet",
           "min": 1,
           "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "podleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "sawgrass",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "scarletmaple",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "scrollleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "sunribbon",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "thornbranch",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "tussock",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "witherleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        }
-      ],
-      "rare": [
-        {
-          "ingredientId": "cinderwraithAsh",
-          "min": 1,
-          "max": 2,
-          "weight": 2
-        },
-        {
-          "ingredientId": "quicksilverTear",
-          "min": 1,
-          "max": 1,
           "weight": 1
         },
         {
           "ingredientId": "bloodRose",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
         },
         {
-          "ingredientId": "bloodgrass",
+          "ingredientId": "agilityFruit",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "bonefang",
+          "kind": "seed",
+          "ingredientId": "agilityFruit",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
         },
         {
-          "ingredientId": "dragonFlower",
+          "ingredientId": "heatBerry",
           "min": 1,
-          "max": 2,
-          "weight": 2
+          "max": 3,
+          "weight": 1
         },
         {
-          "ingredientId": "dragonFruit",
+          "kind": "seed",
+          "ingredientId": "heatBerry",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
         },
         {
-          "ingredientId": "monsterMeat",
+          "ingredientId": "commonFlower",
           "min": 1,
-          "max": 2,
-          "weight": 2
+          "max": 3,
+          "weight": 1
         },
         {
-          "ingredientId": "monsterRoot",
+          "kind": "seed",
+          "ingredientId": "commonFlower",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
         },
         {
-          "ingredientId": "uniqueFlower",
+          "ingredientId": "autumnmaple",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "autumnmaple",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
+        },
+        {
+          "ingredientId": "crimsonbloom",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "crimsonbloom",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "beetMandragora",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "beetMandragora",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "nightbloom",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "nightbloom",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "sunleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "sunleaf",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "sloeberry",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "sloeberry",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "uncommonFlower",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "uncommonFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "ambercap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "ambercap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "poisonCap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "poisonCap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "tieredcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "tieredcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "crimsoncap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "crimsoncap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "eyecap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "eyecap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
         },
         {
           "ingredientId": "vampirRose",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
+        },
+        {
+          "ingredientId": "anglerPlant",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        },
+        {
+          "ingredientId": "dragonFruit",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        },
+        {
+          "ingredientId": "bonefrond",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        },
+        {
+          "ingredientId": "monsterMeat",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        },
+        {
+          "ingredientId": "monsterEgg",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "bloodRose",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "vampirRose",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "anglerPlant",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "dragonFruit",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "bonefrond",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "monsterMeat",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "monsterEgg",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 1,
+          "weight": 1
         }
       ]
     },
@@ -702,162 +867,376 @@
       "requiresRank": 0,
       "loot": [
         {
-          "ingredientId": "mirefenPearl",
+          "ingredientId": "bluepetal",
           "min": 1,
           "max": 3,
-          "weight": 5
+          "weight": 1
         },
         {
-          "ingredientId": "dewcap",
-          "min": 2,
-          "max": 5,
-          "weight": 4
-        },
-        {
-          "ingredientId": "sunleaf",
-          "min": 2,
-          "max": 4,
-          "weight": 3
-        },
-        {
-          "ingredientId": "ashblade",
+          "kind": "seed",
+          "ingredientId": "bluepetal",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
           "ingredientId": "bluecoral",
           "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "broadleaf",
-          "min": 1,
           "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "cleftleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "coralFlower",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "fiddlehead",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "fourleafClover",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "goldcoral",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "grassmandrake",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "hollysprig",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "jellyfishCoral",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "scaleleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "seagrass",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "thornvine",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "wispcoil",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        }
-      ],
-      "rare": [
-        {
-          "ingredientId": "quicksilverTear",
-          "min": 1,
-          "max": 1,
           "weight": 1
         },
         {
-          "ingredientId": "anglerPlant",
+          "kind": "seed",
+          "ingredientId": "bluecoral",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
+        },
+        {
+          "ingredientId": "bluecone",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "bluecone",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "bilberry",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "bilberry",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "azurecap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "azurecap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "bubblecap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "bubblecap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "deepJasper",
+          "min": 1,
+          "max": 3,
+          "weight": 1
         },
         {
           "ingredientId": "magicRoot",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
         },
         {
-          "ingredientId": "magmaFish",
+          "ingredientId": "frostfan",
           "min": 1,
-          "max": 2,
-          "weight": 2
+          "max": 3,
+          "weight": 1
         },
         {
-          "ingredientId": "monsterEgg",
+          "kind": "seed",
+          "ingredientId": "frostfan",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
+        },
+        {
+          "ingredientId": "cyanFlower",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "cyanFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "seagrass",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "seagrass",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "jellyfishCoral",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "jellyfishCoral",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "frostrosette",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "frostrosette",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "moonpetal",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "moonpetal",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "coralFlower",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "coralFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetshroom",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetshroom",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "cornflower",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "cornflower",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "ashsprig",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "ashsprig",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "dewcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "dewcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "goldcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "goldcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "russetcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "russetcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "verdigriscap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "verdigriscap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "stoutcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "stoutcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "violetcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "cinderwraithAsh",
+          "min": 1,
+          "max": 2,
+          "weight": 6
         },
         {
           "ingredientId": "shrimp",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
         },
         {
-          "ingredientId": "uniqueRoot",
+          "ingredientId": "monsterBones",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
         },
         {
-          "ingredientId": "voideel",
+          "ingredientId": "magmaFish",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
+        },
+        {
+          "ingredientId": "mirefenPearl",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "magicRoot",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "cinderwraithAsh",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "shrimp",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "monsterBones",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "magmaFish",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "mirefenPearl",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 1,
+          "weight": 1
         }
       ]
     },
@@ -870,114 +1249,373 @@
       "requiresRank": 1,
       "loot": [
         {
-          "ingredientId": "barrowAsh",
+          "ingredientId": "duskberry",
           "min": 1,
           "max": 3,
-          "weight": 5
+          "weight": 1
         },
         {
-          "ingredientId": "gravecrown",
+          "kind": "seed",
+          "ingredientId": "duskberry",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "chalkNodule",
+          "ingredientId": "cleftleaf",
           "min": 1,
           "max": 3,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "ashsprig",
+          "kind": "seed",
+          "ingredientId": "cleftleaf",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
           "ingredientId": "broomgrass",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "coinleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "dewblade",
+          "kind": "seed",
+          "ingredientId": "broomgrass",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "flameWeed",
+          "ingredientId": "broadleaf",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "goldspike",
+          "kind": "seed",
+          "ingredientId": "broadleaf",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "greensprig",
+          "ingredientId": "mosscap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "mosscap",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "plumeleaf",
+          "ingredientId": "chalkgill",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "snarlgrass",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "thicketleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "toothvine",
+          "kind": "spore",
+          "ingredientId": "chalkgill",
           "min": 1,
           "max": 2,
-          "weight": 3
+          "weight": 1
         },
         {
-          "ingredientId": "uncommonWeed",
+          "ingredientId": "chalkNodule",
           "min": 1,
           "max": 3,
-          "weight": 4
+          "weight": 1
         },
         {
-          "ingredientId": "willowleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        }
-      ],
-      "rare": [
-        {
-          "ingredientId": "deepglass",
+          "ingredientId": "bonefang",
           "min": 1,
           "max": 2,
+          "weight": 6
+        },
+        {
+          "ingredientId": "pomegranate",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "pomegranate",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "honeydewPlant",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "honeydewPlant",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "gloamroot",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "gloamroot",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetroot",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetroot",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "gloomcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "gloomcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "gravecrown",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "gravecrown",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "nullstone",
+          "min": 1,
+          "max": 3,
           "weight": 1
         },
         {
           "ingredientId": "spectralRoot",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
+        },
+        {
+          "ingredientId": "dandelion",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "dandelion",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetBeet",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetBeet",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "greensprig",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "greensprig",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "lighbulbLantern",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "lighbulbLantern",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "lilypad",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "lilypad",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "chrystaLily",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "chrystaLily",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "purpleBerry",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "purpleBerry",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetgarlic",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetgarlic",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "roseSalt",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "roseSalt",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "loamcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "loamcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "toadstool",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "toadstool",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "poffpuffBall",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "poffpuffBall",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "honeycap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "honeycap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "bonefang",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "spectralRoot",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 1,
+          "weight": 1
         }
       ]
     },
@@ -990,126 +1628,364 @@
       "requiresRank": 2,
       "loot": [
         {
-          "ingredientId": "skyreachFeather",
+          "ingredientId": "featherfern",
           "min": 1,
           "max": 3,
-          "weight": 5
+          "weight": 1
         },
         {
-          "ingredientId": "galeThistle",
-          "min": 2,
-          "max": 4,
-          "weight": 4
-        },
-        {
-          "ingredientId": "antlerbranch",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "bladegrass",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "curlwhorl",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "fanleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "goldfrond",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "grass",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "heartleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "magentaleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "oakmoss",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "sawleaf",
-          "min": 1,
-          "max": 3,
-          "weight": 4
-        },
-        {
-          "ingredientId": "shadefern",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "springcurl",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "sunspike",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        },
-        {
-          "ingredientId": "vinestaff",
-          "min": 1,
-          "max": 2,
-          "weight": 3
-        }
-      ],
-      "rare": [
-        {
-          "ingredientId": "quicksilverTear",
+          "kind": "seed",
+          "ingredientId": "featherfern",
           "min": 1,
           "max": 2,
           "weight": 1
         },
         {
-          "ingredientId": "bonefrond",
+          "ingredientId": "windwort",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "windwort",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 1
+        },
+        {
+          "ingredientId": "pinklotus",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "pinklotus",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "galeThistle",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "galeThistle",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "trumpetgill",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "trumpetgill",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "sunfungus",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "sunfungus",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "driftGarnet",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "ingredientId": "skyreachFeather",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        },
+        {
+          "ingredientId": "ashfern",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "ashfern",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetpod",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetpod",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "tulipsCharge",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "tulipsCharge",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "duskplum",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "duskplum",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "blueBerry",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "blueBerry",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetUmbrella",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetUmbrella",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetSpices",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetSpices",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "magentaleaf",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "magentaleaf",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "blackBerry",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "blackBerry",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "pinkPuff",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "pinkPuff",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "violetSwarm",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "seed",
+          "ingredientId": "violetSwarm",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "buttercap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "buttercap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "tubefungus",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "tubefungus",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "cellarcap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "cellarcap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "puffnest",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "puffnest",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "palecap",
+          "min": 1,
+          "max": 3,
+          "weight": 1
+        },
+        {
+          "kind": "spore",
+          "ingredientId": "palecap",
+          "min": 1,
+          "max": 2,
+          "weight": 1
+        },
+        {
+          "ingredientId": "uniqueFlower",
+          "min": 1,
+          "max": 2,
+          "weight": 6
         },
         {
           "ingredientId": "manaFruit",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
         },
         {
-          "ingredientId": "monsterBones",
+          "ingredientId": "voideel",
           "min": 1,
           "max": 2,
-          "weight": 2
+          "weight": 6
+        },
+        {
+          "ingredientId": "barrowAsh",
+          "min": 1,
+          "max": 2,
+          "weight": 6
+        }
+      ],
+      "rare": [
+        {
+          "ingredientId": "skyreachFeather",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "uniqueFlower",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "manaFruit",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "voideel",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "barrowAsh",
+          "min": 1,
+          "max": 3,
+          "weight": 3
+        },
+        {
+          "ingredientId": "quicksilverTear",
+          "min": 1,
+          "max": 1,
+          "weight": 1
         }
       ]
     }

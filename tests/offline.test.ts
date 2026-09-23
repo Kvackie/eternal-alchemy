@@ -106,7 +106,7 @@ describe('offline catch-up', () => {
     const plot = sim.world.plots[0];
     expect(plot).toBeDefined();
 
-    sim.plant(plot!.id, 'sunleaf');
+    sim.plant(plot!.id, 'bluepetal');
     sim.advanceBy(48 * HOUR, false);
 
     const result = sim.harvest(plot!.id);
@@ -114,7 +114,7 @@ describe('offline catch-up', () => {
 
     // Harvest stamps the current world time, so a crop that finished two days ago
     // is Dewfresh when picked, not stale on arrival.
-    const stack = sim.world.inventory.find((s) => s.ingredientId === 'sunleaf');
+    const stack = sim.world.inventory.find((s) => s.ingredientId === 'bluepetal');
     expect(stack?.harvestedAt).toBe(sim.now);
   });
 });

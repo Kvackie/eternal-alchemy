@@ -17,6 +17,7 @@ import { Rng } from '@/sim/rng';
 import { generateVeins } from '@/sim/shaft';
 import { fairValue } from '@/sim/market';
 import type { BottledItem, World } from '@/sim/types';
+import { LEGACY_INGREDIENTS, LEGACY_SEEDS, LEGACY_SPORES } from './legacyIngredients';
 import { LEGACY_RECIPES } from './legacyRecipes';
 
 const KEY_PREFIX = 'eternal-alchemy/save';
@@ -670,6 +671,63 @@ const MIGRATIONS: Record<number, Migration> = {
     delete (world.statistics as unknown as Record<string, unknown>).strainsBred;
     if (world.equipment) delete world.equipment.greenhouse;
     world.log = (world.log ?? []).filter((entry) => (entry.kind as string) !== 'strainBred');
+    return world;
+  },
+
+  /**
+   * v15 → v16: the ingredient set is rebuilt on a clean strength scale.
+   *
+   * Every ingredient that went folds into the kept one of the same kind
+   * closest to it in essence, wherever the save names it: stores, pots, the
+   * shaft's veins, unclaimed expedition hauls and the Ledger. Seeds of a crop
+   * that went become seeds of the nearest herb, a bed growing one keeps
+   * growing as that herb, and spores and cave beds of a species that went
+   * become the nearest fungus. Kept ingredients keep their id and take their
+   * new strength.
+   */
+  16: (world) => {
+    const ingredient = (id: string) => LEGACY_INGREDIENTS.get(id) ?? id;
+    const crop = (id: string) => LEGACY_SEEDS.get(id) ?? id;
+    const species = (id: string) => LEGACY_SPORES.get(id) ?? id;
+
+    const rename = (node: unknown): void => {
+      if (Array.isArray(node)) return node.forEach(rename);
+      if (!node || typeof node !== 'object') return;
+      const loose = node as Record<string, unknown>;
+      for (const [key, value] of Object.entries(loose)) {
+        if (key === 'ingredientId' && typeof value === 'string') loose[key] = ingredient(value);
+        else rename(value);
+      }
+    };
+    rename(world.inventory);
+    rename(world.cauldrons);
+    rename(world.shaft);
+    rename(world.pendingClaims);
+
+    const refold = (table: Record<string, number>, map: (id: string) => string) => {
+      const out: Record<string, number> = {};
+      for (const [id, count] of Object.entries(table ?? {})) {
+        const next = map(id);
+        out[next] = (out[next] ?? 0) + count;
+      }
+      return out;
+    };
+    world.seeds = refold(world.seeds, crop);
+    world.spores = refold(world.spores, species);
+
+    for (const plot of world.plots ?? []) {
+      if (plot.crop) plot.crop.cropId = crop(plot.crop.cropId);
+    }
+    for (const tile of world.cave?.tiles ?? []) {
+      if (tile.speciesId) tile.speciesId = species(tile.speciesId);
+    }
+
+    for (const entry of world.log ?? []) {
+      const params = entry.params;
+      if (typeof params.ingredient === 'string') params.ingredient = ingredient(params.ingredient);
+      if (typeof params.crop === 'string') params.crop = crop(params.crop);
+      if (typeof params.item === 'string') params.item = crop(ingredient(params.item));
+    }
     return world;
   },
 };

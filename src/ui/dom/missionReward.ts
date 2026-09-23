@@ -13,8 +13,18 @@
 import { button, el, ingredientIcon, modal } from './components';
 import { formatNumber, t } from '@/i18n';
 import type { Simulation } from '@/sim/sim';
-import type { MissionOutcome } from '@/sim/types';
+import type { FindKind, MissionOutcome } from '@/sim/types';
 import { changed } from '@/ui/bus';
+
+/**
+ * What one find is called: the ingredient, or the seed or spores that grow it.
+ * The id is the ingredient's in every case, which is what the icon shows.
+ */
+export function findLabel(kind: FindKind | undefined, ingredientId: string): string {
+  if (kind === 'seed') return t('market.seedOf', { crop: t(`crop.${ingredientId}`) });
+  if (kind === 'spore') return t('market.sporeOf', { species: t(`ingredient.${ingredientId}`) });
+  return t(`ingredient.${ingredientId}`);
+}
 
 export function showMissionReward(sim: Simulation, missionId: string): void {
   /*
@@ -61,7 +71,7 @@ function renderHaul(outcome: MissionOutcome): HTMLElement {
     outcome.found.map((entry) =>
       el('div', { class: 'reward-find' }, [
         ingredientIcon(entry.ingredientId, 28),
-        el('span', { class: 'reward-find-name', text: t(`ingredient.${entry.ingredientId}`) }),
+        el('span', { class: 'reward-find-name', text: findLabel(entry.kind, entry.ingredientId) }),
         el('span', { class: 'reward-find-count num', text: `×${formatNumber(entry.count)}` }),
       ]),
     ),

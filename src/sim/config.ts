@@ -28,6 +28,7 @@ import rawPrestige from '@/data/prestige.json';
 import type {
   Essence,
   EssenceVector,
+  FindKind,
   Grade,
   HaggleStance,
   IngredientCategory,
@@ -274,8 +275,20 @@ export interface BiomeDef {
   baseInjury: number;
   baseRareFind: number;
   requiresRank: number;
-  loot: Array<{ ingredientId: string; min: number; max: number; weight: number }>;
-  rare: Array<{ ingredientId: string; min: number; max: number; weight: number }>;
+  loot: LootEntry[];
+  rare: LootEntry[];
+}
+
+/**
+ * One line of a loot table. A seed or spore find names its crop or cave
+ * species by `ingredientId`, which is the id of what it grows into.
+ */
+export interface LootEntry {
+  kind?: FindKind;
+  ingredientId: string;
+  min: number;
+  max: number;
+  weight: number;
 }
 
 export interface HeroesConfig {
@@ -507,6 +520,10 @@ export interface GameConfig {
   economy: {
     startingGold: number;
     startingRenown: number;
+    /** Seeds a new shop opens with, by crop id. */
+    startingSeeds: Array<{ id: string; count: number }>;
+    /** Spore clusters a new shop opens with, by cave species. */
+    startingSpores: Array<{ id: string; count: number }>;
     renownPerSale: number;
     renownPerGradeBonus: Record<string, number>;
     /** Fraction of gold spent that becomes merchant relationship. */

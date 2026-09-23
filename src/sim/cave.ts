@@ -16,7 +16,7 @@ import { caveConfig, getCaveSpecies } from './config';
 import { addIngredient } from './inventory';
 import { derivedStats } from './progression';
 import { caveSpreadMultiplier } from './town';
-import type { Rng } from './rng';
+import { Rng } from './rng';
 import type { CaveTile, World } from './types';
 
 export function makeCaveTiles(count: number): CaveTile[] {
@@ -150,8 +150,13 @@ export function harvestAllMature(world: World): CaveHarvest[] {
  * Same shape as the market: discrete ticks with a budget, so a live tick and a
  * three-week catch-up run identical code. The budget stops a corrupted clock
  * from locking the main thread.
+ *
+ * Each tick draws from its own stream, keyed to the tick's moment, rather than
+ * from the world's shared one. The market and the board spend the shared
+ * stream differently live and offline, so drawing from it made the same night
+ * grow a different cave depending on whether anyone watched.
  */
-export function runCave(world: World, rng: Rng): void {
+export function runCave(world: World): void {
   const tickMs = caveConfig.spreadTickMs;
   if (tickMs <= 0) return;
 
@@ -162,6 +167,7 @@ export function runCave(world: World, rng: Rng): void {
 
   while (tick <= world.now && budget > 0) {
     budget -= 1;
+    const rng = new Rng(Math.imul(Math.floor(tick / tickMs), 0x9e3779b1) >>> 0);
 
     // Snapshot which tiles are empty first: a tile colonised during this tick
     // should not immediately spread onward in the same tick.

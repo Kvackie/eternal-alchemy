@@ -88,14 +88,19 @@ Each source gets a different *verb*, or they are four timer farms wearing differ
 
 | Source | Verb | Yields | Character |
 | --- | --- | --- | --- |
-| **Garden** | cultivate | Herbs | You choose exactly what grows. Low potency, ages. |
-| **Cave** | tend | Fungi | You seed a bed; mycelium spreads on its own. Light steers which species wins. |
-| **Shaft** | extract | Minerals | Veins deplete and you dig deeper. Highest potency, never ages. |
-| **Heroes** | send | Reagents | The only route to the rarest things — and they eat your potions to get there. |
+| **Garden** | cultivate | Herbs | Every herb grows. Weakest, and ages. |
+| **Cave** | tend | Fungi | Every fungus spreads here. You seed a bed; mycelium spreads on its own. Ages twice as fast as a herb. |
+| **Shaft** | extract | Minerals | Every mineral is somewhere down it: a new one every five metres, strongest deepest. Never ages. |
+| **Heroes** | send | Exotics, and most of the rest | The only route to the exotics, and a source of most other ingredients, seeds and spores — but they eat your potions to get there. |
 
-Minerals carry the most essence per unit, which is what makes a large cauldron reachable at all, and
-they are far too coarse to steer a ratio with. A good high-tier brew is minerals for mass and herbs
-for correction.
+There are 151 ingredients, and every amount of essence in them sits on one scale: 4, 6, 8, 10, 12,
+16, 24, 32, 36 and 48. Each essence has a clean ingredient — that essence and nothing else — at every
+step of the scale, and the rest are mixes built from the same numbers. Balancing a ratio is arithmetic
+on those numbers, thrown out a little by age: an ingredient is at its stated strength while dewfresh
+and loses up to a fifth as it dries.
+
+Seeds and spores come from merchants and expeditions, and back from harvests. A new shop starts with
+seeds for one weak clean herb of each essence and one cave species.
 
 ## Merchants, ranks and equipment
 

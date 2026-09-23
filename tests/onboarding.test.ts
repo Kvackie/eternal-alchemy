@@ -27,14 +27,14 @@ describe('the opening checklist', () => {
     expect(sim.onboarding.visible).toBe(true);
 
     const plot = sim.world.plots[0]!;
-    sim.plant(plot.id, 'dewcap');
+    sim.plant(plot.id, 'bluepetal');
     expect(ticked(sim)).toEqual(['plant']);
 
     sim.advanceBy(HOUR);
     sim.harvest(plot.id);
     expect(ticked(sim)).toEqual(['plant', 'harvest']);
 
-    while (sim.addToCauldron('dewcap')) {
+    while (sim.addToCauldron('bluepetal')) {
       if (sim.cauldron.contents.units.length >= 3) break;
     }
     expect(ticked(sim)).toContain('fill');
@@ -65,7 +65,7 @@ describe('the opening checklist', () => {
     const sim = new Simulation(createWorld(2024));
     expect(sim.onboarding.current?.id).toBe('plant');
 
-    sim.plant(sim.world.plots[0]!.id, 'dewcap');
+    sim.plant(sim.world.plots[0]!.id, 'bluepetal');
     expect(sim.onboarding.current?.id).toBe('harvest');
   });
 

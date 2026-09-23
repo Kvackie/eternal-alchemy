@@ -68,9 +68,8 @@ export function angleBetween(a: EssenceVector, b: EssenceVector): number {
  *
  * Zero means it never ages. Reading it from the category rather than from a
  * per-ingredient trait is what keeps the rule learnable: a player who knows
- * fungus keeps twice as long knows it about every fungus, without checking each
- * one. The `stable` trait no longer decides this — it was set on 157
- * ingredients and told the same story less precisely.
+ * fungus ages twice as fast knows it about every fungus, without checking each
+ * one.
  */
 export function agingRateFor(ingredientId: string): number {
   const { category } = getIngredient(ingredientId);

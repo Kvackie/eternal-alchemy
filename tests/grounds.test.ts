@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { caveConfig, crops, getEquipment, getIngredient, shaftConfig } from '@/sim/config';
+import { caveConfig, crops, getEquipment, getIngredient, ingredients, shaftConfig } from '@/sim/config';
 import { isMature, maturityOf, neighboursOf, spreadChanceFor, tileAt } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { countOf } from '@/sim/inventory';
@@ -26,7 +26,7 @@ describe('the cave', () => {
   it('opens with a grid and a couple of spore clusters', () => {
     const sim = new Simulation(createWorld(1));
     expect(sim.cave.tiles).toHaveLength(caveConfig.startingTiles);
-    expect(sim.world.spores.dewcap).toBeGreaterThan(0);
+    expect(sim.world.spores.azurecap).toBeGreaterThan(0);
   });
 
   it('seeds a tile and spends the cluster', () => {
@@ -134,9 +134,10 @@ describe('the shaft', () => {
     return sim;
   }
 
-  it('opens at its starting depth with veins to work', () => {
+  it('opens at the surface with veins to work, and the first metres free to dig', () => {
     const sim = new Simulation(createWorld(1));
-    expect(sim.shaft.depth).toBe(shaftConfig.startingDepth);
+    expect(sim.shaft.depth).toBe(0);
+    expect(sim.world.shaft.supportedDepth).toBe(shaftConfig.startingDepth);
     expect(sim.shaft.veins.length).toBeGreaterThan(0);
   });
 
@@ -186,7 +187,8 @@ describe('the shaft', () => {
 
   it('will not deepen past what the supports allow', () => {
     const sim = new Simulation(createWorld(1));
-    expect(sim.canDeepenShaft()).toBe(false);
+    while (sim.canDeepenShaft()) sim.deepenShaft();
+    expect(sim.shaft.depth).toBe(shaftConfig.startingDepth);
     expect(sim.deepenShaft()).toBe(false);
   });
 
@@ -196,7 +198,7 @@ describe('the shaft', () => {
 
     const before = sim.shaft.veins.length;
     expect(sim.deepenShaft()).toBe(true);
-    expect(sim.shaft.depth).toBe(shaftConfig.startingDepth + shaftConfig.depthStep);
+    expect(sim.shaft.depth).toBe(shaftConfig.depthStep);
     expect(sim.shaft.veins.length).toBeGreaterThan(before);
   });
 
@@ -206,36 +208,36 @@ describe('the shaft', () => {
     expect(clone.shaft.veins.map((v) => v.id)).toEqual(original.shaft.veins.map((v) => v.id));
   });
 
-  it('yields nullstone somewhere in the deepest seam a full set of beams reaches', () => {
+  it('turns up every mineral somewhere a full set of beams reaches', () => {
     /*
-     * Night Glass and the Wraithwind Vial are only brewable with pure Umbra, and
-     * the shaft is its only source. The essence maths saying "reachable" means
-     * nothing if the rock never actually offers it, so this checks the rock.
-     *
-     * Across seeds, because one vein among several at weight 3 is a draw, not a
-     * guarantee — what matters is that a player gets there in reasonable time.
+     * The essence maths saying "reachable" means nothing if the rock never
+     * actually offers it, so this checks the rock. Across seeds, because a vein
+     * among several is a draw, not a guarantee — what matters is that a player
+     * digging all the way down meets every mineral in reasonable odds.
      */
     const maxSupported =
       shaftConfig.startingDepth +
       (getEquipment('supportBeams').repeatable ?? 1) *
         (getEquipment('supportBeams').effect.addSupportedDepth ?? 0);
 
-    let seedsOfferingNullstone = 0;
-    for (let seed = 1; seed <= 40; seed += 1) {
+    const seen = new Map<string, number>();
+    const SEEDS = 40;
+    for (let seed = 1; seed <= SEEDS; seed += 1) {
       const sim = new Simulation(createWorld(seed));
       sim.world.shaft.supportedDepth = maxSupported;
       while (sim.canDeepenShaft()) sim.deepenShaft();
-
-      if (sim.shaft.veins.some((vein) => vein.ingredientId === 'nullstone')) {
-        seedsOfferingNullstone += 1;
+      for (const id of new Set(sim.shaft.veins.map((vein) => vein.ingredientId))) {
+        seen.set(id, (seen.get(id) ?? 0) + 1);
       }
     }
 
-    expect(
-      seedsOfferingNullstone,
-      'the deep seam rarely or never offers nullstone, which strands two recipes',
-    ).toBeGreaterThan(20);
+    const rare = ingredients
+      .filter((ing) => ing.category === 'mineral')
+      .filter((ing) => (seen.get(ing.id) ?? 0) < SEEDS / 2)
+      .map((ing) => `${ing.id} in ${seen.get(ing.id) ?? 0} of ${SEEDS}`);
+    expect(rare, 'these minerals seldom or never surface').toEqual([]);
   });
+
 
   it('groups veins by depth for display, deepest first', () => {
     const sim = new Simulation(createWorld(1));
@@ -264,9 +266,9 @@ describe('soil', () => {
     const siltPlot = suited.world.plots.find((plot) => plot.soil === 'silt')!;
     const loamPlot = wrong.world.plots.find((plot) => plot.soil === 'loam')!;
 
-    for (const sim of [suited, wrong]) sim.world.seeds.dewcap = 4;
-    suited.plant(siltPlot.id, 'dewcap');
-    wrong.plant(loamPlot.id, 'dewcap');
+    for (const sim of [suited, wrong]) sim.world.seeds.bluepetal = 4;
+    suited.plant(siltPlot.id, 'bluepetal');
+    wrong.plant(loamPlot.id, 'bluepetal');
     for (const sim of [suited, wrong]) sim.advanceBy(60 * 60 * 1000);
 
     const good = suited.harvest(siltPlot.id)!;
@@ -278,9 +280,9 @@ describe('soil', () => {
     // A missed opportunity, never a punishment — the crop must still come up.
     const sim = new Simulation(createWorld(5));
     const loam = sim.world.plots.find((plot) => plot.soil === 'loam')!;
-    sim.world.seeds.dewcap = 2;
+    sim.world.seeds.bluepetal = 2;
 
-    expect(sim.plant(loam.id, 'dewcap')).toBe(true);
+    expect(sim.plant(loam.id, 'bluepetal')).toBe(true);
     sim.advanceBy(60 * 60 * 1000);
     expect(sim.harvest(loam.id)!.count).toBeGreaterThan(0);
   });
@@ -291,18 +293,18 @@ describe('soil', () => {
     for (const ripen of [false, true]) {
       const sim = new Simulation(createWorld(5));
       const plot = sim.world.plots[0]!;
-      sim.world.seeds.dewcap = 2;
-      sim.plant(plot.id, 'dewcap');
+      sim.world.seeds.bluepetal = 2;
+      sim.plant(plot.id, 'bluepetal');
       if (ripen) sim.advanceBy(HOUR);
 
-      const seeds = sim.world.seeds.dewcap;
-      const held = countOf(sim.world, 'dewcap');
+      const seeds = sim.world.seeds.bluepetal;
+      const held = countOf(sim.world, 'bluepetal');
       const harvested = sim.world.statistics.cropsHarvested;
 
       expect(sim.destroyCrop(plot.id)).toBe(true);
       expect(plot.crop).toBeNull();
-      expect(sim.world.seeds.dewcap).toBe(seeds);
-      expect(countOf(sim.world, 'dewcap')).toBe(held);
+      expect(sim.world.seeds.bluepetal).toBe(seeds);
+      expect(countOf(sim.world, 'bluepetal')).toBe(held);
       expect(sim.world.statistics.cropsHarvested).toBe(harvested);
       expect(sim.world.log.at(-1)?.kind).toBe('cropDestroyed');
     }

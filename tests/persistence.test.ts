@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { SaveManager, memoryAdapter } from '@/platform/save';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config } from '@/sim/config';
+import { caveConfig, config, crops, ingredients } from '@/sim/config';
 import { fairValue } from '@/sim/market';
 import type { BottledItem } from '@/sim/types';
 
@@ -15,10 +15,10 @@ const HOUR = 3_600_000;
 
 function brewing(seed = 606): Simulation {
   const sim = new Simulation(createWorld(seed));
-  sim.grant({ ingredient: { id: 'dewcap', count: 3 } });
-  sim.addToCauldron('dewcap');
-  sim.addToCauldron('dewcap');
-  sim.addToCauldron('dewcap');
+  sim.grant({ ingredient: { id: 'bluecone', count: 3 } });
+  sim.addToCauldron('bluecone');
+  sim.addToCauldron('bluecone');
+  sim.addToCauldron('bluecone');
   sim.acceptBrew();
   return sim;
 }
@@ -36,7 +36,7 @@ describe('a brew still in the pot', () => {
     expect(resumed.brewing!.readyAt).toBe(readyAt);
 
     resumed.advanceTo(readyAt + 1);
-    expect(resumed.pendingBrew?.recipeId).toBe('aquaTerra');
+    expect(resumed.pendingBrew?.recipeId).toBe('aqua');
   });
 
   it('finishes across an absence rather than pausing', () => {
@@ -53,8 +53,8 @@ describe('an unaccepted pot', () => {
   it('keeps its ingredients across a save', () => {
     const saves = new SaveManager(memoryAdapter());
     const original = new Simulation(createWorld(11));
-    original.grant({ ingredient: { id: 'dewcap', count: 2 } });
-    original.addToCauldron('dewcap');
+    original.grant({ ingredient: { id: 'bluecone', count: 2 } });
+    original.addToCauldron('bluecone');
 
     saves.save(original.world);
     const resumed = new Simulation(saves.load()!);
@@ -306,5 +306,44 @@ describe('migrating a save from before forms and the greenhouse went', () => {
     expect('strains' in loose).toBe(false);
     expect(world.equipment.greenhouse).toBeUndefined();
     expect('strainsBred' in world.statistics).toBe(false);
+  });
+});
+
+describe('migrating a save from before the ingredient rebuild', () => {
+  function v15Save(): string {
+    const world = createWorld(1);
+    // Emberroot, the old moonpetal crop and witchCap are all gone; dewcap
+    // stays, as a fungus.
+    world.inventory = [
+      { ingredientId: 'emberroot', count: 3, harvestedAt: 0 },
+      { ingredientId: 'dewcap', count: 2, harvestedAt: 0 },
+    ];
+    world.seeds = { moonpetal: 0, dewcap: 3, emberroot: 2 };
+    world.spores = { witchCap: 2 };
+    world.cave.tiles[0]!.speciesId = 'witchCap';
+    world.plots[0]!.crop = { cropId: 'emberroot', plantedAt: 0, readyAt: 1 };
+    world.cauldrons[0]!.contents.units = [{ ingredientId: 'emberroot', harvestedAt: 0 }];
+    world.log = [{ id: 1, at: 0, kind: 'harvested', params: { ingredient: 'emberroot', count: 3 } }];
+    return JSON.stringify({ schemaVersion: 15, savedAt: Date.now(), world });
+  }
+
+  it('folds every ingredient, seed and spore that went into one that stayed', () => {
+    const world = new SaveManager(memoryAdapter()).import(v15Save())!;
+    const ids = new Set(ingredients.map((ing) => ing.id));
+    const cropIds = new Set(crops.map((crop) => crop.id));
+    const species = new Set(caveConfig.species.map((entry) => entry.id));
+
+    for (const stack of world.inventory) expect(ids.has(stack.ingredientId)).toBe(true);
+    expect(world.inventory.find((s) => s.ingredientId === 'dewcap')?.count).toBe(2);
+    expect(world.inventory.reduce((sum, s) => sum + s.count, 0)).toBe(5);
+
+    for (const id of Object.keys(world.seeds)) expect(cropIds.has(id)).toBe(true);
+    expect(Object.values(world.seeds).reduce((a, b) => a + b, 0)).toBe(5);
+    for (const id of Object.keys(world.spores)) expect(species.has(id)).toBe(true);
+    expect(species.has(world.cave.tiles[0]!.speciesId!)).toBe(true);
+
+    expect(cropIds.has(world.plots[0]!.crop!.cropId)).toBe(true);
+    expect(ids.has(world.cauldrons[0]!.contents.units[0]!.ingredientId)).toBe(true);
+    expect(ids.has(String(world.log[0]!.params.ingredient))).toBe(true);
   });
 });

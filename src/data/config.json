@@ -40,20 +40,19 @@
     "$soilComment": "Extra units when a crop sits in the soil it wants. A bonus rather than a penalty, so the wrong plot is a missed opportunity and never a punishment.",
     "suitedSoilBonus": 1
   },
-  "$freshnessComment": "Ageing is a property of the category, not of the individual ingredient. Herbs run the plain schedule; stone, expedition finds and reagents never age at all; fungus keeps twice as long, which is what makes a cave worth farming when you cannot get to the pot today.",
+  "$freshnessComment": "Ageing is a property of the category, not of the individual ingredient. An ingredient is at its stated strength while dewfresh and loses up to a fifth as it dries, so an old batch throws a ratio out. Herbs run the plain schedule, fungus ages twice as fast, and stone and expedition finds never age.",
   "freshness": {
     "dewfreshUntilMs": 43200000,
     "freshUntilMs": 172800000,
-    "dewfreshEssenceMultiplier": 1.1,
-    "freshEssenceMultiplier": 1.0,
+    "dewfreshEssenceMultiplier": 1.0,
+    "freshEssenceMultiplier": 0.9,
     "driedEssenceMultiplier": 0.8,
     "agelessCategories": [
       "mineral",
-      "exotic",
-      "reagent"
+      "exotic"
     ],
     "categoryAgeMultiplier": {
-      "fungus": 2
+      "fungus": 0.5
     }
   },
   "$cauldronComment": "Capacity and ingredient count moved to cauldrons.json when the shop stopped having exactly one pot — they are properties of a particular cauldron now, not of the game. What is left here is the rule that applies to every pot alike.",
@@ -161,6 +160,35 @@
   "economy": {
     "startingGold": 60,
     "startingRenown": 0,
+    "$startingComment": "Seeds and spores come from merchants and expeditions, so a new shop starts with one clean herb of each essence and one cave species - enough to make the five potions it already knows.",
+    "startingSeeds": [
+      {
+        "id": "curlflame",
+        "count": 4
+      },
+      {
+        "id": "bluepetal",
+        "count": 4
+      },
+      {
+        "id": "duskberry",
+        "count": 4
+      },
+      {
+        "id": "featherfern",
+        "count": 4
+      },
+      {
+        "id": "pomegranate",
+        "count": 4
+      }
+    ],
+    "startingSpores": [
+      {
+        "id": "azurecap",
+        "count": 2
+      }
+    ],
     "renownPerSale": 0.5,
     "renownPerGradeBonus": {
       "S": 6,
@@ -177,6 +205,6 @@
   "save": {
     "slots": 3,
     "autosaveDebounceMs": 1500,
-    "schemaVersion": 15
+    "schemaVersion": 16
   }
 }

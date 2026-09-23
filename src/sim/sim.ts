@@ -532,7 +532,7 @@ export class Simulation {
 
   /** Cave spread and ore extraction. Both tick like the market. */
   private runGrounds(): void {
-    runCave(this.world, this.rng);
+    runCave(this.world);
 
     const batches = runShaft(this.world, this.world.now);
     for (const batch of batches) {
@@ -1146,9 +1146,8 @@ export class Simulation {
      * Backdate past the drying threshold rather than adding a "dried" flag, so
      * there is only ever one way freshness is decided.
      *
-     * The threshold is per category: fungus keeps twice as long, so a fixed
-     * `freshUntilMs` would leave a cave crop still Fresh and the rack would
-     * report that it had done nothing. A category that never ages has no
+     * The threshold is per category: fungus ages on its own schedule, so a
+     * fixed `freshUntilMs` would get a cave crop's stage wrong. A category that never ages has no
      * threshold to cross at all, so drying it is refused outright.
      */
     const rate = agingRateFor(target.ingredientId);

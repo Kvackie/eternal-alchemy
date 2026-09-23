@@ -253,19 +253,25 @@ export function resolveMissions(world: World, rng: Rng): MissionOutcome[] {
       roll < mission.success * 0.4 ? 'bountiful' : roll < mission.success ? 'successful' : 'meagre';
 
     const multiplier = quality === 'bountiful' ? 2 : quality === 'successful' ? 1 : 0.5;
-    const found: Array<{ ingredientId: string; count: number }> = [];
+    const found: MissionOutcome['found'] = [];
 
     const draws = quality === 'meagre' ? 1 : 2;
     for (let i = 0; i < draws; i += 1) {
       const entry = weightedPick(biome.loot, rng);
       if (!entry) continue;
       const count = Math.max(1, Math.round(rng.int(entry.min, entry.max) * multiplier));
-      found.push({ ingredientId: entry.ingredientId, count });
+      found.push({ kind: entry.kind ?? 'ingredient', ingredientId: entry.ingredientId, count });
     }
 
     if (rng.chance(mission.rareFind)) {
       const entry = weightedPick(biome.rare, rng);
-      if (entry) found.push({ ingredientId: entry.ingredientId, count: rng.int(entry.min, entry.max) });
+      if (entry) {
+        found.push({
+          kind: entry.kind ?? 'ingredient',
+          ingredientId: entry.ingredientId,
+          count: rng.int(entry.min, entry.max),
+        });
+      }
     }
 
     const injured = mission.heroIds.filter(
@@ -308,7 +314,13 @@ export function claimMission(world: World, missionId: string): MissionOutcome | 
   world.pendingClaims.splice(index, 1);
 
   for (const entry of outcome.found) {
-    addIngredient(world, entry.ingredientId, entry.count, null);
+    if (entry.kind === 'seed') {
+      world.seeds[entry.ingredientId] = (world.seeds[entry.ingredientId] ?? 0) + entry.count;
+    } else if (entry.kind === 'spore') {
+      world.spores[entry.ingredientId] = (world.spores[entry.ingredientId] ?? 0) + entry.count;
+    } else {
+      addIngredient(world, entry.ingredientId, entry.count, null);
+    }
   }
 
   const f = heroesConfig.favour;

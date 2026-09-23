@@ -226,7 +226,7 @@ export function showIngredientInfo(
      *
      * Wrapped together so the sentence sits against the table it introduces.
      * Which branch runs is the category's business now, not the `stable`
-     * trait's: stone, expedition finds and reagents have no schedule to show,
+     * trait's: stone and expedition finds have no schedule to show,
      * and everything else gets one drawn at its own rate.
      */
     ...(agingRateFor(ingredientId) <= 0

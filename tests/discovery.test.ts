@@ -74,7 +74,7 @@ describe('the opening checklist', () => {
   it('does not un-tick a step when what it watched is spent', () => {
     const sim = new Simulation(createWorld(1));
     const plot = sim.world.plots[0]!;
-    sim.plant(plot.id, 'dewcap');
+    sim.plant(plot.id, 'bluepetal');
     sim.advanceBy(HOUR);
     sim.harvest(plot.id);
 

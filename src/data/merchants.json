@@ -23,22 +23,6 @@
         "tier": 0
       },
       {
-        "kind": "seed",
-        "id": "dewcap",
-        "price": 7,
-        "stock": 6,
-        "weight": 4,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "emberroot",
-        "price": 11,
-        "stock": 4,
-        "weight": 3,
-        "tier": 0
-      },
-      {
         "kind": "vessel",
         "id": "clayVial",
         "price": 3,
@@ -133,22 +117,6 @@
         "tier": 2
       },
       {
-        "kind": "spore",
-        "id": "mosstier",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "spotcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "decor",
         "id": "verdantBanner",
         "weight": 2,
@@ -200,23 +168,7 @@
       },
       {
         "kind": "seed",
-        "id": "acorn",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
         "id": "agilityFruit",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "amberTuber",
         "price": 32,
         "stock": 4,
         "weight": 2,
@@ -227,30 +179,6 @@
         "id": "ambercap",
         "price": 36,
         "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "azureberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "barkchip",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "barkslab",
-        "price": 32,
-        "stock": 4,
         "weight": 2,
         "tier": 1
       },
@@ -269,14 +197,6 @@
         "stock": 4,
         "weight": 2,
         "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "blueBud",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
       },
       {
         "kind": "spore",
@@ -303,14 +223,6 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "clawroot",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "coalcap",
         "price": 36,
@@ -325,14 +237,6 @@
         "stock": 4,
         "weight": 2,
         "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "cottonSky",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
       },
       {
         "kind": "seed",
@@ -352,27 +256,11 @@
       },
       {
         "kind": "seed",
-        "id": "crimsontop",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
         "id": "dandelion",
         "price": 11,
         "stock": 4,
         "weight": 2,
         "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "dryroot",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
       },
       {
         "kind": "seed",
@@ -383,42 +271,10 @@
         "tier": 0
       },
       {
-        "kind": "seed",
-        "id": "emberFruit",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "emberbundle",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "emberconch",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "eyecap",
         "price": 36,
         "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "fanfungus",
-        "price": 32,
-        "stock": 4,
         "weight": 2,
         "tier": 1
       },
@@ -431,82 +287,10 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "flamepetal",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "ghostroot",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "goldbeet",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "goldcap",
         "price": 36,
         "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "goldiris",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "goldyarrow",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "greenBerry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "greenclover",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "greenhook",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "greenolive",
-        "price": 32,
-        "stock": 4,
         "weight": 2,
         "tier": 1
       },
@@ -528,47 +312,7 @@
       },
       {
         "kind": "seed",
-        "id": "honeycombFlower",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
         "id": "honeydewPlant",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "husknut",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "inkcap",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "jadeberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "lacewort",
         "price": 32,
         "stock": 4,
         "weight": 2,
@@ -591,14 +335,6 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "mandragora",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "mosscap",
         "price": 36,
@@ -615,30 +351,6 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "oakmast",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "oldMandragora",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "paleLeek",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "palecap",
         "price": 36,
@@ -648,31 +360,7 @@
       },
       {
         "kind": "seed",
-        "id": "peapod",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
         "id": "pepper",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "pepperBerry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "pinkclover",
         "price": 32,
         "stock": 4,
         "weight": 2,
@@ -712,27 +400,11 @@
       },
       {
         "kind": "seed",
-        "id": "puffpod",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
         "id": "purpleBerry",
         "price": 11,
         "stock": 4,
         "weight": 2,
         "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "purplethistle",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
       },
       {
         "kind": "seed",
@@ -743,66 +415,10 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "redcurrant",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "roots",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "roseberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "rowanberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
         "kind": "spore",
         "id": "russetcap",
         "price": 36,
         "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "scalebark",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "scarletbud",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "shalecap",
-        "price": 32,
-        "stock": 4,
         "weight": 2,
         "tier": 1
       },
@@ -815,22 +431,6 @@
         "tier": 0
       },
       {
-        "kind": "seed",
-        "id": "snapmaw",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "spiderbloom",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "stoutcap",
         "price": 36,
@@ -839,50 +439,10 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "sunberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "sunflower",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "spore",
         "id": "sunfungus",
         "price": 36,
         "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "sweetHoney",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "tealberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "thornspiral",
-        "price": 32,
-        "stock": 4,
         "weight": 2,
         "tier": 1
       },
@@ -920,23 +480,7 @@
       },
       {
         "kind": "seed",
-        "id": "twistroot",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
         "id": "uncommonFlower",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "uncommonRoot",
         "price": 11,
         "stock": 4,
         "weight": 2,
@@ -953,46 +497,6 @@
       {
         "kind": "seed",
         "id": "violetshroom",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "wintercherry",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "witchCap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "yellowTulip",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "youngRose",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "youngtree",
         "price": 32,
         "stock": 4,
         "weight": 2,
@@ -1045,14 +549,6 @@
         "price": 30,
         "stock": 4,
         "weight": 4,
-        "tier": 0
-      },
-      {
-        "kind": "ingredient",
-        "id": "emberroot",
-        "price": 14,
-        "stock": 6,
-        "weight": 2,
         "tier": 0
       },
       {
@@ -1143,26 +639,10 @@
         "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "algae",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
         "kind": "spore",
         "id": "azurecap",
         "price": 36,
         "stock": 3,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
-        "id": "azurefan",
-        "price": 32,
-        "stock": 4,
         "weight": 2,
         "tier": 2
       },
@@ -1173,14 +653,6 @@
         "stock": 4,
         "weight": 2,
         "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "blueberryThistle",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
       },
       {
         "kind": "seed",
@@ -1216,14 +688,6 @@
       },
       {
         "kind": "seed",
-        "id": "cottonFluff",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
         "id": "cyanFlower",
         "price": 32,
         "stock": 4,
@@ -1240,14 +704,6 @@
       },
       {
         "kind": "seed",
-        "id": "fanFlower",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
         "id": "frostfan",
         "price": 32,
         "stock": 4,
@@ -1257,14 +713,6 @@
       {
         "kind": "seed",
         "id": "frostrosette",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
-        "id": "ice",
         "price": 32,
         "stock": 4,
         "weight": 2,
@@ -1289,22 +737,6 @@
       {
         "kind": "seed",
         "id": "pinklotus",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
-        "id": "tidebulb",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
-        "id": "tidecluster",
         "price": 32,
         "stock": 4,
         "weight": 2,
@@ -1352,14 +784,6 @@
       },
       {
         "kind": "seed",
-        "id": "whitedaisy",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
         "id": "windwort",
         "price": 11,
         "stock": 4,
@@ -1373,15 +797,6 @@
         "stock": 4,
         "weight": 2,
         "tier": 1
-      },
-      {
-        "$comment": "The quarry only rolls a given seam now and then; this is the guarantee.",
-        "kind": "ingredient",
-        "id": "skySpar",
-        "price": 78,
-        "stock": 3,
-        "weight": 2,
-        "tier": 2
       }
     ]
   },
@@ -1572,17 +987,6 @@
         }
       },
       {
-        "kind": "seed",
-        "id": "emberroot",
-        "stock": 6,
-        "weight": 2,
-        "tier": 0,
-        "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        }
-      },
-      {
         "kind": "equipment",
         "id": "richLoam",
         "weight": 2,
@@ -1603,28 +1007,6 @@
           "potions": 1,
           "minGrade": "D"
         }
-      },
-      {
-        "kind": "spore",
-        "id": "glowspindle",
-        "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 3,
-        "weight": 2,
-        "tier": 3
-      },
-      {
-        "kind": "seed",
-        "id": "purpleRoot",
-        "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
       },
       {
         "kind": "seed",
@@ -1691,18 +1073,6 @@
         "stock": 4,
         "weight": 2,
         "tier": 2
-      },
-      {
-        "$comment": "Umbra's dense mineral comes from the night trader, for a potion — the old price of Umbra, kept.",
-        "kind": "ingredient",
-        "id": "shadeSpar",
-        "stock": 3,
-        "weight": 2,
-        "tier": 1,
-        "barter": {
-          "potions": 1,
-          "minGrade": "C"
-        }
       }
     ]
   }

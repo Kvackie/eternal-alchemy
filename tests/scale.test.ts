@@ -17,14 +17,14 @@ import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config, crops, ingredients, recipes, shelfTiers, vessels } from '@/sim/config';
-import type { RecipeDef } from '@/sim/config';
 import { assessOutcome } from '@/sim/brewing';
 import { makePlots } from '@/sim/garden';
 import { makeShelf } from '@/sim/market';
 import { availableSeals, availableVessels } from '@/sim/bottling';
 import type { BottleRequest } from '@/sim/bottling';
-import { addVectors, angleBetween, totalEssence, zeroVector } from '@/sim/essences';
-import type { Grade, World } from '@/sim/types';
+import { totalEssence } from '@/sim/essences';
+import { addIngredient } from '@/sim/inventory';
+import type { Essence, Grade, World } from '@/sim/types';
 
 const HOUR = 3_600_000;
 const PLOTS = 25;
@@ -32,45 +32,19 @@ const SHELVES = 50;
 const POTIONS = 100;
 
 /**
- * A blend that lands in a recipe's cone.
- *
- * Greedy: repeatedly add whichever ingredient most reduces the angle to the
- * target. Not the cheapest blend a player would find, but a real one — these
- * are ingredients that exist, added through the real cauldron. Greed can
- * corner itself on a mixed ingredient that no single addition improves on;
- * then it falls back to one clean ingredient per essence the recipe wants,
- * which is the blend a player would reach for first anyway.
+ * The clean herb for each essence at a strength, which is what a player
+ * reaches for to build a ratio: one of each essence the recipe wants, in equal
+ * number.
  */
-function blendFor(recipe: RecipeDef, cap = 7): string[] {
-  const chosen: string[] = [];
-  let sum = zeroVector();
-  let best = Infinity;
-
-  for (let step = 0; step < cap; step += 1) {
-    let pick: string | null = null;
-    let pickSum = sum;
-    for (const ing of ingredients) {
-      const trial = addVectors(sum, ing.essence);
-      const angle = angleBetween(trial, recipe.target);
-      if (angle < best - 1e-9) {
-        best = angle;
-        pick = ing.id;
-        pickSum = trial;
-      }
-    }
-    if (!pick) break;
-    chosen.push(pick);
-    sum = pickSum;
-  }
-  if (best < (recipe.toleranceDeg * Math.PI) / 180) return chosen;
-
-  return recipe.elements.map((essence) => {
-    const clean = ingredients.find(
-      (ing) => ing.essence[essence] === 24 && totalEssence(ing.essence) === 24,
-    );
-    if (!clean) throw new Error(`no clean 24-strength ${essence} ingredient`);
-    return clean.id;
-  });
+function cleanHerb(essence: Essence, strength: number): string {
+  const found = ingredients.find(
+    (ing) =>
+      ing.category === 'herb' &&
+      ing.essence[essence] === strength &&
+      totalEssence(ing.essence) === strength,
+  );
+  if (!found) throw new Error(`no clean ${strength}-strength ${essence} herb`);
+  return found.id;
 }
 
 /**
@@ -93,14 +67,20 @@ function brewOne(sim: Simulation, index: number, tally?: Record<string, number>)
   const recipe = recipes[index % recipes.length]!;
 
   /*
-   * Stop the blend at a different number of ingredients each time, so a
-   * hundred brews come out as a spread of grades rather than a hundred
-   * identical S's — which is what a shelf full of real stock looks like.
+   * Build each blend at a different strength, and let the first ingredient
+   * have dried in most of them, so a hundred brews come out as a spread of
+   * grades rather than a hundred identical S's — which is what a
+   * shelf full of real stock looks like. Drying is the honest way to miss: it
+   * weakens one part of the blend and throws the ratio out.
    */
-  for (const id of blendFor(recipe, 4 + (index % 4))) {
-    sim.grant({ ingredient: { id, count: 1 } });
-    sim.addToCauldron(id);
-  }
+  const strength = [4, 6, 8, 10][index % 4]!;
+  recipe.elements.forEach((essence, n) => {
+    const id = cleanHerb(essence, strength);
+    const dried = n === 0 && index % 3 !== 0;
+    const age = config.freshness.freshUntilMs * 4;
+    addIngredient(sim.world, id, 1, dried ? sim.now - age : sim.now);
+    sim.addToCauldron(id, dried ? 'dried' : undefined);
+  });
 
   const note = (key: string) => {
     if (tally) tally[key] = (tally[key] ?? 0) + 1;

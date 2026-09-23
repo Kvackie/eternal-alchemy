@@ -38,10 +38,12 @@ describe('garden', () => {
   });
 
   it('yields more from a plot on the soil its crop wants', () => {
-    // Tending is gone, so soil is the whole of what a plot decides. Sunleaf
-    // wants loam; the same seed on anything else gives one unit less.
+    // Tending is gone, so soil is the whole of what a plot decides. The same
+    // seed on anything but the soil it wants gives one unit less.
     const suited = new Simulation(createWorld(1));
     const wrong = new Simulation(createWorld(1));
+    suited.world.seeds.sunleaf = 1;
+    wrong.world.seeds.sunleaf = 1;
 
     const a = suited.world.plots[0]!;
     const b = wrong.world.plots[0]!;
@@ -69,8 +71,8 @@ describe('garden', () => {
 
     for (let attempt = 0; attempt < 60; attempt += 1) {
       const plot = sim.world.plots[0]!;
-      sim.world.seeds.dewcap = 5;
-      sim.plant(plot.id, 'dewcap');
+      sim.world.seeds.sunleaf = 5;
+      sim.plant(plot.id, 'sunleaf');
       sim.advanceBy(HOUR);
       best = Math.max(best, sim.harvest(plot.id)!.seeds);
     }
@@ -87,8 +89,8 @@ describe('garden', () => {
     let recovered = 0;
 
     for (let cycle = 0; cycle < 200; cycle += 1) {
-      sim.world.seeds.dewcap = 5;
-      if (!sim.plant(plot.id, 'dewcap')) break;
+      sim.world.seeds.sunleaf = 5;
+      if (!sim.plant(plot.id, 'sunleaf')) break;
       planted += 1;
       sim.advanceBy(HOUR);
       recovered += sim.harvest(plot.id)!.seeds;
@@ -101,7 +103,7 @@ describe('garden', () => {
   it('records harvests and seed finds in the log', () => {
     const sim = new Simulation(createWorld(7));
     const plot = sim.world.plots[0]!;
-    sim.plant(plot.id, 'dewcap');
+    sim.plant(plot.id, 'bluepetal');
     sim.advanceBy(HOUR);
     sim.harvest(plot.id);
 
@@ -112,25 +114,25 @@ describe('garden', () => {
 });
 
 describe('cauldron', () => {
-  function withDewcaps(count: number): Simulation {
+  function withBluecones(count: number): Simulation {
     const sim = new Simulation(createWorld(2));
-    sim.grant({ ingredient: { id: 'dewcap', count } });
+    sim.grant({ ingredient: { id: 'bluecone', count } });
     return sim;
   }
 
   it('moves units from stores into the cauldron and back', () => {
-    const sim = withDewcaps(3);
-    expect(sim.addToCauldron('dewcap')).toBe(true);
-    expect(countOf(sim.world, 'dewcap')).toBe(2);
+    const sim = withBluecones(3);
+    expect(sim.addToCauldron('bluecone')).toBe(true);
+    expect(countOf(sim.world, 'bluecone')).toBe(2);
 
     sim.removeFromCauldron(0);
-    expect(countOf(sim.world, 'dewcap')).toBe(3);
+    expect(countOf(sim.world, 'bluecone')).toBe(3);
     expect(sim.cauldron.contents.units).toHaveLength(0);
   });
 
   it('refuses to add an ingredient that is not in stores', () => {
     const sim = new Simulation(createWorld(2));
-    expect(sim.addToCauldron('dewcap')).toBe(false);
+    expect(sim.addToCauldron('bluecone')).toBe(false);
   });
 
   it('spends the freshness stage the player pointed at, not the oldest batch', () => {
@@ -138,76 +140,72 @@ describe('cauldron', () => {
 
     // An old batch that has dried out, and a fresh one picked just now. Dewcap
     // is a fungus, so drying it out takes twice the herb schedule.
-    sim.grant({ ingredient: { id: 'dewcap', count: 4 } });
+    sim.grant({ ingredient: { id: 'bluecone', count: 4 } });
     sim.advanceBy(config.freshness.freshUntilMs * 2 + HOUR, false);
-    sim.grant({ ingredient: { id: 'dewcap', count: 4 } });
+    sim.grant({ ingredient: { id: 'bluecone', count: 4 } });
 
-    expect(countOf(sim.world, 'dewcap', 'dried')).toBe(4);
-    expect(countOf(sim.world, 'dewcap', 'dewfresh')).toBe(4);
+    expect(countOf(sim.world, 'bluecone', 'dried')).toBe(4);
+    expect(countOf(sim.world, 'bluecone', 'dewfresh')).toBe(4);
 
-    expect(sim.addToCauldron('dewcap', 'dewfresh')).toBe(true);
+    expect(sim.addToCauldron('bluecone', 'dewfresh')).toBe(true);
 
     // A dried unit is weaker, so taking the wrong batch changes the brew — the
     // tile has to spend what it says it will.
-    expect(countOf(sim.world, 'dewcap', 'dewfresh')).toBe(3);
-    expect(countOf(sim.world, 'dewcap', 'dried')).toBe(4);
+    expect(countOf(sim.world, 'bluecone', 'dewfresh')).toBe(3);
+    expect(countOf(sim.world, 'bluecone', 'dried')).toBe(4);
   });
 
   it('will not take a stage it has none of', () => {
     const sim = new Simulation(createWorld(2));
-    sim.grant({ ingredient: { id: 'dewcap', count: 2 } });
-    expect(sim.addToCauldron('dewcap', 'dried')).toBe(false);
-    expect(sim.addToCauldron('dewcap', 'dewfresh')).toBe(true);
+    sim.grant({ ingredient: { id: 'bluecone', count: 2 } });
+    expect(sim.addToCauldron('bluecone', 'dried')).toBe(false);
+    expect(sim.addToCauldron('bluecone', 'dewfresh')).toBe(true);
   });
 
   /*
    * Drying weakens a brew; it does not redirect it.
    *
-   * This test used to assert the opposite — that dried dewcaps identify as some
-   * *other* recipe, because drying moved Aqua into Terra and walked the blend
-   * out of the Health Tonic's cone. That rule is gone. Age is one multiplier
-   * now, so the same three dewcaps make the same potion at every stage, weaker
-   * and eventually a tier lower.
+   * This test used to assert the opposite — that a dried herb identifies as
+   * some *other* recipe, because drying moved Aqua into Terra and walked the
+   * blend out of its cone. That rule is gone. Age is one multiplier now, so the
+   * same three bluecones make the same potion at every stage, only weaker.
    */
-  it('makes a weaker version of the same thing from dried dewcaps', () => {
+  it('makes a weaker version of the same thing from dried bluecones', () => {
     const fresh = new Simulation(createWorld(5));
-    fresh.grant({ ingredient: { id: 'dewcap', count: 3 } });
-    for (let i = 0; i < 3; i += 1) fresh.addToCauldron('dewcap', 'dewfresh');
-    expect(fresh.assess()!.recipeId).toBe('aquaTerra');
+    fresh.grant({ ingredient: { id: 'bluecone', count: 3 } });
+    for (let i = 0; i < 3; i += 1) fresh.addToCauldron('bluecone', 'dewfresh');
+    expect(fresh.assess()!.recipeId).toBe('aqua');
 
     const dried = new Simulation(createWorld(5));
-    dried.grant({ ingredient: { id: 'dewcap', count: 3 } });
-    // Dewcap is a fungus, and fungus keeps twice as long, so the herb schedule
-    // would leave this stock still Fresh.
-    dried.advanceBy(config.freshness.freshUntilMs * 2 + HOUR, false);
-    for (let i = 0; i < 3; i += 1) dried.addToCauldron('dewcap', 'dried');
+    dried.grant({ ingredient: { id: 'bluecone', count: 3 } });
+    dried.advanceBy(config.freshness.freshUntilMs + HOUR, false);
+    for (let i = 0; i < 3; i += 1) dried.addToCauldron('bluecone', 'dried');
 
-    expect(dried.assess()!.recipeId).toBe('aquaTerra');
+    expect(dried.assess()!.recipeId).toBe('aqua');
     expect(dried.assess()!.totalEssence).toBeLessThan(fresh.assess()!.totalEssence);
   });
 
   it('respects the ingredient count limit', () => {
     // The limit belongs to the pot on the bench, not to the game — a bigger
     // cauldron takes more.
-    const sim = withDewcaps(40);
+    const sim = withBluecones(40);
     for (let i = 0; i < sim.cauldronMaxIngredients; i += 1) {
-      expect(sim.addToCauldron('dewcap')).toBe(true);
+      expect(sim.addToCauldron('bluecone')).toBe(true);
     }
-    expect(sim.addToCauldron('dewcap')).toBe(false);
+    expect(sim.addToCauldron('bluecone')).toBe(false);
   });
 
-  it('assesses a three-dewcap brew as the Aqua–Terra potion', () => {
-    const sim = withDewcaps(3);
-    sim.addToCauldron('dewcap');
-    sim.addToCauldron('dewcap');
-    sim.addToCauldron('dewcap');
+  it('assesses a three-bluecone brew as the Aqua potion', () => {
+    const sim = withBluecones(3);
+    sim.addToCauldron('bluecone');
+    sim.addToCauldron('bluecone');
+    sim.addToCauldron('bluecone');
 
     const outcome = sim.assess()!;
-    expect(outcome.recipeId).toBe('aquaTerra');
+    expect(outcome.recipeId).toBe('aqua');
     expect(outcome.potencyTier).toBe('minor');
 
-    // 17 each × 3 × the 1.1 dewfresh multiplier is 56.1, inside the starter
-    // pot's 60. At 1.2 it came to 61.2 and the opening brew was capped.
+    // 8 each × 3 is 24, well inside the starter pot's 60.
     expect(outcome.overCapacity).toBe(false);
   });
 });
@@ -293,18 +291,18 @@ describe('the whole loop', () => {
     const sim = new Simulation(createWorld(2024));
     const plot = sim.world.plots[0]!;
 
-    sim.plant(plot.id, 'dewcap');
+    sim.plant(plot.id, 'bluepetal');
     sim.advanceBy(HOUR);
     sim.harvest(plot.id);
 
-    while (sim.addToCauldron('dewcap')) {
+    while (sim.addToCauldron('bluepetal')) {
       if (sim.cauldron.contents.units.length >= 3) break;
     }
 
-    expect(sim.assess()?.recipeId).toBe('aquaTerra');
+    expect(sim.assess()?.recipeId).toBe('aqua');
 
     brew(sim);
-    expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
+    expect(sim.pendingBrew?.recipeId).toBe('aqua');
 
     const item = sim.bottlePending({
       vesselId: 'clayVial',
