@@ -10,30 +10,35 @@
  * the station once you have picked one. See `station.ts`.
  */
 
-import { button, chip, collapsible, el, emptyNote, meter, panelHeader, row } from '../components';
-import { countdown, formatGold, t } from '@/i18n';
+import {
+  button,
+  chip,
+  collapsible,
+  el,
+  emptyNote,
+  liveCountdown,
+  liveMeter,
+  panelHeader,
+  row,
+} from '../components';
+import { formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
 import { atCauldronLimit, activityOf, buyableTiers } from '@/sim/cauldrons';
 import type { CauldronActivity } from '@/sim/cauldrons';
 import { findCauldronTier } from '@/sim/config';
-import type { BrewInProgress, Cauldron } from '@/sim/types';
+import type { Cauldron } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, confirm, toast } from '@/ui/bus';
 import { bottleReady, isStationOpen, openStation, renderStation } from './station';
 
-export { INGREDIENT_DRAG } from './station';
-
 /** Which sections are folded shut. Shut is the exception, so this starts empty. */
 const folded = new Set<string>();
 
-function foldable(id: string, section: HTMLElement): HTMLElement {
-  const [head, ...rest] = [...section.children] as HTMLElement[];
-  if (!head) return section;
-
+function foldable(id: string, className: string, title: string, body: HTMLElement[]): HTMLElement {
   return collapsible({
-    className: section.className,
-    head: [head],
-    body: rest,
+    className,
+    title,
+    body,
     open: !folded.has(id),
     onToggle: () => {
       if (folded.has(id)) folded.delete(id);
@@ -49,7 +54,7 @@ export function renderCauldron(sim: Simulation): HTMLElement {
 
   const body = el('div', { class: 'panel-body' }, [
     renderWorkshop(sim),
-    foldable('storage', renderStorage(sim)),
+    foldable('storage', 'storage', t('cauldron.storage'), renderStorage(sim)),
   ]);
 
   // Full rather than docked: there is no scene behind this screen any more, so
@@ -73,36 +78,16 @@ export function renderCauldron(sim: Simulation): HTMLElement {
  *
  * The countdown is patched in place by the shell rather than by redrawing the
  * bench, because redrawing the bench sixty times a second is what made it
- * impossible to scroll. See `needsLiveRedraw`.
+ * impossible to scroll. See `worldShape` in the shell.
  */
 function stateChip(sim: Simulation, pot: Cauldron, activity: CauldronActivity): HTMLElement {
   if (activity !== 'brewing' || !pot.brewing) {
     return chip(t(`cauldron.state.${activity}`), activity === 'ready' ? 'good' : 'plain');
   }
-
-  const node = chip(
-    t('cauldron.state.brewingIn', {
-      time: countdown(pot.brewing.readyAt, sim.now),
-    }),
-    'warm',
-  );
-  node.dataset.countdownAt = String(pot.brewing.readyAt);
-  node.dataset.countdownKey = 'cauldron.state.brewingIn';
-  return node;
-}
-
-/** How far along the brew is, filling on its own between two fixed moments. */
-function brewProgress(sim: Simulation, brewing: BrewInProgress): HTMLElement {
-  const total = brewing.readyAt - brewing.startedAt;
-  const bar = meter(total > 0 ? (sim.now - brewing.startedAt) / total : 1);
-  bar.classList.add('bench-progress');
-
-  const fill = bar.querySelector<HTMLElement>('.meter-fill');
-  if (fill && total > 0) {
-    fill.dataset.progressFrom = String(brewing.startedAt);
-    fill.dataset.progressTo = String(brewing.readyAt);
-  }
-  return bar;
+  return liveCountdown(pot.brewing.readyAt, sim.now, {
+    key: 'cauldron.state.brewingIn',
+    className: 'chip warm',
+  });
 }
 
 /**
@@ -129,7 +114,11 @@ function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
   // A pot at work says how much longer, and shows it filling. The word
   // "Brewing" on its own was the only sign anything was happening, and a grey
   // label that never changes reads the same as a grey label that means nothing.
-  if (!stored && pot.brewing) face.append(brewProgress(sim, pot.brewing));
+  if (!stored && pot.brewing) {
+    const bar = liveMeter(pot.brewing.startedAt, pot.brewing.readyAt, sim.now);
+    bar.classList.add('bench-progress');
+    face.append(bar);
+  }
   face.dataset.activity = activity;
   face.dataset.stored = String(stored);
 
@@ -216,13 +205,11 @@ function renderWorkshop(sim: Simulation): HTMLElement {
  * the bench? A bought pot lands here rather than in the workshop, so acquiring
  * one and deciding to use it stay two separate acts a moment apart.
  */
-function renderStorage(sim: Simulation): HTMLElement {
-  const section = el('section', { class: 'storage' }, [
-    el('span', { class: 'field-label', text: t('cauldron.storage') }),
-  ]);
+function renderStorage(sim: Simulation): HTMLElement[] {
+  const body: HTMLElement[] = [];
 
   const stored = sim.storedCauldrons;
-  section.append(
+  body.push(
     stored.length > 0
       ? el(
           'div',
@@ -241,15 +228,15 @@ function renderStorage(sim: Simulation): HTMLElement {
    * read as a lie about the screen it was on. The absent Buy section is the
    * whole of what there is to say.
    */
-  if (atCauldronLimit(sim.world)) return section;
+  if (atCauldronLimit(sim.world)) return body;
 
   const offers = buyableTiers(sim.world);
   if (offers.length === 0) {
-    section.append(emptyNote(t('cauldron.buy.locked')));
-    return section;
+    body.push(emptyNote(t('cauldron.buy.locked')));
+    return body;
   }
 
-  section.append(el('span', { class: 'field-label', text: t('cauldron.buy.title') }));
+  body.push(el('span', { class: 'field-label', text: t('cauldron.buy.title') }));
   for (const tier of offers) {
     /*
      * A pot you could own looks like a pot.
@@ -264,7 +251,7 @@ function renderStorage(sim: Simulation): HTMLElement {
      * while every other list in the game drew a card. It is a card now.
      */
     const art = artUrlIf('scene', tier.id);
-    section.append(
+    body.push(
       row({
         variant: 'pot-offer',
         icon: el('span', { class: 'buy-art' }, [
@@ -300,5 +287,5 @@ function renderStorage(sim: Simulation): HTMLElement {
     );
   }
 
-  return section;
+  return body;
 }

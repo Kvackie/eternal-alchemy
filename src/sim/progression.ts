@@ -17,9 +17,7 @@
 import {
   caveConfig,
   config,
-  decorConfig,
   equipment,
-  findDecor,
   getEquipment,
   getRecipe,
   heroesConfig,
@@ -27,6 +25,7 @@ import {
   shaftConfig,
   type RankRequirement,
 } from './config';
+import { placedDecor } from './decor';
 import { gradeAtLeast, potencyRank } from './essences';
 import type { DecorEffect, EquipmentDef, EquipmentEffect } from './config';
 import { caveTilesBonus } from './town';
@@ -242,13 +241,7 @@ export function derivedStats(world: World): DerivedStats {
    * it in the back room does nothing, which is what makes five spots a choice
    * rather than a delay.
    */
-  for (const spot of decorConfig.spots) {
-    const id = world.decor?.[spot];
-    if (!id) continue;
-    // Tolerates a piece that has left the data file, so a save outlives an edit.
-    const def = findDecor(id);
-    if (def) applyDecor(stats, def.effect);
-  }
+  for (const def of placedDecor(world)) applyDecor(stats, def.effect);
 
   return stats;
 }

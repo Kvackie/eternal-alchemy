@@ -14,7 +14,7 @@
  */
 
 import { config, getCodexNode, getRecipe, prestigeConfig, shaftConfig } from './config';
-import { makeCaveTiles } from './cave';
+import { makeCaveTile } from './cave';
 import { derivedStats, rankOf } from './progression';
 import { Rng } from './rng';
 import { openTo } from './shaft';
@@ -160,9 +160,7 @@ export function retire(world: World, townId: string, seed: number): RetirementRe
    */
   const tiles = derivedStats(next).caveTiles;
   while (next.cave.tiles.length < tiles) {
-    next.cave.tiles.push(
-      ...makeCaveTiles(1).map((tile) => ({ ...tile, index: next.cave.tiles.length })),
-    );
+    next.cave.tiles.push(makeCaveTile(next.cave.tiles.length));
   }
 
   // Remembered Recipes: carry the most-brewed discoveries forward. What you

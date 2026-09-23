@@ -20,18 +20,22 @@ import { Rng } from './rng';
 import type { CaveTile, World } from './types';
 import { boostedYield } from './boosters';
 
-export function makeCaveTiles(count: number): CaveTile[] {
-  return Array.from({ length: count }, (_, index) => ({
-    index,
-    speciesId: null,
-    seededAt: 0,
-    lit: false,
-    locked: false,
-  }));
+/** The bed at position `index`, unseeded. */
+export function makeCaveTile(index: number): CaveTile {
+  return { index, speciesId: null, seededAt: 0, lit: false, locked: false };
 }
 
+export function makeCaveTiles(count: number): CaveTile[] {
+  return Array.from({ length: count }, (_, index) => makeCaveTile(index));
+}
+
+/**
+ * A bed's index is its position in the list — every bed is made by
+ * `makeCaveTile` at the list's current length and none is ever removed — so
+ * looking one up is indexing, not a search.
+ */
 export function tileAt(world: World, index: number): CaveTile | undefined {
-  return world.cave.tiles.find((tile) => tile.index === index);
+  return world.cave.tiles[index];
 }
 
 /** 0..1. A tile is harvestable once this reaches 1. */
@@ -171,28 +175,24 @@ export function runCave(world: World): void {
     const tickIndex = Math.floor(tick / tickMs);
     const rng = new Rng((world.cave.seed ^ Math.imul(tickIndex, 0x9e3779b1)) >>> 0);
 
-    // Snapshot which tiles are empty first: a tile colonised during this tick
-    // should not immediately spread onward in the same tick.
-    const unlocked = world.cave.tiles.length;
-    const claimed = new Set<number>();
+    const tiles = world.cave.tiles;
+    const unlocked = tiles.length;
 
-    for (const tile of world.cave.tiles) {
+    for (const tile of tiles) {
       if (!tile.speciesId) continue;
-      // Only a mature colony spreads, judged at the tick's own moment.
+      // Only a mature colony spreads, judged at the tick's own moment. A bed
+      // colonised earlier in this same tick was seeded at `tick`, so it is not
+      // mature yet and cannot spread onward before the next one.
       const species = getCaveSpecies(tile.speciesId);
       if (tick - tile.seededAt < species.growMs) continue;
 
       const targets = neighboursOf(tile.index, unlocked).filter((i) => {
-        if (claimed.has(i)) return false;
-        const target = world.cave.tiles.find((t) => t.index === i);
+        const target = tiles[i];
         return target !== undefined && target.speciesId === null && !target.locked;
       });
       if (targets.length === 0) continue;
 
-      const target = targets[rng.int(0, targets.length - 1)];
-      if (target === undefined) continue;
-
-      const destination = world.cave.tiles.find((t) => t.index === target);
+      const destination = tiles[targets[rng.int(0, targets.length - 1)]!];
       if (!destination) continue;
 
       if (!rng.chance(spreadChanceFor(tile.speciesId, destination.lit, spreadBonus, townSpread))) {
@@ -201,7 +201,6 @@ export function runCave(world: World): void {
 
       destination.speciesId = tile.speciesId;
       destination.seededAt = tick;
-      claimed.add(target);
     }
 
     tick += tickMs;

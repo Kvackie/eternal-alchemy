@@ -442,6 +442,18 @@ export function presentMerchants(world: World): MerchantVisit[] {
     });
 }
 
+/**
+ * Who is in town and until when — `presentMerchants` without the stock.
+ *
+ * Pricing a visit's goods is the expensive half of that function, and a caller
+ * asking only whether the cast has changed, every frame, has no use for it.
+ */
+export function presentCast(world: World): Array<{ merchantId: string; leavesAt: number }> {
+  return merchants
+    .filter((def) => isPresent(def, world.now))
+    .map((def) => ({ merchantId: def.id, leavesAt: windowEnd(def, world.now) }));
+}
+
 /** When this merchant is next in town, for the "come back later" line. */
 export function nextVisit(def: MerchantDef, now: number): number {
   const dayMs = config.clock.dayLengthMs;

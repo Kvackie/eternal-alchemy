@@ -32,6 +32,21 @@ import { LEGACY_RECIPES } from './legacyRecipes';
 const KEY_PREFIX = 'eternal-alchemy/save';
 const KEY_POINTER = 'eternal-alchemy/slot';
 
+function slotKey(slot: number): string {
+  return `${KEY_PREFIX}/${slot}`;
+}
+
+/**
+ * Every key a save is written under: the slot pointer and each slot.
+ *
+ * Exported for the native adapter, which has to warm its mirror key by key and
+ * so must know them up front — built from the same constants the manager writes
+ * with, so the two lists cannot drift apart.
+ */
+export function saveKeys(slots: number): string[] {
+  return [KEY_POINTER, ...Array.from({ length: slots }, (_, slot) => slotKey(slot))];
+}
+
 export interface SaveEnvelope {
   schemaVersion: number;
   savedAt: number;
@@ -82,10 +97,6 @@ export function memoryAdapter(): StorageAdapter {
 export class SaveManager {
   constructor(private storage: StorageAdapter = localStorageAdapter) {}
 
-  private slotKey(slot: number): string {
-    return `${KEY_PREFIX}/${slot}`;
-  }
-
   private currentSlot(): number {
     const raw = this.storage.get(KEY_POINTER);
     const parsed = raw === null ? 0 : Number.parseInt(raw, 10);
@@ -101,7 +112,7 @@ export class SaveManager {
       savedAt: Date.now(),
       world,
     };
-    this.storage.set(this.slotKey(next), JSON.stringify(envelope));
+    this.storage.set(slotKey(next), JSON.stringify(envelope));
     this.storage.set(KEY_POINTER, String(next));
   }
 
@@ -116,7 +127,7 @@ export class SaveManager {
     const candidates: SaveEnvelope[] = [];
 
     for (let slot = 0; slot < slots; slot += 1) {
-      const raw = this.storage.get(this.slotKey(slot));
+      const raw = this.storage.get(slotKey(slot));
       if (!raw) continue;
       const parsed = this.parse(raw);
       if (parsed) candidates.push(parsed);
@@ -131,17 +142,10 @@ export class SaveManager {
       const envelope = JSON.parse(raw) as SaveEnvelope;
       if (typeof envelope?.schemaVersion !== 'number' || !envelope.world) return null;
       const world = migrate(envelope.world, envelope.schemaVersion);
-      return world ? { ...envelope, world } : null;
+      return world && looksLikeAWorld(world) ? { ...envelope, world } : null;
     } catch {
       return null;
     }
-  }
-
-  clear(): void {
-    for (let slot = 0; slot < config.save.slots; slot += 1) {
-      this.storage.remove(this.slotKey(slot));
-    }
-    this.storage.remove(KEY_POINTER);
   }
 
   /** Text the player can keep. Local-only saves make this the only real backup. */
@@ -158,6 +162,43 @@ export class SaveManager {
     return parsed?.world ?? null;
   }
 }
+
+/**
+ * Whether a migrated save has the bones every screen reads on boot.
+ *
+ * Not a full schema check — just the fields whose absence throws the moment
+ * the game draws. Without it any JSON with a numeric version and a truthy
+ * world passed: an import of the wrong file was reported as a success, became
+ * the newest slot, and every boot after that loaded it and died, with the good
+ * save one slot older never tried.
+ */
+function looksLikeAWorld(world: World): boolean {
+  const lists = [world.plots, world.shelf, world.cauldrons, world.bottled, world.inventory];
+  const numbers = [world.now, world.gold, world.rngSeed];
+  return lists.every(Array.isArray) && numbers.every(Number.isFinite);
+}
+
+/**
+ * The furnishings as they were first named, and what took each one's place.
+ *
+ * Seven were shop upgrades bought as equipment until v9 made them décor; three
+ * more arrived as décor after that. When painted art came the set was rebuilt
+ * around what the art actually is, and every old id maps to the piece that is
+ * now in its spot — a player who paid for a rug gets the thing on the floor,
+ * rather than an empty spot and a missing purchase. v9 and v11 both read this.
+ */
+const LEGACY_DECOR: Record<string, string> = {
+  polishedCounter: 'mortarAndPestle',
+  alchemistsBench: 'goldGoblet',
+  curioCabinet: 'cutDiamond',
+  wovenRug: 'ironPot',
+  mosaicFloor: 'coinStack',
+  displayCase: 'pottedFern',
+  incenseBurner: 'skullChalice',
+  gildedSign: 'goldBanner',
+  paintedSign: 'crimsonBanner',
+  lanternDisplay: 'sproutingUrn',
+};
 
 /**
  * Migration chain.
@@ -299,7 +340,6 @@ const MIGRATIONS: Record<number, Migration> = {
     world.contracts ??= [];
     world.nextContractId ??= 1;
     world.factionReputation ??= {};
-    world.lastContractTick ??= world.now ?? 0;
 
     world.statistics = { ...emptyStatistics(), ...(world.statistics ?? {}) };
     return world;
@@ -378,29 +418,19 @@ const MIGRATIONS: Record<number, Migration> = {
     world.decorOwned ??= {};
     world.decor ??= emptySpots();
 
-    /*
-     * The seven shop upgrades were later replaced outright when painted art
-     * arrived and the furnishing set was rebuilt around what the art actually
-     * is. Their ids no longer exist, so each maps to the piece that took its
-     * place — a player who paid for a rug gets the thing that is now on the
-     * floor, rather than an empty spot and a missing purchase.
-     */
-    const REPLACED: Record<string, string> = {
-      polishedCounter: 'mortarAndPestle',
-      wovenRug: 'ironPot',
-      displayCase: 'pottedFern',
-      incenseBurner: 'skullChalice',
-      gildedSign: 'goldBanner',
-      paintedSign: 'crimsonBanner',
-      lanternDisplay: 'sproutingUrn',
-    };
-
-    for (const [oldId, newId] of Object.entries(REPLACED)) {
+    // Their ids were later replaced outright; see `LEGACY_DECOR`.
+    for (const [oldId, newId] of Object.entries(LEGACY_DECOR)) {
       if ((world.equipment?.[oldId] ?? 0) <= 0) continue;
       delete world.equipment[oldId];
+      /*
+       * Owned even when the successor has since left the data file. A later
+       * step that retires a piece pays back what it finds owned — v20 refunds
+       * the Iron Pot — and it can only find what was written here. Only
+       * putting it out needs the piece to exist.
+       */
+      world.decorOwned[newId] = 1;
       const piece = findDecor(newId);
       if (!piece) continue;
-      world.decorOwned[newId] = 1;
 
       // Best-of-spot wins, measured by what it cost — which is the game's own
       // ordering of how good a piece is.
@@ -441,32 +471,17 @@ const MIGRATIONS: Record<number, Migration> = {
    * for saves that passed through v9 and v10 with décor already bought.
    */
   11: (world) => {
-    const REPLACED: Record<string, string> = {
-      polishedCounter: 'mortarAndPestle',
-      alchemistsBench: 'goldGoblet',
-      curioCabinet: 'cutDiamond',
-      wovenRug: 'ironPot',
-      mosaicFloor: 'coinStack',
-      displayCase: 'pottedFern',
-      incenseBurner: 'skullChalice',
-      gildedSign: 'goldBanner',
-      paintedSign: 'crimsonBanner',
-      lanternDisplay: 'sproutingUrn',
-    };
-
-    world.decorOwned ??= {};
-    world.decor ??= emptySpots();
-
-    for (const [oldId, newId] of Object.entries(REPLACED)) {
+    for (const [oldId, newId] of Object.entries(LEGACY_DECOR)) {
       if ((world.decorOwned[oldId] ?? 0) <= 0) continue;
       delete world.decorOwned[oldId];
-      if (findDecor(newId)) world.decorOwned[newId] = 1;
+      // Owned whether or not it still exists, as in v9, so v20 can pay it back.
+      world.decorOwned[newId] = 1;
     }
 
     for (const spot of Object.keys(world.decor)) {
       const id = world.decor[spot];
       if (!id) continue;
-      const successor = REPLACED[id];
+      const successor = LEGACY_DECOR[id];
       world.decor[spot] = successor && findDecor(successor) ? successor : findDecor(id) ? id : null;
     }
 
@@ -939,6 +954,19 @@ const MIGRATIONS: Record<number, Migration> = {
     world.seed ??= world.cave?.seed ?? world.rngSeed ?? 1;
     return world;
   },
+
+  /**
+   * v23 → v24: two fields nothing read. The queue of sales awaiting
+   * acknowledgement was emptied by the away dialog and never looked at — the
+   * dialog reports what `resume` returns — and the board's last-refresh time
+   * was written and never used.
+   */
+  24: (world) => {
+    const loose = world as unknown as Record<string, unknown>;
+    delete loose.unreadSales;
+    delete loose.lastContractTick;
+    return world;
+  },
 };
 
 /** Every counter at zero, so a migration can fill only what it actually knows. */
@@ -968,16 +996,14 @@ function migrate(world: World, fromVersion: number): World | null {
     if (step) current = step(current);
   }
 
-  // Fills for fields added without a version bump, where absence is unambiguous.
-  current.unreadSales ??= [];
-  current.log ??= [];
-  current.nextLogId ??= 1;
-  current.decorOwned ??= {};
-  current.decor ??= emptySpots();
-  current.boards ??= {};
+  /*
+   * Fills for fields added without a version bump, where absence is
+   * unambiguous. A field that arrived with a version is filled by that
+   * version's step (the log by v3, décor by v9, boards by v12, the bottled
+   * record by v22) and needs nothing here.
+   */
   // Boosters arrived without a version bump: a save from before holds none.
   current.boosters ??= {};
-  current.bottledKinds ??= {};
   // A save from before parties waited to be greeted simply has none waiting.
   current.pendingClaims ??= [];
   // Every pot in a save from before storage existed was, by definition, out.

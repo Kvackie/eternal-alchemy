@@ -118,9 +118,24 @@ export async function open(
     if (message.type() === 'error') errors.push(`logged: ${message.text()}`);
   });
 
+  /*
+   * The fixture, and only the fixture, on every load — a reload included.
+   *
+   * Writing slot 0 alone was not enough. The game saves on `pagehide` into the
+   * NEXT slot, stamped with the time it left, and `load` takes whichever slot
+   * is newest — so the reload the views pass does between views came back to
+   * the state the last view left behind, not to the fixture it claimed to
+   * restore. Every save slot and the pointer go first, so the fixture is the
+   * only save there is to pick. Matched by prefix rather than by the slot
+   * count, so a change to `config.save.slots` cannot leave one behind.
+   */
   await page.addInitScript(
     (save: string) => {
       try {
+        for (const key of Object.keys(localStorage)) {
+          if (key.startsWith('eternal-alchemy/save/')) localStorage.removeItem(key);
+        }
+        localStorage.removeItem('eternal-alchemy/slot');
         localStorage.setItem('eternal-alchemy/save/0', save);
         localStorage.setItem('eternal-alchemy/slot', '0');
       } catch {

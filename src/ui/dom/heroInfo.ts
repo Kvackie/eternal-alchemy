@@ -40,8 +40,8 @@ import { changed, toast } from '@/ui/bus';
  * since an unrecruited hero has no favour, no injuries and no record.
  */
 export function showHeroInfo(sim: Simulation, heroId: string, hero: Hero | null): void {
-  // Built inside the modal because the buttons in it — hire, dismiss, heal —
-  // close the dialog, so they need the way out that `modal` hands them.
+  // Built inside the modal because the buttons in it — hire, dismiss — close
+  // the dialog, so they need the way out that `modal` hands them.
   modal({ content: (dismiss) => [buildHeroInfo(sim, heroId, hero, dismiss)] });
 }
 

@@ -142,23 +142,11 @@ export function runMarket(world: World, online: boolean): MarketTickResult {
       world.statistics.itemsSold += 1;
       world.statistics.goldEarned += gold;
 
-      const record: SaleRecord = {
-        itemName: item.recipeId,
-        recipeId: item.recipeId,
-        grade: item.grade,
-        gold,
-        renown,
-        at: tick,
-      };
-      sales.push(record);
-      world.unreadSales.push(record);
+      sales.push({ recipeId: item.recipeId, grade: item.grade, gold, renown, at: tick });
 
-      // A stacked slot sells one at a time and only empties when the last goes.
-      slot.quantity -= 1;
-      if (slot.quantity <= 0) {
-        slot.item = null;
-        slot.quantity = 0;
-      }
+      // A shelf holds one bottle, so a sale empties it.
+      slot.item = null;
+      slot.quantity = 0;
     }
     tick += tickMs;
   }
@@ -169,14 +157,19 @@ export function runMarket(world: World, online: boolean): MarketTickResult {
   return { sales };
 }
 
-export function makeShelf(count: number): ShelfSlot[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `shelf-${i + 1}`,
+/** The shelf at position `index`, bare, on the free board. */
+export function makeShelfSlot(index: number): ShelfSlot {
+  return {
+    id: `shelf-${index + 1}`,
     item: null,
     quantity: 0,
     quality: baseShelfTier.id,
     priceRatio: 1,
-  }));
+  };
+}
+
+export function makeShelf(count: number): ShelfSlot[] {
+  return Array.from({ length: count }, (_, i) => makeShelfSlot(i));
 }
 
 /** What a shelf's own board adds to the appeal of whatever stands on it. */
@@ -230,9 +223,8 @@ export function unstockShelf(world: World, slotId: string): boolean {
   const slot = world.shelf.find((s) => s.id === slotId);
   if (!slot?.item) return false;
 
-  for (let i = 0; i < slot.quantity; i += 1) {
-    world.bottled.push(i === 0 ? slot.item : { ...slot.item, uid: `${slot.item.uid}-${i}` });
-  }
+  // One bottle to a shelf since v18, so it goes back as it came.
+  world.bottled.push(slot.item);
   slot.item = null;
   slot.quantity = 0;
   return true;

@@ -39,7 +39,6 @@ export function buildWorld(clock: Clock = 'night'): World {
   world.lastSeenRealTime = Date.now();
   world.onboardingDismissed = true;
   world.lastMarketTick = world.now;
-  world.lastContractTick = world.now;
   world.cave.lastTick = world.now;
 
   world.gold = 250_000;
@@ -165,7 +164,6 @@ export function buildFreshSave(): string {
   world.now = config.clock.dayLengthMs * CLOCKS.day;
   world.lastSeenRealTime = Date.now();
   world.lastMarketTick = world.now;
-  world.lastContractTick = world.now;
   world.cave.lastTick = world.now;
   return JSON.stringify({ schemaVersion: config.save.schemaVersion, savedAt: Date.now(), world });
 }

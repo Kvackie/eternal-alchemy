@@ -1,9 +1,10 @@
 /**
  * The world view behind the panels.
  *
- * One scene with four compositions rather than four scenes, because the day/night
- * lighting, the placeholder atlas and the resize handling are shared and would
- * otherwise be written four times.
+ * One scene, drawing the garden behind the Grounds panel and nothing behind any
+ * other (see `DRAWN_SCREENS`). It stays a general world scene rather than a
+ * garden scene because the day/night lighting, the placeholder atlas and the
+ * resize handling are what the next screen to be drawn will need too.
  *
  * Lighting is a tint overlay over a single painted layer — the entire day/night
  * art budget.
@@ -147,6 +148,23 @@ export class WorldScene extends Phaser.Scene {
     if (!panels || typeof MutationObserver === 'undefined') return;
 
     const observer = new MutationObserver(() => {
+      /*
+       * Nothing to lay out, so nothing to measure.
+       *
+       * The panel is rebuilt on every press on every screen, and measuring it is
+       * a forced layout inside that press. On a screen with nothing behind it the
+       * answer could only ever feed a redraw that returns before it looks.
+       *
+       * The box is forgotten rather than left as it was, so the first rebuild
+       * after arriving back always counts as a move. Left alone it still held the
+       * Grounds panel from the last visit, which the new one matches — so a
+       * garden first laid out against whichever panel was on the page when the
+       * screen changed would never have been corrected.
+       */
+      if (!DRAWN_SCREENS.has(this.screen)) {
+        this.panelBox = '';
+        return;
+      }
       if (this.panelMoved()) this.redraw(true);
     });
     observer.observe(panels, { childList: true });
@@ -319,12 +337,6 @@ export class WorldScene extends Phaser.Scene {
         if (plot.crop) ingredientIds.push(plot.crop.cropId);
       }
     }
-    if (screen === 'cauldron') {
-      // Every pot's contents: the cauldron screen shows them all.
-      for (const pot of this.sim.cauldrons) {
-        for (const unit of pot.contents.units) ingredientIds.push(unit.ingredientId);
-      }
-    }
     for (const id of new Set(ingredientIds)) {
       this.wantTexture(`ingredient:${id}`, artUrlIf('ingredient', id));
     }
@@ -363,9 +375,8 @@ export class WorldScene extends Phaser.Scene {
     return ensureTexture(this, key, url, () => this.redraw(true));
   }
 
-  /** Called whenever the world changes; cheap enough at this scale to rebuild. */
   /**
-   * Draw the world.
+   * Draw the world. Called whenever it changes, and four times a second besides.
    *
    * `layoutChanged` is for the callers who know the panel has been rebuilt —
    * the scene is laid out around wherever the panel is, and the signature below
@@ -701,7 +712,18 @@ export class WorldScene extends Phaser.Scene {
     const cellH = innerH / rows;
     const cell = Math.min(cellW, cellH);
 
-    this.wantTexture(`ingredient:${crop.cropId}`, artUrlIf('ingredient', crop.cropId));
+    /*
+     * No plant until there is something to draw it with.
+     *
+     * A crop with painted art has no generated badge — `generatePlaceholders`
+     * leaves its key free for the painting — so until the file lands the key
+     * does not exist, and Phaser draws its missing-texture box in its place: a
+     * bed of black-and-green squares for the first moment of every new crop. The
+     * mounds are still drawn, so the bed reads as planted, and the redraw
+     * `wantTexture` fires on arrival puts the plants in.
+     */
+    const cropKey = `ingredient:${crop.cropId}`;
+    const plantReady = this.wantTexture(cropKey, artUrlIf('ingredient', crop.cropId));
 
     // A badge is a UI token standing in for a picture; at plant size it reads as
     // a sign staked in the soil, so it is drawn smaller than painted art.
@@ -725,6 +747,9 @@ export class WorldScene extends Phaser.Scene {
       seed = (seed * 1103515245 + 12345) & 0x7fffffff;
       return seed / 0x7fffffff - 0.5;
     };
+
+    // Where this bed's objects start, so the halo below can go underneath them.
+    const base = this.content.length;
 
     for (let i = 0; i < count; i += 1) {
       const col = i % cols;
@@ -767,12 +792,13 @@ export class WorldScene extends Phaser.Scene {
       const half = Math.max(1, (inRow - 1) / 2);
       const spread = inRow > 1 ? (col - (inRow - 1) / 2) / half : 0;
       const lean = spread * 13 + jitter() * 16;
+      if (!plantReady) continue;
 
       // Anchored by its foot, planted just inside the heap's crown rather than
       // balanced on top of it. Rotation pivots on that foot, so a leaning plant
       // stays rooted in its mound instead of swinging out of it.
       const sprite = this.add
-        .image(px, groundY + moundW * 0.06, `ingredient:${crop.cropId}`)
+        .image(px, groundY + moundW * 0.06, cropKey)
         .setOrigin(0.5, 1)
         .setDisplaySize(size, size)
         .setAngle(lean)
@@ -782,7 +808,15 @@ export class WorldScene extends Phaser.Scene {
 
     if (ready) {
       const halo = this.add.circle(x, y, Math.max(innerW, innerH) * 0.5, palette.good, 0.1);
-      this.content.addAt(halo, Math.max(0, this.content.length - count * 2));
+      /*
+       * Under everything this bed drew, and above the bed itself.
+       *
+       * This used to count back two objects per plant from the end, which was
+       * right for a plant and its mound and wrong once each mound carried a
+       * shadow too: three objects per plant, so the halo landed part-way through
+       * the planting, over some plants and under others.
+       */
+      this.content.addAt(halo, base);
     }
   }
 }

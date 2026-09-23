@@ -15,6 +15,7 @@ import {
   emptyNote,
   goldText,
   ingredientIcon,
+  liveCountdown,
   modal,
   panelHeader,
   portrait,
@@ -22,15 +23,13 @@ import {
   slotGrid,
 } from '../components';
 import type { QuantityActionSpec } from '../components';
-import { countdown, formatDuration, has, t } from '@/i18n';
-import { getBooster, getCrop, getDecor, getEquipment } from '@/sim/config';
-import { decorAvailability } from '@/sim/decor';
+import { has, t } from '@/i18n';
+import { getCrop, getDecor } from '@/sim/config';
+import { gradeAtLeast } from '@/sim/essences';
 import { artUrlIf } from '@/ui/art';
 import { showIngredientInfo } from '../ingredientInfo';
 import { goodsNotes } from '../goods';
 import type { MerchantVisit, StockEntry } from '@/sim/merchants';
-import { equipmentAvailability } from '@/sim/progression';
-
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
@@ -135,23 +134,7 @@ function entryLabel(entry: StockEntry): string {
   }
 }
 
-/**
- * How long this merchant is still here, ticking in place.
- *
- * The shell retextes anything carrying `data-countdown-at` every frame, which
- * is what lets the Market stop rebuilding itself sixty times a second to move
- * one number. See `needsLiveRedraw` in the shell for what that was costing.
- */
-function leavingChip(leavesAt: number, leaving: number): HTMLElement {
-  const node = chip(t('market.leaves', { time: formatDuration(leaving) }));
-  node.dataset.countdownAt = String(leavesAt);
-  node.dataset.countdownKey = 'market.leaves';
-  return node;
-}
-
 function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
-  const leaving = Math.max(0, visit.leavesAt - sim.now);
-
   const face = portrait('merchant', visit.merchantId);
   const header = el('div', { class: face ? 'merchant-head has-portrait' : 'merchant-head' }, [
     ...(face ? [face] : []),
@@ -160,7 +143,14 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
       chip(t(`merchant.${visit.merchantId}.tag`)),
     ]),
     el('div', { class: 'row-sub' }, [
-      leavingChip(visit.leavesAt, leaving),
+      /*
+       * How long they are still here, ticking in place.
+       *
+       * The shell retextes it every frame, which is what lets the Market stop
+       * rebuilding itself sixty times a second to move one number. See
+       * `worldShape` in the shell for what that was costing.
+       */
+      liveCountdown(visit.leavesAt, sim.now, { key: 'market.leaves', className: 'chip plain' }),
       chip(t('market.tier', { tier: visit.tier + 1 })),
       ...(visit.discount > 0
         ? [chip(t('market.discount', { percent: Math.round(visit.discount * 100) }), 'good')]
@@ -283,19 +273,15 @@ function buildEntry(
   });
 }
 
-/** Why this cannot be bought right now, or nothing. */
+/**
+ * Why this cannot be bought right now, or nothing.
+ *
+ * The gate is the simulation's own, so the tile cannot drift from the purchase:
+ * this used to be a copy of it, one rule behind.
+ */
 function blockedReason(sim: Simulation, entry: StockEntry): string | undefined {
   if (entry.remaining <= 0) return 'market.error.soldOut';
-  if (entry.kind === 'equipment') {
-    return equipmentAvailability(sim.world, getEquipment(entry.id)).reasonKey;
-  }
-  if (entry.kind === 'decor') {
-    return decorAvailability(sim.world, getDecor(entry.id)).reasonKey;
-  }
-  if (entry.kind === 'booster' && sim.rankIndex < getBooster(entry.id).requiresRank) {
-    return 'market.reason.rank';
-  }
-  return undefined;
+  return sim.purchaseGate(entry);
 }
 
 /**
@@ -366,15 +352,25 @@ function buyMany(
  * Bounded by the stock and by the purse, so the stepper cannot offer a number
  * the press behind it would refuse — including zero, which is the answer when
  * the purse cannot cover even one. A floor of 1 here used to hand the player an
- * enabled Buy button and a refusal toast. Bartered goods are priced in potions
- * rather than gold, so what the purse will bear is the barter rule's business
- * and they are offered one at a time; a tool or a furnishing is a single thing
- * the world holds once.
+ * enabled Buy button and a refusal toast. A tool or a furnishing is a single
+ * thing the world holds once.
  */
 function affordable(sim: Simulation, entry: StockEntry): number {
-  // Priced in potions, so what the purse will bear is the barter rule's
-  // business; the panel says the terms and offers one at a time.
-  if (entry.barter) return Math.min(1, entry.remaining);
+  /*
+   * Priced in potions, so the purse is the store room.
+   *
+   * Offered one at a time, and only while there are bottles enough to pay —
+   * counted by the rule the sim pays by, the barter's minimum grade. It was a
+   * flat one, which put an enabled Buy over an empty store room and answered
+   * the press with a refusal.
+   */
+  const { barter } = entry;
+  if (barter) {
+    const bottles = sim.world.bottled.filter((item) =>
+      gradeAtLeast(item.grade, barter.minGrade),
+    ).length;
+    return Math.min(1, entry.remaining, Math.floor(bottles / barter.potions));
+  }
 
   const price = entry.price ?? 0;
   const byPurse = price <= 0 ? entry.remaining : Math.floor(sim.world.gold / price);
@@ -392,7 +388,9 @@ function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, ind
   // it is a reason rather than a disabled button with a price on it.
   const blockedKey = blockedReason(sim, entry);
   const affordableNow = affordable(sim, entry);
-  const blocked = blockedKey ?? (affordableNow < 1 ? 'market.error.gold' : undefined);
+  const blocked =
+    blockedKey ??
+    (affordableNow < 1 ? (entry.barter ? 'market.error.potions' : 'market.error.gold') : undefined);
 
   const action = {
     label: t('market.buy'),
@@ -426,33 +424,17 @@ function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, ind
   showGoodsInfo(entry, label, action);
 }
 
-/** When a merchant who is not here yet is due, ticking in place. */
-function whenDue(at: number, now: number): HTMLElement {
-  const node = el('span', {
-    class: 'num upcoming-when',
-    text: countdown(at, now),
-  });
-  node.dataset.countdownAt = String(at);
-  return node;
-}
-
 function renderUpcoming(sim: Simulation): HTMLElement {
-  const rows = sim
-    .upcoming()
-    .map((entry) =>
-      el('div', { class: 'upcoming-row' }, [
-        el('span', { class: 'upcoming-name', text: t(`merchant.${entry.merchantId}`) }),
-        whenDue(entry.at, sim.now),
-      ]),
-    );
+  const rows = sim.upcoming().map((entry) =>
+    el('div', { class: 'upcoming-row' }, [
+      el('span', { class: 'upcoming-name', text: t(`merchant.${entry.merchantId}`) }),
+      // When they are due, ticking in place.
+      liveCountdown(entry.at, sim.now, { className: 'num upcoming-when' }),
+    ]),
+  );
 
   return el('section', { class: 'upcoming' }, [
     el('span', { class: 'field-label', text: t('market.upcoming') }),
     ...rows,
   ]);
-}
-
-/** Used by the shop panel's banner, so a visit is noticeable from elsewhere. */
-export function presentMerchantNames(sim: Simulation): string[] {
-  return sim.merchants().map((visit) => t(`merchant.${visit.merchantId}`));
 }

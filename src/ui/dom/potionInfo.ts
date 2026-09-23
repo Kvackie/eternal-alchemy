@@ -2,8 +2,7 @@
  * What a bottled potion actually is.
  *
  * A finished bottle carries more than its name and grade — the purity it was
- * poured at, how much essence is in it, what it is stoppered with, and whether
- * that stopper makes it worth more to a hero than to a customer. All of that was
+ * poured at, how much essence is in it, and what it is worth. All of that was
  * decided at the workbench and then never shown again, so a shelf of forty
  * bottles was forty names and a letter.
  *
@@ -25,6 +24,8 @@ import {
 import type { QuantityActionSpec } from './components';
 import { formatGold, formatNumber, t } from '@/i18n';
 import { getHeroDef } from '@/sim/config';
+import { contractTerms } from '@/sim/contracts';
+import { gradeAtLeast } from '@/sim/essences';
 import type { Simulation } from '@/sim/sim';
 import type { BottledItem } from '@/sim/types';
 
@@ -54,7 +55,18 @@ function notesOn(sim: Simulation, item: BottledItem): string[] {
     );
   }
 
-  if (sim.world.contracts.some((contract) => contract.terms?.recipeId === item.recipeId)) {
+  /*
+   * Only a contract this bottle would actually count against.
+   *
+   * Read through `contractTerms`, because an order posted from a template keeps
+   * its terms there rather than on itself — those were never matched — and
+   * held to the order's grade, because a D bottle is no use to an order for B.
+   */
+  const wanted = sim.world.contracts.some((contract) => {
+    const terms = contractTerms(contract);
+    return terms.recipeId === item.recipeId && gradeAtLeast(item.grade, terms.minGrade);
+  });
+  if (wanted) {
     notes.push(t('potionInfo.use.contract'));
   }
 

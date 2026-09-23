@@ -530,21 +530,8 @@ export interface GameConfig {
   save: { slots: number; autosaveDebounceMs: number; schemaVersion: number };
 }
 
-/**
- * Live config. The debug panel mutates this in place (see `overrideConfig`), which
- * is safe because nothing caches derived values across a frame.
- */
+/** The tunables in config.json, typed — a copy, so the imported module stays as shipped. */
 export const config: GameConfig = structuredClone(rawConfig) as unknown as GameConfig;
-
-/** Replace a config subtree at runtime. Used only by the debug panel. */
-export function overrideConfig(patch: Partial<GameConfig>): void {
-  Object.assign(config, patch);
-}
-
-/** Restore the values shipped in config.json. */
-export function resetConfig(): void {
-  Object.assign(config, structuredClone(rawConfig) as unknown as GameConfig);
-}
 
 export const ingredients = rawIngredients as unknown as IngredientDef[];
 export const crops = rawCrops as unknown as CropDef[];

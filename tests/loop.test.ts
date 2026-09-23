@@ -281,10 +281,10 @@ describe('the whole loop', () => {
     sim.setPrice('shelf-1', 0.8);
 
     const goldBefore = sim.world.gold;
-    sim.advanceBy(24 * HOUR, false);
+    const sales = sim.advanceBy(24 * HOUR, false);
 
     expect(sim.world.gold).toBeGreaterThan(goldBefore);
     expect(sim.world.statistics.itemsSold).toBe(1);
-    expect(sim.world.unreadSales).toHaveLength(1);
+    expect(sales).toHaveLength(1);
   });
 });

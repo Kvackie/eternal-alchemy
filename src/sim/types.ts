@@ -113,7 +113,7 @@ export interface ShelfSlot {
    *
    * A slot once stacked several of a kind, when the waxed pouch let one shelf
    * carry five. Vessels are gone and a shelf holds one bottle; the count stays
-   * so the sale and the stock mover read the same way they always have.
+   * in the save's shape, kept in step with `item` wherever a bottle comes or goes.
    */
   quantity: number;
   /**
@@ -128,7 +128,6 @@ export interface ShelfSlot {
 }
 
 export interface SaleRecord {
-  itemName: string;
   recipeId: string;
   grade: Grade;
   gold: number;
@@ -379,9 +378,6 @@ export interface World {
   /** Scheduled market ticks are derived, not stored; this is the last one applied. */
   lastMarketTick: number;
 
-  /** Sales that happened since the player last acknowledged them. */
-  unreadSales: SaleRecord[];
-
   /** Newest last. Trimmed to a cap so a long game doesn't bloat the save. */
   log: LogEntry[];
   nextLogId: number;
@@ -451,8 +447,6 @@ export interface World {
   contracts: Contract[];
   nextContractId: number;
   factionReputation: Record<string, number>;
-  /** World time the board was last refreshed. */
-  lastContractTick: number;
 
   /** The customer currently being haggled with, if any. */
   haggle: HaggleSession | null;

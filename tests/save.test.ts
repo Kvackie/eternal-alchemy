@@ -76,6 +76,38 @@ describe('saving', () => {
     expect(saves.import('{"hello":"world"}')).toBeNull();
   });
 
+  it('rejects an import shaped like a save but holding no world', () => {
+    const saves = new SaveManager(memoryAdapter());
+    const envelope = (world: unknown) =>
+      JSON.stringify({ schemaVersion: config.save.schemaVersion, savedAt: Date.now(), world });
+
+    // A version and a truthy world used to be enough to be reported imported.
+    expect(saves.import(envelope({ hello: 'world' }))).toBeNull();
+    expect(saves.import(envelope(true))).toBeNull();
+    expect(saves.import(envelope({ ...createWorld(1), plots: 'none' }))).toBeNull();
+    expect(saves.import(envelope({ ...createWorld(1), gold: null }))).toBeNull();
+  });
+
+  it('skips a newest slot that is not a world, and loads the one before it', () => {
+    const storage = memoryAdapter();
+    const saves = new SaveManager(storage);
+    const world = createWorld(9);
+    world.gold = 321;
+    saves.save(world);
+
+    // Newer by its own timestamp, readable as JSON, and not a shop.
+    storage.set(
+      'eternal-alchemy/save/2',
+      JSON.stringify({
+        schemaVersion: config.save.schemaVersion,
+        savedAt: Date.now() + 60_000,
+        world: { imported: 'the wrong file' },
+      }),
+    );
+
+    expect(saves.load()?.gold).toBe(321);
+  });
+
   it('survives storage that throws on every access', () => {
     const hostile = {
       get() {

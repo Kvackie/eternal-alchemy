@@ -16,6 +16,8 @@ import {
   goldText,
   gradeBadge,
   ingredientIcon,
+  liveCountdown,
+  liveMeter,
   matchesSearch,
   meter,
   panelHeader,
@@ -32,7 +34,7 @@ import { showHeroInfo } from '../heroInfo';
 import { findLabel, showMissionReward } from '../missionReward';
 import { showIngredientInfo } from '../ingredientInfo';
 import { showPotionInfo } from '../potionInfo';
-import { countdown, formatDuration, formatPercent, t } from '@/i18n';
+import { formatDuration, formatPercent, t } from '@/i18n';
 import { getHeroDef, heroesConfig, type LootEntry } from '@/sim/config';
 import type { FindKind } from '@/sim/types';
 import {
@@ -162,9 +164,6 @@ function renderMissionsUnderway(sim: Simulation): HTMLElement {
   if (sim.world.missions.length === 0) return el('span');
 
   const rows = sim.world.missions.map((mission) => {
-    const total = mission.returnsAt - mission.startedAt;
-    const done = sim.now - mission.startedAt;
-
     /*
      * The clock is marked, not redrawn.
      *
@@ -173,16 +172,11 @@ function renderMissionsUnderway(sim: Simulation): HTMLElement {
      * — and rebuilding the panel is what used to make this screen unclickable
      * the moment a party was out.
      */
-    const clock = chip(t('roster.returns', { time: countdown(mission.returnsAt, sim.now) }));
-    clock.dataset.countdownAt = String(mission.returnsAt);
-    clock.dataset.countdownKey = 'roster.returns';
-
-    const bar = meter(total > 0 ? done / total : 1);
-    const fill = bar.querySelector<HTMLElement>('.meter-fill');
-    if (fill && total > 0) {
-      fill.dataset.progressFrom = String(mission.startedAt);
-      fill.dataset.progressTo = String(mission.returnsAt);
-    }
+    const clock = liveCountdown(mission.returnsAt, sim.now, {
+      key: 'roster.returns',
+      className: 'chip plain',
+    });
+    const bar = liveMeter(mission.startedAt, mission.returnsAt, sim.now);
 
     return row({
       variant: 'mission',
@@ -256,19 +250,23 @@ function renderHeroes(sim: Simulation): HTMLElement {
       chip(t(`biome.${def.affinity}`)),
     ];
     if (hurt) {
-      const healing = chip(
-        t('roster.injured', {
-          time: countdown(hero.injuredUntil ?? 0, sim.now),
+      sub.push(
+        liveCountdown(hero.injuredUntil ?? 0, sim.now, {
+          key: 'roster.injured',
+          className: 'chip warn',
         }),
-        'warn',
       );
-      healing.dataset.countdownAt = String(hero.injuredUntil ?? 0);
-      healing.dataset.countdownKey = 'roster.injured';
-      sub.push(healing);
     }
     const actions: HTMLElement[] = [];
     if (hurt) {
-      const remedy = sim.world.bottled.find((item) => item.recipeId === HEALING_RECIPE);
+      // The cheapest remedy on hand, the way a barter spends the cheapest
+      // bottles: healing asks for a potion, not for the best one you have.
+      const remedy = sim.world.bottled
+        .filter((item) => item.recipeId === HEALING_RECIPE)
+        .reduce<(typeof sim.world.bottled)[number] | undefined>(
+          (best, item) => (best === undefined || item.fairValue < best.fairValue ? item : best),
+          undefined,
+        );
       actions.push(
         button(
           t('roster.heal'),
@@ -290,9 +288,19 @@ function renderHeroes(sim: Simulation): HTMLElement {
        * twitched every time you picked someone. The class fixes a minimum wide
        * enough for either word, so only the text inside it changes.
        */
+      /*
+       * A full party offers nobody else.
+       *
+       * The press used to go through and do nothing — the selection is capped
+       * at the party size, so a fourth pick was sliced straight back off — which
+       * reads as a broken button rather than as a rule.
+       */
+      const partyFull = !selected && selectedHeroes.length >= heroesConfig.partySize;
       const pick = button(selected ? t('roster.deselect') : t('roster.select'), toggle, {
         small: true,
         variant: selected ? 'amber' : 'ghost',
+        disabled: partyFull,
+        title: partyFull ? t('roster.partyFull', { count: heroesConfig.partySize }) : undefined,
       });
       pick.classList.add('hero-pick');
       pick.setAttribute('aria-pressed', String(selected));
@@ -316,12 +324,28 @@ function renderHeroes(sim: Simulation): HTMLElement {
 
   // No slot count here: it is a fact about hiring, and hiring happens in the
   // tavern beside this. Said in both places it was noise in one of them.
+  // Said where it can be read, not only in the greyed buttons' tooltips, which
+  // a touchscreen never shows.
+  // Only while someone is actually being turned away.
+  const full =
+    selectedHeroes.length >= heroesConfig.partySize &&
+    here.some((hero) => isAvailable(hero, sim.now) && !selectedHeroes.includes(hero.id));
   return collapsible({
     className: 'heroes',
     title: t('roster.heroes'),
     open: !folded.has('heroes'),
     onToggle: fold('heroes'),
-    body: rows,
+    body: [
+      ...(full
+        ? [
+            el('p', {
+              class: 'field-note',
+              text: t('roster.partyFull', { count: heroesConfig.partySize }),
+            }),
+          ]
+        : []),
+      ...rows,
+    ],
   });
 }
 

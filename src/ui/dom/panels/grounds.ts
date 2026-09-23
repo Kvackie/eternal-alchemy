@@ -15,6 +15,8 @@ import {
   el,
   emptyState,
   ingredientIcon,
+  liveCountdown,
+  liveMeter,
   makeDropTarget,
   meter,
   modal,
@@ -23,15 +25,24 @@ import {
   sectionHead,
   slot,
   slotGrid,
+  splitOnValue,
   stat,
   tabPanel,
   tabStrip,
+  VALUE_MARK,
 } from '../components';
-import { countdown, formatDuration, t } from '@/i18n';
+import { formatDuration, t } from '@/i18n';
 import { showIngredientInfo } from '../ingredientInfo';
-import { caveConfig, crops, getCrop, getIngredient, shaftConfig } from '@/sim/config';
+import {
+  caveConfig,
+  crops,
+  getCaveSpecies,
+  getCrop,
+  getIngredient,
+  shaftConfig,
+} from '@/sim/config';
 import { isReady } from '@/sim/garden';
-import { isMature, maturityOf } from '@/sim/cave';
+import { isMature } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { boostedCount, boosterFor } from '@/sim/boosters';
 import type { BoostSite } from '@/sim/config';
@@ -40,17 +51,13 @@ import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, confirm, toast } from '@/ui/bus';
 
-export const SEED_DRAG = 'application/x-eternal-seed';
+const SEED_DRAG = 'application/x-eternal-seed';
 
 type Tab = 'garden' | 'cave' | 'shaft';
 
 let tab: Tab = 'garden';
 let selectedSpecies: string | null = null;
 let caveTool: 'seed' | 'lantern' | 'tray' = 'seed';
-
-export function setGroundsTab(next: Tab): void {
-  tab = next;
-}
 
 /**
  * Whether what is showing here is drawn behind the panel.
@@ -125,13 +132,8 @@ function harvestToast(
       : t('toast.harvestKinds', { count: kinds.size });
 
   return seeds > 0
-    ? t('toast.harvestSeeds', { count: total, ingredient: name, seeds })
+    ? t('toast.harvestSeeds', { count: seeds, total, ingredient: name })
     : t('toast.harvest', { count: total, ingredient: name });
-}
-
-/** Painted art where it exists, essence glyph where it doesn't. */
-function iconFor(ingredientId: string): Node {
-  return ingredientIcon(ingredientId);
 }
 
 // ---------------------------------------------------------------------------
@@ -179,17 +181,16 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
   const boost = boosterBar(sim, 'garden');
   if (boost) body.append(boost);
 
-  const held = crops
-    .map((crop) => ({ id: crop.id, count: sim.world.seeds[crop.id] ?? 0, crop }))
-    .filter((entry) => entry.count > 0);
+  // Once for the tray and every empty plot, rather than once per plot.
+  const held = seedsOnHand(sim);
 
-  const tiles = held.map(({ id, count, crop }) => {
+  const tiles = held.map(({ id, count, label }) => {
+    const crop = getCrop(id);
     const growMs = crop.growMs;
-    const label = t(`crop.${crop.id}`);
 
     return slot({
       id,
-      icon: iconFor(crop.yields),
+      icon: ingredientIcon(crop.yields),
       label,
       count,
       /*
@@ -272,7 +273,7 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
         : null,
     ),
   ]);
-  for (const plot of sim.world.plots) plots.append(renderPlot(sim, plot));
+  for (const plot of sim.world.plots) plots.append(renderPlot(sim, plot, held.length > 0));
   body.append(plots);
 }
 
@@ -385,7 +386,7 @@ function soilChipFor(plot: Plot, cropId: string): HTMLElement {
   return chip(t(`soil.${plot.soil}`), getCrop(cropId).soil === plot.soil ? 'good' : 'plain');
 }
 
-function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
+function renderPlot(sim: Simulation, plot: Plot, anySeeds: boolean): HTMLElement {
   if (!plot.crop) {
     /*
      * The plot asks which seed; the seed asks which soil.
@@ -395,7 +396,6 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
      * which meant every tap on a seed quietly armed the garden — and a plot
      * whose button did nothing until you had been somewhere else first.
      */
-    const seeds = seedsOnHand(sim);
     const empty = row({
       variant: 'plot plot-empty',
       title: t('garden.plot.empty'),
@@ -405,7 +405,7 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
       ],
       actions: [
         button(t('garden.action.plant'), () => openSeedPicker(sim, plot), {
-          disabled: seeds.length === 0,
+          disabled: !anySeeds,
           small: true,
         }),
       ],
@@ -418,7 +418,6 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
 
   const crop = getCrop(plot.crop.cropId);
   const ready = isReady(plot, sim.now);
-  const remaining = Math.max(0, plot.crop.readyAt - sim.now);
   const name = t(`crop.${crop.id}`);
 
   const sub: Array<Node | string> = [soilChipFor(plot, crop.id)];
@@ -449,10 +448,29 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
 
   return row({
     variant: ready ? 'plot plot-ready' : 'plot',
-    icon: iconFor(crop.yields),
+    icon: ingredientIcon(crop.yields),
+    /*
+     * The time left runs in place.
+     *
+     * It was written once, when the panel was drawn, and then stood still: the
+     * garden is not rebuilt as time passes, so a bed read "ready in 4m" until
+     * something else on the screen was pressed. The sentence is cut around the
+     * clock so the clock alone can be retexted — see `splitOnValue`.
+     */
     title: ready
       ? t('garden.plot.ready', { crop: name })
-      : t('garden.plot.growing', { crop: name, time: formatDuration(remaining) }),
+      : [
+          // One span, so the title's flex row cannot wrap the clock away from
+          // the words it finishes.
+          el(
+            'span',
+            {},
+            splitOnValue(
+              t('garden.plot.growing', { crop: name, time: VALUE_MARK }),
+              liveCountdown(plot.crop.readyAt, sim.now),
+            ),
+          ),
+        ],
     sub,
     actions: [
       destroy,
@@ -492,6 +510,10 @@ function caveLabel(base: string, tile: CaveTile): string {
 }
 
 function renderCave(sim: Simulation, body: HTMLElement): void {
+  // The last spore of the chosen species sown takes its tile away, and a
+  // selection with no tile to show it is one the player cannot see or undo.
+  if (selectedSpecies && (sim.world.spores[selectedSpecies] ?? 0) <= 0) selectedSpecies = null;
+
   const boost = boosterBar(sim, 'cave');
   if (boost) body.append(boost);
 
@@ -501,7 +523,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
     .map(({ species, count }) =>
       slot({
         id: species.id,
-        icon: iconFor(species.id),
+        icon: ingredientIcon(species.id),
         label: t(`ingredient.${species.id}`),
         count,
         caption: t(`cave.light.${species.light}`),
@@ -592,8 +614,14 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
        */
       const essence = dominantEssence(getIngredient(tile.speciesId).essence);
       node.dataset.essence = essence;
-      node.append(el('span', { class: 'cave-crop' }, [iconFor(tile.speciesId)]));
-      node.append(el('span', { class: 'cave-growth' }, [meter(maturityOf(tile, sim.now))]));
+      node.append(el('span', { class: 'cave-crop' }, [ingredientIcon(tile.speciesId)]));
+      // Fills in place between sowing and ripeness, like every other timer.
+      const growMs = getCaveSpecies(tile.speciesId).growMs;
+      node.append(
+        el('span', { class: 'cave-growth' }, [
+          liveMeter(tile.seededAt, tile.seededAt + growMs, sim.now),
+        ]),
+      );
       node.setAttribute(
         'aria-label',
         caveLabel(
@@ -746,26 +774,34 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
     const rows = group.veins.map((vein) => {
       const working = shaft.workingVeinIds.includes(vein.id);
       const workable = isWorkable(vein, sim.now);
+      /*
+       * A seam that has regrown is a full seam, whatever its record says.
+       *
+       * The ore goes back only when the seam is next worked, so until then it
+       * reads zero and carries a refill time in the past — and it was drawn
+       * that way: "Regrowing · 0s", "0 of 8 left", beside a Work button that
+       * would dig it. It is idle, and full, and says so.
+       */
+      const left = vein.remaining <= 0 && workable ? vein.size : vein.remaining;
       const status = working
-        ? t('shaft.working', {
-            time: countdown(vein.nextBatchAt ?? sim.now, sim.now),
+        ? liveCountdown(vein.nextBatchAt ?? sim.now, sim.now, {
+            key: 'shaft.working',
+            className: 'chip good',
           })
-        : vein.remaining > 0
-          ? t('shaft.idle')
-          : t('shaft.refilling', {
-              time: countdown(vein.refillsAt ?? sim.now, sim.now),
+        : left > 0
+          ? chip(t('shaft.idle'), 'plain')
+          : liveCountdown(vein.refillsAt ?? sim.now, sim.now, {
+              key: 'shaft.refilling',
+              className: 'chip plain',
             });
 
       return row({
         variant: 'vein',
         data: working ? { working: 'true' } : {},
-        icon: iconFor(vein.ingredientId),
+        icon: ingredientIcon(vein.ingredientId),
         title: veinTitle(vein, seen, ordinal),
-        sub: [
-          chip(t('shaft.remaining', { count: vein.remaining, size: vein.size })),
-          chip(status, working ? 'good' : 'plain'),
-        ],
-        extra: [meter(vein.size > 0 ? vein.remaining / vein.size : 0)],
+        sub: [chip(t('shaft.remaining', { count: left, size: vein.size })), status],
+        extra: [meter(vein.size > 0 ? left / vein.size : 0)],
         actions: [
           working
             ? button(

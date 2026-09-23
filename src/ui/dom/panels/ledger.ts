@@ -14,10 +14,13 @@ import {
   pager,
   panelHeader,
   splitOnValue,
+  tabPanel,
+  tabStrip,
   VALUE_MARK,
 } from '../components';
 import { formatGold, formatNumber, has, t } from '@/i18n';
 import { dayStateAt } from '@/sim/clock';
+import { caveConfig, crops } from '@/sim/config';
 import { logPage } from '@/sim/log';
 import { nextRankProgress } from '@/sim/progression';
 import type { LogEntry, LogKind } from '@/sim/types';
@@ -41,7 +44,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'haggleWon',
     'haggleLost',
   ],
-  craft: ['brewStarted', 'brewReady', 'brewRejected', 'bottled'],
+  craft: ['brewStarted', 'brewReady', 'brewRejected', 'bottled', 'recipeFound'],
   garden: [
     'planted',
     'cropDestroyed',
@@ -59,7 +62,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'heroRecruited',
     'heroDismissed',
   ],
-  shop: ['installed', 'furnished', 'rankUp', 'retired'],
+  shop: ['installed', 'furnished', 'cauldronBought', 'rankUp'],
 };
 
 let page = 1;
@@ -181,22 +184,20 @@ function renderLog(sim: Simulation): HTMLElement {
   const result = logPage(sim.world, page, PAGE_SIZE, FILTERS[filter]);
   page = result.page;
 
-  const tabs = el(
-    'div',
-    { class: 'options' },
-    (['all', 'trade', 'craft', 'garden', 'expedition', 'shop'] as Filter[]).map((id) => {
-      const node = el('button', { class: 'option', type: 'button' }, [
-        el('span', { text: t(`ledger.filter.${id}`) }),
-      ]);
-      node.setAttribute('aria-pressed', String(filter === id));
-      node.addEventListener('click', () => {
-        filter = id;
-        page = 1;
-        changed();
-      });
-      return node;
-    }),
-  );
+  // Views of one log, so a strip of tabs rather than of toggles.
+  const tabs = tabStrip({
+    name: 'ledger-log',
+    current: filter,
+    tabs: (Object.keys(FILTERS) as Filter[]).map((id) => ({
+      id,
+      label: t(`ledger.filter.${id}`),
+    })),
+    onSelect: (id) => {
+      filter = id as Filter;
+      page = 1;
+      changed();
+    },
+  });
 
   const rows =
     result.entries.length === 0
@@ -221,7 +222,7 @@ function renderLog(sim: Simulation): HTMLElement {
       el('span', { class: 'field-note', text: t('ledger.log.count', { count: result.total }) }),
     ]),
     tabs,
-    el('div', { class: 'log-rows' }, rows),
+    tabPanel('ledger-log', filter, [el('div', { class: 'log-rows' }, rows)]),
     pages,
   ]);
 }
@@ -247,15 +248,19 @@ function renderEntry(entry: LogEntry): HTMLElement {
   if (typeof params.quality === 'string') params.quality = t(`quality.${params.quality}`);
   if (typeof params.customer === 'string') params.customer = t(`customer.${params.customer}`);
   if (typeof params.town === 'string') params.town = t(`town.${params.town}`);
+  if (typeof params.tier === 'string') params.tier = t(`cauldronTier.${params.tier}`);
   // Substituted as a marker, then cut back out below so the coin is gold-coloured
   // without the sentence leaving `en.json`. See `splitOnValue`.
   const goldValue = typeof params.gold === 'number' ? formatGold(params.gold) : null;
   if (goldValue !== null) params.gold = VALUE_MARK;
 
   // A bought item could be any kind, so try each namespace and fall back to the id.
-  if (typeof params.item === 'string') {
+  const packet = entry.kind === 'bought' ? boughtPacket(entry) : null;
+  if (packet) {
+    params.item = packet;
+  } else if (typeof params.item === 'string') {
     const id = params.item;
-    for (const namespace of ['equipment', 'decor', 'booster', 'ingredient', 'crop']) {
+    for (const namespace of ['equipment', 'decor', 'booster', 'board', 'ingredient', 'crop']) {
       const key = `${namespace}.${id}`;
       if (has(key)) {
         params.item = t(key);
@@ -283,6 +288,28 @@ function renderEntry(entry: LogEntry): HTMLElement {
   const row = el('div', { class: 'log-row' }, parts);
   row.dataset.kind = entry.kind;
   return row;
+}
+
+/**
+ * A seed or spore purchase, named as one.
+ *
+ * The log records what was bought by id, and a packet of seeds shares its id
+ * with the herb it grows into — so "Bought Sunleaf for 12g" was a line about a
+ * herb nobody sold. Nobody sells herbs or fungi loose, so a crop's id in a
+ * purchase is its seed and a cave species' is its spores. A `kind` in the
+ * entry says so outright where the simulation records one.
+ */
+function boughtPacket(entry: LogEntry): string | null {
+  const id = entry.params.item;
+  if (typeof id !== 'string') return null;
+  const kind = entry.params.kind;
+  const seed = kind === 'seed' || (kind === undefined && crops.some((crop) => crop.id === id));
+  if (seed) return t('market.seedOf', { crop: t(`crop.${id}`) });
+  const spore =
+    kind === 'spore' ||
+    (kind === undefined && caveConfig.species.some((species) => species.id === id));
+  if (spore) return t('market.sporeOf', { species: t(`ingredient.${id}`) });
+  return null;
 }
 
 export function resetLedgerPaging(): void {

@@ -9,7 +9,8 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, customersConfig, getCustomer } from '@/sim/config';
+import { config, customersConfig, getCustomer, getDecor } from '@/sim/config';
+import { grantDecor } from '@/sim/decor';
 import { WALK_INS_PAUSED, ceilingFor, previewPitch, scheduledWalkIns } from '@/sim/haggle';
 import type { BottledItem, Grade, HaggleStance } from '@/sim/types';
 
@@ -100,6 +101,22 @@ describe('a haggle', () => {
       sim.abandonHaggle();
     }
     expect(seen.size).toBeGreaterThan(1);
+  });
+
+  it('lifts the opening ceiling by what the placed décor promises', () => {
+    // The purse draw is seeded by customer and day, so the same visit with and
+    // without the chalice differs only by the décor.
+    const plain = shopWithCustomer();
+    const without = plain.sim.beginHaggle(plain.customerId, 'a')!.ceiling;
+
+    const dressed = shopWithCustomer();
+    grantDecor(dressed.sim.world, 'skullChalice');
+    const bonus = getDecor('skullChalice').effect.haggleCeilingBonus ?? 0;
+    expect(bonus).toBeGreaterThan(0);
+    const session = dressed.sim.beginHaggle(dressed.customerId, 'a')!;
+    expect(session.ceiling).toBeGreaterThan(without);
+    expect(session.ceiling).toBeCloseTo(without * (1 + bonus), -1);
+    expect(session.baseCeiling).toBe(session.ceiling);
   });
 
   it('refuses an item the customer does not want', () => {

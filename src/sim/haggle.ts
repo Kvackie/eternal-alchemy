@@ -19,7 +19,7 @@ import { config, customersConfig, getCustomer, getRecipe } from './config';
 import type { CustomerActionDef, CustomerDef } from './config';
 import { dayStateAt } from './clock';
 import { angleBetween } from './essences';
-import { rankOf } from './progression';
+import { derivedStats, rankOf } from './progression';
 import { hashKey, Rng } from './rng';
 import type { BottledItem, HaggleSession, HaggleStance, World } from './types';
 
@@ -158,7 +158,11 @@ export function beginHaggle(
   // Stance first, so adding the purse draw does not reshuffle which stance a
   // given day produces.
   const stance = pickStance(def, rng);
-  const ceiling = Math.round(ceilingFor(item, def, budgetVariance(rng)));
+  // Décor that raises what a haggler will go to is applied here, once, to the
+  // opening ceiling — pitching then moves it by proportion, so the bonus
+  // carries through every round without being counted twice.
+  const bonus = 1 + derivedStats(world).haggleCeilingBonus;
+  const ceiling = Math.round(ceilingFor(item, def, budgetVariance(rng)) * bonus);
 
   const session: HaggleSession = {
     customerId,

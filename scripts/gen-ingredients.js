@@ -321,11 +321,16 @@ write('merchants.json', merchants);
 
 // ----------------------------------------------------------------- report
 
-const byKind = Object.groupBy(ingredients, (ing) => ing.category);
+// Counted by hand rather than with `Object.groupBy`, which Node only has from
+// 21: the generator should not be the thing that fails on a Node 20 machine.
+const byKind = ingredients.reduce((counts, ing) => {
+  counts[ing.category] = (counts[ing.category] ?? 0) + 1;
+  return counts;
+}, {});
 console.log(
   `${ingredients.length} ingredients: ` +
     Object.entries(byKind)
-      .map(([kind, list]) => `${list.length} ${kind}`)
+      .map(([kind, count]) => `${count} ${kind}`)
       .join(', '),
 );
 console.log(

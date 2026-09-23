@@ -12,43 +12,41 @@
 
 import Phaser from 'phaser';
 import { ingredients } from '@/sim/config';
-import { artUrl, dominantEssence, hasArt, idsWithArt } from '@/ui/art';
+import { artUrl, dominantEssence, hasArt } from '@/ui/art';
 import { essenceColors, palette } from '@/ui/theme';
-import { ESSENCES } from '@/sim/types';
-import type { Essence, EssenceVector } from '@/sim/types';
+import type { Essence } from '@/sim/types';
 
 /** Authoring grid. Everything is a multiple of this so the atlas stays tidy. */
 const CELL = 64;
 
+/** The scene art the world draws on every frame — see `preloadArt`. */
+const PRELOADED_SCENE_ART = ['plot', 'dirtMound'] as const;
+
 /**
- * Queue every sprite that has real art.
+ * Queue the painted sprites the world cannot start without.
  *
  * Called from `preload`, so Phaser's loader handles it before the scene builds.
- * Anything not queued here falls through to a generated badge below, which is
- * what lets painted art replace placeholders a few files at a time.
+ * Anything not queued here is either fetched on demand by `ensureTexture` or
+ * falls through to a generated badge below, which is what lets painted art
+ * replace placeholders a few files at a time.
  */
 export function preloadArt(scene: Phaser.Scene): void {
   /*
-   * Only what every scene needs, which is a couple of dozen files.
+   * Only what the garden stands on: the bed and the heap of earth under each
+   * plant, drawn on every frame of the only screen with a world behind it.
    *
    * Queuing all of it — hundreds of ingredients and potions — meant Phaser held
    * the scene back until the last one arrived, and the world sat empty for over
    * half a minute. The rest is fetched by `ensureTexture` when something is
    * actually about to be drawn, which for a garden of four plots is four files.
    *
-   * The real answer is a packed atlas; this is the honest interim, and it keeps
-   * the placeholder fallback doing exactly what it was built to do.
+   * This used to take every scene, decor and shelf picture too — a couple of
+   * dozen files for cauldrons, shelves and furnishings the canvas stopped
+   * drawing when those screens became documents. The panels load their own art
+   * as plain images, so nothing lost them.
    */
-  for (const id of idsWithArt('scene')) {
-    scene.load.image(id, artUrl('scene', id));
-  }
-  for (const id of idsWithArt('decor')) {
-    scene.load.image(`decor:${id}`, artUrl('decor', id));
-  }
-  // Five boards, drawn on every shop screen, so they belong in the preload
-  // rather than arriving a frame after the shelves they are.
-  for (const id of idsWithArt('shelf')) {
-    scene.load.image(`shelf:${id}`, artUrl('shelf', id));
+  for (const id of PRELOADED_SCENE_ART) {
+    if (hasArt('scene', id)) scene.load.image(id, artUrl('scene', id));
   }
 }
 
@@ -93,9 +91,6 @@ export function generatePlaceholders(scene: Phaser.Scene): void {
     makeIngredientBadge(scene, ingredient.id, dominantEssence(ingredient.essence));
   }
   makePlotTile(scene);
-  makeCauldron(scene);
-  makeShelf(scene);
-  makeBottle(scene);
 }
 
 function texture(
@@ -135,8 +130,11 @@ function makeIngredientBadge(scene: Phaser.Scene, id: string, essence: Essence):
   commit();
 }
 
-/** Shared glyph geometry, so canvas sprites and the wheel agree. */
-export function drawGlyphShape(
+/**
+ * An essence glyph in Graphics calls: the shapes of `essenceGlyphPath`, on the
+ * same 10×10 grid, so a badge on the canvas and a glyph in the panel agree.
+ */
+function drawGlyphShape(
   g: Phaser.GameObjects.Graphics,
   essence: Essence,
   cx: number,
@@ -230,103 +228,4 @@ function makePlotTile(scene: Phaser.Scene): void {
   }
 
   commit();
-}
-
-function makeCauldron(scene: Phaser.Scene): void {
-  const made = texture(scene, 'cauldron', CELL * 3, CELL * 3);
-  if (!made) return;
-  const { g, commit } = made;
-  const cx = CELL * 1.5;
-
-  g.fillStyle(0x1d2422, 1);
-  g.fillEllipse(cx, CELL * 1.9, CELL * 2.4, CELL * 2);
-  g.lineStyle(3, 0x36423d, 1);
-  g.strokeEllipse(cx, CELL * 1.9, CELL * 2.4, CELL * 2);
-
-  g.fillStyle(palette.goodWash, 1);
-  g.fillEllipse(cx, CELL * 1.25, CELL * 2.05, CELL * 0.7);
-  g.lineStyle(2, palette.good, 0.8);
-  g.strokeEllipse(cx, CELL * 1.25, CELL * 2.05, CELL * 0.7);
-
-  commit();
-}
-
-/**
- * A board with a lip and a shadow under it.
- *
- * The old version was a flat bar, which read as a line rather than a surface —
- * bottles appeared to float above a stripe. A lit top edge, a darker face and a
- * cast shadow are enough to say "things stand on this".
- */
-function makeShelf(scene: Phaser.Scene): void {
-  const w = CELL * 4;
-  const h = CELL;
-  const made = texture(scene, 'shelf', w, h);
-  if (!made) return;
-  const { g, commit } = made;
-
-  const top = h * 0.62;
-  const thickness = h * 0.2;
-
-  // Shadow first, so the board sits on top of it.
-  g.fillStyle(0x000000, 0.35);
-  g.fillRect(6, top + thickness, w - 12, h * 0.12);
-
-  g.fillStyle(0x3a2c1d, 1);
-  g.fillRect(0, top, w, thickness);
-  // Lit edge along the front lip.
-  g.fillStyle(0x5a462e, 1);
-  g.fillRect(0, top, w, 2.5);
-  // Darker underside, where the board turns away from the light.
-  g.fillStyle(0x241b12, 1);
-  g.fillRect(0, top + thickness - 3, w, 3);
-
-  // Two brackets, so the board reads as fixed to a wall rather than hovering.
-  g.fillStyle(0x2b2116, 1);
-  for (const x of [w * 0.14, w * 0.86]) {
-    g.fillRect(x - 3, top + thickness, 6, h * 0.16);
-  }
-
-  commit();
-}
-
-function makeBottle(scene: Phaser.Scene): void {
-  const made = texture(scene, 'bottle', CELL, CELL * 1.5);
-  if (!made) return;
-  const { g, commit } = made;
-  const cx = CELL / 2;
-
-  g.fillStyle(0x8fd4c3, 0.22);
-  g.fillRect(cx - 7, 8, 14, 18);
-  g.fillRoundedRect(cx - 17, 24, 34, 60, 8);
-  g.lineStyle(2, 0xa9bdb6, 0.8);
-  g.strokeRect(cx - 7, 8, 14, 18);
-  g.strokeRoundedRect(cx - 17, 24, 34, 60, 8);
-
-  // Tinted at runtime by the potion's blend, which is why the fill is neutral.
-  g.fillStyle(0xffffff, 0.9);
-  g.fillRoundedRect(cx - 13, 44, 26, 36, 6);
-
-  commit();
-}
-
-/** Blend an essence vector into one colour, for tinting a bottle's contents. */
-export function blendColor(vector: EssenceVector): number {
-  let total = 0;
-  let r = 0;
-  let g = 0;
-  let b = 0;
-
-  for (const essence of ESSENCES) {
-    const weight = vector[essence];
-    if (weight <= 0) continue;
-    const color = essenceColors[essence];
-    r += ((color >> 16) & 0xff) * weight;
-    g += ((color >> 8) & 0xff) * weight;
-    b += (color & 0xff) * weight;
-    total += weight;
-  }
-
-  if (total === 0) return palette.textFaint;
-  return ((r / total) << 16) | ((g / total) << 8) | (b / total);
 }

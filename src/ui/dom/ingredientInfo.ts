@@ -136,24 +136,21 @@ function essenceRows(essence: EssenceVector): HTMLElement {
   return el('div', { class: 'essence-rows' }, rows);
 }
 
+export interface IngredientInfoOptions {
+  action?: QuantityActionSpec;
+}
+
 /**
- * The properties panel for one ingredient.
+ * Show what an ingredient does, and optionally offer to act on it.
  *
  * Built as a plain overlay so it sits over whichever screen asked for it, and
  * dismisses on backdrop click or Escape like the other dialogs.
- */
-/**
- * Show what an ingredient does, and optionally offer to act on it.
  *
  * The action is what the tile's click used to be. Moving it in here is what
  * lets a tap on a tile mean "tell me about this" everywhere, instead of meaning
  * "buy one" in the market and "select" in the garden and "tell me" only on a
  * dot in the corner too small to aim at.
  */
-export interface IngredientInfoOptions {
-  action?: QuantityActionSpec;
-}
-
 export function showIngredientInfo(
   sim: Simulation,
   ingredientId: string,
@@ -191,7 +188,7 @@ export function showIngredientInfo(
                 el('span', { text: t(`recipe.${entry.recipe.id}`) }),
                 chip(
                   t('ingredientInfo.off', { deg: entry.deg.toFixed(0) }),
-                  entry.deg <= entry.recipe.toleranceDeg ? 'good' : 'default',
+                  entry.deg <= entry.recipe.toleranceDeg ? 'good' : 'plain',
                 ),
               ]),
             ),

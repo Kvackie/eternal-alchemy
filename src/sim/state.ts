@@ -38,7 +38,6 @@ export function createWorld(seed = freshSeed()): World {
     shelf: makeShelf(config.shop.startingShelves),
 
     lastMarketTick: 0,
-    unreadSales: [],
 
     log: [],
     nextLogId: 1,
@@ -74,7 +73,6 @@ export function createWorld(seed = freshSeed()): World {
     contracts: [],
     nextContractId: 1,
     factionReputation: {},
-    lastContractTick: 0,
 
     haggle: null,
     servedToday: { dayNumber: -1, customerIds: [] },

@@ -10,14 +10,7 @@
 
 import { config, getIngredient } from './config';
 import { ESSENCES } from './types';
-import type {
-  CauldronContents,
-  Essence,
-  EssenceVector,
-  Freshness,
-  Grade,
-  PotencyTierId,
-} from './types';
+import type { CauldronContents, EssenceVector, Freshness, Grade, PotencyTierId } from './types';
 
 export function zeroVector(): EssenceVector {
   return { ignis: 0, aqua: 0, terra: 0, aer: 0, umbra: 0 };
@@ -98,6 +91,29 @@ export function freshnessOf(
   if (age < config.freshness.dewfreshUntilMs * rate) return 'dewfresh';
   if (age < config.freshness.freshUntilMs * rate) return 'fresh';
   return 'dried';
+}
+
+/**
+ * When a unit next drops a stage, or null if it never will again.
+ *
+ * The same boundaries `freshnessOf` reads, at the same category rate — a
+ * countdown built from the bare config figures ran a fungus's clock at twice
+ * its real speed and counted down on stone that never ages.
+ */
+export function nextFreshnessChangeAt(
+  ingredientId: string,
+  harvestedAt: number | null,
+  now: number,
+): number | null {
+  if (harvestedAt === null) return null;
+  const rate = agingRateFor(ingredientId);
+  if (rate <= 0) return null;
+
+  for (const until of [config.freshness.dewfreshUntilMs, config.freshness.freshUntilMs]) {
+    const at = harvestedAt + until * rate;
+    if (now < at) return at;
+  }
+  return null;
 }
 
 /**
@@ -188,10 +204,4 @@ export function gradeAtLeast(grade: Grade, minimum: Grade): boolean {
 
 export function worseOf(a: Grade, b: Grade): Grade {
   return GRADE_ORDER.indexOf(a) >= GRADE_ORDER.indexOf(b) ? a : b;
-}
-
-/** Share of the blend made up by one essence, 0..1. */
-export function essenceShare(v: EssenceVector, essence: Essence): number {
-  const total = totalEssence(v);
-  return total === 0 ? 0 : v[essence] / total;
 }

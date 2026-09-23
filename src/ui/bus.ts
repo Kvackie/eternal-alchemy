@@ -9,7 +9,6 @@
 export type GameEvent =
   | { type: 'world:changed' }
   | { type: 'screen:changed'; screen: ScreenId }
-  | { type: 'brew:ready' }
   /** Time was caught up after an absence — real or simulated by the debug panel. */
   | { type: 'away'; summary: AwaySummary }
   | { type: 'confirm'; request: ConfirmRequest }

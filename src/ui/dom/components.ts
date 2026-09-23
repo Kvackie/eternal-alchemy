@@ -9,7 +9,7 @@
 import { essenceGlyphSvg } from '@/ui/theme';
 import { artUrlIf, dominantEssence } from '@/ui/art';
 import { getIngredient, getRecipe } from '@/sim/config';
-import { formatGold, t } from '@/i18n';
+import { countdown, formatGold, t } from '@/i18n';
 import type { Essence, Grade } from '@/sim/types';
 
 export function el<K extends keyof HTMLElementTagNameMap>(
@@ -277,6 +277,14 @@ export function row(options: RowOptions): HTMLElement {
     node.setAttribute('tabindex', '0');
     node.addEventListener('click', options.onClick);
     node.addEventListener('keydown', (event) => {
+      /*
+       * Only the row's own keys.
+       *
+       * A keydown bubbles, so Enter on a button inside the row — Heal, Take
+       * along — reached this handler too, which cancelled the button's own
+       * activation and opened the row instead. The button never fired.
+       */
+      if (event.target !== node) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         options.onClick?.();
@@ -292,42 +300,52 @@ export function meter(fraction: number, over = false): HTMLElement {
   return el('div', { class: 'meter' }, [fill]);
 }
 
+/**
+ * A meter that fills on its own between two fixed moments.
+ *
+ * Drawn at where it stands now and tagged with `data-progress-from`/`-to`, which
+ * the shell reads every frame to move the fill without rebuilding the panel
+ * around it. Four panels built this by hand, each with its own copy of the
+ * querySelector for the fill.
+ */
+export function liveMeter(from: number, to: number, now: number): HTMLElement {
+  const total = to - from;
+  const bar = meter(total > 0 ? (now - from) / total : 1);
+  const fill = bar.querySelector<HTMLElement>('.meter-fill');
+  if (fill && total > 0) {
+    fill.dataset.progressFrom = String(from);
+    fill.dataset.progressTo = String(to);
+  }
+  return bar;
+}
+
+/**
+ * A countdown the shell retextes in place, every frame — see `updateCountdowns`.
+ *
+ * `key` names a sentence with a `{time}` in it, for a clock that reads as one
+ * ("Back in 3m"); without it the node is the bare duration. `className` makes
+ * it a chip or whatever else the caller was going to wrap it in.
+ */
+export function liveCountdown(
+  at: number,
+  now: number,
+  spec: { key?: string; className?: string } = {},
+): HTMLElement {
+  const time = countdown(at, now);
+  const node = el('span', {
+    ...(spec.className ? { class: spec.className } : {}),
+    text: spec.key ? t(spec.key, { time }) : time,
+  });
+  node.dataset.countdownAt = String(at);
+  if (spec.key) node.dataset.countdownKey = spec.key;
+  return node;
+}
+
 export function emptyState(title: string, hint: string): HTMLElement {
   return el('div', { class: 'empty-state' }, [
     el('strong', { text: title }),
     el('span', { text: hint }),
   ]);
-}
-
-export interface OptionSpec {
-  label: string;
-  detail?: string;
-  selected: boolean;
-  disabled?: boolean;
-  title?: string;
-  onSelect: () => void;
-}
-
-/**
- * A row of mutually exclusive choices.
- *
- * Unavailable options are shown disabled with a reason rather than hidden — the
- * player should learn that a cap exists before they run into it.
- */
-export function optionGroup(options: OptionSpec[]): HTMLElement {
-  const nodes = options.map((option) => {
-    const children: Array<Node | string> = [el('span', { text: option.label })];
-    if (option.detail) children.push(el('small', { text: option.detail }));
-
-    const node = el('button', { class: 'option', type: 'button' }, children);
-    node.setAttribute('aria-pressed', String(option.selected));
-    if (option.disabled) node.disabled = true;
-    if (option.title) node.title = option.title;
-    node.addEventListener('click', option.onSelect);
-    return node;
-  });
-
-  return el('div', { class: 'options' }, nodes);
 }
 
 export interface TabSpec {
@@ -414,7 +432,7 @@ export function tabStrip(spec: {
 
 /** The view a strip of tabs is showing, named by the tab that chose it. */
 export function tabPanel(name: string, current: string, children: HTMLElement[]): HTMLElement {
-  const panel = el('div', { class: 'tab-panel', role: 'tabpanel' }, children);
+  const panel = el('div', { role: 'tabpanel' }, children);
   panel.id = `${name}-panel`;
   panel.setAttribute('aria-labelledby', `${name}-tab-${current}`);
   return panel;
@@ -423,13 +441,8 @@ export function tabPanel(name: string, current: string, children: HTMLElement[])
 export interface CollapsibleSpec {
   /** Extra classes for the section, so existing per-section styling still lands. */
   className?: string;
-  title?: string;
+  title: string;
   note?: string;
-  /**
-   * A ready-made heading, for a section that already had one worth keeping —
-   * the Cauldron's numbered steps, say. Used instead of `title`/`note`.
-   */
-  head?: HTMLElement[];
   open: boolean;
   onToggle: () => void;
   body: HTMLElement[];
@@ -450,17 +463,14 @@ export function collapsible(spec: CollapsibleSpec): HTMLElement {
   /*
    * A div with a button's role, not a `<button>`.
    *
-   * A heading handed in whole — the Cauldron's step head is a div wrapping a
-   * number and two lines — cannot legally live inside a button, and a browser
-   * that reparses it would take it back out. The role and the key handler give
-   * the same behaviour on markup that stays valid.
+   * It began that way to hold a whole heading handed in — a div, which cannot
+   * legally live inside a button — and the role and the key handler give the
+   * same behaviour, so it stayed when the last such heading went.
    */
   const head = el('div', { class: 'collapsible-head', role: 'button', tabindex: '0' }, [
     el('span', { class: 'collapsible-caret', text: '▾', 'aria-hidden': 'true' }),
-    ...(spec.head ?? [
-      el('span', { class: 'field-label', text: spec.title ?? '' }),
-      ...(spec.note ? [el('span', { class: 'field-note', text: spec.note })] : []),
-    ]),
+    el('span', { class: 'field-label', text: spec.title }),
+    ...(spec.note ? [el('span', { class: 'field-note', text: spec.note })] : []),
   ]);
   head.setAttribute('aria-expanded', String(spec.open));
   head.addEventListener('click', spec.onToggle);
@@ -559,8 +569,8 @@ export function pager(spec: {
 /**
  * A row of chips where exactly one is on.
  *
- * Distinct from `optionGroup`, which is a row of cells sized to a grid: this
- * is the lighter thing that sits above a list to say how it is ordered.
+ * Distinct from `tabStrip`, which is a row of cells sized to a grid: this is
+ * the lighter thing that sits above a list to say how it is ordered.
  */
 export function chipRow<T extends string>(spec: {
   options: ReadonlyArray<{ id: T; label: string }>;
@@ -703,9 +713,9 @@ export function slot(spec: SlotSpec): HTMLElement {
 /**
  * An on/off switch, for a setting that is simply on or off.
  *
- * `optionGroup` was standing in for this — two full-width cells reading Off and
- * On, which is the weight of a choice between five text sizes rather than of a
- * thing with two states. `role="switch"` is what a screen reader wants for the
+ * A row of option cells stood in for this — two full-width cells reading Off
+ * and On, which is the weight of a choice between five text sizes rather than
+ * of a thing with two states. `role="switch"` is what a screen reader wants for the
  * same reason a track and a thumb are what an eye wants.
  */
 export function toggleSwitch(spec: {
@@ -715,7 +725,7 @@ export function toggleSwitch(spec: {
 }): HTMLElement {
   const node = el('button', { class: 'switch', type: 'button' }, [
     el('span', { class: 'switch-track' }, [el('span', { class: 'switch-thumb' })]),
-    el('span', { class: 'switch-label', text: spec.label }),
+    el('span', { text: spec.label }),
   ]);
   node.setAttribute('role', 'switch');
   node.setAttribute('aria-checked', String(spec.on));
@@ -750,9 +760,21 @@ export interface ModalSpec {
 export function modal(spec: ModalSpec): () => void {
   const overlay = el('div', { class: 'overlay' });
 
+  /*
+   * Where the keyboard was, so closing puts it back.
+   *
+   * A dialog that leaves the caret behind on the page is one a keyboard user
+   * has to Tab through the whole screen to reach, and one that drops it on
+   * `<body>` when it closes sends them back to the top of the document.
+   */
+  const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
   const dismiss = () => {
     overlay.remove();
     document.removeEventListener('keydown', onKey);
+    // Only if it is still there: the panel behind may have been rebuilt while
+    // this was open, and focusing a detached node does nothing useful.
+    if (previous?.isConnected) previous.focus({ preventScroll: true });
     spec.onClose?.();
   };
 
@@ -778,7 +800,29 @@ export function modal(spec: ModalSpec): () => void {
   // The stage outlives the panels; `#panels` is the thing being rebuilt.
   const host = document.getElementById('stage') ?? document.getElementById('panels');
   host?.append(overlay);
+  focusFirstControl(dialog);
   return dismiss;
+}
+
+/**
+ * Put the caret on the first thing in a dialog that can take it.
+ *
+ * A control marked `data-autofocus` wins; otherwise the first in document
+ * order. The details dialogs mark their way out, so a stray Enter closes
+ * rather than buys.
+ */
+export function focusFirstControl(root: HTMLElement): void {
+  const first =
+    root.querySelector<HTMLElement>('[data-autofocus]') ??
+    root.querySelector<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), select, textarea, [href], [tabindex]:not([tabindex="-1"])',
+    );
+  first?.focus({ preventScroll: true });
+}
+
+function withAutofocus<T extends HTMLElement>(node: T): T {
+  node.dataset.autofocus = 'true';
+  return node;
 }
 
 // ---------------------------------------------------------------------------
@@ -840,7 +884,9 @@ export function infoActions(spec: {
 }): HTMLElement {
   return el('div', { class: 'dialog-actions' }, [
     ...(spec.before ?? []).filter((node): node is HTMLElement => node != null),
-    button(spec.closeLabel ?? t('common.close'), spec.dismiss, { variant: 'quiet' }),
+    // The dialog's first stop — see `focusFirstControl`. A hero's Dismiss comes
+    // before it in the row, and Enter on an opened dialog should not let them go.
+    withAutofocus(button(spec.closeLabel ?? t('common.close'), spec.dismiss, { variant: 'quiet' })),
     ...(spec.action
       ? [
           quantityAction({

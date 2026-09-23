@@ -27,9 +27,10 @@ import {
   essenceChip,
   gradeBadge,
   ingredientIcon,
+  liveCountdown,
+  liveMeter,
   makeDropTarget,
   matchesSearch,
-  meter,
   outcomeCard,
   pager,
   searchField,
@@ -37,11 +38,11 @@ import {
   stat,
   tabStrip,
 } from '../components';
-import { countdown, formatDuration, t } from '@/i18n';
-import { config, getIngredient } from '@/sim/config';
+import { formatDuration, t } from '@/i18n';
+import { getIngredient } from '@/sim/config';
 import { inventoryRows } from '@/sim/inventory';
 import { outcomeProblems } from '@/sim/brewing';
-import { totalEssence } from '@/sim/essences';
+import { nextFreshnessChangeAt, totalEssence } from '@/sim/essences';
 import { showIngredientInfo } from '../ingredientInfo';
 import { ESSENCES } from '@/sim/types';
 import type { Essence, EssenceVector, Freshness, IngredientCategory } from '@/sim/types';
@@ -49,7 +50,7 @@ import type { RecipeDef } from '@/sim/config';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
-export const INGREDIENT_DRAG = 'application/x-eternal-ingredient';
+const INGREDIENT_DRAG = 'application/x-eternal-ingredient';
 
 /**
  * A scrolling box that keeps its place when the panel is rebuilt.
@@ -209,12 +210,15 @@ export function renderStation(sim: Simulation): HTMLElement {
         stationView === 'brew'
           ? [
               scroller('left', 'station-col station-left', [
-                renderPinned(sim),
+                renderPinned(sim, blend),
                 renderStores(sim),
-                renderVerdict(sim),
+                renderVerdict(sim, blend),
               ]),
             ]
-          : [scroller('middle', 'station-col station-middle', [renderPot(sim)]), renderRight(sim)],
+          : [
+              scroller('middle', 'station-col station-middle', [renderPot(sim, blend)]),
+              renderRight(sim, blend),
+            ],
       ),
     );
     // The columns above are the view this strip chose; name them as one.
@@ -224,7 +228,11 @@ export function renderStation(sim: Simulation): HTMLElement {
     cols.setAttribute('aria-labelledby', `station-tab-${stationView}`);
   } else {
     children.push(
-      el('div', { class: 'station-cols' }, [renderLeft(sim), renderMiddle(sim), renderRight(sim)]),
+      el('div', { class: 'station-cols' }, [
+        renderLeft(sim),
+        renderMiddle(sim, blend),
+        renderRight(sim, blend),
+      ]),
     );
   }
 
@@ -257,8 +265,7 @@ function viewSwitch(): HTMLElement {
  * a promise the layout could not keep. Here it is what it sounds like: the
  * thing you are aiming at, next to the things you are aiming it with.
  */
-function renderPinned(sim: Simulation): HTMLElement {
-  const blend = sim.blend();
+function renderPinned(sim: Simulation, blend: EssenceVector | null): HTMLElement {
   const rows = sim
     .knownRecipes()
     .filter((recipe) => pinned.has(recipe.id))
@@ -314,13 +321,29 @@ function filterChip<T>(label: string, set: Set<T>, value: T): HTMLElement {
 }
 
 function renderStores(sim: Simulation): HTMLElement {
-  const full = sim.cauldron.contents.units.length >= sim.cauldronMaxIngredients;
+  /*
+   * Why nothing more can go in, if nothing can.
+   *
+   * A pot that is brewing or waiting to be bottled refuses every ingredient,
+   * and its cards stayed live — pressable, draggable — and answered each press
+   * with "the pot will not hold any more", which is a different fact about a
+   * different pot. Locked, they say the real one.
+   */
+  const lock =
+    sim.brewing || sim.pendingBrew
+      ? t('cauldron.pot.busy')
+      : sim.cauldron.contents.units.length >= sim.cauldronMaxIngredients
+        ? t('cauldron.pot.full')
+        : null;
 
+  const query = storeQuery.trim();
   const rows = inventoryRows(sim.world, sim.now).filter((entry) => {
     const def = getIngredient(entry.ingredientId);
+    // Checked before the terms are built, so an empty box translates nothing.
     if (
+      query &&
       !matchesSearch(
-        storeQuery,
+        query,
         t(`ingredient.${entry.ingredientId}`),
         t(`category.${def.category}`),
         t(`freshness.${entry.freshness}`),
@@ -345,7 +368,7 @@ function renderStores(sim: Simulation): HTMLElement {
   const pageCount = Math.max(1, Math.ceil(rows.length / STORE_PAGE));
   storePage = Math.min(Math.max(1, storePage), pageCount);
   const onThisPage = rows.slice((storePage - 1) * STORE_PAGE, storePage * STORE_PAGE);
-  const tiles = onThisPage.map((entry) => ingredientCard(sim, entry, full));
+  const tiles = onThisPage.map((entry) => ingredientCard(sim, entry, lock));
 
   /*
    * The filters fold away, because they are not what the screen is for.
@@ -427,6 +450,8 @@ function renderStores(sim: Simulation): HTMLElement {
   const body = [
     search,
     filters,
+    // Said once, above the cards, rather than in a tooltip a phone never shows.
+    ...(lock ? [el('p', { class: 'field-note', text: lock })] : []),
     scroller('stores', 'station-scroll', [
       tiles.length > 0 ? el('div', { class: 'ingredient-grid' }, tiles) : emptyNote(empty),
     ]),
@@ -470,19 +495,16 @@ function renderStores(sim: Simulation): HTMLElement {
 function ingredientCard(
   sim: Simulation,
   entry: ReturnType<typeof inventoryRows>[number],
-  full: boolean,
+  /** Why the pot will take nothing more, or null while it will. */
+  lock: string | null,
 ): HTMLElement {
   const profile = getIngredient(entry.ingredientId).essence;
 
+  // At the ingredient's own rate: a fungus ages twice as fast as a herb, and
+  // stone and exotics not at all, so they get no clock.
   let caption = t(`freshness.${entry.freshness}`);
-  if (entry.harvestedAt !== null && entry.freshness !== 'dried') {
-    const boundary =
-      entry.freshness === 'dewfresh'
-        ? config.freshness.dewfreshUntilMs
-        : config.freshness.freshUntilMs;
-    const left = entry.harvestedAt + boundary - sim.now;
-    if (left > 0) caption = `${caption} · ${formatDuration(left)}`;
-  }
+  const turns = nextFreshnessChangeAt(entry.ingredientId, entry.harvestedAt, sim.now);
+  if (turns !== null) caption = `${caption} · ${formatDuration(turns - sim.now)}`;
 
   const name = t(`ingredient.${entry.ingredientId}`);
 
@@ -502,14 +524,15 @@ function ingredientCard(
     el('span', { class: 'ingredient-freshness', text: caption }),
   ]);
   face.dataset.tone = FRESHNESS_TONE[entry.freshness];
-  face.disabled = full;
+  face.disabled = lock !== null;
+  if (lock) face.title = lock;
   face.addEventListener('click', () => {
     if (sim.addToCauldron(entry.ingredientId, entry.freshness)) changed();
     else toast(t('cauldron.pot.full'));
   });
 
   // Draggable, carrying the payload the pot's drop target expects.
-  if (!full) {
+  if (!lock) {
     face.draggable = true;
     face.addEventListener('dragstart', (event) => {
       const payload = `${entry.ingredientId}:${entry.freshness}`;
@@ -544,8 +567,11 @@ function ingredientCard(
 
 // -- middle: the pot ---------------------------------------------------------
 
-function renderMiddle(sim: Simulation): HTMLElement {
-  return scroller('middle', 'station-col station-middle', [renderPot(sim), renderVerdict(sim)]);
+function renderMiddle(sim: Simulation, blend: EssenceVector | null): HTMLElement {
+  return scroller('middle', 'station-col station-middle', [
+    renderPot(sim, blend),
+    renderVerdict(sim, blend),
+  ]);
 }
 
 /**
@@ -556,10 +582,10 @@ function renderMiddle(sim: Simulation): HTMLElement {
  * still adding things, and on a phone it used to live under the picture of the
  * cauldron, on the half of the screen you were not on.
  */
-function renderVerdict(sim: Simulation): HTMLElement {
+function renderVerdict(sim: Simulation, blend: EssenceVector | null): HTMLElement {
   if (sim.pendingBrew) return renderReadyCard(sim);
   if (sim.brewing) return renderBrewingTimer(sim);
-  return renderOutcome(sim);
+  return renderOutcome(sim, blend);
 }
 
 /**
@@ -598,7 +624,7 @@ function potGroups(
  * deliberately quiet until the brew has actually been started — a pot you are
  * still filling is not doing anything yet.
  */
-function renderPot(sim: Simulation): HTMLElement {
+function renderPot(sim: Simulation, blend: EssenceVector | null): HTMLElement {
   const units = sim.cauldron.contents.units;
   const brewing = sim.brewing !== null;
 
@@ -671,7 +697,6 @@ function renderPot(sim: Simulation): HTMLElement {
     stage.append(door);
   }
 
-  const blend = sim.blend();
   const chips = blend
     ? ESSENCES.filter((essence) => blend[essence] >= PRESENT).map((essence) =>
         essenceChip(essence, blend[essence]),
@@ -684,9 +709,9 @@ function renderPot(sim: Simulation): HTMLElement {
   ]);
 }
 
-function renderOutcome(sim: Simulation): HTMLElement {
+function renderOutcome(sim: Simulation, blend: EssenceVector | null): HTMLElement {
   const section = el('section', { class: 'station-block' });
-  if (!sim.blend()) {
+  if (!blend) {
     section.append(emptyState(t('cauldron.empty'), t('cauldron.empty.hint')));
     return section;
   }
@@ -757,20 +782,8 @@ function renderOutcome(sim: Simulation): HTMLElement {
  */
 function renderBrewingTimer(sim: Simulation): HTMLElement {
   const brewing = sim.brewing!;
-  const total = brewing.readyAt - brewing.startedAt;
-  const done = sim.now - brewing.startedAt;
-
-  const remaining = el('span', {
-    text: countdown(brewing.readyAt, sim.now),
-  });
-  remaining.dataset.countdownAt = String(brewing.readyAt);
-
-  const bar = meter(total > 0 ? done / total : 1);
-  const fill = bar.querySelector<HTMLElement>('.meter-fill');
-  if (fill && total > 0) {
-    fill.dataset.progressFrom = String(brewing.startedAt);
-    fill.dataset.progressTo = String(brewing.readyAt);
-  }
+  const remaining = liveCountdown(brewing.readyAt, sim.now);
+  const bar = liveMeter(brewing.startedAt, brewing.readyAt, sim.now);
 
   return el('section', { class: 'station-block' }, [
     outcomeCard({
@@ -850,8 +863,7 @@ function essencesInPot(blend: EssenceVector | null): Essence[] {
   return ESSENCES.filter((essence) => blend[essence] >= PRESENT);
 }
 
-function renderRight(sim: Simulation): HTMLElement {
-  const blend = sim.blend();
+function renderRight(sim: Simulation, blend: EssenceVector | null): HTMLElement {
   const inPot = essencesInPot(blend);
 
   /*
@@ -976,23 +988,46 @@ function renderRecipe(recipe: RecipeDef, blend: EssenceVector | null): HTMLEleme
     changed();
   });
 
-  const head = el('div', { class: 'recipe-head', role: 'button', tabindex: '0' }, [
-    el('span', { class: 'collapsible-caret', text: isOpen ? '▾' : '▸', 'aria-hidden': 'true' }),
+  /*
+   * A pinned recipe is always open, so its head is not a toggle.
+   *
+   * Pressing it used to flip the hidden expanded state underneath the pin —
+   * nothing moved, and unpinning later opened or shut the recipe according to
+   * presses the player could not have known they were making. So no caret, no
+   * button role, and nothing to press but the star.
+   */
+  const head = el('div', { class: 'recipe-head' }, [
+    ...(isPinned
+      ? []
+      : [
+          el('span', {
+            class: 'collapsible-caret',
+            text: isOpen ? '▾' : '▸',
+            'aria-hidden': 'true',
+          }),
+        ]),
     el('span', { class: 'recipe-name', text: t(`recipe.${recipe.id}`) }),
     pin,
   ]);
-  head.setAttribute('aria-expanded', String(isOpen));
-  const toggle = () => {
-    if (expanded.has(recipe.id)) expanded.delete(recipe.id);
-    else expanded.add(recipe.id);
-    changed();
-  };
-  head.addEventListener('click', toggle);
-  head.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    event.preventDefault();
-    toggle();
-  });
+  if (!isPinned) {
+    head.setAttribute('role', 'button');
+    head.tabIndex = 0;
+    head.setAttribute('aria-expanded', String(isOpen));
+    const toggle = () => {
+      if (expanded.has(recipe.id)) expanded.delete(recipe.id);
+      else expanded.add(recipe.id);
+      changed();
+    };
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', (event) => {
+      // Enter on the star is the star's — it bubbles here, and used to toggle
+      // the recipe instead of pinning it.
+      if (event.target !== head) return;
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      toggle();
+    });
+  }
 
   const row = el('div', { class: 'recipe' }, [head]);
   if (isPinned) row.dataset.pinned = 'true';

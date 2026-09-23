@@ -6,8 +6,7 @@
  * genuinely different ingredients and must not merge.
  */
 
-import { getIngredient } from './config';
-import { freshnessOf } from './essences';
+import { agingRateFor, freshnessOf } from './essences';
 import type { Freshness, World } from './types';
 
 /** Stacks harvested within this window of each other merge, to stop stack sprawl. */
@@ -20,8 +19,10 @@ export function addIngredient(
   harvestedAt: number | null,
 ): void {
   if (count <= 0) return;
-  const isMineral = getIngredient(ingredientId).category === 'mineral';
-  const stamp = isMineral ? null : harvestedAt;
+  // Anything that never ages — stone, and the exotics a party brings home —
+  // is Fresh for ever with or without a stamp, so it carries none and every
+  // batch of it stacks as the one ingredient it is.
+  const stamp = agingRateFor(ingredientId) === 0 ? null : harvestedAt;
 
   const existing = world.inventory.find(
     (stack) =>
@@ -51,8 +52,8 @@ export function countOf(world: World, ingredientId: string, freshness?: Freshnes
  *
  * `freshness` matters more than it looks. Stores are displayed as one tile per
  * ingredient *per freshness stage*, because a Dried herb is a genuinely
- * different ingredient — drying moves part of its Aqua into Terra, which can
- * change which recipe a blend even matches. Without this filter, tapping the
+ * different ingredient — drying weakens every essence in it, and a weaker
+ * blend can brew a lesser potion. Without this filter, tapping the
  * Dewfresh tile spent the Dried batch instead, and the tile was simply lying
  * about what it would do.
  *

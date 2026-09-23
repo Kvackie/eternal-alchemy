@@ -1895,29 +1895,6 @@ input[type='range'] {
   overflow: visible;
 }
 
-/* Portraits make these rows tall; two or three of them is already a list. */
-/*
- * The hero list has no cap of its own any more.
- *
- * 20rem was a taller version of the 17rem above, for the one fold most likely
- * to be long — and it outranked the rule that says a fold in a panel does not
- * scroll, so the Roster kept its second scrollbar at both sizes while every
- * other screen lost theirs.
- */
-
-/*
- * The Cauldron's steps keep their own heading inside the toggle.
- *
- * A step head is a numbered block with two lines in it, so the caret sits
- * against the number rather than on the label's baseline, and the head takes
- * the width it needs rather than the label's own.
- */
-.collapsible-head .step-head,
-.collapsible-head .stores-head {
-  flex: 1;
-  min-width: 0;
-}
-
 /* Selected out of a stack, beside the grade and the price. */
 .supply-taken {
   color: var(--warn);
@@ -2540,6 +2517,10 @@ input[type='range'] {
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0;
+}
+
+/* Only an unpinned head folds; a pinned one is always open and has only the star. */
+.recipe-head[role='button'] {
   cursor: pointer;
 }
 
@@ -2867,6 +2848,15 @@ input[type='range'] {
   font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+}
+
+/* The verdict in the colour of how it went; a plain success stays plain. */
+.reward-quality.is-bountiful {
+  color: var(--good-text);
+}
+
+.reward-quality.is-meagre {
+  color: var(--warn);
 }
 
 .reward-haul {
@@ -3779,22 +3769,8 @@ input[type='range'] {
   gap: 0.5rem;
 }
 
-/* The spot's name sits left, what is in it sits right. */
-/* Options wrap rather than scroll: a spot with four choices is still one glance. */
-/* -------------------------------------------------------- standing order */
-
-.standing {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
-}
-
 /* --------------------------------------------------------------- market */
 
-.standing,
 .merchant,
 .upcoming {
   display: flex;

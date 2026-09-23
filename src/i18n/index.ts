@@ -25,10 +25,6 @@ export function setLocale(locale: LocaleId): void {
   table = tables[locale] ?? tables.en;
 }
 
-export function locale(): LocaleId {
-  return current;
-}
-
 const pluralRules = new Map<LocaleId, Intl.PluralRules>();
 
 function pluralCategory(count: number): Intl.LDMLPluralRule {
@@ -50,8 +46,8 @@ function pluralCategory(count: number): Intl.LDMLPluralRule {
  * `board.daysLeft.one` beside `board.daysLeft.other`. English needs two;
  * `Intl.PluralRules` picks the right one for whatever a locale needs, which is
  * six for Arabic and one for Japanese, and is the reason this is not an
- * `=== 1` in here. An exact key wins over a category — `away.crops.0` says
- * "nothing is ready", which no plural category can express.
+ * `=== 1` in here. An exact key wins over a category — `board.daysLeft.0`
+ * says "Today", which no plural category can express.
  *
  * Only keys that declare an `other` form pay for any of it. Everything else
  * costs one extra property read, which matters: this runs thousands of times
@@ -75,7 +71,11 @@ export function t(key: string, params?: Record<string, string | number>): string
   });
 }
 
-/** True when a key exists — used by the debug panel to spot gaps. */
+/**
+ * True when a key exists — for wording only some things have: the market asks
+ * whether an entry has a detail line before showing one, and the Ledger tries
+ * each namespace an item's name could live in.
+ */
 export function has(key: string): boolean {
   return key in table;
 }

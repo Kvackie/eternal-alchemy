@@ -16,7 +16,7 @@ import {
 } from '@/sim/config';
 import { isMature, maturityOf, neighboursOf, spreadChanceFor, tileAt } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
-import { countOf } from '@/sim/inventory';
+import { addIngredient, countOf } from '@/sim/inventory';
 import { veinTitle } from '@/ui/dom/panels/grounds';
 import type { ShaftVein } from '@/sim/types';
 
@@ -187,6 +187,15 @@ describe('the shaft', () => {
     sim.advanceBy(HOUR);
     const stack = sim.world.inventory.find((entry) => entry.count > 0);
     expect(stack?.harvestedAt).toBeNull();
+  });
+
+  it('stacks every batch of an exotic, since it never ages either', () => {
+    const world = createWorld(1);
+    const exotic = ingredients.find((ing) => ing.category === 'exotic')!;
+    addIngredient(world, exotic.id, 1, 0);
+    addIngredient(world, exotic.id, 2, 10 * HOUR);
+    const stacks = world.inventory.filter((stack) => stack.ingredientId === exotic.id);
+    expect(stacks).toEqual([{ ingredientId: exotic.id, count: 3, harvestedAt: null }]);
   });
 
   it('depletes the vein and stops on its own', () => {

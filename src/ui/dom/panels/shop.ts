@@ -38,7 +38,7 @@ import {
   tabStrip,
 } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
-import { saleChance, sameGoods } from '@/sim/market';
+import { saleChance } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
 import { artUrlIf } from '@/ui/art';
 import { showPotionInfo } from '../potionInfo';
@@ -126,11 +126,6 @@ function paceLabel(chance: number): string {
   if (chance > 0.15) return t('shop.pace.steady');
   if (chance > 0.05) return t('shop.pace.slow');
   return t('shop.pace.stalled');
-}
-
-/** Painted potion art once it exists; until then the recipe's essence glyph. */
-function itemIcon(item: BottledItem): Node {
-  return potionIcon(item.recipeId);
 }
 
 // -- The floor ---------------------------------------------------------------
@@ -509,17 +504,20 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
  *
  * Twelve identical bottles used to be twelve tiles — a wall of the same
  * picture, and a grid whose length said how much you had brewed rather than
- * what you had. `sameGoods` is the sim's own test for whether two bottles are
- * interchangeable, so the grid groups by exactly what a shelf slot would merge.
+ * what you had. The key is what `sameGoods` compares — the sim's own test for
+ * whether two bottles are interchangeable — so the grid groups by exactly what
+ * a shelf slot would merge. Keyed rather than asked of each stack in turn,
+ * which was a scan of every stack for every bottle in a store room of hundreds.
  */
 function stacksOf(items: BottledItem[]): Array<{ item: BottledItem; count: number }> {
-  const stacks: Array<{ item: BottledItem; count: number }> = [];
+  const stacks = new Map<string, { item: BottledItem; count: number }>();
   for (const item of items) {
-    const found = stacks.find((stack) => sameGoods(stack.item, item));
+    const key = `${item.recipeId}|${item.grade}|${item.potencyTier}`;
+    const found = stacks.get(key);
     if (found) found.count += 1;
-    else stacks.push({ item, count: 1 });
+    else stacks.set(key, { item, count: 1 });
   }
-  return stacks;
+  return [...stacks.values()];
 }
 
 /** A stack, with the two numbers the grid sorts and reads it by. */
@@ -588,8 +586,10 @@ function renderInventory(sim: Simulation): HTMLElement {
    * these anywhere". The shell puts the caret back afterwards; see
    * `captureFocus`.
    */
+  const query = stackQuery.trim();
   const stacks: Stack[] = stacksOf(sim.world.bottled)
-    .filter(({ item }) => matchesSearch(stackQuery, t(`recipe.${item.recipeId}`), item.grade))
+    // An empty box matches everything, so it translates nothing to say so.
+    .filter(({ item }) => !query || matchesSearch(query, t(`recipe.${item.recipeId}`), item.grade))
     .map(({ item, count }) => ({
       item,
       count,
@@ -651,7 +651,7 @@ function renderInventory(sim: Simulation): HTMLElement {
 function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
   return slot({
     id: item.uid,
-    icon: itemIcon(item),
+    icon: potionIcon(item.recipeId),
     label: t(`recipe.${item.recipeId}`),
     count,
     caption: [gradeBadge(item.grade), goldText(item.fairValue)],

@@ -79,14 +79,21 @@ export function onboardingComplete(world: World): boolean {
   return onboardingSteps(world).every((step) => step.done);
 }
 
-/** The first step still outstanding — what the list should be pointing at. */
-export function currentStep(world: World): OnboardingStep | null {
-  return onboardingSteps(world).find((step) => !step.done) ?? null;
-}
-
-export function shouldShowOnboarding(world: World): boolean {
-  if (world.onboardingDismissed) return false;
-  return !onboardingComplete(world);
+/**
+ * What the checklist shows: whether it is up, every step, and the first one
+ * still outstanding — the step it should be pointing at.
+ *
+ * One pass over the steps for all three, since each step's predicate walks the
+ * plots and the shelves and the getter behind it is read on every render.
+ */
+export function onboardingView(world: World): {
+  visible: boolean;
+  steps: OnboardingStep[];
+  current: OnboardingStep | null;
+} {
+  const steps = onboardingSteps(world);
+  const current = steps.find((step) => !step.done) ?? null;
+  return { visible: !world.onboardingDismissed && current !== null, steps, current };
 }
 
 export function dismissOnboarding(world: World): void {

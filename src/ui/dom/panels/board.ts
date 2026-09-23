@@ -149,8 +149,10 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
             }),
             confirm: t('board.abandon'),
             onConfirm: () => {
-              sim.abandonContract(contract.id);
-              toast(t('board.abandoned'));
+              // Only said when it happened: the contract may have lapsed or been
+              // filled while the question was up. Redrawn either way, so a card
+              // that is already gone leaves the board.
+              if (sim.abandonContract(contract.id)) toast(t('board.abandoned'));
               changed();
             },
           });

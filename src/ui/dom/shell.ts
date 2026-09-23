@@ -10,7 +10,7 @@
  * bus, and the game module wires the two halves together.
  */
 
-import { button, clear, el } from './components';
+import { button, clear, el, focusFirstControl } from './components';
 import { captureFocus, captureScroll, restoreFocus, restoreScroll } from './scroll';
 import { groundsHasScene, renderGrounds } from './panels/grounds';
 import { renderCauldron } from './panels/cauldron';
@@ -25,6 +25,10 @@ import { renderOnboarding } from './panels/onboarding';
 import { countdown, formatDuration, formatGold, formatLongDuration, formatNumber, t } from '@/i18n';
 import { activityOf } from '@/sim/cauldrons';
 import { dayStateAt } from '@/sim/clock';
+import { config } from '@/sim/config';
+import { presentCast } from '@/sim/merchants';
+import { isMature } from '@/sim/cave';
+import { isWorkable } from '@/sim/shaft';
 import { bus, changed, type ConfirmRequest, type ScreenId } from '@/ui/bus';
 import { debugEnabled } from '@/platform/debugFlag';
 import type { AwaySummary, Simulation } from '@/sim/sim';
@@ -122,11 +126,11 @@ export class Shell {
    */
   private view: StageView = 'split';
 
-  /** The market's cast as it was last drawn — see `marketCastChanged`. */
-  private marketCast = '';
+  /** The world as it was when the screen was last drawn — see `worldShape`. */
+  private drawnShape = '';
 
-  /** What the pots were doing when the bench was last drawn. */
-  private cauldronShape = '';
+  /** Where the caret was before the confirm dialog took it. */
+  private confirmReturn: HTMLElement | null = null;
 
   /*
    * The parts of the open panel that move on their own.
@@ -157,8 +161,8 @@ export class Shell {
     renown: Number.NaN,
     mastery: Number.NaN,
     phase: '',
-    date: '',
-    clock: '',
+    day: Number.NaN,
+    seconds: Number.NaN,
   };
   private panels = el('div', { id: 'panels' });
   private nav = el('nav', { class: 'nav' });
@@ -190,15 +194,18 @@ export class Shell {
      */
     window.matchMedia(DESKTOP).addEventListener('change', () => this.renderPanels());
 
+    // The confirm dialog answers Escape like every other dialog in the game. It
+    // is rebuilt with the panels, so the listener lives here rather than on it.
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && this.confirming) this.closeConfirm();
+    });
+
     if (debugEnabled()) this.loadDebugPanel();
 
     bus.on((event) => {
       switch (event.type) {
         case 'world:changed':
           this.render();
-          break;
-        case 'brew:ready':
-          this.setScreen('cauldron');
           break;
         case 'screen:changed':
           this.setScreen(event.screen);
@@ -208,6 +215,10 @@ export class Shell {
           this.showAway(event.summary);
           break;
         case 'confirm':
+          if (!this.confirming) {
+            this.confirmReturn =
+              document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          }
           this.confirming = event.request;
           this.renderPanels();
           break;
@@ -265,13 +276,21 @@ export class Shell {
   /**
    * Runs every frame.
    *
-   * The HUD clock and any live timer need to tick; panels rebuild only when
-   * something they show has changed.
+   * The HUD clock and any live timer need to tick; the screen is rebuilt only
+   * when something it shows has changed — see `worldShape`.
    */
   tick(): void {
     this.updateHud();
     this.updateCountdowns();
-    if (this.needsLiveRedraw()) this.renderPanels();
+    /*
+     * Not under a dialog the shell drew itself.
+     *
+     * Both are rebuilt with the panels, and a rebuild between mousedown and
+     * mouseup is a press that lands on nothing. Closing either one renders, and
+     * the shape is compared again from there.
+     */
+    if (this.away || this.confirming) return;
+    if (this.worldShape() !== this.drawnShape) this.render();
   }
 
   /*
@@ -339,96 +358,66 @@ export class Shell {
     return this.screen !== 'grounds' || groundsHasScene();
   }
 
-  private needsLiveRedraw(): boolean {
-    if (this.away) return false;
-
-    /*
-     * The bench does NOT redraw because something is brewing.
-     *
-     * It used to: `sim.brewing !== null` meant that from the moment a brew was
-     * accepted until the moment it finished, this screen was torn down and
-     * rebuilt sixty times a second — 240 fresh children under `#panels` in two
-     * seconds, measured. That is the market bug described below, and it had the
-     * same two symptoms: the page could not be scrolled, because the thing
-     * under the finger was replaced mid-gesture, and buttons only answered
-     * about one press in six, because a click needs mousedown and mouseup to
-     * land on the same element.
-     *
-     * The timer and its bar carry `data-countdown-at` and `data-progress-from`
-     * instead, so they move on their own. What is left worth a rebuild is a pot
-     * changing what it is doing — filling, brewing, ready — which is a string
-     * this can compare.
-     */
-    if (this.screen === 'cauldron') return this.cauldronShapeChanged();
-    /*
-     * The market redraws when its cast changes, not when its clock moves.
-     *
-     * This used to return `true` outright, so the panel was torn down and
-     * rebuilt every frame to move one number: 366 childList mutations a second,
-     * against zero on a screen that does not do this. A click needs mousedown
-     * and mouseup to land on the same element, and that element was replaced
-     * between them — one tap in six reached a button on this screen.
-     *
-     * It is the same bug the roster note below describes, and it takes the same
-     * cure: the countdowns carry `data-countdown-at` and are retexted in place,
-     * so the only thing left worth a rebuild is a merchant arriving or leaving.
-     * That still has to be watched from here, because the simulation does not
-     * announce it — nothing emits `world:changed` as time passes, so without
-     * this check a merchant would sit on the screen after they had gone.
-     */
-    if (this.screen === 'market') return this.marketCastChanged();
-
-    /*
-     * The roster is NOT redrawn live.
-     *
-     * Its clocks — a party walking home, an injury healing — are patched in
-     * place by `updateCountdowns`, because rebuilding the panel underneath them
-     * made every button on the screen unclickable for as long as a mission was
-     * out. See the note there.
-     */
-    return false;
-  }
-
   /**
-   * What the pots are doing, as a string — see `needsLiveRedraw`.
+   * Everything on screen that can change with nobody pressing anything, as one
+   * comparable string.
    *
-   * Like the market's cast, this is made of fixed facts rather than of the
-   * clock, so it reads the same on every frame until something really happens.
-   * Nothing emits `world:changed` when a brew finishes on its own, so the
-   * change has to be noticed from here or the bench would keep saying
-   * "Brewing" over a pot that was done.
-   */
-  private cauldronShapeChanged(): boolean {
-    const shape = this.deps.sim.world.cauldrons
-      .map((pot) => `${pot.id}:${activityOf(pot)}:${pot.stored ? 'away' : 'out'}`)
-      .join('|');
-
-    if (shape === this.cauldronShape) return false;
-    this.cauldronShape = shape;
-    return true;
-  }
-
-  /**
-   * Who is at the market, and who is due — as one comparable string.
+   * Nothing emits `world:changed` as time passes, so a plot coming ready, a
+   * party walking home, a seam regrowing, a contract lapsing or a bottle
+   * selling off the shelf left every panel — and every nav badge — saying what
+   * it said when it was drawn: no Harvest button, "Back in 0s" with no Claim,
+   * a Deliver still offered on a contract that had gone.
    *
-   * Both halves are needed: a merchant leaving drops out of `merchants()` and
-   * reappears in `upcoming()`, and the panel has to follow them across. The
-   * timestamps are fixed points rather than remaining durations, so this is
-   * stable between frames and only differs when the cast actually changes.
+   * Redrawing every frame is not the answer, and was tried: a panel torn down
+   * and rebuilt sixty times a second cannot be scrolled, and a click only fires
+   * when mousedown and mouseup land on the same element, so about one press in
+   * six got through. Clocks and bars move in place instead (`updateCountdowns`);
+   * this catches the moments something actually changes state.
+   *
+   * Every part is a fixed fact rather than a remaining duration, so the string
+   * reads the same on every frame until something really happens. It is built
+   * sixty times a second, so it stays cheap — the market's cast comes from
+   * `presentCast` rather than `sim.merchants()`, which prices every visit's
+   * whole stock to answer a question about who is standing there.
    */
-  private marketCastChanged(): boolean {
+  private worldShape(): string {
     const { sim } = this.deps;
-    const cast = [
-      ...sim.merchants().map((visit) => `${visit.merchantId}@${visit.leavesAt}`),
-      ...sim.upcoming().map((entry) => `${entry.merchantId}>${entry.at}`),
-    ].join('|');
+    const { world, now } = sim;
+    const working = world.shaft.workingVeinIds;
 
-    if (cast === this.marketCast) return false;
-    this.marketCast = cast;
-    return true;
+    return [
+      // Most things that happen on their own write a line in the log: a sale,
+      // a brew finishing, a party home, ore brought up, a contract lapsing.
+      world.nextLogId,
+      // The rest become true with the clock, and write nothing.
+      sim.readyToHarvest(),
+      world.cave.tiles.filter((tile) => isMature(tile, now)).length,
+      world.missions.length,
+      sim.pendingClaims.length,
+      world.heroes.filter((hero) => hero.injuredUntil !== null && now < hero.injuredUntil).length,
+      world.shaft.veins
+        .map(
+          (vein) =>
+            `${vein.remaining}${working.includes(vein.id) ? 'w' : ''}${isWorkable(vein, now) ? '' : 'x'}`,
+        )
+        .join(','),
+      // Days, not milliseconds: the card counts down in days.
+      world.contracts
+        .map(
+          (contract) =>
+            `${contract.id}:${Math.ceil(contract.msRemaining / config.clock.dayLengthMs)}`,
+        )
+        .join(','),
+      world.shelf.map((slot) => slot.item?.uid ?? '').join(','),
+      world.cauldrons.map((pot) => `${activityOf(pot)}${pot.stored ? 's' : ''}`).join(','),
+      presentCast(world)
+        .map((visit) => `${visit.merchantId}@${visit.leavesAt}`)
+        .join(','),
+    ].join('|');
   }
 
   render(): void {
+    this.drawnShape = this.worldShape();
     this.updateHud();
     this.renderNav();
     this.renderPanels();
@@ -514,24 +503,26 @@ export class Shell {
       f.mastery.textContent = formatNumber(sim.world.mastery);
     }
 
-    const phase = t(`phase.${day.phase}`);
+    // The same for the words: which phase and which day are compared as they
+    // come, and only a change pays for the translation.
     if (day.phase !== this.hudShown.phase) {
+      const phase = t(`phase.${day.phase}`);
       this.hudShown.phase = day.phase;
       f.dot.dataset.phase = day.phase;
       f.dot.title = phase;
       f.dot.setAttribute('aria-label', phase);
     }
 
-    const date = `${t('hud.day', { day: day.dayNumber + 1 })} · ${t(`weekday.${day.weekday}`)}`;
-    if (date !== this.hudShown.date) {
-      this.hudShown.date = date;
-      f.date.textContent = date;
+    if (day.dayNumber !== this.hudShown.day) {
+      this.hudShown.day = day.dayNumber;
+      f.date.textContent = `${t('hud.day', { day: day.dayNumber + 1 })} · ${t(`weekday.${day.weekday}`)}`;
     }
 
-    const clock = formatDuration(remaining);
-    if (clock !== this.hudShown.clock) {
-      this.hudShown.clock = clock;
-      f.countdown.textContent = clock;
+    // The clock shows whole seconds, so a second is the most it can change by.
+    const seconds = Math.floor(remaining / 1000);
+    if (seconds !== this.hudShown.seconds) {
+      this.hudShown.seconds = seconds;
+      f.countdown.textContent = formatDuration(remaining);
     }
   }
 
@@ -540,7 +531,8 @@ export class Shell {
   private renderNav(): void {
     /*
      * The nav scrolls as well — sideways on a phone, down the side above the
-     * breakpoint — and it is rebuilt on every tick for its badges.
+     * breakpoint — and it is rebuilt with every render for its badges, which
+     * includes the ones `tick` asks for when the world changes on its own.
      */
     const scrolls = captureScroll(this.nav);
     clear(this.nav);
@@ -555,11 +547,14 @@ export class Shell {
 
       // Badges only for things that are genuinely waiting on the player, and
       // that will stop waiting: a bottled brew, and a merchant about to leave.
-      if (entry.id === 'cauldron' && sim.pendingBrew) {
-        node.append(el('span', { class: 'badge', text: '1' }));
+      if (entry.id === 'cauldron') {
+        // Every pot, not only the one last opened: a brew finished in the second
+        // cauldron is waiting just the same.
+        const done = sim.world.cauldrons.filter((pot) => pot.pendingBrew).length;
+        if (done > 0) node.append(el('span', { class: 'badge', text: String(done) }));
       }
       if (entry.id === 'market') {
-        const here = sim.merchants().length;
+        const here = presentCast(sim.world).length;
         if (here > 0) node.append(el('span', { class: 'badge', text: String(here) }));
       }
       if (entry.id === 'grounds') {
@@ -673,12 +668,16 @@ export class Shell {
     }
 
     if (this.away) this.panels.append(this.buildAwayDialog(this.away));
-    if (this.confirming) this.panels.append(this.buildConfirmDialog(this.confirming));
+    const asking = this.confirming ? this.buildConfirmDialog(this.confirming) : null;
+    if (asking) this.panels.append(asking);
 
     // Last, once everything that affects the layout is in place: a scroller put
     // back before its siblings exist has nothing to scroll through yet.
     restoreScroll(this.panels, scrolls);
     restoreFocus(this.panels, focus);
+    // A question just asked takes the caret, on its safe answer; one already
+    // open keeps whichever button it was on, which `restoreFocus` put back.
+    if (asking && !focus?.name.startsWith('confirm-')) focusFirstControl(asking);
 
     // Whatever moves on this screen, found now rather than every frame.
     this.collectLiveNodes();
@@ -757,7 +756,6 @@ export class Shell {
         el('div', { class: 'dialog-actions' }, [
           button(t('away.collect'), () => {
             this.away = null;
-            this.deps.sim.acknowledgeSales();
             this.render();
           }),
         ]),
@@ -765,14 +763,6 @@ export class Shell {
     ]);
   }
 
-  /**
-   * Zoom out, zoom in, and put the world back.
-   *
-   * Always present on a screen that draws a world, rather than appearing only
-   * once the view is off centre: a control that materialises when you are
-   * already lost is one you have to discover at the worst moment, and a scene
-   * you cannot see all of is exactly when you want the zoom.
-   */
   /**
    * A question with a way out of it.
    *
@@ -782,24 +772,24 @@ export class Shell {
    * decision.
    */
   private buildConfirmDialog(request: ConfirmRequest): HTMLElement {
-    const close = () => {
-      this.confirming = null;
-      this.renderPanels();
-    };
+    const close = () => this.closeConfirm();
 
     const overlay = el('div', { class: 'overlay' }, [
       el('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true' }, [
         el('h2', { text: request.title }),
         el('p', { text: request.body }),
         el('div', { class: 'dialog-actions' }, [
-          button(t('common.cancel'), close, { variant: 'quiet' }),
-          button(
-            request.confirm,
-            () => {
-              close();
-              request.onConfirm();
-            },
-            { variant: request.danger ? 'danger' : 'warm' },
+          keepFocus(button(t('common.cancel'), close, { variant: 'quiet' }), 'confirm-cancel'),
+          keepFocus(
+            button(
+              request.confirm,
+              () => {
+                close();
+                request.onConfirm();
+              },
+              { variant: request.danger ? 'danger' : 'warm' },
+            ),
+            'confirm-go',
           ),
         ]),
       ]),
@@ -813,6 +803,21 @@ export class Shell {
     return overlay;
   }
 
+  private closeConfirm(): void {
+    this.confirming = null;
+    this.renderPanels();
+    if (this.confirmReturn?.isConnected) this.confirmReturn.focus({ preventScroll: true });
+    this.confirmReturn = null;
+  }
+
+  /**
+   * Zoom out, zoom in, and put the world back.
+   *
+   * Always present on a screen that draws a world, rather than appearing only
+   * once the view is off centre: a control that materialises when you are
+   * already lost is one you have to discover at the worst moment, and a scene
+   * you cannot see all of is exactly when you want the zoom.
+   */
   private buildViewControls(): HTMLElement {
     const zoom = (label: string, factor: number, title: string) => {
       const node = el('button', { class: 'view-button', type: 'button', title, text: label });
@@ -915,6 +920,12 @@ export class Shell {
     this.toasts.append(node);
     setTimeout(() => node.remove(), 2200);
   }
+}
+
+/** Named for the shell's focus memory, so the caret survives a rebuild — see `captureFocus`. */
+function keepFocus<T extends HTMLElement>(node: T, name: string): T {
+  node.dataset.keepFocus = name;
+  return node;
 }
 
 /** A label and the node that carries its figure — see `buildHud`. */

@@ -499,6 +499,39 @@ describe('migrating a save from before the Iron Pot went', () => {
   });
 });
 
+describe('migrating a save from before décor, owning a rug', () => {
+  it('carries the rug through to the Iron Pot, and so to its refund', () => {
+    // A v8 shop had its rug as equipment and no décor at all.
+    const world = createWorld(1);
+    const loose = world as unknown as Record<string, unknown>;
+    delete loose.decorOwned;
+    delete loose.decor;
+    world.equipment = { wovenRug: 1 };
+    const gold = world.gold;
+    const raw = JSON.stringify({ schemaVersion: 8, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+
+    // The rug became the Iron Pot, and the Iron Pot was paid back when it went.
+    expect(migrated.gold).toBe(gold + 150);
+    expect(migrated.equipment.wovenRug).toBeUndefined();
+    expect(migrated.decorOwned.ironPot).toBeUndefined();
+    expect(Object.values(migrated.decor)).not.toContain('ironPot');
+  });
+
+  it('does the same for a rug already bought as décor', () => {
+    const world = createWorld(1);
+    world.decorOwned = { wovenRug: 1 };
+    world.decor.floor = 'wovenRug';
+    const gold = world.gold;
+    const raw = JSON.stringify({ schemaVersion: 10, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+
+    expect(migrated.gold).toBe(gold + 150);
+    expect(migrated.decorOwned.wovenRug).toBeUndefined();
+    expect(migrated.decor.floor).toBeNull();
+  });
+});
+
 describe('migrating a save from before ranks asked for a potion', () => {
   it('keeps the rank the renown had given, and records the potions held', () => {
     const world = createWorld(1);
@@ -556,5 +589,21 @@ describe('migrating a save from before the world kept its own seed', () => {
     const raw = JSON.stringify({ schemaVersion: 22, savedAt: Date.now(), world });
     const migrated = new SaveManager(memoryAdapter()).import(raw)!;
     expect(migrated.seed).toBe(world.cave.seed);
+  });
+});
+
+describe('migrating a save from before the unread-sales queue went', () => {
+  it('drops the queue and the board’s refresh time', () => {
+    const world = createWorld(5) as unknown as Record<string, unknown> &
+      ReturnType<typeof createWorld>;
+    world.unreadSales = [{ recipeId: 'aquaTerra', grade: 'B', gold: 1, renown: 1, at: 0 }];
+    world.lastContractTick = 0;
+    const raw = JSON.stringify({ schemaVersion: 23, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)! as unknown as Record<
+      string,
+      unknown
+    >;
+    expect('unreadSales' in migrated).toBe(false);
+    expect('lastContractTick' in migrated).toBe(false);
   });
 });

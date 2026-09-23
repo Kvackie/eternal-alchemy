@@ -21,6 +21,18 @@ describe('plural forms', () => {
     expect(t('market.barter.cost', { count: 3, grade: 'C' })).toBe('Pay 3 potions, C+');
   });
 
+  it('counts one sale and one seed in the singular', () => {
+    expect(t('away.gold', { gold: '40g', count: 1 })).toBe('40g earned from 1 sale');
+    expect(t('away.gold', { gold: '90g', count: 3 })).toBe('90g earned from 3 sales');
+    // The seeds drive the plural; the harvest's own size rides along.
+    expect(t('toast.harvestSeeds', { count: 1, total: 4, ingredient: 'Mint' })).toBe(
+      '+4 Mint, 1 seed',
+    );
+    expect(t('toast.harvestSeeds', { count: 2, total: 4, ingredient: 'Mint' })).toBe(
+      '+4 Mint, 2 seeds',
+    );
+  });
+
   it('leaves a key with no plural forms exactly as it was', () => {
     expect(t('shop.stacked', { count: 1 })).toBe('1 in the slot');
     expect(t('shop.stacked', { count: 7 })).toBe('7 in the slot');

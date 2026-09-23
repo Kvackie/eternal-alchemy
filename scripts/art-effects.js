@@ -3,13 +3,14 @@
  *
  * The sheet arrives as five brews on a painted CHECKERBOARD — the pattern
  * artists use to mean "transparent" in a format that cannot hold transparency.
- * `art-dekey.js` cannot help: it floods inward from a single flat background
- * colour, and a checker is two colours in alternating squares, so the flood
- * stops at the first tile boundary and leaves the board behind.
+ * `art-dekey.js` reads both checker tones now too, but it keys one picture per
+ * file: this is five on one sheet, which have to be found and cut apart first,
+ * and each brew's rim read off the art — so the keying lives here as well
+ * rather than as a second pass over files that do not exist yet.
  *
- * So the background test here is "close to EITHER checker tone", and the flood
- * still runs from the borders inward, which is what protects the pale highlights
- * inside the flames and foam from being punched out.
+ * The background test is "close to EITHER checker tone", and the flood runs
+ * from the borders inward, which is what protects the pale highlights inside
+ * the flames and foam from being punched out.
  *
  *   node scripts/art-effects.js [--apply]
  */

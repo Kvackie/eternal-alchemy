@@ -60,10 +60,6 @@ export function decorAvailability(
   return { visible: true };
 }
 
-export function canBuyDecor(world: World, def: DecorDef): boolean {
-  return decorAvailability(world, def).reasonKey === undefined;
-}
-
 /**
  * Take delivery of a piece.
  *

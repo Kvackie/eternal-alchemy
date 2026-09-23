@@ -24,13 +24,19 @@ export interface HarvestResult {
   seeds: number;
 }
 
-export function makePlots(count: number): Plot[] {
-  const soils: SoilId[] = ['loam', 'ash', 'silt', 'loam'];
-  return Array.from({ length: count }, (_, i) => ({
-    id: `plot-${i + 1}`,
-    soil: soils[i % soils.length] ?? 'loam',
+const SOILS: SoilId[] = ['loam', 'ash', 'silt', 'loam'];
+
+/** The plot at position `index`, empty. Its soil follows from where it sits. */
+export function makePlot(index: number): Plot {
+  return {
+    id: `plot-${index + 1}`,
+    soil: SOILS[index % SOILS.length] ?? 'loam',
     crop: null,
-  }));
+  };
+}
+
+export function makePlots(count: number): Plot[] {
+  return Array.from({ length: count }, (_, i) => makePlot(i));
 }
 
 export function plotById(world: World, plotId: string): Plot | undefined {

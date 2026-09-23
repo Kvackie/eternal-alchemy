@@ -69,8 +69,19 @@ export function renderSettings(deps: SettingsDeps): HTMLElement {
         button(
           t('settings.save.export'),
           () => {
-            exportSave(deps.saves.export(deps.sim.world));
-            toast(t('settings.save.exported'));
+            const started = exportSave(deps.saves.export(deps.sim.world));
+            toast(t(started ? 'settings.save.exported' : 'settings.save.exportFailed'));
+          },
+          { variant: 'ghost', small: true },
+        ),
+        // Its own press rather than a fallback the download could not reach —
+        // see `exportSave` — and the one route out of a viewer that blocks it.
+        button(
+          t('settings.save.copy'),
+          () => {
+            void copySave(deps.saves.export(deps.sim.world)).then((copied) =>
+              toast(t(copied ? 'settings.save.copied' : 'settings.save.copyFailed')),
+            );
           },
           { variant: 'ghost', small: true },
         ),
@@ -528,12 +539,15 @@ function confirmNewGame(onConfirm: () => void): void {
 }
 
 /**
- * Save the export as a file.
+ * Save the export as a file, and say whether a download was started.
  *
- * A download started by the page is blocked in some embedded viewers, so a
- * failure falls back to the clipboard rather than silently doing nothing.
+ * It fell back to the clipboard on failure, but the only thing that can fail
+ * here is building the link: a viewer that blocks the download does it after
+ * `click()` has returned, quietly, so the fallback never ran and "Save
+ * downloaded" was said either way. Copying is a button of its own now, and
+ * this only claims what it can see.
  */
-function exportSave(text: string): void {
+function exportSave(text: string): boolean {
   try {
     const blob = new Blob([text], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -544,8 +558,20 @@ function exportSave(text: string): void {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
   } catch {
-    void navigator.clipboard?.writeText(text);
+    return false;
+  }
+}
+
+/** The export as text on the clipboard, and whether it got there. */
+async function copySave(text: string): Promise<boolean> {
+  try {
+    if (!navigator.clipboard) return false;
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
   }
 }
 

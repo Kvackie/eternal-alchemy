@@ -61,15 +61,25 @@ const onlyScreen = arg('screen');
 const sizes = (Object.keys(SIZES) as SizeName[]).filter((size) => !onlySize || size === onlySize);
 const screens = SCREENS.filter((screen) => !onlyScreen || screen === onlyScreen);
 
+/** File what a check found against the screen and size it was found on. */
+function file(screen: string, size: SizeName, check: string, details: string[]): void {
+  for (const detail of details) problems.push({ screen, size, check, detail });
+}
+
 /** The checks every view gets. Churn and scroll memory are the landings' own. */
 async function measure(page: Page, screen: string, size: SizeName, touch: boolean) {
-  const add = (check: string, details: string[]) => {
-    for (const detail of details) problems.push({ screen, size, check, detail });
-  };
-  add('overflow', await checkOverflow(page));
-  add('strings', await checkStrings(page));
-  if (touch) add('tap targets', await checkTapTargets(page));
-  add('covered controls', await checkCoveredControls(page));
+  file(screen, size, 'overflow', await checkOverflow(page));
+  file(screen, size, 'strings', await checkStrings(page));
+  // Only where a finger is the pointer: on a mouse a 36px button is a
+  // deliberate weight, not an obstacle.
+  if (touch) file(screen, size, 'tap targets', await checkTapTargets(page));
+  file(screen, size, 'covered controls', await checkCoveredControls(page));
+}
+
+/** One line of progress: what was looked at, and whether it had any complaint. */
+function report(screen: string, size: SizeName): void {
+  const found = problems.filter((p) => p.screen === screen && p.size === size).length;
+  console.log(`${size.padEnd(8)} ${screen.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`);
 }
 
 const server = await startServer();
@@ -85,23 +95,10 @@ try {
       await goTo(page, screen);
       await page.waitForTimeout(450);
 
-      const add = (check: string, details: string[]) => {
-        for (const detail of details) problems.push({ screen, size, check, detail });
-      };
-
-      add('overflow', await checkOverflow(page));
-      add('strings', await checkStrings(page));
-      // Only where a finger is the pointer: on a mouse a 36px button is a
-      // deliberate weight, not an obstacle.
-      if (touch) add('tap targets', await checkTapTargets(page));
-      add('covered controls', await checkCoveredControls(page));
-      add('idle churn', await checkIdleChurn(page, CHURN_BUDGET));
-      add('scroll memory', await checkScrollMemory(page));
-
-      const found = problems.filter((p) => p.screen === screen && p.size === size).length;
-      console.log(
-        `${size.padEnd(8)} ${screen.padEnd(9)} ${found === 0 ? 'ok' : `${found} problems`}`,
-      );
+      await measure(page, screen, size, touch);
+      file(screen, size, 'idle churn', await checkIdleChurn(page, CHURN_BUDGET));
+      file(screen, size, 'scroll memory', await checkScrollMemory(page));
+      report(screen, size);
     }
 
     for (const error of errors)
@@ -135,11 +132,7 @@ try {
         await measure(page, label, size, touch);
       }
       await closeDialogs(page);
-
-      const found = problems.filter((p) => p.screen === label && p.size === size).length;
-      console.log(
-        `${size.padEnd(8)} ${label.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`,
-      );
+      report(label, size);
     }
 
     for (const error of errors)
@@ -164,17 +157,14 @@ try {
       for (const error of errors) {
         problems.push({ screen: 'market (day)', size, check: 'console', detail: error });
       }
-      const found = problems.filter((p) => p.screen === 'market (day)' && p.size === size).length;
-      console.log(
-        `${size.padEnd(8)} ${'market (day)'.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`,
-      );
+      report('market (day)', size);
       await close();
     }
   }
 
   /*
-   * A brand-new shop. The greeting is measured as it arrives, then every
-   * screen in its empty first-morning state.
+   * A brand-new shop. The greeting is measured first, then every screen in its
+   * empty first-morning state.
    */
   for (const size of sizes) {
     const { page, errors, close } = await open(browser, size, 'day', {
@@ -182,10 +172,33 @@ try {
       keepOverlays: true,
     });
     const touch = SIZES[size].mobile;
-    if ((await page.locator('.overlay').count()) > 0) {
-      await measure(page, 'fresh: greeting', size, touch);
+
+    /*
+     * The greeting is the checklist, opened from its pill.
+     *
+     * It used to arrive as a dialog over the first screen, and this measured it
+     * whenever one was up. The dialog became a pill that opens the list on a
+     * tap, so there was never an overlay to find and the check passed without
+     * measuring anything. Now the pill is pressed, the list it opens measured,
+     * and a new shop with no pill at all is itself the complaint.
+     */
+    const greeting = 'fresh: greeting';
+    await closeDialogs(page);
+    const pill = page.locator('.checklist-pill').first();
+    if ((await pill.count()) === 0) {
+      file(greeting, size, 'greeting', ['no checklist pill on a brand-new shop']);
+    } else {
+      await pill.click({ timeout: 3000 });
+      await page.waitForTimeout(300);
+      if ((await page.locator('.overlay .checklist-dialog').count()) === 0) {
+        file(greeting, size, 'greeting', ['the checklist pill opened nothing']);
+      } else {
+        await measure(page, greeting, size, touch);
+      }
       await closeDialogs(page);
     }
+    report(greeting, size);
+
     for (const screen of screens) {
       const label = `fresh: ${screen}`;
       await goTo(page, screen);
@@ -205,14 +218,8 @@ try {
         }
       });
       await page.waitForTimeout(150);
-      for (const detail of await checkCoveredControls(page)) {
-        problems.push({ screen: label, size, check: 'covered at the end of the scroll', detail });
-      }
-
-      const found = problems.filter((p) => p.screen === label && p.size === size).length;
-      console.log(
-        `${size.padEnd(8)} ${label.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`,
-      );
+      file(label, size, 'covered at the end of the scroll', await checkCoveredControls(page));
+      report(label, size);
     }
     for (const error of errors)
       problems.push({ screen: 'fresh', size, check: 'console', detail: error });

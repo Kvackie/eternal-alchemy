@@ -43,13 +43,13 @@ import {
 } from './cauldrons';
 import type { Cauldron } from './types';
 import { dayStateAt } from './clock';
-import { destroyCrop, harvest, harvestAllReady, isReady, makePlots, plant } from './garden';
+import { destroyCrop, harvest, harvestAllReady, makePlot, plant, readyCount } from './garden';
 import { addIngredient, returnUnit, takeUnit } from './inventory';
 import { record } from './log';
 import {
   fairValue,
   fitBoard,
-  makeShelf,
+  makeShelfSlot,
   moveShelfStock,
   placeableCount,
   runMarket,
@@ -78,7 +78,7 @@ import {
 import {
   harvestAllMature,
   harvestTile,
-  makeCaveTiles,
+  makeCaveTile,
   matureCount,
   runCave,
   seedTile,
@@ -108,12 +108,7 @@ import {
 } from './haggle';
 import { buyCodex, canRetire, masteryFor, retire } from './prestige';
 import { discoveredRecipes, isDiscovered, learnFrom } from './discovery';
-import {
-  currentStep,
-  dismissOnboarding,
-  onboardingSteps,
-  shouldShowOnboarding,
-} from './onboarding';
+import { dismissOnboarding, onboardingView } from './onboarding';
 import { Rng } from './rng';
 import { createWorld } from './state';
 import { assessOutcome, brewDurationFor } from './brewing';
@@ -235,7 +230,7 @@ export class Simulation {
       awayMs: delta,
       sales,
       goldEarned: this.world.gold - before,
-      cropsReady: this.world.plots.filter((plot) => isReady(plot, this.world.now)).length,
+      cropsReady: readyCount(this.world),
       // Any pot, not just the visible one — coming back to a finished brew in
       // the second cauldron is exactly what the resume summary is for.
       brewReady: this.world.cauldrons.some((pot) => pot.pendingBrew !== null),
@@ -595,8 +590,7 @@ export class Simulation {
 
   /** Plots and cave beds waiting on the player, for the nav badge. */
   readyToHarvest(): number {
-    const plots = this.world.plots.filter((plot) => isReady(plot, this.world.now)).length;
-    return plots + matureCount(this.world);
+    return readyCount(this.world) + matureCount(this.world);
   }
 
   harvestCave() {
@@ -891,15 +885,16 @@ export class Simulation {
     return visit?.entries[index] ?? null;
   }
 
-  /** What stops this being bought at all, as opposed to not being affordable. */
   /**
-   * Why this entry cannot be bought yet, in the words the tile already shows.
+   * Why this entry cannot be bought yet, in the words the tile already shows —
+   * what stops it being bought at all, as opposed to not being affordable.
+   * Public so the market tile asks this rather than keeping a copy of it.
    *
    * It said "needs a higher rank" for everything, which was wrong for an
    * upgrade shown a rank early whose real block is the one before it — the
    * sixth plot waiting on the fifth.
    */
-  private purchaseGate(entry: StockEntry): string | undefined {
+  purchaseGate(entry: StockEntry): string | undefined {
     if (entry.kind === 'equipment') {
       return equipmentAvailability(this.world, getEquipment(entry.id)).reasonKey;
     }
@@ -929,7 +924,7 @@ export class Simulation {
 
     this.world.gold -= price;
     addRelationship(this.world, merchantId, price * config.economy.relationshipPerGold);
-    record(this.world, 'bought', { item: entry.id, gold: price });
+    record(this.world, 'bought', { item: entry.id, kind: entry.kind, gold: price });
     return { ok: true };
   }
 
@@ -977,13 +972,7 @@ export class Simulation {
         addIngredient(this.world, entry.id, 1, this.world.now);
         break;
       case 'equipment':
-        grantEquipment(
-          this.world,
-          entry.id,
-          (i) => makePlots(i + 1)[i]!,
-          (i) => makeShelf(i + 1)[i]!,
-          (i) => makeCaveTiles(i + 1)[i]!,
-        );
+        grantEquipment(this.world, entry.id, makePlot, makeShelfSlot, makeCaveTile);
         record(this.world, 'installed', { item: entry.id });
         break;
       case 'decor':
@@ -1053,12 +1042,6 @@ export class Simulation {
     if (slot) slot.priceRatio = Math.max(0.4, Math.min(2, ratio));
   }
 
-  acknowledgeSales(): SaleRecord[] {
-    const sales = this.world.unreadSales;
-    this.world.unreadSales = [];
-    return sales;
-  }
-
   // -- Décor ----------------------------------------------------------------
 
   /** Every shop spot, what is in it, and what else could go there. */
@@ -1090,11 +1073,7 @@ export class Simulation {
   // -- Onboarding -----------------------------------------------------------
 
   get onboarding() {
-    return {
-      visible: shouldShowOnboarding(this.world),
-      steps: onboardingSteps(this.world),
-      current: currentStep(this.world),
-    };
+    return onboardingView(this.world);
   }
 
   dismissOnboarding(): void {
@@ -1236,13 +1215,7 @@ export class Simulation {
     for (const def of equipment) {
       if (def.effect.addShelves === undefined && def.effect.addHeroSlots === undefined) continue;
       this.world.equipment[def.id] = Math.max(0, (def.repeatable ?? 1) - 1);
-      grantEquipment(
-        this.world,
-        def.id,
-        (i) => makePlots(i + 1)[i]!,
-        (i) => makeShelf(i + 1)[i]!,
-        (i) => makeCaveTiles(i + 1)[i]!,
-      );
+      grantEquipment(this.world, def.id, makePlot, makeShelfSlot, makeCaveTile);
     }
 
     for (const recipe of recipes) {

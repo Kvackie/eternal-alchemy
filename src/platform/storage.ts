@@ -10,7 +10,7 @@
  * never carries the native plugin and the game runs identically with neither.
  */
 
-import { localStorageAdapter, type StorageAdapter } from './save';
+import { localStorageAdapter, saveKeys, type StorageAdapter } from './save';
 
 /**
  * Capacitor's native bridge, as the WebView sees it.
@@ -98,18 +98,6 @@ export function storageReady(): Promise<void> {
 }
 
 /**
- * Every key the save system uses.
- *
- * Listed explicitly because Preferences has no synchronous enumeration, so the
- * mirror has to know what to warm up front.
- */
-function saveKeys(slots: number): string[] {
-  const keys = ['eternal-alchemy/slot', 'eternal-alchemy/ui-scale'];
-  for (let i = 0; i < slots; i += 1) keys.push(`eternal-alchemy/save/${i}`);
-  return keys;
-}
-
-/**
  * Pick the adapter for this platform.
  *
  * Returns synchronously so bootstrap order stays simple; on native the returned
@@ -118,6 +106,8 @@ function saveKeys(slots: number): string[] {
 export function createStorage(slots: number): StorageAdapter {
   if (!isNative()) return localStorageAdapter;
 
+  // Preferences has no synchronous enumeration, so the mirror has to be told
+  // every key to warm up front.
   const keys = saveKeys(slots);
 
   // A native shell without the plugin installed falls back rather than failing.
