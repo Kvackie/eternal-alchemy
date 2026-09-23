@@ -14,11 +14,6 @@ expeditions; and a contract board.
 (The greenhouse, bottle forms, and a range of eight vessels and seven seals shipped here too, and
 were all taken out again: bottling is one press now.)
 
-Design document: `docs/design.html` (open it in a browser). It is the design record: draft 7 brought
-its topic sections in line with the build after the potion overhaul, while its changelog keeps each
-earlier draft as it was. It opens with a status panel naming the few passages that still describe
-intent rather than code; this README is the short, accurate account.
-
 ## Running it
 
 ```
@@ -326,9 +321,8 @@ Above the breakpoint the toggle is hidden: the panel and the scene already fit s
 
 ## What's not here yet
 
-Audio is out of scope behind a silent bus stub. Saves are local only. The **art pipeline** is
-specified in the design doc but unbuilt — it needs actual assets to be worth writing, and no native
-build has been compiled or tested on a real device.
+Audio is out of scope behind a silent bus stub. Saves are local only. No native build has been
+compiled or tested on a real device.
 
 ## The balance harness
 

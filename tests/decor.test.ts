@@ -78,25 +78,23 @@ describe('placement is what pays', () => {
 
   it('lets one spot hold only one piece', () => {
     const world = createWorld(1);
-    grantDecor(world, 'ironPot');
+    grantDecor(world, 'coinSacks');
     grantDecor(world, 'coinStack');
 
     // Both stand on the floor, so the second displaces the first rather than
     // stacking — and only the placed one's bonus is ever counted.
     placeDecor(world, 'coinStack');
     expect(placedIn(world, 'floor')?.id).toBe('coinStack');
-    expect(derivedStats(world).footfallBonus).toBeCloseTo(0, 5);
     expect(derivedStats(world).appealBonus).toBeCloseTo(
       getDecor('coinStack').effect.appealBonus ?? 0,
       5,
     );
 
     // And the displaced piece is still owned, so the swap is reversible.
-    expect(ownsDecor(world, 'ironPot')).toBe(true);
-    placeDecor(world, 'ironPot');
-    expect(derivedStats(world).appealBonus).toBeCloseTo(0, 5);
-    expect(derivedStats(world).footfallBonus).toBeCloseTo(
-      getDecor('ironPot').effect.footfallBonus ?? 0,
+    expect(ownsDecor(world, 'coinSacks')).toBe(true);
+    placeDecor(world, 'coinSacks');
+    expect(derivedStats(world).appealBonus).toBeCloseTo(
+      getDecor('coinSacks').effect.appealBonus ?? 0,
       5,
     );
   });
@@ -119,10 +117,10 @@ describe('placement is what pays', () => {
 
   it('empties a spot on request', () => {
     const world = createWorld(1);
-    grantDecor(world, 'ironPot');
+    grantDecor(world, 'coinSacks');
     expect(clearSpot(world, 'floor')).toBe(true);
     expect(placedIn(world, 'floor')).toBeNull();
-    expect(derivedStats(world).footfallBonus).toBe(0);
+    expect(derivedStats(world).appealBonus).toBe(0);
     // Clearing an empty spot is a no-op, not an error.
     expect(clearSpot(world, 'floor')).toBe(false);
   });
@@ -319,12 +317,13 @@ describe('an older save keeps its fittings', () => {
     expect(ownsDecor(loaded, 'mortarAndPestle')).toBe(true);
     expect(ownsDecor(loaded, 'goldBanner')).toBe(true);
     expect(ownsDecor(loaded, 'crimsonBanner')).toBe(true);
-    expect(ownsDecor(loaded, 'ironPot')).toBe(true);
+    // The woven rug became the Iron Pot, which has since gone and been paid back.
+    expect(ownsDecor(loaded, 'ironPot')).toBe(false);
 
     // And the best of each contested spot is out, so nobody logs in to a shop
     // with its fittings switched off.
     expect(placedIn(loaded, 'counter')?.id).toBe('mortarAndPestle');
-    expect(placedIn(loaded, 'floor')?.id).toBe('ironPot');
+    expect(placedIn(loaded, 'floor')).toBeNull();
     expect(placedIn(loaded, 'wall')?.id).toBe('goldBanner');
 
     // The retired equipment entries are gone, so nothing is counted twice.
@@ -333,8 +332,11 @@ describe('an older save keeps its fittings', () => {
     // Real equipment is untouched.
     expect(loaded.equipment.shelfFive).toBe(1);
 
-    // The bonus is applied exactly once.
-    expect(derivedStats(loaded).footfallBonus).toBeCloseTo(0.4 + 0.12, 5);
+    // The bonus is applied exactly once: the banner's, with the floor now empty.
+    expect(derivedStats(loaded).footfallBonus).toBeCloseTo(
+      getDecor('goldBanner').effect.footfallBonus ?? 0,
+      5,
+    );
   });
 
   it('gives a save with no décor at all an empty floor rather than a crash', () => {

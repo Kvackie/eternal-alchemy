@@ -847,6 +847,21 @@ const MIGRATIONS: Record<number, Migration> = {
     }
     return world;
   },
+
+  /**
+   * v19 → v20: the Iron Pot furnishing is gone — it read as a cauldron you
+   * could brew in. Whoever owned it has its price back, and the floor it stood
+   * on is free for something else.
+   */
+  20: (world) => {
+    const owned = world.decorOwned?.ironPot ?? 0;
+    if (owned > 0) world.gold = (world.gold ?? 0) + 150 * owned;
+    if (world.decorOwned) delete world.decorOwned.ironPot;
+    for (const spot of Object.keys(world.decor ?? {})) {
+      if (world.decor[spot] === 'ironPot') world.decor[spot] = null;
+    }
+    return world;
+  },
 };
 
 /** Every counter at zero, so a migration can fill only what it actually knows. */

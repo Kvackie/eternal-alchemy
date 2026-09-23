@@ -473,3 +473,18 @@ describe('migrating a save from before the guild order was renamed', () => {
     expect(migrated.contracts[0]!.templateId).toBe('guildTonics');
   });
 });
+
+describe('migrating a save from before the Iron Pot went', () => {
+  it('refunds it and frees the floor', () => {
+    const world = createWorld(1);
+    world.decorOwned = { ironPot: 1 };
+    world.decor.floor = 'ironPot';
+    const gold = world.gold;
+    const raw = JSON.stringify({ schemaVersion: 19, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+    expect(migrated.gold).toBe(gold + 150);
+    expect(migrated.decorOwned.ironPot).toBeUndefined();
+    expect(migrated.decor.floor).toBeNull();
+  });
+});
+

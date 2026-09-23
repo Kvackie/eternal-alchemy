@@ -78,12 +78,6 @@
       },
       {
         "kind": "decor",
-        "id": "ironPot",
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "decor",
         "id": "coinStack",
         "weight": 2,
         "tier": 2

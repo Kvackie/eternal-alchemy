@@ -115,13 +115,6 @@
     },
 
     {
-      "id": "ironPot",
-      "spot": "floor",
-      "cost": 150,
-      "requiresRank": 0,
-      "effect": { "footfallBonus": 0.08 }
-    },
-    {
       "id": "coinSacks",
       "spot": "floor",
       "cost": 400,

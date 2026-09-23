@@ -6,7 +6,7 @@
  * otherwise be written four times.
  *
  * Lighting is a tint overlay over a single painted layer — the entire day/night
- * art budget, as the design doc committed.
+ * art budget.
  */
 
 import Phaser from 'phaser';
