@@ -616,8 +616,19 @@ button {
   color: var(--bg-page);
 }
 
+/*
+ * Disabled is one look, whatever the button's colour.
+ *
+ * Fading the live colour to a third left a disabled Deliver a dim green —
+ * still green, which is the colour that means "press this". A button that
+ * cannot be pressed now drops its colour altogether: no fill, faint text, the
+ * ordinary border.
+ */
 .btn:disabled {
-  opacity: 0.35;
+  background: transparent;
+  color: var(--text-faint);
+  border-color: var(--border);
+  opacity: 0.6;
   cursor: default;
 }
 
@@ -1185,6 +1196,27 @@ input[type='range'] {
 
   .slot-label {
     hyphens: auto;
+  }
+
+  /*
+   * Seeds and spores, three across.
+   *
+   * Their caption is two things side by side — how long it grows and the
+   * ground it wants — and at four columns neither fitted: "Pomegranate" broke
+   * a letter from its end and "10m 00s" stacked on itself beside the soil
+   * chip. Three columns hold both, and the caption's parts wrap whole if a
+   * translation ever makes them longer.
+   */
+  .seeds .slot-grid {
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  }
+
+  .seeds .slot-caption {
+    flex-wrap: wrap;
+  }
+
+  .seeds .slot-caption > * {
+    white-space: nowrap;
   }
 }
 
