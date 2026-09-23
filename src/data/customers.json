@@ -53,7 +53,7 @@
   "$palateComment": "`wants` is what this person always asks for by name. `palate` is their taste, and it is what makes a walk-in interested in a potion nobody wrote them a line for — anything within spreadDeg of the palate is something they would consider. Without it a customer only ever bought from a list of one or two, so brewing anything else had no buyer but the shelf.",
   "roster": [
     {
-      "$comment": "Village remedies: clean water and honest earth. The widest taste on the roster, because a villager will try anything that grows nearby — which is also what stops a murky, marginal recipe like the Mirebloom Elixir from having no buyer in the world at all.",
+      "$comment": "Village remedies: clean water and honest earth. The widest taste on the roster, because a villager will try anything that grows nearby.",
       "id": "maren",
       "archetype": "villager",
       "wants": ["aquaTerra"],

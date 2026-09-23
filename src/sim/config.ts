@@ -222,7 +222,14 @@ export interface MerchantDef {
   offsetDays: number;
   phase: 'day' | 'night';
   currency: 'gold' | 'potions';
+  /** Staples drawn at random from everything that is not the merchant's trade. */
   picks: number;
+  /**
+   * Trade goods shown per visit, dealt in turn rather than drawn: each visit
+   * carries on round the list where the last left off, so everything a
+   * merchant trades in turns up within a known number of visits.
+   */
+  rotation: number;
   relationshipTiers: number[];
   discountPerTier: number;
   pool: MerchantStockDef[];
@@ -233,7 +240,6 @@ export interface CaveSpeciesDef {
   growMs: number;
   spreadChance: number;
   light: 'any' | 'lit' | 'dark';
-  clusterCost: number;
 }
 
 export interface CaveConfig {

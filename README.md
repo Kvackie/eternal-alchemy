@@ -109,12 +109,27 @@ appear in a merchant's stock, and you still pay. Equipment shows up one rank ear
 reason, so you learn what a rank is *for* before you reach it.
 
 Merchant presence *and stock* are derived from the world clock — a merchant is in town on the days
-their cycle lands on, and their goods come from an RNG seeded on `(merchant, day)`. Nothing about a
+their cycle lands on, and their goods come from the visit number and an RNG seeded on `(merchant, day)`. Nothing about a
 visit is stored except what you have already bought, so offline catch-up needs no special handling
 and a reload cannot reshuffle the shelves.
 
+Each merchant has one trade:
+
+| Merchant | Trade |
+| --- | --- |
+| **Bramm** | Every herb's seed |
+| **Vessa** | Every cave species' spores, and the minerals of the quarry's upper half |
+| **Hesk** | The strong minerals of the quarry's lower half, and the tools that make the shop bigger |
+| **The Ashwalker** | Exotics |
+
+A stall is eight to ten things. The trade goods are dealt in turn rather than drawn: each visit picks
+up round the list where the last left off, so anything a merchant sells turns up within a known number
+of visits. The staples beside them — vessels, seals, boards, furnishings, equipment — are still drawn
+at random.
+
 Bramm, Vessa and Hesk keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his
-prices are sealed potions of a minimum grade, and he spends your cheapest qualifying bottles first.
+prices are sealed potions of a minimum grade, and he spends your cheapest qualifying bottles first. The
+rarest exotics wait on a long acquaintance with him, so an expedition stays the cheaper way to them.
 
 ## Heroes and contracts
 

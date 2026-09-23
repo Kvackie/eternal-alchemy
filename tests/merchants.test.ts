@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, getMerchant, ranks } from '@/sim/config';
+import { config, getIngredient, getMerchant, ingredients, merchants, ranks } from '@/sim/config';
 import { isPresent, nextVisit, presentMerchants, tierOf, visitsOn } from '@/sim/merchants';
 import {
   canBuyEquipment,
@@ -551,5 +551,76 @@ describe('buying several at once', () => {
       reasonKey: 'market.error.gold',
     });
     expect(sim.world.gold).toBe(0);
+  });
+});
+
+describe('merchants by trade', () => {
+  const sold = (kind: string) =>
+    new Set(merchants.flatMap((m) => m.pool.filter((e) => e.kind === kind).map((e) => e.id)));
+
+  // One way or another: a herb by its seed, a fungus by its spores, the rest
+  // as themselves.
+  it('carry every ingredient one way or another', () => {
+    const seeds = sold('seed');
+    const spores = sold('spore');
+    const goods = sold('ingredient');
+    const missing = ingredients.filter((ing) => {
+      if (ing.category === 'herb') return !seeds.has(ing.id);
+      if (ing.category === 'fungus') return !spores.has(ing.id);
+      return !goods.has(ing.id);
+    });
+    expect(missing.map((ing) => ing.id)).toEqual([]);
+  });
+
+  it('keep one trade each', () => {
+    const trade = (id: string) =>
+      new Set(
+        getMerchant(id)
+          .pool.filter((e) => ['seed', 'spore', 'ingredient'].includes(e.kind))
+          .map((e) => (e.kind === 'ingredient' ? getIngredient(e.id).category : e.kind)),
+      );
+    expect(trade('bramm')).toEqual(new Set(['seed']));
+    expect(trade('vessa')).toEqual(new Set(['spore', 'mineral']));
+    expect(trade('hesk')).toEqual(new Set(['mineral']));
+    expect(trade('ashwalker')).toEqual(new Set(['exotic']));
+  });
+
+  it('sell exotics only for potions, and hold the rarest back for old friends', () => {
+    const exotics = ASHWALKER.pool.filter((e) => e.kind === 'ingredient');
+    expect(exotics.every((e) => e.barter !== undefined)).toBe(true);
+    expect(Math.max(...exotics.map((e) => e.tier))).toBeGreaterThan(0);
+  });
+
+  /*
+   * The rotation guarantee: however long the list, every trade good a merchant
+   * will sell you turns up within a known number of visits.
+   */
+  it('show every trade good within a known number of visits', () => {
+    for (const def of merchants) {
+      const world = createWorld(1);
+      world.merchantRelations[def.id] = def.relationshipTiers.at(-1)!;
+      const trade = def.pool.filter((e) => ['seed', 'spore', 'ingredient'].includes(e.kind));
+      const visits = Math.ceil(trade.length / def.rotation);
+
+      const seen = new Set<string>();
+      let day = def.offsetDays;
+      for (let v = 0; v < visits; v += 1, day += def.cycleDays) {
+        world.now = def.phase === 'day' ? midday(day) : midnight(day);
+        world.merchantVisits = {};
+        const visit = presentMerchants(world).find((m) => m.merchantId === def.id);
+        for (const entry of visit?.entries ?? []) seen.add(entry.id);
+      }
+      const unseen = trade.filter((e) => !seen.has(e.id)).map((e) => e.id);
+      expect(unseen, `${def.id} left these out for ${visits} visits`).toEqual([]);
+    }
+  });
+
+  it('lay out a stall of eight to ten', () => {
+    for (const def of merchants) {
+      const staples = def.pool.filter((e) => !['seed', 'spore', 'ingredient'].includes(e.kind));
+      const size = def.rotation + Math.min(def.picks, staples.length);
+      expect(size, def.id).toBeGreaterThanOrEqual(8);
+      expect(size, def.id).toBeLessThanOrEqual(10);
+    }
   });
 });

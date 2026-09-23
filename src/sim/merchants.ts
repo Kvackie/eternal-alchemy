@@ -156,6 +156,26 @@ function fromPicks(def: MerchantDef, picks: string[]): MerchantStockDef[] {
  * tier and rank have opened up. Equipment already owned is filtered out before
  * the draw, so a full shelf of upgrades never crowds out the staples.
  */
+/** Seeds, spores and ingredients: what a merchant is known for. */
+const TRADE_KINDS: ReadonlySet<MerchantStockDef['kind']> = new Set(['seed', 'spore', 'ingredient']);
+
+/**
+ * This visit's share of the merchant's trade, dealt round the list in order.
+ *
+ * A weighted draw over sixty seeds could leave one unseen for a season. Dealing
+ * them in turn — visit n starts where visit n − 1 stopped — means a player who
+ * wants a particular one knows it is at most a few visits away.
+ */
+function rotationPicks(def: MerchantDef, dayNumber: number, tier: number): MerchantStockDef[] {
+  const trade = def.pool.filter((item) => TRADE_KINDS.has(item.kind) && item.tier <= tier);
+  if (trade.length === 0 || def.rotation <= 0) return [];
+  if (trade.length <= def.rotation) return trade;
+
+  const visit = Math.floor((dayNumber - def.offsetDays) / Math.max(1, def.cycleDays));
+  const start = (((visit * def.rotation) % trade.length) + trade.length) % trade.length;
+  return Array.from({ length: def.rotation }, (_, i) => trade[(start + i) % trade.length]!);
+}
+
 function drawPicks(
   world: World,
   def: MerchantDef,
@@ -166,6 +186,7 @@ function drawPicks(
   const rank = rankIndexFor(world.renown);
 
   const pool = def.pool.filter((item) => {
+    if (TRADE_KINDS.has(item.kind)) return false;
     if (item.tier > tier) return false;
     if (item.kind !== 'equipment' && item.kind !== 'decor') return true;
 
@@ -194,16 +215,10 @@ function drawPicks(
   });
 
   /*
-   * Stratified draw: one kind at a time, round-robin, weighted within the kind.
-   *
-   * A flat weighted draw over the whole pool was fine when a merchant carried a
-   * dozen things. With seeds and spores for every crop and cave species, Bramm's
-   * pool is seventy-odd entries and a flat draw of five would show five seeds and
-   * no vessel most days — the staples crowded out by the very content that was
-   * supposed to enrich them.
-   *
-   * Dealing round the kinds means a visit always looks like a shop: something to
-   * plant, something to brew with, something to bottle in.
+   * Stratified draw over the staples: one kind at a time, round-robin,
+   * weighted within the kind, so a visit always looks like a shop rather than
+   * five of one thing. The trade goods are dealt separately, in turn — see
+   * `rotationPicks`.
    */
   const byKind = new Map<MerchantStockDef['kind'], MerchantStockDef[]>();
   for (const item of pool) {
@@ -219,8 +234,8 @@ function drawPicks(
     [kinds[i], kinds[j]] = [kinds[j]!, kinds[i]!];
   }
 
-  const chosen: MerchantStockDef[] = [];
-  const picks = Math.min(def.picks, pool.length);
+  const chosen: MerchantStockDef[] = [...rotationPicks(def, dayNumber, tier)];
+  const picks = chosen.length + Math.min(def.picks, pool.length);
 
   while (chosen.length < picks) {
     let dealt = false;

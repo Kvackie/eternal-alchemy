@@ -1,11 +1,13 @@
 [
   {
+    "$comment": "The seedsman. Every herb's seed, dealt six a visit in turn so none is ever more than a few visits away, plus the everyday bottles and bits for the garden.",
     "id": "bramm",
     "cycleDays": 2,
     "offsetDays": 0,
     "phase": "day",
     "currency": "gold",
-    "picks": 5,
+    "picks": 3,
+    "rotation": 6,
     "relationshipTiers": [
       0,
       200,
@@ -14,14 +16,6 @@
     ],
     "discountPerTier": 0.05,
     "pool": [
-      {
-        "kind": "seed",
-        "id": "sunleaf",
-        "price": 5,
-        "stock": 8,
-        "weight": 4,
-        "tier": 0
-      },
       {
         "kind": "vessel",
         "id": "clayVial",
@@ -37,22 +31,6 @@
         "stock": 12,
         "weight": 3,
         "tier": 0
-      },
-      {
-        "kind": "ingredient",
-        "id": "sunleaf",
-        "price": 6,
-        "stock": 8,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "ingredient",
-        "id": "dewcap",
-        "price": 8,
-        "stock": 6,
-        "weight": 2,
-        "tier": 1
       },
       {
         "kind": "vessel",
@@ -91,30 +69,6 @@
         "id": "richLoam",
         "weight": 2,
         "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "dewcap",
-        "price": 8,
-        "stock": 4,
-        "weight": 3,
-        "tier": 0
-      },
-      {
-        "kind": "seed",
-        "id": "moonpetal",
-        "price": 22,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "ashfern",
-        "price": 25,
-        "stock": 3,
-        "weight": 2,
-        "tier": 2
       },
       {
         "kind": "decor",
@@ -168,365 +122,495 @@
       },
       {
         "kind": "seed",
-        "id": "agilityFruit",
-        "price": 32,
+        "id": "bluepetal",
+        "price": 12,
         "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "ambercap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "beetMandragora",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "blueBerry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "spore",
-        "id": "buttercap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "cellarcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "chrystaLily",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "coalcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "commonFlower",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
+        "weight": 1,
         "tier": 0
       },
       {
         "kind": "seed",
-        "id": "crimsonbloom",
-        "price": 32,
+        "id": "curlflame",
+        "price": 12,
         "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "crimsoncap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "dandelion",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
+        "weight": 1,
         "tier": 0
       },
       {
         "kind": "seed",
         "id": "duskberry",
-        "price": 11,
+        "price": 12,
         "stock": 4,
-        "weight": 2,
+        "weight": 1,
         "tier": 0
       },
       {
-        "kind": "spore",
-        "id": "eyecap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "flamefan",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "goldcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "seed",
-        "id": "heatBerry",
-        "price": 11,
+        "id": "featherfern",
+        "price": 12,
         "stock": 4,
-        "weight": 2,
+        "weight": 1,
         "tier": 0
-      },
-      {
-        "kind": "spore",
-        "id": "honeycap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "honeydewPlant",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "lilypad",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "loamcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "mosscap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "nightbloom",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "palecap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "pepper",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "poffpuffBall",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "poisonCap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
       },
       {
         "kind": "seed",
         "id": "pomegranate",
-        "price": 32,
+        "price": 12,
         "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "puffnest",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
+        "weight": 1,
+        "tier": 0
       },
       {
         "kind": "seed",
-        "id": "purpleBerry",
-        "price": 11,
+        "id": "bluecoral",
+        "price": 16,
         "stock": 4,
-        "weight": 2,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "seed",
+        "id": "cleftleaf",
+        "price": 16,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "seed",
+        "id": "honeydewPlant",
+        "price": 16,
+        "stock": 4,
+        "weight": 1,
         "tier": 0
       },
       {
         "kind": "seed",
         "id": "redSpices",
-        "price": 32,
+        "price": 16,
         "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "russetcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "sloeberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 0
-      },
-      {
-        "kind": "spore",
-        "id": "stoutcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "sunfungus",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "tieredcap",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "toadstool",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "trumpetgill",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "spore",
-        "id": "tubefungus",
-        "price": 36,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "uncommonFlower",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
+        "weight": 1,
         "tier": 0
       },
       {
         "kind": "seed",
-        "id": "violetSwarm",
-        "price": 32,
+        "id": "windwort",
+        "price": 16,
         "stock": 4,
-        "weight": 2,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "seed",
+        "id": "agilityFruit",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
         "tier": 1
       },
       {
         "kind": "seed",
-        "id": "violetshroom",
-        "price": 32,
+        "id": "ashfern",
+        "price": 20,
         "stock": 4,
-        "weight": 2,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "beetMandragora",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "blueBerry",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "bluecone",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "broomgrass",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "chrystaLily",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "commonFlower",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "cyanFlower",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "frostrosette",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
         "tier": 1
       },
       {
         "kind": "seed",
         "id": "gloamroot",
-        "price": 14,
+        "price": 20,
         "stock": 4,
-        "weight": 2,
-        "tier": 0
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "spore",
-        "id": "gloomcap",
-        "price": 38,
-        "stock": 3,
-        "weight": 2,
+        "kind": "seed",
+        "id": "pepper",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
         "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "pinklotus",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "tulipsCharge",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "violetSpices",
+        "price": 20,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "seed",
+        "id": "bilberry",
+        "price": 24,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "broadleaf",
+        "price": 24,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "cinderleaf",
+        "price": 24,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "galeThistle",
+        "price": 24,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetroot",
+        "price": 24,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "ashsprig",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "autumnmaple",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "blackBerry",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "coralFlower",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "cornflower",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "crimsonbloom",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "dandelion",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "duskplum",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "frostfan",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "greensprig",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "heatBerry",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "jellyfishCoral",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "lighbulbLantern",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "lilypad",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "magentaleaf",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "moonpetal",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "nightbloom",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "pinkPuff",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "purpleBerry",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "roseSalt",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "seagrass",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "sloeberry",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "sunleaf",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "uncommonFlower",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetBeet",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetSwarm",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetUmbrella",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetgarlic",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetpod",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "seed",
+        "id": "violetshroom",
+        "price": 28,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
       }
     ]
   },
   {
+    "$comment": "Spores and stone. Every cave species, and the minerals of the quarry's upper half, for anyone who has not dug that far.",
     "id": "vessa",
     "cycleDays": 5,
     "offsetDays": 1,
     "phase": "day",
     "currency": "gold",
-    "picks": 4,
+    "picks": 2,
+    "rotation": 7,
     "relationshipTiers": [
       0,
       400,
@@ -536,44 +620,12 @@
     "discountPerTier": 0.05,
     "pool": [
       {
-        "kind": "ingredient",
-        "id": "galeThistle",
-        "price": 26,
-        "stock": 4,
-        "weight": 4,
-        "tier": 0
-      },
-      {
-        "kind": "ingredient",
-        "id": "chalkNodule",
-        "price": 30,
-        "stock": 4,
-        "weight": 4,
-        "tier": 0
-      },
-      {
         "kind": "vessel",
         "id": "glassFlask",
         "price": 10,
         "stock": 10,
         "weight": 3,
         "tier": 0
-      },
-      {
-        "kind": "ingredient",
-        "id": "moonpetal",
-        "price": 28,
-        "stock": 3,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "ingredient",
-        "id": "ashfern",
-        "price": 30,
-        "stock": 3,
-        "weight": 2,
-        "tier": 2
       },
       {
         "kind": "equipment",
@@ -592,15 +644,6 @@
         "id": "cauldronOneEighty",
         "weight": 3,
         "tier": 2
-      },
-      {
-        "$comment": "Chalkgill wants light — buying it is what gives the lantern something to steer.",
-        "kind": "spore",
-        "id": "chalkgill",
-        "price": 14,
-        "stock": 3,
-        "weight": 3,
-        "tier": 0
       },
       {
         "kind": "decor",
@@ -641,173 +684,414 @@
       {
         "kind": "spore",
         "id": "azurecap",
-        "price": 36,
+        "price": 32,
         "stock": 3,
-        "weight": 2,
-        "tier": 2
+        "weight": 1,
+        "tier": 0
       },
       {
-        "kind": "seed",
-        "id": "bilberry",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
-      },
-      {
-        "kind": "seed",
-        "id": "bluecone",
+        "kind": "spore",
+        "id": "coalcap",
         "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "stock": 3,
+        "weight": 1,
+        "tier": 0
       },
       {
-        "kind": "seed",
-        "id": "bluepetal",
+        "kind": "spore",
+        "id": "gloomcap",
         "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "stock": 3,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "spore",
+        "id": "mosscap",
+        "price": 32,
+        "stock": 3,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "spore",
+        "id": "trumpetgill",
+        "price": 32,
+        "stock": 3,
+        "weight": 1,
+        "tier": 0
       },
       {
         "kind": "spore",
         "id": "bubblecap",
-        "price": 36,
+        "price": 40,
         "stock": 3,
-        "weight": 2,
-        "tier": 2
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "cornflower",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "chalkgill",
+        "price": 40,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "cyanFlower",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "flamefan",
+        "price": 40,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "duskplum",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "gravecrown",
+        "price": 40,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "frostfan",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "sunfungus",
+        "price": 40,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "frostrosette",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "ambercap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "lighbulbLantern",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "buttercap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "pinkPuff",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "cellarcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "pinklotus",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "crimsoncap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "tulipsCharge",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "dewcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "eyecap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "goldcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "honeycap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "loamcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "palecap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "poffpuffBall",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "poisonCap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "puffnest",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "russetcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "stoutcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "tieredcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "toadstool",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "spore",
+        "id": "tubefungus",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
         "kind": "spore",
         "id": "verdigriscap",
-        "price": 36,
+        "price": 44,
         "stock": 3,
-        "weight": 2,
-        "tier": 2
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "violetSpices",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+        "kind": "spore",
+        "id": "violetcap",
+        "price": 44,
+        "stock": 3,
+        "weight": 1,
+        "tier": 1
       },
       {
-        "kind": "seed",
-        "id": "violetUmbrella",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
-        "id": "violetpod",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "seed",
-        "id": "windwort",
-        "price": 11,
-        "stock": 4,
-        "weight": 2,
+        "kind": "ingredient",
+        "id": "chalkNodule",
+        "price": 36,
+        "stock": 6,
+        "weight": 1,
         "tier": 0
       },
       {
-        "kind": "seed",
-        "id": "featherfern",
-        "price": 32,
-        "stock": 4,
-        "weight": 2,
+        "kind": "ingredient",
+        "id": "deepJasper",
+        "price": 36,
+        "stock": 6,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "driftGarnet",
+        "price": 36,
+        "stock": 6,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "emberGarnet",
+        "price": 36,
+        "stock": 6,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "nullstone",
+        "price": 36,
+        "stock": 6,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "aetherJasper",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "barkOpal",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "brineGlass",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "chalkGlass",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "clayShard",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "cloudJasper",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "coalGarnet",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "deepCrystal",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "deepOpal",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "deepShard",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "deepglass",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "dewGlass",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "emberCrystal",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "emberJasper",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "forgeOpal",
+        "price": 48,
+        "stock": 6,
+        "weight": 1,
         "tier": 1
       }
     ]
   },
   {
-    "$comment": "The outfitter. Everything that makes the shop BIGGER rather than fuller — beams, beds, moulds, the order book. Ten upgrades had no seller at all, which stranded the shaft one seam down and put crossbreeding, vessel crafting and standing orders permanently out of reach. Infrastructure is his whole identity, which is also why he is slow and dear.",
+    "$comment": "The outfitter. Everything that makes the shop BIGGER rather than fuller — beams, beds, moulds, the order book — and the strong minerals from the bottom half of the quarry, for a shop that wants them before it has dug that deep. Slow and dear.",
     "id": "hesk",
     "cycleDays": 3,
     "offsetDays": 2,
     "phase": "day",
     "currency": "gold",
-    "picks": 4,
+    "picks": 5,
+    "rotation": 4,
     "relationshipTiers": [
       0,
       300,
@@ -945,17 +1229,178 @@
         "id": "shelfBoard",
         "weight": 4,
         "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "rillQuartz",
+        "price": 64,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "scaldPrism",
+        "price": 64,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "veilGlass",
+        "price": 64,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "veilJasper",
+        "price": 64,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "zephyrQuartz",
+        "price": 64,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "aetherShard",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "barkAgate",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 0
+      },
+      {
+        "kind": "ingredient",
+        "id": "brineTopaz",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "chalkGeode",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "cinderOpal",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "cinderQuartz",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "deepTopaz",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "emberShard",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "galeGarnet",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 1
+      },
+      {
+        "kind": "ingredient",
+        "id": "mirePrism",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "ingredient",
+        "id": "nightQuartz",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "ingredient",
+        "id": "slateBeryl",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "ingredient",
+        "id": "voidGeode",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "ingredient",
+        "id": "waneOnyx",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
+      },
+      {
+        "kind": "ingredient",
+        "id": "wispGarnet",
+        "price": 72,
+        "stock": 4,
+        "weight": 1,
+        "tier": 2
       }
     ]
   },
   {
+    "$comment": "The one night trader, and the only one who deals in exotics. Takes no gold: his prices are sealed potions, and the rarest finds wait on a long acquaintance, so an expedition is still the cheaper way to them.",
     "id": "ashwalker",
-    "$comment": "The one night trader. Takes no gold — his prices are sealed potions.",
     "cycleDays": 8,
     "offsetDays": 3,
     "phase": "night",
     "currency": "potions",
-    "picks": 3,
+    "picks": 1,
+    "rotation": 8,
     "relationshipTiers": [
       0,
       4,
@@ -964,28 +1409,6 @@
     ],
     "discountPerTier": 0,
     "pool": [
-      {
-        "kind": "ingredient",
-        "id": "chalkNodule",
-        "stock": 5,
-        "weight": 3,
-        "tier": 0,
-        "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        }
-      },
-      {
-        "kind": "ingredient",
-        "id": "galeThistle",
-        "stock": 4,
-        "weight": 3,
-        "tier": 0,
-        "barter": {
-          "potions": 1,
-          "minGrade": "C"
-        }
-      },
       {
         "kind": "equipment",
         "id": "richLoam",
@@ -997,82 +1420,235 @@
         }
       },
       {
-        "$comment": "The only source of Gravecrown. Umbra also comes as Moonpetal and Gloamroot from the garden, Gloomcap from the cave, and Nullstone and Shade Spar from the quarry — this is the blended one, sold for a potion.",
-        "kind": "spore",
-        "id": "gravecrown",
-        "stock": 3,
-        "weight": 4,
+        "kind": "ingredient",
+        "id": "anglerPlant",
+        "stock": 2,
+        "weight": 1,
         "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
+          "potions": 3,
+          "minGrade": "C"
         }
       },
       {
-        "kind": "seed",
-        "id": "blackBerry",
+        "kind": "ingredient",
+        "id": "barrowAsh",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 4,
-        "weight": 2,
-        "tier": 1
+          "potions": 3,
+          "minGrade": "C"
+        }
       },
       {
-        "kind": "seed",
-        "id": "roseSalt",
+        "kind": "ingredient",
+        "id": "cinderwraithAsh",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+          "potions": 3,
+          "minGrade": "C"
+        }
       },
       {
-        "kind": "seed",
-        "id": "violetBeet",
+        "kind": "ingredient",
+        "id": "dragonFruit",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+          "potions": 3,
+          "minGrade": "C"
+        }
       },
       {
-        "kind": "spore",
-        "id": "violetcap",
+        "kind": "ingredient",
+        "id": "manaFruit",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 3,
-        "weight": 2,
-        "tier": 2
+          "potions": 3,
+          "minGrade": "C"
+        }
       },
       {
-        "kind": "seed",
-        "id": "violetgarlic",
+        "kind": "ingredient",
+        "id": "monsterBones",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+          "potions": 3,
+          "minGrade": "C"
+        }
       },
       {
-        "kind": "seed",
-        "id": "violetroot",
+        "kind": "ingredient",
+        "id": "shrimp",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
         "barter": {
-          "potions": 1,
-          "minGrade": "D"
-        },
-        "stock": 4,
-        "weight": 2,
-        "tier": 2
+          "potions": 3,
+          "minGrade": "C"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "uniqueFlower",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
+        "barter": {
+          "potions": 3,
+          "minGrade": "C"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "vampirRose",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
+        "barter": {
+          "potions": 3,
+          "minGrade": "C"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "voideel",
+        "stock": 2,
+        "weight": 1,
+        "tier": 0,
+        "barter": {
+          "potions": 3,
+          "minGrade": "C"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "bloodRose",
+        "stock": 2,
+        "weight": 1,
+        "tier": 1,
+        "barter": {
+          "potions": 4,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "bonefang",
+        "stock": 2,
+        "weight": 1,
+        "tier": 1,
+        "barter": {
+          "potions": 4,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "magicRoot",
+        "stock": 2,
+        "weight": 1,
+        "tier": 1,
+        "barter": {
+          "potions": 4,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "skyreachFeather",
+        "stock": 2,
+        "weight": 1,
+        "tier": 1,
+        "barter": {
+          "potions": 4,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "spectralRoot",
+        "stock": 2,
+        "weight": 1,
+        "tier": 1,
+        "barter": {
+          "potions": 4,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "bonefrond",
+        "stock": 2,
+        "weight": 1,
+        "tier": 2,
+        "barter": {
+          "potions": 5,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "magmaFish",
+        "stock": 2,
+        "weight": 1,
+        "tier": 2,
+        "barter": {
+          "potions": 5,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "mirefenPearl",
+        "stock": 2,
+        "weight": 1,
+        "tier": 2,
+        "barter": {
+          "potions": 5,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "monsterEgg",
+        "stock": 2,
+        "weight": 1,
+        "tier": 2,
+        "barter": {
+          "potions": 5,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "monsterMeat",
+        "stock": 2,
+        "weight": 1,
+        "tier": 2,
+        "barter": {
+          "potions": 5,
+          "minGrade": "B"
+        }
+      },
+      {
+        "kind": "ingredient",
+        "id": "quicksilverTear",
+        "stock": 2,
+        "weight": 1,
+        "tier": 3,
+        "barter": {
+          "potions": 6,
+          "minGrade": "A"
+        }
       }
     ]
   }
