@@ -43,7 +43,7 @@ import {
 } from './cauldrons';
 import type { Cauldron } from './types';
 import { dayStateAt } from './clock';
-import { harvest, harvestAllReady, isReady, makePlots, plant } from './garden';
+import { destroyCrop, harvest, harvestAllReady, isReady, makePlots, plant } from './garden';
 import { addIngredient, returnUnit, takeUnit } from './inventory';
 import { record } from './log';
 import {
@@ -277,6 +277,13 @@ export class Simulation {
     return ok;
   }
 
+
+  /** Clear a planted bed for nothing. See `destroyCrop`. */
+  destroyCrop(plotId: string): boolean {
+    const cropId = destroyCrop(this.world, plotId);
+    if (cropId) record(this.world, 'cropDestroyed', { crop: cropId });
+    return cropId !== null;
+  }
 
   harvest(plotId: string) {
     const result = harvest(this.world, plotId, this.rng);

@@ -102,13 +102,24 @@ export function portrait(kind: 'merchant' | 'hero', id: string): HTMLElement | n
 export function button(
   label: string,
   onClick: () => void,
-  opts: { variant?: string; disabled?: boolean; small?: boolean; title?: string } = {},
+  opts: {
+    variant?: string;
+    disabled?: boolean;
+    small?: boolean;
+    title?: string;
+    /** A picture before the label, for a button that stands for a thing. */
+    icon?: Node;
+  } = {},
 ): HTMLButtonElement {
   const classes = ['btn'];
   if (opts.variant) classes.push(opts.variant);
   if (opts.small) classes.push('small');
+  if (opts.icon) classes.push('with-icon');
 
-  const node = el('button', { class: classes.join(' '), type: 'button' }, [label]);
+  const node = el('button', { class: classes.join(' '), type: 'button' }, [
+    ...(opts.icon ? [el('span', { class: 'btn-icon', 'aria-hidden': 'true' }, [opts.icon])] : []),
+    label,
+  ]);
   if (opts.disabled) node.disabled = true;
   if (opts.title) node.title = opts.title;
   node.addEventListener('click', (event) => {

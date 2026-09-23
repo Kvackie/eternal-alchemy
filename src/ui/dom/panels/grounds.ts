@@ -39,7 +39,7 @@ import { ESSENCES } from '@/sim/types';
 import { dominantEssence } from '@/ui/art';
 import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
-import { changed, toast } from '@/ui/bus';
+import { changed, confirm, toast } from '@/ui/bus';
 
 export const SEED_DRAG = 'application/x-eternal-seed';
 
@@ -257,9 +257,16 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
 }
 
 /** Seeds and strains you actually hold, in the order the tray shows them. */
-function seedsOnHand(sim: Simulation): Array<{ id: string; label: string; count: number }> {
+function seedsOnHand(
+  sim: Simulation,
+): Array<{ id: string; label: string; count: number; yields: string }> {
   const wild = crops
-    .map((crop) => ({ id: crop.id, label: t(`crop.${crop.id}`), count: sim.world.seeds[crop.id] ?? 0 }))
+    .map((crop) => ({
+      id: crop.id,
+      label: t(`crop.${crop.id}`),
+      count: sim.world.seeds[crop.id] ?? 0,
+      yields: crop.yields,
+    }))
     .filter((entry) => entry.count > 0);
 
   const bred = sim.world.strains
@@ -270,6 +277,8 @@ function seedsOnHand(sim: Simulation): Array<{ id: string; label: string; count:
         gen: strain.generation,
       }),
       count: sim.world.seeds[strain.id] ?? 0,
+      // A strain grows what its parent grows, in a better or worse way.
+      yields: getCrop(strain.baseCropId).yields,
     }))
     .filter((entry) => entry.count > 0);
 
@@ -341,13 +350,21 @@ function openSeedPicker(sim: Simulation, plot: Plot): void {
         { class: 'shelf-picker' },
         seeds.map((seed) => {
           const suits = soilWantedBy(seed.id) === plot.soil;
+          /*
+           * The crop, not only its name.
+           *
+           * The seed tray behind this dialog draws every seed as its picture,
+           * and the list that asked which one to plant was a column of words —
+           * so the player had to translate back from "Moonpetal" to the thing
+           * they had just been looking at.
+           */
           return button(
             t('garden.seedPicker.option', { seed: seed.label, count: seed.count }),
             () => {
               dismiss();
               if (sim.plant(plot.id, seed.id)) changed();
             },
-            { variant: suits ? 'good' : 'quiet' },
+            { variant: suits ? 'good' : 'quiet', icon: ingredientIcon(seed.yields, 24) },
           );
         }),
       ),
@@ -408,6 +425,29 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
   const sub: Array<Node | string> = [soilChipFor(plot, crop.id)];
   if (plot.soil === crop.soil) sub.push(chip(t('garden.suited'), 'good'));
 
+  /*
+   * Pull it up, for nothing.
+   *
+   * A bed planted with the wrong seed used to be stuck with it until it grew —
+   * forty-five minutes of Moonpetal in the silt you wanted for something else.
+   * Destroying gives back nothing, not even the seed, so it asks first: that
+   * is the one thing here that cannot be taken back.
+   */
+  const destroy = button(
+    t('garden.action.destroy'),
+    () =>
+      confirm({
+        title: t('garden.destroy.title', { crop: name }),
+        body: t('garden.destroy.body'),
+        confirm: t('garden.action.destroy'),
+        danger: true,
+        onConfirm: () => {
+          if (sim.destroyCrop(plot.id)) changed();
+        },
+      }),
+    { small: true, variant: 'danger' },
+  );
+
   return row({
     variant: ready ? 'plot plot-ready' : 'plot',
     icon: iconFor(crop.yields),
@@ -415,9 +455,10 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
       ? t('garden.plot.ready', { crop: name })
       : t('garden.plot.growing', { crop: name, time: formatDuration(remaining) }),
     sub,
-    actions: ready
-      ? [
-          button(
+    actions: [
+      destroy,
+      ready
+        ? button(
             t('garden.action.harvest'),
             () => {
               const result = sim.harvest(plot.id);
@@ -427,9 +468,9 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
               }
             },
             { small: true },
-          ),
-        ]
-      : [],
+          )
+        : null,
+    ],
   });
 }
 

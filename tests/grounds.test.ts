@@ -285,6 +285,34 @@ describe('soil', () => {
     expect(sim.harvest(loam.id)!.count).toBeGreaterThan(0);
   });
 
+  it('destroys a crop for nothing, ready or not', () => {
+    // No ingredient, no seed back — not even the one it was planted from —
+    // or pulling a bed up would be a free undo of planting it.
+    for (const ripen of [false, true]) {
+      const sim = new Simulation(createWorld(5));
+      const plot = sim.world.plots[0]!;
+      sim.world.seeds.dewcap = 2;
+      sim.plant(plot.id, 'dewcap');
+      if (ripen) sim.advanceBy(HOUR);
+
+      const seeds = sim.world.seeds.dewcap;
+      const held = countOf(sim.world, 'dewcap');
+      const harvested = sim.world.statistics.cropsHarvested;
+
+      expect(sim.destroyCrop(plot.id)).toBe(true);
+      expect(plot.crop).toBeNull();
+      expect(sim.world.seeds.dewcap).toBe(seeds);
+      expect(countOf(sim.world, 'dewcap')).toBe(held);
+      expect(sim.world.statistics.cropsHarvested).toBe(harvested);
+      expect(sim.world.log.at(-1)?.kind).toBe('cropDestroyed');
+    }
+  });
+
+  it('has nothing to destroy in an empty bed', () => {
+    const sim = new Simulation(createWorld(5));
+    expect(sim.destroyCrop(sim.world.plots[0]!.id)).toBe(false);
+  });
+
   it('gives every crop a plot that suits it', () => {
     // A crop whose soil appears on no starting plot can never earn its bonus.
     const sim = new Simulation(createWorld(5));

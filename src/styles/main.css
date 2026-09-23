@@ -489,6 +489,19 @@ button {
   white-space: nowrap;
 }
 
+/* A button that is a thing — a seed, a pot — shows the thing before its name. */
+.btn.with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
 .btn:hover:not(:disabled) {
   background: var(--good-text);
   border-color: var(--good-text);

@@ -183,6 +183,7 @@ export interface SaleRecord {
  */
 export type LogKind =
   | 'planted'
+  | 'cropDestroyed'
   | 'harvested'
   | 'seedFound'
   | 'brewStarted'

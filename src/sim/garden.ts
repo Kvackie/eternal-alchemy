@@ -85,6 +85,22 @@ export function plant(world: World, plotId: string, seedId: string): boolean {
 }
 
 /**
+ * Pull a crop out and throw it away.
+ *
+ * For a bed planted with the wrong thing, or one a player wants back now
+ * rather than in forty minutes. Nothing comes of it — no ingredient, no seed,
+ * not the seed it was planted from — which is what makes it a choice rather
+ * than a free undo of `plant`. Ready or not makes no difference.
+ */
+export function destroyCrop(world: World, plotId: string): string | null {
+  const plot = plotById(world, plotId);
+  if (!plot?.crop) return null;
+  const cropId = plot.crop.cropId;
+  plot.crop = null;
+  return cropId;
+}
+
+/**
  * Harvest a plot.
  *
  * Seeds roll per unit harvested, not per plot. That distinction is the whole

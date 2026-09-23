@@ -41,7 +41,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'haggleLost',
   ],
   craft: ['brewStarted', 'brewReady', 'brewRejected', 'bottled'],
-  garden: ['planted', 'harvested', 'seedFound', 'caveHarvest', 'oreFound'],
+  garden: ['planted', 'cropDestroyed', 'harvested', 'seedFound', 'caveHarvest', 'oreFound'],
   expedition: [
     'missionSent',
     'missionReturned',
