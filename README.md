@@ -14,10 +14,10 @@ expeditions; and a contract board.
 the Long Distillation with its Mastery Codex. (The greenhouse and bottle forms shipped here too, and
 were taken out again in the potion overhaul.)
 
-Design document: `docs/design.html` (open it in a browser). It is the design record rather than a
-description of the build — it still describes the alembic wheel that M1's rework replaced, among
-other things. It opens with a status panel listing exactly where it and the code have parted company;
-this README is the accurate account.
+Design document: `docs/design.html` (open it in a browser). It is the design record: draft 7 brought
+its topic sections in line with the build after the potion overhaul, while its changelog keeps each
+earlier draft as it was. It opens with a status panel naming the few passages that still describe
+intent rather than code; this README is the short, accurate account.
 
 ## Running it
 
