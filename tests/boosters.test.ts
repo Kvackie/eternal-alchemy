@@ -5,9 +5,9 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, getBooster, ranks } from '@/sim/config';
+import { config, getBooster, ranks, shaftConfig } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
-import { isBoosted } from '@/sim/boosters';
+import { boosterBlock, isBoosted } from '@/sim/boosters';
 
 const HOUR = 3_600_000;
 const DAY = config.clock.dayLengthMs;
@@ -16,11 +16,11 @@ function planted(boost: boolean): { sim: Simulation; count: number } {
   const sim = new Simulation(createWorld(4));
   const plot = sim.world.plots[0]!;
   sim.world.seeds.curlflame = 2;
+  sim.plant(plot.id, 'curlflame');
   if (boost) {
     sim.world.boosters.gardenTonic = 1;
     expect(sim.useBooster('gardenTonic')).toBe(true);
   }
-  sim.plant(plot.id, 'curlflame');
   sim.advanceBy(HOUR);
   return { sim, count: sim.harvest(plot.id)!.count };
 }
@@ -41,6 +41,8 @@ describe('yield boosters', () => {
 
   it('takes one at a time, and only if one is held', () => {
     const sim = new Simulation(createWorld(4));
+    sim.world.seeds.curlflame = 1;
+    sim.plant(sim.world.plots[0]!.id, 'curlflame');
     expect(sim.useBooster('gardenTonic')).toBe(false);
 
     sim.world.boosters.gardenTonic = 2;
@@ -71,11 +73,11 @@ describe('yield boosters', () => {
     const run = (boost: boolean) => {
       const sim = new Simulation(createWorld(33));
       const vein = sim.shaft.veins[0]!;
+      sim.workVein(vein.id);
       if (boost) {
         sim.world.boosters.mineTonic = 1;
         sim.useBooster('mineTonic');
       }
-      sim.workVein(vein.id);
       const before = vein.remaining;
       sim.advanceBy(HOUR);
       return { mined: countOf(sim.world, vein.ingredientId), taken: before - vein.remaining };
@@ -84,6 +86,53 @@ describe('yield boosters', () => {
     const boosted = run(true);
     expect(boosted.taken).toBe(plain.taken);
     expect(boosted.mined).toBeGreaterThan(plain.mined);
+  });
+
+  it('is not spent on a site with nothing going', () => {
+    const sim = new Simulation(createWorld(4));
+    sim.world.boosters.gardenTonic = 1;
+    sim.world.boosters.caveTonic = 1;
+    sim.world.boosters.mineTonic = 1;
+    sim.world.cave.tiles.forEach((tile) => (tile.speciesId = null));
+
+    expect(boosterBlock(sim.world, 'gardenTonic')).toBe('booster.idle.garden');
+    expect(sim.useBooster('gardenTonic')).toBe(false);
+    expect(sim.useBooster('caveTonic')).toBe(false);
+    expect(sim.useBooster('mineTonic')).toBe(false);
+    expect(sim.world.boosters).toEqual({ gardenTonic: 1, caveTonic: 1, mineTonic: 1 });
+  });
+
+  it('marks only the veins being worked, so the next charge is not refused for good', () => {
+    const sim = new Simulation(createWorld(7));
+    const [worked, idle] = sim.shaft.veins;
+    sim.world.boosters.mineTonic = 2;
+    sim.workVein(worked!.id);
+    expect(sim.useBooster('mineTonic')).toBe(true);
+    expect(worked!.boosted).toBe(true);
+    expect(idle!.boosted).toBeUndefined();
+
+    // Spent on the worked vein's next batch; the idle one never held it up.
+    sim.advanceBy(shaftConfig.batchTickMs);
+    expect(sim.shaft.workingVeinIds).toEqual([worked!.id]);
+    expect(isBoosted(sim.world, 'mine')).toBe(false);
+    expect(boosterBlock(sim.world, 'mineTonic')).toBeNull();
+  });
+
+  it('is not held up by a mark left on something that stopped', () => {
+    const sim = new Simulation(createWorld(7));
+    const vein = sim.shaft.veins[0]!;
+    sim.world.boosters.mineTonic = 2;
+    sim.workVein(vein.id);
+    sim.useBooster('mineTonic');
+    sim.stopVein(vein.id);
+
+    // Called off before its batch: the mark is left, but nothing is producing
+    // under it, so a crew sent elsewhere can take the next charge.
+    const other = sim.shaft.veins[1]!;
+    sim.workVein(other.id);
+    expect(sim.useBooster('mineTonic')).toBe(true);
+    expect(vein.boosted).toBeUndefined();
+    expect(other.boosted).toBe(true);
   });
 
   it('is always on the stall from Distiller, at its catalogue price', () => {

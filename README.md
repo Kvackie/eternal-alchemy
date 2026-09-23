@@ -144,8 +144,9 @@ day alone, the same in every world.
 
 From Distiller, each trade carries a **yield booster** on every visit — Bramm a Garden tonic (1,200g),
 Vessa a Cave tonic (1,500g), Hesk a Seam charge (1,800g). Used from its Grounds tab, it doubles the
-next harvest of every plot, the next picking of every cave bed, or the next batch from every vein
-(without draining the vein faster). A site takes one at a time. Trade goods come at twice their
+next harvest of every plot with a crop in, the next picking of every colonised cave bed, or the next
+batch from every vein a crew is working (without draining the vein faster) — what the site has going
+when it is used, so it cannot be used on a site with nothing going. A site takes one at a time. Trade goods come at twice their
 listed count, and half again for every standing tier with the merchant.
 
 Bramm, Vessa and Hesk keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his

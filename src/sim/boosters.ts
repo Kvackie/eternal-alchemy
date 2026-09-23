@@ -1,31 +1,45 @@
 /**
- * Yield boosters: one harvest, doubled, across a whole site.
+ * Yield boosters: one harvest, doubled, across what a site has going.
  *
- * A booster is held until used. Using one marks every plot, every cave bed or
- * every vein, and each doubles the next thing it yields and then goes back to
- * normal — so a booster is worth one full round of a site, however long that
- * round takes. A site takes one at a time: a second waits until the first has
- * been spent everywhere it was put.
+ * A booster is held until used. Using one marks what the site is producing at
+ * that moment — the plots with a crop in, the beds with a colony, the veins a
+ * crew is working — and each doubles the next thing it yields, then goes back
+ * to normal. With nothing producing there is nothing to mark, so it is not
+ * spent.
+ *
+ * Only what is producing, because a mark on a vein nobody works, or on an
+ * empty bed, was never spent: the site read as boosted for good, and every
+ * later booster was refused. A site still takes one at a time, counted over
+ * what is producing; any mark left behind on something that stopped (a crop
+ * dug up, a crew called off) is cleared by the next one.
  */
 
 import { boosters, getBooster, type BoostSite } from './config';
 import type { World } from './types';
 
-/** Everything on a site that a booster marks. */
-function marked(world: World, site: BoostSite): Array<{ boosted?: boolean }> {
+/** Everything on a site that a booster could have marked. */
+function everything(world: World, site: BoostSite): Array<{ boosted?: boolean }> {
   if (site === 'garden') return world.plots;
   if (site === 'cave') return world.cave.tiles;
   return world.shaft.veins;
 }
 
-/** Whether a booster is still waiting to be spent somewhere on this site. */
-export function isBoosted(world: World, site: BoostSite): boolean {
-  return marked(world, site).some((entry) => entry.boosted);
+/** What a site is producing now: what a booster used now would mark. */
+function producing(world: World, site: BoostSite): Array<{ boosted?: boolean }> {
+  if (site === 'garden') return world.plots.filter((plot) => plot.crop !== null);
+  if (site === 'cave') return world.cave.tiles.filter((tile) => tile.speciesId !== null);
+  const working = world.shaft.workingVeinIds;
+  return world.shaft.veins.filter((vein) => working.includes(vein.id));
 }
 
-/** How much of the site a running booster has left to double. */
+/** Whether a booster is still waiting to be spent on something this site has going. */
+export function isBoosted(world: World, site: BoostSite): boolean {
+  return producing(world, site).some((entry) => entry.boosted);
+}
+
+/** How much of what the site has going a running booster has left to double. */
 export function boostedCount(world: World, site: BoostSite): number {
-  return marked(world, site).filter((entry) => entry.boosted).length;
+  return producing(world, site).filter((entry) => entry.boosted).length;
 }
 
 /** The booster sold for a site. */
@@ -33,16 +47,28 @@ export function boosterFor(site: BoostSite) {
   return boosters.find((def) => def.site === site)!;
 }
 
-/** Use a held booster on its site. Refused while one is still running there. */
-export function useBooster(world: World, boosterId: string): boolean {
+/**
+ * Why a booster cannot be used now, as a string key, or null when it can.
+ *
+ * One answer for the sim and the button, so the button is never offered for a
+ * press the sim will refuse.
+ */
+export function boosterBlock(world: World, boosterId: string): string | null {
   const def = getBooster(boosterId);
-  if ((world.boosters[boosterId] ?? 0) <= 0) return false;
-  if (isBoosted(world, def.site)) return false;
-  const targets = marked(world, def.site);
-  if (targets.length === 0) return false;
+  if ((world.boosters[boosterId] ?? 0) <= 0) return 'booster.none';
+  if (isBoosted(world, def.site)) return 'booster.busy';
+  if (producing(world, def.site).length === 0) return `booster.idle.${def.site}`;
+  return null;
+}
+
+/** Use a held booster on what its site has going. */
+export function useBooster(world: World, boosterId: string): boolean {
+  if (boosterBlock(world, boosterId)) return false;
+  const def = getBooster(boosterId);
 
   world.boosters[boosterId] = (world.boosters[boosterId] ?? 0) - 1;
-  for (const target of targets) target.boosted = true;
+  for (const entry of everything(world, def.site)) delete entry.boosted;
+  for (const target of producing(world, def.site)) target.boosted = true;
   return true;
 }
 

@@ -44,7 +44,7 @@ import {
 import { isReady } from '@/sim/garden';
 import { isMature } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
-import { boostedCount, boosterFor } from '@/sim/boosters';
+import { boostedCount, boosterBlock, boosterFor } from '@/sim/boosters';
 import type { BoostSite } from '@/sim/config';
 import { dominantEssence } from '@/ui/art';
 import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
@@ -154,6 +154,9 @@ function boosterBar(sim: Simulation, site: BoostSite): HTMLElement | null {
   if (held <= 0 && running <= 0) return null;
 
   const name = t(`booster.${def.id}`);
+  const blocked = boosterBlock(sim.world, def.id);
+  // Holding one with nothing to put it on is worth saying why, not just greying.
+  const idle = running <= 0 && blocked?.startsWith('booster.idle.') ? blocked : null;
   return el('section', { class: 'booster-bar' }, [
     el('span', { class: 'booster-glyph', text: '✦' }),
     el('div', { class: 'booster-text' }, [
@@ -164,6 +167,7 @@ function boosterBar(sim: Simulation, site: BoostSite): HTMLElement | null {
             ? t(`booster.running.${site}`, { count: running })
             : t('booster.held', { count: held }),
       }),
+      ...(idle ? [el('span', { text: t(idle) })] : []),
     ]),
     button(
       t('booster.use'),
@@ -172,7 +176,7 @@ function boosterBar(sim: Simulation, site: BoostSite): HTMLElement | null {
         toast(t('booster.used', { item: name }));
         changed();
       },
-      { variant: 'gold', small: true, disabled: held <= 0 || running > 0 },
+      { variant: 'gold', small: true, disabled: blocked !== null },
     ),
   ]);
 }
