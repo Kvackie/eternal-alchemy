@@ -217,32 +217,35 @@ footer p{max-width:68ch; margin:0}
         <circle cx="10.5" cy="23.5" r="1.5" fill="var(--amber)"/>
         <circle cx="15" cy="25" r="1" fill="var(--amber)"/>
       </svg>
-      <span>Game design document &nbsp;·&nbsp; draft 7 &nbsp;·&nbsp; as built after the potion overhaul</span>
+      <span>Game design document &nbsp;·&nbsp; draft 8 &nbsp;·&nbsp; as built after bottling became one press</span>
     </div>
     <h1>Eternal Alchemy<br><em>a potion shop, kept slowly</em></h1>
     <p class="standfirst">A cozy single-player alchemy shop for mobile and desktop. Grow it in the garden,
       raise it in the cave, cut it from the shaft, or send someone braver to fetch it — then match
-      essences in the cauldron, seal it well, and price it right. No debt, no deadline, no gems.</p>
+      essences in the cauldron, bottle it, and price it right. No debt, no deadline, no gems.</p>
     <div class="card" style="border-color:var(--amber);margin:1rem 0">
       <p class="eyebrow">Status &nbsp;·&nbsp; where this differs from the build</p>
       <p>This is the design record. Draft 7 brought the topic sections back in line with
-        <code>src/</code> after the potion overhaul, but the record keeps its history, and three things
-        are worth knowing before reading it. <strong>The README is still the short, accurate account
+        <code>src/</code> after the potion overhaul, and draft 8 did the same after vessels and seals
+        were removed, but the record keeps its history, and three things are worth knowing before
+        reading it. <strong>The README is still the short, accurate account
         of what is built.</strong></p>
       <ul>
         <li><strong>The changelog is history.</strong> Each draft entry describes the game as that
           draft left it. The alembic wheel, temperature bands, the Stirred and Simmered methods, Murk,
-          bottle forms, the greenhouse and the reagent category all appear there, and all of them are
-          gone. So do the old counts: 314 ingredients and 71 recipes in draft 6, and 385 and 196 just
+          bottle forms, the greenhouse, the reagent category, vessels, seals, the vessel moulds and
+          the sealing press all appear there, and all of them are gone. So do the old counts: 314
+          ingredients and 71 recipes in draft 6, and 385 and 196 just
           before the overhaul. The data now holds <strong>151 ingredients</strong> and
           <strong>31 recipes</strong>.</li>
-        <li><strong>Brewing is mixing alone.</strong> Ingredients in the pot, then an outcome you
-          accept or pour back. There is no heat and no method; the ratio decides the potion and its
-          grade, and the amount decides its potency.</li>
+        <li><strong>Brewing is mixing alone, and bottling is one press.</strong> Ingredients in the
+          pot, then an outcome you accept or pour back. There is no heat and no method; the ratio
+          decides the potion and its grade, and the amount decides its potency. When the brew is
+          done, <em>Bottle it</em> — there is nothing to choose and nothing to spend.</li>
         <li><strong>A few passages outside the overhaul still describe intent.</strong> The night-only
           crops and faster night-time cave spread under <a href="#time">Time</a> are not in the code,
-          contracts are commissioned from each faction's palate rather than from fixed templates, and
-          the list of towns has grown to seven. Those sections were not rewritten for draft 7.</li>
+          and the list of towns has grown to seven. Those sections were not rewritten for draft 7
+          or 8.</li>
       </ul>
     </div>
     <dl class="facts">
@@ -288,7 +291,52 @@ footer p{max-width:68ch; margin:0}
     <h2>What changed</h2>
     <p class="sub">Your answers, applied. Further down, <span class="new">new</span> marks something
       added after the first draft, and <span class="new">rebuilt</span> marks a section rewritten
-      for draft 7.</p>
+      for draft 7 or 8.</p>
+
+    <h3>Draft 8 — bottling is one press</h3>
+    <p>Vessels and seals were a second set of choices asked of every finished brew, and they were not
+      part of the design the game is being built to now. Playing it made the case: most vessels and
+      seals were sold by no merchant at all — the Crystal Orb, the only vessel that would hold a
+      Sovereign brew, among them — and the supply of glass bottlenecked the whole economy. This draft
+      takes them out and records what else moved with them.</p>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-h">No vessels, no seals</p>
+        <p>When a brew finishes you press <strong>Bottle it</strong> — on the bench's Ready card, on
+          the pot, or in the station — and it is bottled. No dialog, no choice, nothing consumed. A
+          potion's value is its recipe's base × potency × grade, and every potency can be bottled,
+          Sovereign included. <a href="#vessels">Bottling</a>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">What went with them</p>
+        <p>Shelf appeal from glass and wax, the Ashwalker's mark, hero supplies a grade better than
+          they were, the guild stamp's contract bonus, the amphora's three units, the pouch's stack of
+          five, and the <em>volatile</em> trait. A bottle is one unit and fills one shelf slot.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Two pieces of equipment that did nothing</p>
+        <p>The vessel moulds and the sealing press were on sale for 900g and 1200g and never did
+          anything in the code. They are gone, and the equipment list is thirteen pieces.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Every save carried forward</p>
+        <p>Migration <code>v18</code> drops vessel and seal stock, strips both from every stored
+          bottle and prices it again, drops them from every order, hands back the extra bottles on a
+          stacked shelf, deals the stalls again, refunds the moulds and the press, and clears log lines
+          naming what was removed.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">The S bar rises with the mix</p>
+        <p>S is from 90 purity for one- or two-essence potions, 94 for three and 97 for four or five,
+          and every band above F moves up with it. One ladder for every potion made a five-essence S
+          as easy as a single-essence one. <a href="#brewing">Grades</a>.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">No order shown twice</p>
+        <p>The board never holds two orders asking one faction for the same number of the same
+          potion at the same grade. Orders that are merely close still appear.</p>
+      </div>
+    </div>
 
     <h3>Draft 7 — the potion overhaul</h3>
     <p>The game had grown a second and third test on every brew — a temperature band and a method —
@@ -557,7 +605,7 @@ footer p{max-width:68ch; margin:0}
       <div class="card">
         <p class="card-h">Pillar 01 — Craft, not clicks</p>
         <p>Every potion is the result of decisions you made: which ingredients, in what ratio, how
-          fresh they were, what you sealed it in. Two players' Aqua–Terra potions should differ.</p>
+          fresh they were, how much of it you made. Two players' Aqua–Terra potions should differ.</p>
       </div>
       <div class="card">
         <p class="card-h">Pillar 02 — Time is a rhythm, not a wall</p>
@@ -585,7 +633,7 @@ footer p{max-width:68ch; margin:0}
       stock and equipment, and your own potions supply the heroes who fetch what you can't grow.</p>
 
     <div class="diagram">
-      <svg viewBox="0 0 680 500" role="img" aria-label="Flow diagram: garden, cave and mine, merchants and hero missions all feed the cauldron; the cauldron feeds bottling and sealing; bottled goods sell via shelf, contract or haggle; sales produce gold and renown, which flows back to buy stock and equipment; bottled potions also flow back to supply hero missions.">
+      <svg viewBox="0 0 680 500" role="img" aria-label="Flow diagram: garden, cave and mine, merchants and hero missions all feed the cauldron; the cauldron feeds bottling; bottled goods sell via shelf, contract or haggle; sales produce gold and renown, which flows back to buy stock and equipment; bottled potions also flow back to supply hero missions.">
         <g>
           <rect class="node" x="26" y="40" width="128" height="52" rx="3"/>
           <text class="nsub" x="90" y="60" text-anchor="middle">CULTIVATE</text>
@@ -620,8 +668,8 @@ footer p{max-width:68ch; margin:0}
         <path d="M339 248 l5 -9 h-10z" fill="var(--rule)"/>
 
         <rect class="node" x="110" y="250" width="460" height="56" rx="3"/>
-        <text class="nsub" x="339" y="271" text-anchor="middle">VESSEL · SEAL</text>
-        <text class="nlab" x="339" y="291" text-anchor="middle">Bottle &amp; Seal</text>
+        <text class="nsub" x="339" y="271" text-anchor="middle">ONE PRESS</text>
+        <text class="nlab" x="339" y="291" text-anchor="middle">Bottle</text>
 
         <g class="flow">
           <path d="M339 306 C339 330 171 326 171 346"/>
@@ -714,14 +762,14 @@ footer p{max-width:68ch; margin:0}
 
     <h4>The Ashwalker is the exception <span class="new">new</span></h4>
     <p>Bramm, Vessa and Hesk keep daylight hours. <strong>The Ashwalker only appears at night</strong> —
-      the trader who deals in sealed potions rather than gold is a worse character with a market stall
+      the trader who deals in potions rather than gold is a worse character with a market stall
       and a sunny disposition. He is the reason to check the shop after dark, and the rule stays simple to
       explain because he is the only exception:</p>
     <div class="rec">
   Bramm       <b>day</b>    every 2 days     <span class="c">every herb's seed</span>
   Vessa       <b>day</b>    every 5 days     <span class="c">every spore, the upper quarry's minerals</span>
   Hesk        <b>day</b>    every 3 days     <span class="c">the lower quarry's minerals, the tools</span>
-  Ashwalker   <b>night</b>  every 8 days     <span class="c">exotics, for sealed potions only</span>
+  Ashwalker   <b>night</b>  every 8 days     <span class="c">exotics, for potions only</span>
 </div>
 
     <h3>Developing against a real clock <span class="new">new</span></h3>
@@ -769,7 +817,7 @@ footer p{max-width:68ch; margin:0}
           <tr><td>Hero mission</td><td class="num">20 min</td><td class="num">2 – 6 h</td><td class="num">14 h</td><td>Longer = better loot tables</td></tr>
           <tr><td>Merchant visit</td><td class="num">—</td><td class="num">every 2 – 8 days</td><td class="num">—</td><td>In-game days; daytime only</td></tr>
           <tr><td>Brewing</td><td class="num">30 s</td><td class="num">2 – 8 min</td><td class="num">45 min</td><td>By potency, Minor to Sovereign; runs whether you watch or not</td></tr>
-          <tr><td>Bottling</td><td colspan="3" class="num">instant</td><td>Player-driven, never timed</td></tr>
+          <tr><td>Bottling</td><td colspan="3" class="num">instant</td><td>One press, never timed</td></tr>
           <tr><td>Contract deadline</td><td class="num">4 days</td><td class="num">4 – 12 days</td><td class="num">12 days</td><td>In-game days; paused while closed</td></tr>
         </tbody>
       </table>
@@ -912,23 +960,23 @@ footer p{max-width:68ch; margin:0}
     <div class="grid2">
       <div class="card">
         <p class="card-h">Bramm · day · every 2 days · seeds</p>
-        <p>Every herb's seed, sixty of them, plus clay vials, the cheap furnishings, extra plots and
+        <p>Every herb's seed, sixty of them, plus the cheap furnishings, extra plots and
           shelves. Cheap, always useful, never exciting. The reliable floor.</p>
       </div>
       <div class="card">
         <p class="card-h">Vessa · day · every 5 days · spores &amp; stone</p>
         <p>Every cave species' spores, and the minerals of the quarry's upper half for anyone who has
-          not dug that far. Glass flasks, the better furnishings and the wide rim beside them.</p>
+          not dug that far. The better furnishings and the wide rim beside them.</p>
       </div>
       <div class="card">
         <p class="card-h">Hesk · day · every 3 days · infrastructure <span class="new">new</span></p>
-        <p>The outfitter. Beams, beds, moulds, presses, bunk rooms — everything that makes the shop
+        <p>The outfitter. Beams, beds, the steel pick, bunk rooms — everything that makes the shop
           bigger rather than fuller — and the strong minerals of the quarry's lower half, for a shop
           that wants them before it has dug that deep. Slow and dear.</p>
       </div>
       <div class="card">
         <p class="card-h">The Ashwalker · <em>night</em> · every 8 days · exotics</p>
-        <p>Doesn't take gold. Trades only for sealed potions of a minimum grade, spending your
+        <p>Doesn't take gold. Trades only for potions of a minimum grade, spending your
           cheapest qualifying bottles first, and is the only merchant who sells exotics. The rarest
           wait on a long acquaintance with him, so an expedition stays the cheaper way to them. The
           main sink that isn't money, and the only merchant you'll ever meet after dark.</p>
@@ -940,7 +988,7 @@ footer p{max-width:68ch; margin:0}
       <strong>Trade goods are dealt in turn</strong>: each visit picks up round the merchant's list
       where the last visit stopped, so anything they sell turns up within a known number of visits. A
       weighted draw over sixty seeds could leave one unseen for a season, which is not acceptable when
-      the seed is the only way to grow that herb. <strong>Staples</strong> — vessels, seals, boards,
+      the seed is the only way to grow that herb. <strong>Staples</strong> — boards,
       furnishings, equipment — are still drawn at random, as they were before draft 7; they were not
       redistributed by trade.</p>
     <p>Both parts come from the visit number and a seed derived from <em>(merchant, day)</em>, so a
@@ -966,14 +1014,15 @@ footer p{max-width:68ch; margin:0}
           <tr><td>Shop</td><td>Bramm · Hesk</td><td>More shelves, and better boards to stand on them</td></tr>
           <tr><td>Cave</td><td>Hesk</td><td>Six more beds (×2), a humidity ward</td></tr>
           <tr><td>Shaft</td><td>Hesk</td><td>A steel pick, and support beams (×10, 20m each) — the only way down</td></tr>
-          <tr><td>Bottling</td><td>Hesk</td><td>Vessel moulds and the sealing press: craft your own</td></tr>
           <tr><td>Roster</td><td>Hesk</td><td>Bunk rooms, one more hero each</td></tr>
         </tbody>
       </table>
     </div>
-    <p>Fifteen pieces in all. The pots themselves are a ladder of their own, bought from the Cauldron
-      screen: six sizes from 60 to 600 essence, and up to six pots at once. The greenhouse and the
-      Lagged cauldron left the tree in draft 7, and the order book before it.</p>
+    <p>Thirteen pieces in all. The pots themselves are a ladder of their own, bought from the Cauldron
+      screen: six sizes from 60 to 600 essence, and up to six pots at once. The vessel moulds and the
+      sealing press left the tree in draft 8 — they never did anything, and old saves were paid back
+      900g and 1200g — the greenhouse and the Lagged cauldron in draft 7, and the order book before
+      it.</p>
     <p>This solves a real problem with the draft-1 economy: gold had too few
       sinks late, and rank-ups dumped capability all at once. Now every gold pile has an obvious next
       purchase and rank-ups feel like a shop restock rather than a gift.</p>
@@ -1071,7 +1120,7 @@ footer p{max-width:68ch; margin:0}
     <p>Exotics carry the heaviest weight, about half of an ordinary draw, and they alone fill the
       rare-find tables. The rarest of all, Quicksilver Tear — all five essences, 8 of each — is in
       every biome's rare table and no ordinary one. An expedition is the only way to gather an exotic
-      and the cheapest way to get one; the Ashwalker sells them too, for sealed potions.</p>
+      and the cheapest way to get one; the Ashwalker sells them too, for potions.</p>
   </section>
 
   <section id="brewing">
@@ -1090,9 +1139,10 @@ footer p{max-width:68ch; margin:0}
       <span class="chip ae"><svg width="11" height="11"><use href="#g-ae"/></svg><b>AER</b> Aer · speed, mind, perception</span>
       <span class="chip um"><svg width="11" height="11"><use href="#g-um"/></svg><b>UMB</b> Umbra · change, toxin, illusion</span>
     </div>
-    <p>Every ingredient is a vector across those five, plus one optional trait, <em>volatile</em>.
-      Nothing else about an ingredient matters mechanically — that's what keeps 151 ingredients
-      authorable and every recipe provably brewable.</p>
+    <p>Every ingredient is a vector across those five, and nothing else about it matters
+      mechanically — that's what keeps 151 ingredients authorable and every recipe provably brewable.
+      The one trait there was, <em>volatile</em>, only decided which vessel a brew needed, and went
+      with the vessels in draft 8.</p>
 
     <h3>One scale for every amount <span class="new">new</span></h3>
     <p>Every amount of essence in every ingredient is one of ten numbers: <strong>4, 6, 8, 10, 12, 16,
@@ -1134,16 +1184,16 @@ footer p{max-width:68ch; margin:0}
 
     <div class="scroll">
       <table>
-        <thead><tr><th>Ingredient</th><th class="num">IGN</th><th class="num">AQU</th><th class="num">TER</th><th class="num">AER</th><th class="num">UMB</th><th>Trait</th><th>Source</th></tr></thead>
+        <thead><tr><th>Ingredient</th><th class="num">IGN</th><th class="num">AQU</th><th class="num">TER</th><th class="num">AER</th><th class="num">UMB</th><th>Source</th></tr></thead>
         <tbody>
-          <tr><td>Curlflame</td><td class="num">4</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td>—</td><td>Garden · Ash · a starting seed</td></tr>
-          <tr><td>Sunleaf</td><td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">4</td><td class="num">0</td><td>—</td><td>Garden · Ash</td></tr>
-          <tr><td>Moonpetal</td><td class="num">0</td><td class="num">8</td><td class="num">0</td><td class="num">0</td><td class="num">4</td><td>—</td><td>Garden · Silt</td></tr>
-          <tr><td>Dewcap</td><td class="num">0</td><td class="num">12</td><td class="num">6</td><td class="num">0</td><td class="num">0</td><td>—</td><td>Cave · any light</td></tr>
-          <tr><td>Gravecrown</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">16</td><td>—</td><td>Cave · dark tile</td></tr>
-          <tr><td>Chalk Nodule</td><td class="num">0</td><td class="num">0</td><td class="num">24</td><td class="num">0</td><td class="num">0</td><td>—</td><td>Shaft · surface</td></tr>
-          <tr><td>Deepglass</td><td class="num">0</td><td class="num">0</td><td class="num">16</td><td class="num">16</td><td class="num">0</td><td>—</td><td>Shaft · 75m</td></tr>
-          <tr><td>Quicksilver Tear</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td>Volatile</td><td>Expedition · rare find, every biome</td></tr>
+          <tr><td>Curlflame</td><td class="num">4</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td>Garden · Ash · a starting seed</td></tr>
+          <tr><td>Sunleaf</td><td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">4</td><td class="num">0</td><td>Garden · Ash</td></tr>
+          <tr><td>Moonpetal</td><td class="num">0</td><td class="num">8</td><td class="num">0</td><td class="num">0</td><td class="num">4</td><td>Garden · Silt</td></tr>
+          <tr><td>Dewcap</td><td class="num">0</td><td class="num">12</td><td class="num">6</td><td class="num">0</td><td class="num">0</td><td>Cave · any light</td></tr>
+          <tr><td>Gravecrown</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">16</td><td>Cave · dark tile</td></tr>
+          <tr><td>Chalk Nodule</td><td class="num">0</td><td class="num">0</td><td class="num">24</td><td class="num">0</td><td class="num">0</td><td>Shaft · surface</td></tr>
+          <tr><td>Deepglass</td><td class="num">0</td><td class="num">0</td><td class="num">16</td><td class="num">16</td><td class="num">0</td><td>Shaft · 75m</td></tr>
+          <tr><td>Quicksilver Tear</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td>Expedition · rare find, every biome</td></tr>
         </tbody>
       </table>
     </div>
@@ -1184,24 +1234,24 @@ footer p{max-width:68ch; margin:0}
     <h3>Potency tiers <span class="new">rebuilt</span></h3>
     <div class="scroll">
       <table>
-        <thead><tr><th>Tier</th><th class="num">Total essence</th><th>Smallest pot that holds it</th><th>Smallest vessel</th><th class="num">Value ×</th></tr></thead>
+        <thead><tr><th>Tier</th><th class="num">Total essence</th><th>Smallest pot that holds it</th><th class="num">Value ×</th></tr></thead>
         <tbody>
-          <tr><td>Minor</td><td class="num">1 – 60</td><td>The first pot (60)</td><td>Waxed pouch</td><td class="num">0.6</td></tr>
-          <tr><td>Common</td><td class="num">61 – 110</td><td>Second (110)</td><td>Clay vial</td><td class="num">1.0</td></tr>
-          <tr><td>Greater</td><td class="num">111 – 190</td><td>Third (190)</td><td>Glass flask</td><td class="num">2.2</td></tr>
-          <tr><td>Grand</td><td class="num">191 – 320</td><td>Fourth (320)</td><td>Iron-bound jar</td><td class="num">4.5</td></tr>
-          <tr><td>Sovereign</td><td class="num">321 +</td><td>Fifth (440)</td><td>Crystal orb</td><td class="num">9.0</td></tr>
+          <tr><td>Minor</td><td class="num">1 – 60</td><td>The first pot (60)</td><td class="num">0.6</td></tr>
+          <tr><td>Common</td><td class="num">61 – 110</td><td>Second (110)</td><td class="num">1.0</td></tr>
+          <tr><td>Greater</td><td class="num">111 – 190</td><td>Third (190)</td><td class="num">2.2</td></tr>
+          <tr><td>Grand</td><td class="num">191 – 320</td><td>Fourth (320)</td><td class="num">4.5</td></tr>
+          <tr><td>Sovereign</td><td class="num">321 +</td><td>Fifth (440)</td><td class="num">9.0</td></tr>
         </tbody>
       </table>
     </div>
     <p>The tier boundaries are the pots' capacities, so buying a bigger pot is buying the next tier,
       and a full pot of any of the first four sizes sits at the top of a tier rather than a few points
-      short of one.</p>
+      short of one. Every tier can be bottled; nothing caps the potency of a bottle.</p>
     <p>Purity maps to letter grades straight: <strong>S from 90, A from 82, B from 70, C from 58, D
       from 46, E from 24</strong>, and F below, for a one- or two-essence potion. The simple ones are
       forgiving and the big mixes are not: for three essences every band above F rises by 4 (S from
       94), and for four or five by 7 (S from 97). A brew's value is the recipe's base value × the
-      potency multiplier × the vessel's × the seal's × a grade factor that rises superlinearly, so the
+      potency multiplier × a grade factor that rises superlinearly, so the
       gap between a C and an A is the gap between breaking even and profiting — exactly the pressure
       that makes the ratio matter.</p>
   </section>
@@ -1241,7 +1291,8 @@ footer p{max-width:68ch; margin:0}
       </div>
       <div class="card">
         <p class="card-h">Then — Bottle</p>
-        <p>When the timer finishes, choose a vessel and a seal. See <a href="#vessels">Bottling</a>.</p>
+        <p>When the timer finishes, press <strong>Bottle it</strong>. There is nothing to choose.
+          See <a href="#vessels">Bottling</a>.</p>
       </div>
     </div>
 
@@ -1278,7 +1329,7 @@ footer p{max-width:68ch; margin:0}
         <thead><tr><th>What you control</th><th>What it decides</th></tr></thead>
         <tbody>
           <tr><td>The ratio</td><td>Which potion, and its grade. Outside every cone, nothing at all.</td></tr>
-          <tr><td>The amount</td><td>Its potency, and so its value multiplier and the vessel it needs.</td></tr>
+          <tr><td>The amount</td><td>Its potency, and so its value multiplier and how long it brews.</td></tr>
           <tr><td>The pot</td><td>How much it can hold. Over capacity is Unstable, capped at grade D.</td></tr>
         </tbody>
       </table>
@@ -1298,8 +1349,8 @@ footer p{max-width:68ch; margin:0}
     <h3>Then it brews</h3>
     <p>Accepting starts a timer scaled to potency — 30 seconds for a Minor, 45 minutes for a
       Sovereign — and the brew finishes whether you are watching or not. When it is ready, bottling
-      appears on the same page. The old separate Workbench screen is gone; vessel and seal were never
-      a different activity.</p>
+      is one press on the same page. The old separate Workbench screen is gone; bottling was never a
+      different activity.</p>
 
     <h3>What this cost, and what it bought</h3>
     <ul>
@@ -1330,69 +1381,50 @@ footer p{max-width:68ch; margin:0}
       almost no room on the narrow three- to five-essence cones once drying had moved the ratio at all.
       S now starts at 90, and the other bands moved down by the same six points, so the letters stay
       evenly spaced. The heat-drift tuning this heading used to record went with heat.</p>
+    <p>Then the bigger mixes went back up. With one ladder for every potion, a five-essence blend was
+      as easy to take to S as a single-essence one, and the difference between them was only in the
+      price. S stays at 90 for one or two essences, and is from <strong>94 for three and 97 for four
+      or five</strong> — the last above the 96 that started this — with every band above F rising by
+      the same amount. The scale is <code>grading.sFromByEssenceCount</code>. Whether 97 leaves room
+      on a ±13° cone once drying has moved the ratio is one of the questions under
+      <a href="#open">Status</a>.</p>
   </section>
 
 
   <section id="vessels">
     <span class="eyebrow">Finish</span>
-    <h2>Bottling, containing, sealing <span class="new">rebuilt</span></h2>
-    <p class="sub">Two separate choices, both instant, each a real trade-off. Eight vessels, seven
-      seals — this is where a good brew becomes a valuable product.</p>
+    <h2>Bottling <span class="new">rebuilt</span></h2>
+    <p class="sub">One press. A finished brew becomes a potion you can sell, supply or deliver, and there
+      is nothing to choose on the way.</p>
 
-    <p>Bottling used to start with a third choice, the <strong>form</strong> — tincture, salve,
-      powder, elixir, bomb and five more, each with its own conditions on the finished brew. Forms were
-      removed in draft 7. They asked a second, unrelated set of questions of a brew (enough Terra for a
-      salve, dry material for a powder) that fought the rule that a potion is its ratio and its size.
-      Every bottle is now a plain potion; old saves had the form stripped from each bottle and the
-      bottle priced again, since the form's multiplier was part of its value.</p>
+    <p>When a brew's timer finishes, press <strong>Bottle it</strong> — on the bench's Ready card, on
+      the pot itself, or in the station — and it is bottled. No dialog, no choice, nothing consumed.
+      The bottle carries the potion, its grade and its potency, and its value is the recipe's base
+      value × the potency multiplier × the grade factor. Every potency can be bottled, Sovereign
+      included.</p>
+    <p>Every bottle counts the same way: one unit toward a contract, one to a shelf slot, and to a
+      hero exactly the grade it was brewed at.</p>
 
-    <h3>1 · Vessel</h3>
-    <p>Vessels are consumables — bought from merchants, or crafted once you own the mold. They cap potency
-      and multiply value:</p>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Vessel</th><th class="num">Cost</th><th>Potency cap</th><th class="num">Value ×</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>Clay vial</td><td class="num">2g</td><td>Common</td><td class="num">1.00</td><td>Starting vessel</td></tr>
-          <tr><td>Waxed pouch <span class="new">new</span></td><td class="num">1g</td><td>Minor</td><td class="num">0.85</td><td>Stacks ×5 on one shelf slot</td></tr>
-          <tr><td>Horn phial <span class="new">new</span></td><td class="num">6g</td><td>Common</td><td class="num">1.05</td><td>+1 effective grade when supplied to heroes</td></tr>
-          <tr><td>Glass flask</td><td class="num">9g</td><td>Greater</td><td class="num">1.15</td><td>Shows the potion's colour on the shelf — appeal bonus</td></tr>
-          <tr><td>Copper bottle <span class="new">new</span></td><td class="num">16g</td><td>Greater</td><td class="num">1.20</td><td>A little shelf appeal; its extra dose went with forms</td></tr>
-          <tr><td>Iron-bound jar</td><td class="num">22g</td><td>Grand</td><td class="num">1.10</td><td>The only vessel that will hold a volatile brew</td></tr>
-          <tr><td>Sealed amphora <span class="new">new</span></td><td class="num">48g</td><td>Grand</td><td class="num">1.25</td><td>Counts as 3 units toward a contract</td></tr>
-          <tr><td>Crystal orb</td><td class="num">70g</td><td>none</td><td class="num">1.40</td><td>Late-game; the only vessel that holds a Sovereign brew</td></tr>
-        </tbody>
-      </table>
+    <div class="slip">
+      <span class="lbl">What changed, and why</span>
+      <p>Bottling used to be two more choices: a <strong>vessel</strong>, from a waxed pouch to a
+        crystal orb, which capped potency and multiplied value, and a <strong>seal</strong>, from a
+        cork to the Ashwalker's mark, which added appeal, contract pay, a haggle ceiling or a grade for
+        heroes. Draft 8 took both out. They were not part of the design the game is being built to
+        now, and playing it showed what they cost: most vessels and seals were sold by no merchant at
+        all — the crystal orb, the only vessel that would hold a Sovereign brew, among them — and the
+        supply of glass bottlenecked the whole economy. The vessel moulds and the sealing press,
+        which were meant to make them, never did anything and went too.</p>
+      <p>Old saves had the vessel and seal stripped from every bottle and the bottle priced again,
+        were paid back for the moulds and the press, and got back the extra pouches from a stacked
+        shelf as bottles of their own. Draft 7 had already removed the third choice, the bottle
+        <em>form</em> — tincture, salve, powder and the rest — for asking questions of a brew that
+        fought the rule that a potion is its ratio and its size.</p>
     </div>
-    <p>A brew is <strong>volatile</strong> when any ingredient in it carries the volatile trait — nine
-      exotics do, Quicksilver Tear among them — and then only the iron-bound jar will hold it. A vessel
-      that cannot take the brew, for its potency or its volatility, is shown blocked with the reason
-      rather than hidden, so the player learns the rule before they need it.</p>
 
-    <h3>2 · Seal</h3>
-    <p>The seal is the flourish — where a potion picks up a marketable personality:</p>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>Seal</th><th class="num">Cost</th><th>From rank</th><th>Effect</th></tr></thead>
-        <tbody>
-          <tr><td>Cork</td><td class="num">0g</td><td>I</td><td>None. Functional.</td></tr>
-          <tr><td>Wax &amp; ribbon</td><td class="num">3g</td><td>I</td><td>+8% shelf appeal — sells faster at the same price</td></tr>
-          <tr><td>Guild stamp</td><td class="num">12g</td><td>III</td><td>+15% contract payout; required by some guild contracts</td></tr>
-          <tr><td>Warding sigil</td><td class="num">18g</td><td>IV</td><td>+1 effective grade when supplied to heroes</td></tr>
-          <tr><td>Silver clasp <span class="new">new</span></td><td class="num">26g</td><td>V</td><td>+20% to a noble's haggle ceiling; +10% base value</td></tr>
-          <tr><td>Alchemist's mark <span class="new">new</span></td><td class="num">8g</td><td>IV</td><td>Your own shop's sigil. +renown per sale, and marked goods build repeat footfall.</td></tr>
-          <tr><td>Ashwalker mark</td><td class="num">—</td><td>VI</td><td>Umbra brews only. Doubles Ashwalker trade value; villagers refuse it.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>A seal with a condition is checked against the brew and your rank before it is offered: the
-      rank-gated ones against your rank, the Ashwalker's mark against the brew, which must be at least
-      a quarter Umbra. The bottling dialog asks exactly the questions bottling does and says why a seal
-      is unavailable — an earlier version asked without the brew or the rank, showed the Ashwalker's
-      mark as free from the start, and let Bottle silently do nothing when it was picked.</p>
-    <p><strong>Sealed goods never degrade.</strong> Freshness lives on raw ingredients only. Once it's in a
-      bottle it's inventory forever — Pillar 04, and it means you can stockpile before a big contract
-      without the game punishing the planning.</p>
+    <p><strong>Bottled potions never degrade.</strong> Freshness lives on raw ingredients only. Once
+      it's in a bottle it's inventory forever — Pillar 04, and it means you can stockpile before a big
+      contract without the game punishing the planning.</p>
   </section>
 
   <section id="selling">
@@ -1406,15 +1438,14 @@ footer p{max-width:68ch; margin:0}
         a tick and buy probabilistically:</p>
       <div class="rec"><b>P(sale)</b> = footfall × appeal × demand(item) × priceCurve(ask / fairValue)</div>
       <p><strong>Footfall</strong> comes from renown, shop décor, district, weekday and time of day.
-        <strong>Appeal</strong> comes from vessel and seal. <strong>Demand</strong> drifts slowly per item
+        <strong>Appeal</strong> starts equal for every bottle and is raised by the shelf's board and
+        the furnishings on show. <strong>Demand</strong> drifts slowly per item
         type, so what sells changes week to week. The price curve is steep: at 130% of fair value sales
         nearly stop, at 80% they fly. Setting prices is the whole game here, and it's one slider per
         shelf slot.</p>
       <p>Offline, footfall runs at <strong>40%</strong>. Being present matters; leaving doesn't hurt.</p>
-      <p>A <strong>waxed pouch</strong> stacks: stocking one fills the slot with as many identical
-        pouches as it will hold, and the slot empties one at a time as they sell. That is the whole
-        reason to bottle cheap goods in one — shelf space, not value — and space you have to click for
-        is not space.</p>
+      <p>A shelf slot holds <strong>one bottle</strong>. Putting several out fills free shelves in
+        order, one to each, so how many is the player's decision and which shelf is not.</p>
     </div>
 
     <div class="card">
@@ -1432,22 +1463,23 @@ footer p{max-width:68ch; margin:0}
 
     <div class="card">
       <p class="card-h">B · Contracts — planned</p>
-      <p>A board of standing requests from guilds, barracks, temples and noble houses. Each names a
-        quantity, an item, a minimum grade, a deadline and a payout — often with a constraint: a seal
-        type, a specific vessel, all-Dewfresh, no Umbra.</p>
+      <p>A board of three standing requests from guilds, barracks, temples and noble houses. Each
+        names a faction, a potion, a minimum grade and a quantity, with a deadline and a payout —
+        nothing about how it is bottled.</p>
       <div class="rec">
 <b>CONTRACT</b>  Greycloak Barracks            <span class="c">reputation: cordial</span>
   Deliver   8 × Aqua–Terra Potion  ·  grade B or better
-  Require   Guild stamp seal
-  Deadline  16 days  <span class="c">(in-game · paused while away)</span>
+  Deadline   8 days  <span class="c">(in-game · paused while away)</span>
   Payout    <b>1,240g</b>  ·  +40 renown  ·  unlocks Barracks tier 2
 </div>
       <p>Contracts are the main gold faucet and the reason to plan a supply chain. Failing one costs the
         payout and some faction reputation — nothing else. You can also <strong>partially deliver</strong>
         for a prorated payout and no reputation hit: a mercy valve that keeps a bad week from feeling bad.</p>
-      <p>Delivery counts <em>units</em>, not bottles. A sealed amphora settles three of them, so an
-        order for nine potions can be met with three amphorae — which is the entire reason to buy one.
-        Nine templates across four factions, and a faction may never outrank the contracts it posts.</p>
+      <p>Every bottle is one unit: an order for nine potions takes nine bottles. Most of the board is
+        commissioned from each faction's palate, among the potions you have discovered; the rest comes
+        from nine hand-written orders across four factions, and a faction may never outrank the
+        contracts it posts. The board never shows the same order twice at once — one faction, the
+        same potion, grade and quantity — though orders that are merely close still appear.</p>
     </div>
   </section>
 
@@ -1543,9 +1575,9 @@ footer p{max-width:68ch; margin:0}
 
     <h3>One currency</h3>
     <p><strong>Gold.</strong> That's it. No gems, no energy, no premium tier — there's nothing to sell, so
-      a second currency would be pure friction. Sinks: ingredients, seeds, spore clusters, vessels, seals,
-      hero wages, and now the seven equipment trees and the shop's furnishings, which together are the
-      deep late-game sink draft 1 was missing.</p>
+      a second currency would be pure friction. Sinks: ingredients, seeds, spore clusters,
+      hero wages, and now the six equipment trees, the pots and the shop's furnishings, which together
+      are the deep late-game sink draft 1 was missing.</p>
 
     <h3>Renown is permission</h3>
     <p>Earned from sales, contracts, first-time recipe discoveries and prestige items. Never spent — it
@@ -1554,12 +1586,12 @@ footer p{max-width:68ch; margin:0}
       <table>
         <thead><tr><th>Rank</th><th>Puts on sale</th></tr></thead>
         <tbody>
-          <tr><td>I — Apprentice</td><td>The first pot (60) · cork, wax &amp; ribbon · Emberwaste and Mirefen expeditions</td></tr>
+          <tr><td>I — Apprentice</td><td>The first pot (60) · Emberwaste and Mirefen expeditions</td></tr>
           <tr><td>II — Journeyman</td><td>Plots 5–6 · cave beds · steel pick and support beams · a fifth shelf · the 110 pot · Sunken Barrow</td></tr>
-          <tr><td>III — Steeped</td><td>Rich loam · the wide rim · humidity ward · bunk rooms · more shelves · the 190 pot · guild stamp · Skyreach Spires</td></tr>
-          <tr><td>IV — Distiller</td><td>Drying rack · the 320 pot, the first to reach Grand · alchemist's mark · warding sigil</td></tr>
-          <tr><td>V — Chandler</td><td>Vessel moulds · the 440 pot, the first to reach Sovereign · silver clasp</td></tr>
-          <tr><td>VI — Adept</td><td>Sealing press · the 600 pot · the Ashwalker's mark</td></tr>
+          <tr><td>III — Steeped</td><td>Rich loam · the wide rim · humidity ward · bunk rooms · more shelves · the 190 pot · Skyreach Spires</td></tr>
+          <tr><td>IV — Distiller</td><td>Drying rack · the 320 pot, the first to reach Grand</td></tr>
+          <tr><td>V — Chandler</td><td>The 440 pot, the first to reach Sovereign</td></tr>
+          <tr><td>VI — Adept</td><td>The 600 pot</td></tr>
           <tr><td>VII–IX</td><td>Nothing new on sale; renown still counts toward Mastery</td></tr>
           <tr><td>X — Arch-Alchemist</td><td><strong>The Long Distillation</strong></td></tr>
         </tbody>
@@ -1575,8 +1607,8 @@ footer p{max-width:68ch; margin:0}
       <div class="card">
         <p class="card-h">What resets</p>
         <p>Gold, renown and rank. Plots, cave grid, shaft depth. All equipment. Inventory and the
-          recipes you discovered. Hero levels and favour. You start again with four plots, clay vials,
-          the five starting seeds and the five single-essence recipes.</p>
+          recipes you discovered. Hero levels and favour. You start again with four plots, the five
+          starting seeds and the five single-essence recipes.</p>
       </div>
       <div class="card">
         <p class="card-h">What persists</p>
@@ -1693,8 +1725,8 @@ footer p{max-width:68ch; margin:0}
       <strong>Settings</strong> (text size, saves, the Mastery Codex).</p>
     <p>Two things moved from the plan. Merchants earned a screen rather than an overlay — with four
       traders on different cycles and the upgrade trees to browse, a banner was not enough surface. And
-      the Workbench folded into the Cauldron, because choosing a vessel and a seal was never a separate
-      activity from the brew it finishes.</p>
+      the Workbench folded into the Cauldron, because bottling was never a separate activity from the
+      brew it finishes — and it is now a single press.</p>
     <p>Eight does not fit a phone at a comfortable tap size, so the bar scrolls rather than squeezing
       every label into four characters. Each item keeps its full 44px target.</p>
 
@@ -1902,7 +1934,7 @@ src/
     essences.ts     vectors, purity, potency, grading
     brewing.ts      what a blend makes, and how long it brews
     discovery.ts    the recipe book: what you know, and learning from an accepted pot
-    bottling.ts     vessel and seal
+    bottling.ts     one press: a finished brew becomes a bottle
     config.ts       typed data, and the recipe cones worked out from each set of essences
     garden.ts  cave.ts  shaft.ts        <span class="c">three sources, three verbs</span>
     merchants.ts  progression.ts  heroes.ts  cauldrons.ts
@@ -1910,7 +1942,7 @@ src/
     prestige.ts  town.ts   mastery codex, town modifiers
     state.ts        the serialisable World
     rng.ts          seeded, deterministic — offline must replay identically
-  <b>data/</b>         <span class="c">JSON · ingredients, recipes, vessels, seals, equipment, biomes, towns</span>
+  <b>data/</b>         <span class="c">JSON · ingredients, recipes, equipment, merchants, biomes, towns</span>
   <b>i18n/</b>         <span class="c">en.json — every user-facing string, ICU format</span>
   <b>ui/</b>           <span class="c">Phaser scenes (world) + DOM overlay (panels)</span>
   <b>platform/</b>     <span class="c">save adapters: localStorage | Capacitor Preferences</span>
@@ -1977,7 +2009,7 @@ src/
         <p>Haggling and the customer roster. Greenhouse and crossbreeding, with strains that carry
           their own essence into the pot. Ten forms, eight vessels, seven seals. Ranks V–X. The Long
           Distillation and the Mastery Codex. (The greenhouse and the forms were taken out again in
-          the potion overhaul.)</p>
+          the potion overhaul, and the vessels and seals in draft 8.)</p>
       </div>
       <div class="card" data-done="true">
         <p class="card-h">M4 · Content &amp; systems — shipped</p>
@@ -2000,6 +2032,12 @@ src/
           merchant, dealt in turn. Forms, the greenhouse, Lagged and Deft Hands removed, with four
           save migrations and refunds. Names, prices and hints still placeholders.</p>
       </div>
+      <div class="card" data-done="true">
+        <p class="card-h">Bottling in one press — shipped</p>
+        <p>Vessels, seals, the vessel moulds and the sealing press removed, with a <code>v18</code>
+          migration and refunds. Every bottle is one unit on one shelf slot. The S bar rises with the
+          size of the mix, and the board never shows one order twice.</p>
+      </div>
       <div class="card">
         <p class="card-h">M6 · Ship</p>
         <p>A second locale, to prove the i18n plumbing against a real language. Accessibility audit at
@@ -2007,7 +2045,7 @@ src/
           and SDK. Scene art for the plot and shelf, and portraits for the customer roster.</p>
       </div>
     </div>
-    <p><strong>377 tests, all green (one skipped), in a few seconds.</strong> The simulation core is covered end to
+    <p><strong>369 tests, all green (one skipped), in a few seconds.</strong> The simulation core is covered end to
       end — offline catch-up, save migration, every economy rule — while the UI gets smoke coverage
       only. That split is deliberate and has caught real bugs: a freshness tile that spent the wrong
       batch, a text-scale setting that flipped the desktop layout, a rank that could disagree with its
@@ -2029,7 +2067,7 @@ src/
   <section id="open">
     <span class="eyebrow">Status</span>
     <h2>What the building taught</h2>
-    <p class="sub">Five milestones and an overhaul in. These are the places the code disagreed with the
+    <p class="sub">Five milestones and two overhauls in. These are the places the code disagreed with the
       design, and the questions that only playing it could raise.</p>
 
     <div class="card">
@@ -2039,7 +2077,7 @@ src/
           opaque in the hand; then temperature and method, which were legible but split the book into
           twins. Brewing is mixing alone. See <a href="#wheel">Brewing</a> for what that cost.</li>
         <li><strong>Merchants got a screen; the Workbench lost one.</strong> Four traders and the
-          upgrade trees need browsing; vessel and seal never needed their own room.</li>
+          upgrade trees need browsing; bottling never needed its own room, and is one press now.</li>
         <li><strong>Nothing is scheduled that can be derived.</strong> Merchant visits and stock, cave
           spread, walk-in customers — all pure functions of the day counter. This is the single
           decision that has paid off most: offline catch-up needed no special cases anywhere.</li>
@@ -2072,7 +2110,9 @@ src/
       <p>Five separate times, a data file declared something and the far end was never wired: five
         pieces of equipment, half the Mastery Codex, five vessel and seal fields, the soil on every
         crop, and seven of the eight town modifiers. A sixth kind was worse — ten upgrades that
-        worked perfectly and no merchant sold.</p>
+        worked perfectly and no merchant sold. Draft 8 found the reverse of it: the vessel moulds and
+        the sealing press were on sale for 900g and 1200g and did nothing at all, because the
+        crafting they unlocked was never built.</p>
       <p>Every one of them passed a full green suite, because the tests measured behaviour that was
         working. None asked whether the thing could be reached at all. Three habits came out of it,
         and they are the most valuable thing in this document:</p>
@@ -2104,9 +2144,11 @@ src/
           of essences exhausts the equal-measure recipes, and a thirty-second would need unequal
           ratios and narrower cones. Whether 31 potions with placeholder names are
           <em>interesting</em> is the open question, and only playing it answers it.</li>
-        <li><strong>The narrow cones may be too narrow.</strong> S already moved from 96 purity to 90
-          because drying left no room on the three- to five-essence cones. Whether ±13° is a
-          satisfying target for a five-essence potion or a frustrating one is untested.</li>
+        <li><strong>The narrow cones may be too narrow.</strong> S moved from 96 purity to 90 because
+          drying left no room on the three- to five-essence cones, then back up to 94 and 97 on exactly
+          those cones, because a five-essence S had become as easy as a single-essence one. Whether
+          ±13° with S at 97 is a satisfying target for a five-essence potion or a frustrating one is
+          untested.</li>
         <li><strong>151 ingredients may still be many to choose between.</strong> Every one is
           gatherable and sits on one scale, which makes them easier to reason about than the three
           hundred before. Whether the cauldron needs a filter and a favourites list is untested.</li>
@@ -2153,8 +2195,8 @@ src/
 </div>
 
 <footer>
-  <p>Eternal Alchemy — game design document, draft 7, brought in line with the code after the potion
-    overhaul.
+  <p>Eternal Alchemy — game design document, draft 8, brought in line with the code after vessels and
+    seals were removed.
     Every number in this document is a starting point for tuning, not a decision — and several have
     already moved because playing it said so.</p>
 </footer>
