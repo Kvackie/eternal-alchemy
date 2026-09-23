@@ -548,3 +548,13 @@ describe('migrating a save from before ranks asked for a potion', () => {
     expect(sim.rankIndex).toBe(rankIndexFor(3_000));
   });
 });
+
+describe('migrating a save from before the world kept its own seed', () => {
+  it('fixes one from what the save already had', () => {
+    const world = createWorld(5);
+    delete (world as unknown as Record<string, unknown>).seed;
+    const raw = JSON.stringify({ schemaVersion: 22, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+    expect(migrated.seed).toBe(world.cave.seed);
+  });
+});

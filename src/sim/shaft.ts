@@ -147,6 +147,9 @@ export function runShaft(world: World, now: number): ShaftBatch[] {
       continue;
     }
 
+    // When the last batch landed, not when this call ran: an offline catch-up
+    // that runs a vein dry must start its refill where live play would have.
+    let driedAt = now;
     let budget = 20_000;
     while (
       vein.nextBatchAt !== null &&
@@ -168,12 +171,13 @@ export function runShaft(world: World, now: number): ShaftBatch[] {
       world.statistics.oreExtracted += count;
       batches.push({ ingredientId: vein.ingredientId, count });
 
+      driedAt = vein.nextBatchAt;
       vein.nextBatchAt += shaftConfig.batchTickMs;
     }
 
     if (vein.remaining <= 0) {
       vein.nextBatchAt = null;
-      vein.refillsAt = now + shaftConfig.veinRefillMs;
+      vein.refillsAt = driedAt + shaftConfig.veinRefillMs;
       world.shaft.workingVeinIds = world.shaft.workingVeinIds.filter((id) => id !== veinId);
     }
   }

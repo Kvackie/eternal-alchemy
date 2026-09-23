@@ -931,6 +931,14 @@ const MIGRATIONS: Record<number, Migration> = {
     });
     return world;
   },
+  /**
+   * A world seed that never moves. The cave's is the one number every save
+   * already fixed at creation, so it stands in for worlds from before.
+   */
+  23: (world) => {
+    world.seed ??= world.cave?.seed ?? world.rngSeed ?? 1;
+    return world;
+  },
 };
 
 /** Every counter at zero, so a migration can fill only what it actually knows. */

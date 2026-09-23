@@ -17,6 +17,7 @@ export function createWorld(seed = freshSeed()): World {
   const world: World = {
     now: 0,
     lastSeenRealTime: Date.now(),
+    seed,
     rngSeed: seed,
 
     gold: config.economy.startingGold,

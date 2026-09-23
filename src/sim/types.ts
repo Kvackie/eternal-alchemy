@@ -238,6 +238,8 @@ export interface Mission {
   injury: number;
   suppliesFilled: number;
   favouriteSupplied: boolean;
+  /** Whose favourite was packed. Absent on a party that left before it was recorded. */
+  favouriteHeroIds?: string[];
 }
 
 /** What an expedition can bring back: the thing itself, or the means to grow it. */
@@ -256,6 +258,7 @@ export interface MissionOutcome {
   heroIds: string[];
   suppliesFilled: number;
   favouriteSupplied: boolean;
+  favouriteHeroIds?: string[];
   returnedAt: number;
 }
 
@@ -333,6 +336,11 @@ export interface World {
   now: number;
   /** Real timestamp the world was last saved at, for offline delta. */
   lastSeenRealTime: number;
+  /**
+   * Fixed when the shop opens. What keys a world's own shuffles and per-tick
+   * streams; `rngSeed` is the shared stream and moves on every draw.
+   */
+  seed: number;
   rngSeed: number;
 
   gold: number;

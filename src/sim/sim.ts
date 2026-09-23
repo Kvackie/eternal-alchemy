@@ -178,7 +178,7 @@ export class Simulation {
     // at. See `packArrivals`.
     packArrivals(this.world);
 
-    const { sales } = runMarket(this.world, this.rng, online);
+    const { sales } = runMarket(this.world, online);
     for (const sale of sales) {
       record(this.world, 'sold', { recipe: sale.recipeId, grade: sale.grade, gold: sale.gold });
     }
@@ -531,7 +531,7 @@ export class Simulation {
   }
 
   private runExpeditions(): void {
-    for (const outcome of resolveMissions(this.world, this.rng)) {
+    for (const outcome of resolveMissions(this.world)) {
       record(this.world, 'missionReturned', {
         biome: outcome.biomeId,
         quality: outcome.quality,

@@ -10,9 +10,9 @@
 import { baseShelfTier, config, findShelfTier, getRecipe } from './config';
 import { dayStateAt } from './clock';
 import { potencyMultiplier } from './essences';
-import { derivedStats } from './progression';
+import { derivedStats, type DerivedStats } from './progression';
 import { footfallMultiplier } from './town';
-import type { Rng } from './rng';
+import { Rng } from './rng';
 import type { BottledItem, Grade, SaleRecord, ShelfSlot, World } from './types';
 
 const GRADE_SCORE: Record<Grade, number> = { S: 6, A: 5, B: 4, C: 3, D: 2, E: 1, F: 0 };
@@ -54,10 +54,15 @@ export function priceCurve(priceRatio: number): number {
   return 1 / (1 + Math.exp(m.priceCurveSteepness * (priceRatio - m.priceCurveMidpoint)));
 }
 
-export function footfallAt(world: World, now: number, online: boolean): number {
+/** `stats` can be handed in by a caller that asks many times over one catch-up. */
+export function footfallAt(
+  world: World,
+  now: number,
+  online: boolean,
+  stats: DerivedStats = derivedStats(world),
+): number {
   const m = config.market;
   const day = dayStateAt(now);
-  const stats = derivedStats(world);
 
   const phase = m.phaseFootfall[day.phase] ?? 1;
   const weekday = m.weekdayFootfall[day.weekday] ?? 1;
@@ -75,11 +80,17 @@ export function footfallAt(world: World, now: number, online: boolean): number {
 }
 
 /** Probability that one shelf slot sells during one tick. */
-export function saleChance(world: World, slot: ShelfSlot, now: number, online: boolean): number {
+export function saleChance(
+  world: World,
+  slot: ShelfSlot,
+  now: number,
+  online: boolean,
+  stats: DerivedStats = derivedStats(world),
+): number {
   if (!slot.item) return 0;
-  const footfall = footfallAt(world, now, online);
+  const footfall = footfallAt(world, now, online, stats);
   // The shop's fittings and this shelf's own board both flatter the goods on it.
-  const appeal = appealOf(derivedStats(world).appealBonus + shelfQualityBonus(slot));
+  const appeal = appealOf(stats.appealBonus + shelfQualityBonus(slot));
   return Math.min(0.95, footfall * appeal * priceCurve(slot.priceRatio) * 0.22);
 }
 
@@ -94,22 +105,32 @@ export interface MarketTickResult {
  * catch-up. Ticks are processed individually rather than approximated in bulk:
  * a week away should produce the same gold as a week of watching, and the only
  * way to guarantee that is to run the same loop.
+ *
+ * Each tick draws from its own stream, keyed to the world's seed and the tick,
+ * so a sale does not depend on how the time was cut up — and a long catch-up
+ * does not use up the shared stream that expeditions and the board draw from.
  */
-export function runMarket(world: World, rng: Rng, online: boolean): MarketTickResult {
+export function runMarket(world: World, online: boolean): MarketTickResult {
   const tickMs = config.market.tickMs;
   const sales: SaleRecord[] = [];
   if (tickMs <= 0) return { sales };
 
+  // Nothing a sale changes feeds these, so one lookup serves the whole run.
+  const stats = derivedStats(world);
+  const lastDue =
+    world.lastMarketTick + Math.floor((world.now - world.lastMarketTick) / tickMs) * tickMs;
   let tick = world.lastMarketTick + tickMs;
-  // Guard against a pathological delta (a corrupted save, a clock jump) locking the
-  // main thread. 20k ticks is ~10 real weeks at the default rate.
+  // Guard against a pathological delta (a corrupted save, a clock jump) locking
+  // the main thread. 20k ticks is ~10 weeks of stocked shelves at the default
+  // rate; anything past it is dropped, not replayed later at online footfall.
   let budget = 20_000;
 
-  while (tick <= world.now && budget > 0) {
+  while (tick <= world.now && budget > 0 && world.shelf.some((slot) => slot.item)) {
     budget -= 1;
+    const rng = new Rng((world.seed ^ Math.imul(tick / tickMs, 0x9e3779b1)) >>> 0);
     for (const slot of world.shelf) {
       if (!slot.item) continue;
-      if (!rng.chance(saleChance(world, slot, tick, online))) continue;
+      if (!rng.chance(saleChance(world, slot, tick, online, stats))) continue;
 
       const item = slot.item;
       const gold = Math.max(1, Math.round(item.fairValue * slot.priceRatio));
@@ -142,7 +163,9 @@ export function runMarket(world: World, rng: Rng, online: boolean): MarketTickRe
     tick += tickMs;
   }
 
-  world.lastMarketTick = tick - tickMs;
+  // An empty shelf sells nothing, so the ticks after the last sale can be
+  // skipped rather than walked.
+  world.lastMarketTick = Math.max(lastDue, world.lastMarketTick);
   return { sales };
 }
 

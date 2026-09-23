@@ -35,9 +35,9 @@ export function bottle(world: World, brew: PendingBrew): BottledItem {
     uid: nextUid(world.now),
     recipeId: brew.recipeId,
     grade: brew.grade,
-    purity: Math.round(brew.purity),
+    purity: Math.floor(brew.purity),
     potencyTier: brew.potencyTier,
-    totalEssence: Math.round(brew.totalEssence),
+    totalEssence: Math.floor(brew.totalEssence),
     fairValue: 0,
     bottledAt: world.now,
   };

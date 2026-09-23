@@ -212,6 +212,6 @@
   "save": {
     "slots": 3,
     "autosaveDebounceMs": 1500,
-    "schemaVersion": 22
+    "schemaVersion": 23
   }
 }

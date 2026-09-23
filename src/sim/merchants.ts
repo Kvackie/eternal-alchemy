@@ -15,7 +15,7 @@
 import { dayStateAt } from './clock';
 import { config, findBooster, findDecor, findEquipment, getMerchant, merchants } from './config';
 import type { MerchantDef, MerchantStockDef } from './config';
-import { Rng } from './rng';
+import { hashKey, Rng } from './rng';
 import { rankOf } from './progression';
 import { codexBonuses } from './prestige';
 import { merchantPriceMultiplier } from './town';
@@ -75,15 +75,6 @@ function windowEnd(def: MerchantDef, now: number): number {
   // Night runs to the end of the day; daylight runs until night begins.
   const fraction = def.phase === 'night' ? 1 : nightStart;
   return day.dayNumber * dayMs + fraction * dayMs;
-}
-
-function hashKey(key: string): number {
-  let hash = 2166136261;
-  for (let i = 0; i < key.length; i += 1) {
-    hash ^= key.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
 }
 
 /**
@@ -170,7 +161,9 @@ const TRADE_KINDS: ReadonlySet<MerchantStockDef['kind']> = new Set(['seed', 'spo
  */
 function tradeOrder(world: World, def: MerchantDef): MerchantStockDef[] {
   const trade = def.pool.filter((item) => TRADE_KINDS.has(item.kind));
-  const rng = new Rng(hashKey(`${world.rngSeed}:${def.id}`));
+  // The world's seed, not `rngSeed`: that is the shared stream, which moves
+  // on every tick and would reshuffle the round at every visit.
+  const rng = new Rng(hashKey(`${world.seed}:${def.id}`));
   for (let i = trade.length - 1; i > 0; i -= 1) {
     const j = rng.int(0, i);
     [trade[i], trade[j]] = [trade[j]!, trade[i]!];

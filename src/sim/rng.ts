@@ -49,6 +49,16 @@ export class Rng {
   }
 }
 
+/** A stable seed from a string (FNV-1a), for streams keyed to a thing and a time. */
+export function hashKey(key: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < key.length; i += 1) {
+    hash ^= key.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
 /** A seed derived from the current time, for brand-new games only. */
 export function freshSeed(): number {
   return (Date.now() ^ (Math.random() * 0xffffffff)) >>> 0;

@@ -198,10 +198,21 @@ describe('the shaft', () => {
     expect(sim.shaft.veins[0]!.refillsAt).not.toBeNull();
   });
 
+  it('starts the refill when the vein ran dry, however long the catch-up', () => {
+    const live = working();
+    for (let i = 0; i < 48 * 60; i += 1) live.advanceBy(60_000);
+    const away = working();
+    away.advanceBy(48 * HOUR, false);
+
+    const refill = (sim: Simulation) => sim.shaft.veins[0]!.refillsAt!;
+    // Live play notices on the minute; a catch-up knows the exact batch.
+    expect(Math.abs(refill(away) - refill(live))).toBeLessThanOrEqual(60_000);
+  });
+
   it('regrows an exhausted vein rather than leaving dead content', () => {
     const sim = working();
-    sim.advanceBy(48 * HOUR);
     const vein = sim.shaft.veins[0]!;
+    while (vein.remaining > 0) sim.advanceBy(60_000);
     expect(isWorkable(vein, sim.now)).toBe(false);
 
     sim.advanceBy(shaftConfig.veinRefillMs);

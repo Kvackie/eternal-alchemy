@@ -20,18 +20,12 @@ import type { CustomerActionDef, CustomerDef } from './config';
 import { dayStateAt } from './clock';
 import { angleBetween } from './essences';
 import { rankOf } from './progression';
-import { Rng } from './rng';
+import { hashKey, Rng } from './rng';
 import type { BottledItem, HaggleSession, HaggleStance, World } from './types';
 
 /** A stable per-day seed, so the same day always brings the same customer. */
 function visitSeed(customerId: string, dayNumber: number): number {
-  let hash = 2166136261;
-  const key = `haggle:${customerId}:${dayNumber}`;
-  for (let i = 0; i < key.length; i += 1) {
-    hash ^= key.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+  return hashKey(`haggle:${customerId}:${dayNumber}`);
 }
 
 function pickStance(def: CustomerDef, rng: Rng): HaggleStance {

@@ -37,7 +37,8 @@ import { isMature, spreadChanceFor } from '@/sim/cave';
 import { derivedStats, equipmentAvailability, rankIndexFor } from '@/sim/progression';
 import { codexBonuses } from '@/sim/prestige';
 import { tierOf } from '@/sim/merchants';
-import type { BottledItem, EssenceVector, Grade } from '@/sim/types';
+import { scheduledWalkIns } from '@/sim/haggle';
+import type { BottledItem, Contract, EssenceVector, Grade } from '@/sim/types';
 
 const HOUR = 3_600_000;
 const DAY = config.clock.dayLengthMs;
@@ -205,10 +206,17 @@ describe('the selling channels stay in their lanes', () => {
   });
 
   it('pays better through a contract than through the shelf', () => {
-    const sim = new Simulation(createWorld(9));
-    sim.advanceBy(1000);
-    const contract = sim.world.contracts.find((c) => c.templateId === 'barrackTonics');
-    if (!contract) return;
+    // Which seed posts a Barrack order moves with the data, so find one — and
+    // fail if none does, rather than passing without measuring anything.
+    let found: { sim: Simulation; contract: Contract } | null = null;
+    for (let seed = 1; seed <= 200 && !found; seed += 1) {
+      const sim = new Simulation(createWorld(seed));
+      sim.advanceBy(1000);
+      const contract = sim.world.contracts.find((c) => c.templateId === 'barrackTonics');
+      if (contract) found = { sim, contract };
+    }
+    expect(found).not.toBeNull();
+    const { sim, contract } = found!;
 
     // Use the *real* fair value, not the helper's placeholder — comparing a
     // contract's payout against a made-up shelf price measures nothing.
@@ -232,16 +240,21 @@ describe('the selling channels stay in their lanes', () => {
 
   it('pays best of all through a haggle played well', () => {
     // Ceiling after two counters and a hold-firm, versus plain fair value.
-    const sim = new Simulation(createWorld(77));
-    sim.world.renown = 100000;
-    sim.world.bottledKinds['S|5|sovereign'] = true;
-    sim.advanceTo(DAY * 0.4);
-    sim.world.bottled.push(bottle('h', 'B'));
+    // The schedule directly: walk-ins are paused behind the counter's UI, and
+    // the paused door would send nobody and let this pass unmeasured.
+    let sim: Simulation | null = null;
+    let walkIn: ReturnType<typeof scheduledWalkIns>[number] | undefined;
+    for (let day = 0; day < 40 && !walkIn; day += 1) {
+      sim = new Simulation(createWorld(77));
+      sim.world.renown = 100000;
+      sim.world.bottledKinds['S|5|sovereign'] = true;
+      sim.advanceTo(day * DAY + DAY * 0.4);
+      sim.world.bottled.push(bottle('h', 'B'));
+      walkIn = scheduledWalkIns(sim.world)[0];
+    }
+    expect(walkIn).toBeDefined();
 
-    const walkIn = sim.walkIns()[0];
-    if (!walkIn) return;
-
-    const session = sim.beginHaggle(walkIn.customerId, 'h')!;
+    const session = sim!.beginHaggle(walkIn!.customerId, 'h')!;
     const opening = session.ceiling;
     expect(opening).toBeGreaterThan(bottle('h', 'B').fairValue);
     expect(opening).toBeLessThan(bottle('h', 'B').fairValue * 3);

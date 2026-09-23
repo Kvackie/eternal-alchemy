@@ -19,7 +19,8 @@ import { contractTerms, generateContract, qualifyingItems } from '@/sim/contract
 import { isDiscovered } from '@/sim/discovery';
 import { angleBetween } from '@/sim/essences';
 import { Rng } from '@/sim/rng';
-import type { BottledItem, Grade } from '@/sim/types';
+import { fairValue } from '@/sim/market';
+import type { BottledItem, Contract, Grade } from '@/sim/types';
 
 const HOUR = 3_600_000;
 const DAY = config.clock.dayLengthMs;
@@ -32,7 +33,7 @@ function bottle(uid: string, grade: Grade, recipeId = 'aquaTerra'): BottledItem 
     purity: 80,
     potencyTier: 'common',
     totalEssence: 57,
-    fairValue: 30,
+    fairValue: fairValue({ recipeId, grade, potencyTier: 'common' }),
     bottledAt: 0,
   };
 }
@@ -123,6 +124,19 @@ describe('favour', () => {
     claimAll(sim);
 
     expect(sim.world.heroes[0]!.favour).toBeGreaterThan(before);
+  });
+
+  it('pleases only the hero whose favourite was packed', () => {
+    const sim = withHero(7);
+    sim.world.heroes.push({ ...sim.world.heroes[0]!, id: 'maren' });
+    sim.world.bottled.push(bottle('fav', 'B', getHeroDef('corin').favourite));
+
+    sim.send('emberwaste', ['corin', 'maren'], ['fav']);
+    sim.advanceBy(6 * HOUR);
+    claimAll(sim);
+
+    const favour = (id: string) => sim.world.heroes.find((hero) => hero.id === id)!.favour;
+    expect(favour('corin') - favour('maren')).toBe(heroesConfig.favour.perFavouritePotion);
   });
 
   it('rises further when the party was supplied', () => {
@@ -310,6 +324,22 @@ describe('the contract board', () => {
     return sim;
   }
 
+  /**
+   * A fresh board carrying a Barrack Tonics order of at least three. Which
+   * seed posts one moves with the data, so it is searched for — and a board
+   * that never posts one fails here rather than letting a test pass empty.
+   */
+  function withBarrackOrder(): { sim: Simulation; contract: Contract } {
+    for (let seed = 1; seed <= 200; seed += 1) {
+      const sim = withBoard(seed);
+      const contract = sim.world.contracts.find(
+        (c) => c.templateId === 'barrackTonics' && c.quantity >= 3,
+      );
+      if (contract) return { sim, contract };
+    }
+    throw new Error('no seed in 1..200 posts a Barrack Tonics order of three or more');
+  }
+
   it('posts contracts up to the board size', () => {
     const sim = withBoard();
     expect(sim.world.contracts).toHaveLength(contractsConfig.boardSize);
@@ -389,9 +419,7 @@ describe('the contract board', () => {
   });
 
   it('counts only bottles that actually meet the terms', () => {
-    const sim = withBoard();
-    const contract = sim.world.contracts.find((c) => c.templateId === 'barrackTonics');
-    if (!contract) return;
+    const { sim, contract } = withBarrackOrder();
 
     sim.world.bottled.push(bottle('good', 'B', 'aquaTerra'));
     sim.world.bottled.push(bottle('lowGrade', 'F', 'aquaTerra'));
@@ -402,9 +430,7 @@ describe('the contract board', () => {
   });
 
   it('pays out and clears when fully delivered', () => {
-    const sim = withBoard();
-    const contract = sim.world.contracts.find((c) => c.templateId === 'barrackTonics');
-    if (!contract) return;
+    const { sim, contract } = withBarrackOrder();
 
     for (let i = 0; i < contract.quantity; i += 1) {
       sim.world.bottled.push(bottle(`t${i}`, 'B', 'aquaTerra'));
@@ -420,11 +446,7 @@ describe('the contract board', () => {
   });
 
   it('pays pro rata on a partial delivery, and keeps the contract open', () => {
-    const sim = withBoard();
-    const contract = sim.world.contracts.find(
-      (c) => c.templateId === 'barrackTonics' && c.quantity >= 3,
-    );
-    if (!contract) return;
+    const { sim, contract } = withBarrackOrder();
 
     sim.world.bottled.push(bottle('one', 'B', 'aquaTerra'));
     const result = sim.deliverContract(contract.id)!;
@@ -438,9 +460,7 @@ describe('the contract board', () => {
   });
 
   it('spends the worst qualifying bottles first when there is a surplus', () => {
-    const sim = withBoard();
-    const contract = sim.world.contracts.find((c) => c.templateId === 'barrackTonics');
-    if (!contract) return;
+    const { sim, contract } = withBarrackOrder();
 
     // One more qualifying bottle than the contract wants, so there is a genuine
     // choice about which to spend.
@@ -454,6 +474,21 @@ describe('the contract board', () => {
 
     // A contract asking for grade C should never quietly consume an S.
     expect(sim.world.bottled.map((item) => item.uid)).toEqual(['prize']);
+  });
+
+  it('spends a plain bottle before a stronger one of the same grade', () => {
+    const { sim, contract } = withBarrackOrder();
+    const strong: BottledItem = { ...bottle('strong', 'C'), potencyTier: 'sovereign' };
+    strong.fairValue = fairValue(strong);
+    sim.world.bottled.push(strong);
+    for (let i = 0; i < contract.quantity; i += 1) {
+      const plain: BottledItem = { ...bottle(`plain-${i}`, 'C'), potencyTier: 'minor' };
+      plain.fairValue = fairValue(plain);
+      sim.world.bottled.push(plain);
+    }
+
+    sim.deliverContract(contract.id);
+    expect(sim.world.bottled.map((item) => item.uid)).toEqual(['strong']);
   });
 
   it('runs deadlines down only while the player is present', () => {

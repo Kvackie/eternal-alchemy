@@ -186,7 +186,7 @@ export function renderStation(sim: Simulation): HTMLElement {
       el('span', { class: 'station-title', text: t(`cauldronTier.${sim.cauldron.tierId}`) }),
       el('span', {
         class: 'station-capacity num',
-        text: `${Math.round(blend ? totalEssence(blend) : 0)} / ${sim.cauldronCapacity}`,
+        text: `${Math.floor(blend ? totalEssence(blend) : 0)} / ${sim.cauldronCapacity}`,
       }),
     ]),
   ];
@@ -717,7 +717,7 @@ function renderOutcome(sim: Simulation): HTMLElement {
       badge: gradeBadge(outcome.grade),
       name: t(`recipe.${outcome.recipeId}`),
       chips: [chip(t(`potency.${outcome.potencyTier}`))],
-      body: [stat(t('cauldron.readout.purity'), `${Math.round(outcome.purity)} / 100`)],
+      body: [stat(t('cauldron.readout.purity'), `${Math.floor(outcome.purity)} / 100`)],
     }),
   );
 
@@ -805,7 +805,7 @@ function renderReadyCard(sim: Simulation): HTMLElement {
       name: t(`recipe.${brew.recipeId}`),
       chips: [chip(t(`potency.${brew.potencyTier}`), 'good')],
       body: [
-        stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`),
+        stat(t('cauldron.readout.purity'), `${Math.floor(brew.purity)} / 100`),
         el('div', { class: 'row-actions center' }, [
           button(t('cauldron.bottle.open'), () => bottleReady(sim), { variant: 'gold' }),
         ]),

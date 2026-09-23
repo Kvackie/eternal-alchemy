@@ -729,6 +729,25 @@ describe('what a trader brings, world by world', () => {
     }
     for (const seed of seeds) expect(seen.has(seed), seed).toBe(true);
   });
+
+  it('keeps the round in one world played hour by hour', () => {
+    // The shared random stream moves on every tick; a shuffle keyed to it
+    // would deal a different round at every visit and break the promise.
+    const def = getMerchant('bramm');
+    const seeds = def.pool
+      .filter((item) => item.kind === 'seed' && item.tier === 0)
+      .map((item) => item.id);
+    const passes = Math.ceil(seeds.length / def.rotation);
+    const sim = new Simulation(createWorld(42));
+    const seen = new Set<string>();
+    for (let visit = 0; visit < passes; visit += 1) {
+      const day = def.offsetDays + visit * def.cycleDays;
+      while (sim.world.now < midday(day)) sim.advanceBy(3_600_000);
+      const stall = sim.merchants().find((entry) => entry.merchantId === 'bramm');
+      for (const entry of stall?.entries ?? []) seen.add(entry.id);
+    }
+    for (const seed of seeds) expect(seen.has(seed), seed).toBe(true);
+  });
 });
 
 describe('how much a trader carries', () => {

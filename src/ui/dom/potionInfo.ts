@@ -75,8 +75,8 @@ export function showPotionInfo(
   action?: QuantityActionSpec,
 ): void {
   const facts: HTMLElement[] = [
-    stat(t('potionInfo.purity'), `${Math.round(item.purity)} / 100`),
-    stat(t('potionInfo.essence'), formatNumber(Math.round(item.totalEssence))),
+    stat(t('potionInfo.purity'), `${Math.floor(item.purity)} / 100`),
+    stat(t('potionInfo.essence'), formatNumber(item.totalEssence)),
   ];
 
   facts.push(stat(t('potionInfo.value'), formatGold(item.fairValue), 'good'));

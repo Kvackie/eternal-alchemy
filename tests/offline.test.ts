@@ -145,3 +145,33 @@ describe('market tick accounting', () => {
     );
   });
 });
+
+describe('a catch-up and the same time played', () => {
+  /** Eight bottles out and a hero on the road, the shop someone walks away from. */
+  function busyShop(): Simulation {
+    const world = stockedWorld(77);
+    const template = world.shelf[0]!.item!;
+    world.shelf.forEach((slot, i) => {
+      slot.item = { ...template, uid: `stock-${i}` };
+      slot.quantity = 1;
+    });
+    world.gold = 100_000;
+    const sim = new Simulation(world);
+    sim.recruitHero('corin');
+    sim.send('emberwaste', ['corin'], []);
+    return sim;
+  }
+
+  it('sells the same and brings the party home with the same haul', () => {
+    const played = busyShop();
+    for (let t = 0; t < 72 * 60; t += 1) played.advanceBy(MINUTE, false);
+    const away = busyShop();
+    away.advanceBy(72 * HOUR, false);
+
+    expect(away.world.gold).toBe(played.world.gold);
+    expect(away.world.statistics.itemsSold).toBe(played.world.statistics.itemsSold);
+    expect(away.world.pendingClaims.map((claim) => claim.found)).toEqual(
+      played.world.pendingClaims.map((claim) => claim.found),
+    );
+  });
+});

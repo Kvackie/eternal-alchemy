@@ -14,7 +14,7 @@
 
 import { getBiome, getHeroDef, heroesConfig } from './config';
 import { addIngredient } from './inventory';
-import type { Rng } from './rng';
+import { hashKey, Rng } from './rng';
 import type { Grade, Hero, Mission, MissionOutcome, World } from './types';
 
 const GRADE_POINTS: Record<Grade, number> = { S: 6, A: 5, B: 4, C: 3, D: 2, E: 1, F: 0 };
@@ -97,6 +97,8 @@ export interface MissionEstimate {
   durationMs: number;
   suppliesFilled: number;
   favouriteSupplied: boolean;
+  /** The heroes whose own favourite was packed: only they are pleased by it. */
+  favouriteHeroIds: string[];
 }
 
 /**
@@ -131,7 +133,7 @@ export function estimateMission(
   }
 
   const s = heroesConfig.supplies;
-  let favouriteSupplied = false;
+  const favouriteHeroIds = new Set<string>();
   let filled = 0;
 
   for (const uid of supplyUids.slice(0, s.slots)) {
@@ -143,8 +145,8 @@ export function estimateMission(
     success += points * s.successPerGradePoint;
     rareFind += points * s.rareFindPerGradePoint;
     injury += points * s.injuryPerGradePoint;
-    if (heroes.some((hero) => getHeroDef(hero.id).favourite === item.recipeId)) {
-      favouriteSupplied = true;
+    for (const hero of heroes) {
+      if (getHeroDef(hero.id).favourite === item.recipeId) favouriteHeroIds.add(hero.id);
     }
   }
 
@@ -154,7 +156,8 @@ export function estimateMission(
     injury: clamp(injury, 0.01, 0.6),
     durationMs: biome.durationMs,
     suppliesFilled: filled,
-    favouriteSupplied,
+    favouriteSupplied: favouriteHeroIds.size > 0,
+    favouriteHeroIds: [...favouriteHeroIds],
   };
 }
 
@@ -215,6 +218,7 @@ export function sendMission(
     injury: estimate.injury,
     suppliesFilled: estimate.suppliesFilled,
     favouriteSupplied: estimate.favouriteSupplied,
+    favouriteHeroIds: estimate.favouriteHeroIds,
   };
 
   world.nextMissionId += 1;
@@ -235,11 +239,14 @@ export function sendMission(
  * result that already exists rather than rolling one when you happen to look,
  * so waiting a day cannot improve a haul and being away cannot cost you one.
  */
-export function resolveMissions(world: World, rng: Rng): MissionOutcome[] {
+export function resolveMissions(world: World): MissionOutcome[] {
   const outcomes: MissionOutcome[] = [];
   const due = world.missions.filter((mission) => world.now >= mission.returnsAt);
 
   for (const mission of due) {
+    // Its own stream, so what a party brings home does not depend on how
+    // much else drew from the shared one while it was away.
+    const rng = new Rng(hashKey(`${world.seed}:${mission.id}`));
     const biome = getBiome(mission.biomeId);
     const roll = rng.next();
     const quality: MissionOutcome['quality'] =
@@ -281,6 +288,7 @@ export function resolveMissions(world: World, rng: Rng): MissionOutcome[] {
       heroIds: [...mission.heroIds],
       suppliesFilled: mission.suppliesFilled,
       favouriteSupplied: mission.favouriteSupplied,
+      favouriteHeroIds: mission.favouriteHeroIds,
       returnedAt: mission.returnsAt,
     };
     world.pendingClaims.push(outcome);
@@ -325,7 +333,9 @@ export function claimMission(world: World, missionId: string): MissionOutcome | 
     hero.missionsCompleted += 1;
 
     adjustFavour(hero, f.perReturn + outcome.suppliesFilled * f.perSupplySlotFilled);
-    if (outcome.favouriteSupplied && getHeroDef(hero.id).favourite) {
+    // A party that left before this was recorded pleases everyone, as it did then.
+    const pleased = outcome.favouriteHeroIds ?? (outcome.favouriteSupplied ? outcome.heroIds : []);
+    if (pleased.includes(id)) {
       adjustFavour(hero, f.perFavouritePotion);
     }
     if (outcome.suppliesFilled === 0) adjustFavour(hero, f.sentUnsupplied);

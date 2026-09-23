@@ -15,7 +15,7 @@
 
 import { contractsConfig, getContractTemplate, getFaction, getRecipe } from './config';
 import { discoveredRecipes } from './discovery';
-import { angleBetween, GRADE_ORDER, gradeAtLeast } from './essences';
+import { angleBetween, gradeAtLeast } from './essences';
 import { fairValue } from './market';
 import { rankOf } from './progression';
 import { contractPayoutMultiplier } from './town';
@@ -269,8 +269,9 @@ export interface DeliveryResult {
 /**
  * Hand over as many qualifying bottles as the contract still wants.
  *
- * Spends the *worst* qualifying bottles first: a contract asking for grade C
- * should not quietly consume an S you were saving, when a C would have done.
+ * Spends the *cheapest* qualifying bottles first: a contract asking for grade
+ * C should not quietly consume an S — or a Sovereign C — you were saving, when
+ * a plain C would have done. Fair value already weighs grade and potency.
  */
 export function deliver(world: World, contractId: string): DeliveryResult | null {
   const contract = world.contracts.find((entry) => entry.id === contractId);
@@ -279,9 +280,7 @@ export function deliver(world: World, contractId: string): DeliveryResult | null
   const wanted = contract.quantity - contract.delivered;
   if (wanted <= 0) return null;
 
-  const qualifying = qualifyingItems(world, contract).sort(
-    (a, b) => GRADE_ORDER.indexOf(b.grade) - GRADE_ORDER.indexOf(a.grade),
-  );
+  const qualifying = qualifyingItems(world, contract).sort((a, b) => a.fairValue - b.fairValue);
 
   const handing = qualifying.slice(0, wanted);
   if (handing.length === 0) return null;
