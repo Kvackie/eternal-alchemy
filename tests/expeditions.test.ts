@@ -310,6 +310,31 @@ describe('the contract board', () => {
     expect(sim.world.contracts).toHaveLength(contractsConfig.boardSize);
   });
 
+  it('never shows the same order twice at once', () => {
+    // Near the same is allowed; the same faction, potion, grade and count is
+    // one order shown twice. Checked across enough fresh boards and reposts
+    // that a repeat would have turned up.
+    for (let seed = 1; seed <= 60; seed += 1) {
+      const sim = withBoard(seed);
+      for (let round = 0; round < 6; round += 1) {
+        const keys = sim.world.contracts.map((contract) => {
+          const terms = contractTerms(contract);
+          return [
+            terms.faction,
+            terms.recipeId,
+            terms.minGrade,
+            contract.quantity,
+            terms.requiresSeal,
+            terms.requiresVessel,
+          ].join('|');
+        });
+        expect(new Set(keys).size).toBe(keys.length);
+        sim.world.contracts.splice(0, 1);
+        sim.advanceBy(1000);
+      }
+    }
+  });
+
   it('only offers contracts the current rank has unlocked', () => {
     const sim = withBoard();
     for (const contract of sim.world.contracts) {

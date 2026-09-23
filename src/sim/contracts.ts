@@ -186,6 +186,45 @@ function quantityFor(recipeId: string, rng: Rng): number {
 }
 
 /**
+ * One draw of an order's terms.
+ *
+ * Most of the board is commissioned from a palate; the rest keeps the
+ * hand-authored orders in rotation, because those carry the specific
+ * vessel-and-seal set pieces and the flavour that a generator cannot.
+ */
+function drawTerms(
+  world: World,
+  local: Rng,
+  rank: number,
+): { terms: ContractTerms | null; templateId: string; quantity: number } {
+  let terms: ContractTerms | null = null;
+  let templateId = '';
+  let quantity = 0;
+
+  if (local.next() < contractsConfig.derived.derivedShare) {
+    terms = deriveTerms(world, local, rank);
+    if (terms) quantity = quantityFor(terms.recipeId, local);
+  }
+
+  if (!terms) {
+    const available = contractsConfig.templates.filter((template) => template.requiresRank <= rank);
+    if (available.length === 0) return { terms: null, templateId, quantity };
+    const template = available[local.int(0, available.length - 1)]!;
+    templateId = template.id;
+    quantity = local.int(template.quantityMin, template.quantityMax);
+    terms = {
+      faction: template.faction,
+      recipeId: template.recipeId,
+      minGrade: template.minGrade,
+      ...(template.requiresSeal ? { requiresSeal: template.requiresSeal } : {}),
+      ...(template.requiresVessel ? { requiresVessel: template.requiresVessel } : {}),
+    };
+  }
+
+  return { terms, templateId, quantity };
+}
+
+/**
  * Post a new contract.
  *
  * The payout is derived from what the goods are actually worth, so a contract
@@ -214,34 +253,37 @@ export function generateContract(
    */
   const local = new Rng(rng.int(1, 0x7ffffffe));
 
-  /*
-   * Most of the board is commissioned from a palate; the rest keeps the
-   * hand-authored orders in rotation, because those carry the specific
-   * vessel-and-seal set pieces and the flavour that a generator cannot.
-   */
   let terms: ContractTerms | null = null;
   let templateId = '';
   let quantity = 0;
 
-  if (local.next() < contractsConfig.derived.derivedShare) {
-    terms = deriveTerms(world, local, rank);
-    if (terms) quantity = quantityFor(terms.recipeId, local);
+  /*
+   * Near the same is fine; the same is not.
+   *
+   * The board is three orders, and two of them asking one faction for the
+   * same number of the same potion at the same grade is one order shown twice.
+   * A few redraws find something else; if nothing else comes up, the slot
+   * stays empty until the next tick tries again.
+   */
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    ({ terms, templateId, quantity } = drawTerms(world, local, rank));
+    if (!terms) return null;
+    const drawn = terms;
+    const repeats = world.contracts.some((contract) => {
+      const other = contractTerms(contract);
+      return (
+        contract.quantity === quantity &&
+        other.faction === drawn.faction &&
+        other.recipeId === drawn.recipeId &&
+        other.minGrade === drawn.minGrade &&
+        other.requiresSeal === drawn.requiresSeal &&
+        other.requiresVessel === drawn.requiresVessel
+      );
+    });
+    if (!repeats) break;
+    if (attempt === 7) return null;
   }
-
-  if (!terms) {
-    const available = contractsConfig.templates.filter((template) => template.requiresRank <= rank);
-    if (available.length === 0) return null;
-    const template = available[local.int(0, available.length - 1)]!;
-    templateId = template.id;
-    quantity = local.int(template.quantityMin, template.quantityMax);
-    terms = {
-      faction: template.faction,
-      recipeId: template.recipeId,
-      minGrade: template.minGrade,
-      ...(template.requiresSeal ? { requiresSeal: template.requiresSeal } : {}),
-      ...(template.requiresVessel ? { requiresVessel: template.requiresVessel } : {}),
-    };
-  }
+  if (!terms) return null;
 
   const unitValue = fairValue({
     recipeId: terms.recipeId,
