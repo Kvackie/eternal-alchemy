@@ -629,7 +629,6 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
   );
 
   const grid = el('div', { class: 'cave-grid' });
-  grid.style.setProperty('--cave-width', String(caveConfig.width));
 
   for (const tile of sim.world.cave.tiles) {
     const node = el('button', { class: 'cave-tile', type: 'button' });
@@ -700,8 +699,9 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
    * comes and goes for no reason a player can see.
    */
   const ripe = sim.world.cave.tiles.filter((tile) => isMature(tile, sim.now)).length;
-  body.append(
-    el('section', { class: 'cave' }, [
+  // On the section, not the grid: the section's cap reads it, and a parent
+  // cannot see a custom property set on its child.
+  const cave = el('section', { class: 'cave' }, [
       sectionHead(
         t('cave.grid'),
         t('cave.grid.hint'),
@@ -718,8 +718,9 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
           : null,
       ),
       grid,
-    ]),
-  );
+    ]);
+  cave.style.setProperty('--cave-width', String(caveConfig.width));
+  body.append(cave);
 }
 
 // ---------------------------------------------------------------------------

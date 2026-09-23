@@ -1662,11 +1662,28 @@ input[type='range'] {
  * grows to a comfortable size and then stops, left-aligned rather than
  * stretched across a window it does not need.
  */
+/*
+ * The beds and their heading, centred together once the panel is wider.
+ *
+ * Capped and left-aligned, the grid was a 624px block pinned to the left edge
+ * of a 1900px panel with the whole right side empty — the beds looked like
+ * they had fallen into a corner. Centring only the grid left its heading
+ * stretched to the panel's edges, a label 550px from the thing it labels. The
+ * section is the unit, so the section is what is capped and centred.
+ *
+ * A 9rem bed is big enough to read at arm's length and small enough that
+ * twelve of them do not turn into slabs. On a phone the cap never binds.
+ */
+.cave {
+  width: 100%;
+  max-width: calc(var(--cave-width, 6) * 9rem);
+  margin-inline: auto;
+}
+
 .cave-grid {
   display: grid;
   grid-template-columns: repeat(var(--cave-width, 6), minmax(0, 1fr));
   gap: 0.25rem;
-  max-width: calc(var(--cave-width, 6) * 6.5rem);
 }
 
 .cave-tile {
