@@ -674,3 +674,35 @@ describe('buying ground', () => {
     expect(world.plots.length).toBe(before + 1);
   });
 });
+
+describe('what a trader brings, world by world', () => {
+  const TRADE = new Set(['seed', 'spore', 'ingredient']);
+  const visitOf = (seed: number, day: number, merchantId: string) => {
+    const sim = new Simulation(createWorld(seed));
+    sim.advanceTo(midday(day));
+    return sim.merchants().find((visit) => visit.merchantId === merchantId);
+  };
+
+  it('deals each world its own trade goods but the same staples', () => {
+    const a = visitOf(1, 2, 'bramm')!;
+    const b = visitOf(2, 2, 'bramm')!;
+    const trade = (visit: typeof a) => visit.entries.filter((e) => TRADE.has(e.kind)).map((e) => e.id);
+    const staples = (visit: typeof a) => visit.entries.filter((e) => !TRADE.has(e.kind)).map((e) => e.id);
+
+    expect(trade(a)).not.toEqual(trade(b));
+    expect(staples(a)).toEqual(staples(b));
+  });
+
+  it('still brings every seed round within one pass of the list', () => {
+    const def = getMerchant('bramm');
+    const seeds = def.pool.filter((item) => item.kind === 'seed' && item.tier === 0).map((item) => item.id);
+    const passes = Math.ceil(seeds.length / def.rotation);
+    const seen = new Set<string>();
+    for (let visit = 0; visit < passes; visit += 1) {
+      const day = def.offsetDays + visit * def.cycleDays;
+      for (const entry of visitOf(9, day, 'bramm')?.entries ?? []) seen.add(entry.id);
+    }
+    for (const seed of seeds) expect(seen.has(seed), seed).toBe(true);
+  });
+});
+

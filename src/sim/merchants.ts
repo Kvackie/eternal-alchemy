@@ -77,15 +77,23 @@ function windowEnd(def: MerchantDef, now: number): number {
   return day.dayNumber * dayMs + fraction * dayMs;
 }
 
-/** A stable per-visit seed, so the same visit always stocks the same goods. */
-function visitSeed(merchantId: string, dayNumber: number): number {
+function hashKey(key: string): number {
   let hash = 2166136261;
-  const key = `${merchantId}:${dayNumber}`;
   for (let i = 0; i < key.length; i += 1) {
     hash ^= key.charCodeAt(i);
     hash = Math.imul(hash, 16777619);
   }
   return hash >>> 0;
+}
+
+/**
+ * A stable per-visit seed, so the same visit always stocks the same goods.
+ *
+ * Deliberately not the world's: the staples it draws — upgrades, boards,
+ * furnishings — are the same on the same day in every shop.
+ */
+function visitSeed(merchantId: string, dayNumber: number): number {
+  return hashKey(`${merchantId}:${dayNumber}`);
 }
 
 export function relationshipOf(world: World, merchantId: string): number {
@@ -153,14 +161,39 @@ function fromPicks(def: MerchantDef, picks: string[]): MerchantStockDef[] {
 const TRADE_KINDS: ReadonlySet<MerchantStockDef['kind']> = new Set(['seed', 'spore', 'ingredient']);
 
 /**
+ * A merchant's trade goods in this world's order.
+ *
+ * Every world used to deal them in the order the data lists them, so every
+ * shop saw the same seeds on the same days. The order is shuffled once per
+ * world, from its seed, and never again: it is still a fixed round, so the
+ * promise below holds, but it is this world's round.
+ */
+function tradeOrder(world: World, def: MerchantDef): MerchantStockDef[] {
+  const trade = def.pool.filter((item) => TRADE_KINDS.has(item.kind));
+  const rng = new Rng(hashKey(`${world.rngSeed}:${def.id}`));
+  for (let i = trade.length - 1; i > 0; i -= 1) {
+    const j = rng.int(0, i);
+    [trade[i], trade[j]] = [trade[j]!, trade[i]!];
+  }
+  return trade;
+}
+
+/**
  * This visit's share of the merchant's trade, dealt round the list in order.
  *
  * A weighted draw over sixty seeds could leave one unseen for a season. Dealing
  * them in turn — visit n starts where visit n − 1 stopped — means a player who
- * wants a particular one knows it is at most a few visits away.
+ * wants a particular one knows it is at most a few visits away. Shuffled before
+ * the tier filter, so goods a deeper tier opens slot into the round without
+ * reordering what was already there.
  */
-function rotationPicks(def: MerchantDef, dayNumber: number, tier: number): MerchantStockDef[] {
-  const trade = def.pool.filter((item) => TRADE_KINDS.has(item.kind) && item.tier <= tier);
+function rotationPicks(
+  world: World,
+  def: MerchantDef,
+  dayNumber: number,
+  tier: number,
+): MerchantStockDef[] {
+  const trade = tradeOrder(world, def).filter((item) => item.tier <= tier);
   if (trade.length === 0 || def.rotation <= 0) return [];
   if (trade.length <= def.rotation) return trade;
 
@@ -233,7 +266,7 @@ function drawPicks(
     [kinds[i], kinds[j]] = [kinds[j]!, kinds[i]!];
   }
 
-  const chosen: MerchantStockDef[] = [...rotationPicks(def, dayNumber, tier)];
+  const chosen: MerchantStockDef[] = [...rotationPicks(world, def, dayNumber, tier)];
   const picks = chosen.length + Math.min(def.picks, pool.length);
 
   while (chosen.length < picks) {

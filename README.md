@@ -124,8 +124,9 @@ Each merchant has one trade:
 
 A stall is eight to ten things. The trade goods are dealt in turn rather than drawn: each visit picks
 up round the list where the last left off, so anything a merchant sells turns up within a known number
-of visits. The staples beside them — boards, furnishings, equipment — are still drawn
-at random.
+of visits. The order of that round comes from the world's seed, so every shop's merchants bring their
+goods in their own order. The staples beside them — boards, furnishings, equipment — are drawn by the
+day alone, the same in every world.
 
 Bramm, Vessa and Hesk keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his
 prices are potions of a minimum grade, and he spends your cheapest qualifying bottles first. The
