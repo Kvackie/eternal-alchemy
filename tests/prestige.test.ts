@@ -1,167 +1,16 @@
 /**
- * Crossbreeding and the Long Distillation.
+ * The Long Distillation, and what is left of the late-game bottling rules.
  */
 
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, getIngredient, prestigeConfig, ranks } from '@/sim/config';
-import { previewCross } from '@/sim/greenhouse';
+import { config, prestigeConfig, ranks } from '@/sim/config';
 import { canRetire, codexBonuses, masteryFor } from '@/sim/prestige';
-import { availableForms } from '@/sim/bottling';
-import { totalEssence } from '@/sim/essences';
-import { addIngredient, inventoryRows } from '@/sim/inventory';
+import { availableVessels } from '@/sim/bottling';
 import { derivedStats } from '@/sim/progression';
 import { spreadChanceFor } from '@/sim/cave';
 import { footfallAt } from '@/sim/market';
-import type { EssenceVector } from '@/sim/types';
-
-const HOUR = 3_600_000;
-
-function withGreenhouse(seed = 3): Simulation {
-  const sim = new Simulation(createWorld(seed));
-  sim.world.equipment.greenhouse = 1;
-  return sim;
-}
-
-describe('crossbreeding', () => {
-  it('needs a greenhouse', () => {
-    const sim = new Simulation(createWorld(1));
-    const [a, b] = sim.crossCandidates();
-    expect(sim.crossStrains(a!, b!)).toBeNull();
-  });
-
-  it('puts the child midway between its parents', () => {
-    const a: EssenceVector = { ignis: 0, aqua: 20, terra: 0, aer: 0, umbra: 0 };
-    const b: EssenceVector = { ignis: 0, aqua: 0, terra: 10, aer: 0, umbra: 0 };
-    expect(previewCross(a, b)).toEqual({ ignis: 0, aqua: 10, terra: 5, aer: 0, umbra: 0 });
-  });
-
-  it('produces a seed, not a plant', () => {
-    const sim = withGreenhouse();
-    const [a, b] = sim.crossCandidates();
-    const result = sim.crossStrains(a!, b!)!;
-
-    expect(result.strain.generation).toBe(1);
-    expect(sim.world.seeds[result.strain.id]).toBe(config.greenhouse.seedsPerCross);
-    expect(sim.world.statistics.strainsBred).toBe(1);
-  });
-
-  it('reaches blends no wild plant has', () => {
-    const sim = withGreenhouse();
-    const candidates = sim.crossCandidates();
-    const sunleaf = candidates.find((c) => c.cropId === 'sunleaf')!;
-    const dewcap = candidates.find((c) => c.cropId === 'dewcap')!;
-
-    const child = sim.crossStrains(sunleaf, dewcap)!.strain;
-    const wild = config.greenhouse.crossableCrops.map((id) => getIngredient(id).essence);
-
-    // The child should not be identical to either parent's wild profile.
-    for (const profile of wild) {
-      expect(JSON.stringify(child.essence)).not.toBe(JSON.stringify(profile));
-    }
-    expect(totalEssence(child.essence)).toBeGreaterThan(0);
-  });
-
-  it('can be crossed again, deepening the lineage', () => {
-    const sim = withGreenhouse(9);
-    const [a, b] = sim.crossCandidates();
-    const first = sim.crossStrains(a!, b!)!.strain;
-
-    const withChild = sim.crossCandidates();
-    const child = withChild.find((c) => c.strainId === first.id)!;
-    const second = sim.crossStrains(child, a!)!.strain;
-
-    expect(second.generation).toBe(2);
-  });
-
-  it('sometimes throws a mutation, and never a bad one', () => {
-    const sim = withGreenhouse(4242);
-    const mutations = new Set<string>();
-
-    for (let i = 0; i < config.greenhouse.maxStrains - 1; i += 1) {
-      const candidates = sim.crossCandidates();
-      const result = sim.crossStrains(candidates[0]!, candidates[1]!);
-      if (!result) break;
-      if (result.mutation) mutations.add(result.mutation);
-      // Nothing a cross produces is worthless.
-      expect(totalEssence(result.strain.essence)).toBeGreaterThan(0);
-    }
-
-    expect(mutations.size).toBeGreaterThan(0);
-  });
-
-  it('produces a seed you can actually plant, grow and brew with', () => {
-    // Breeding is decorative unless the strain survives all the way into the pot.
-    const sim = withGreenhouse(17);
-    const candidates = sim.crossCandidates();
-    const sunleaf = candidates.find((c) => c.cropId === 'sunleaf')!;
-    const dewcap = candidates.find((c) => c.cropId === 'dewcap')!;
-    const strain = sim.crossStrains(sunleaf, dewcap)!.strain;
-
-    // Plant the bred seed, not a wild one.
-    const plot = sim.world.plots[0]!;
-    expect(sim.plant(plot.id, strain.id)).toBe(true);
-    expect(plot.crop?.strainId).toBe(strain.id);
-
-    sim.advanceBy(HOUR);
-    const harvest = sim.harvest(plot.id)!;
-    expect(harvest.count).toBeGreaterThan(0);
-
-    // The harvested stack remembers which line it came from.
-    const stack = sim.world.inventory.find((s) => s.strainId === strain.id);
-    expect(stack).toBeDefined();
-
-    // And the pot reads the strain's essence, not the wild plant's.
-    sim.addToCauldron(harvest.ingredientId, 'dewfresh', strain.id);
-    const blend = sim.blend()!;
-    const wild = getIngredient(harvest.ingredientId).essence;
-    expect(JSON.stringify(blend)).not.toBe(JSON.stringify(wild));
-  });
-
-  it('drops its own seed on harvest, so a line can be replanted forever', () => {
-    const sim = withGreenhouse(23);
-    const candidates = sim.crossCandidates();
-    const strain = sim.crossStrains(candidates[0]!, candidates[1]!)!.strain;
-    const plot = sim.world.plots[0]!;
-
-    let recovered = 0;
-    for (let i = 0; i < 40; i += 1) {
-      sim.world.seeds[strain.id] = (sim.world.seeds[strain.id] ?? 0) + 1;
-      sim.plant(plot.id, strain.id);
-      sim.advanceBy(HOUR);
-      recovered += sim.harvest(plot.id)!.seeds;
-    }
-    // Seeds come back as the strain, never as its wild parent.
-    expect(recovered).toBeGreaterThan(0);
-    expect(sim.world.seeds[strain.id]).toBeGreaterThan(0);
-  });
-
-  it('keeps two strains of the same plant apart in stores', () => {
-    const sim = withGreenhouse(29);
-    const candidates = sim.crossCandidates();
-    const a = sim.crossStrains(candidates[0]!, candidates[1]!)!.strain;
-    const b = sim.crossStrains(candidates[1]!, candidates[2]!)!.strain;
-
-    sim.grant({ ingredient: { id: 'sunleaf', count: 2 } });
-    const rows = () => inventoryRows(sim.world, sim.now);
-    const before = rows().length;
-
-    // Same base plant, different lines — they must not merge into one stack.
-    addIngredient(sim.world, 'sunleaf', 1, sim.now, a.id);
-    addIngredient(sim.world, 'sunleaf', 1, sim.now, b.id);
-    expect(rows().length).toBe(before + 2);
-  });
-
-  it('stops at the strain cap rather than growing the save forever', () => {
-    const sim = withGreenhouse(11);
-    for (let i = 0; i < config.greenhouse.maxStrains + 10; i += 1) {
-      const candidates = sim.crossCandidates();
-      sim.crossStrains(candidates[0]!, candidates[1]!);
-    }
-    expect(sim.world.strains.length).toBeLessThanOrEqual(config.greenhouse.maxStrains);
-  });
-});
 
 describe('mastery', () => {
   it('scales with lifetime renown, so retiring later is worth more', () => {
@@ -282,68 +131,27 @@ describe('the Long Distillation', () => {
   });
 });
 
-describe('the full bottling range', () => {
-  it('gates Powder behind dry material', () => {
-    const brew = {
-      recipeId: 'aquaTerra',
-      total: { ignis: 0, aqua: 36, terra: 20, aer: 0, umbra: 0 },
-      grade: 'B' as const,
-      purity: 80,
-      totalEssence: 56,
-      potencyTier: 'common' as const,
-      composition: { driedShare: 0.5, mineralShare: 0, traits: [], unitCount: 2 },
-    };
-    const powder = availableForms(brew).find((f) => f.formId === 'powder')!;
-    expect(powder.available).toBe(false);
-    expect(powder.reasonKey).toBe('workbench.reason.dried');
-
-    const allDry = availableForms({
-      ...brew,
-      composition: { ...brew.composition, driedShare: 1 },
-    }).find((f) => f.formId === 'powder')!;
-    expect(allDry.available).toBe(true);
-  });
-
-  it('gates Crystal behind stone and potency', () => {
-    const brew = {
-      recipeId: 'aquaTerra',
-      total: { ignis: 0, aqua: 120, terra: 90, aer: 0, umbra: 0 },
-      grade: 'A' as const,
-      purity: 90,
-      totalEssence: 210,
-      potencyTier: 'grand' as const,
-      composition: { driedShare: 0, mineralShare: 0.2, traits: [], unitCount: 5 },
-    };
-    expect(availableForms(brew).find((f) => f.formId === 'crystal')!.reasonKey).toBe(
-      'workbench.reason.mineral',
-    );
-
-    const stony = availableForms({
-      ...brew,
-      composition: { ...brew.composition, mineralShare: 0.6 },
-    }).find((f) => f.formId === 'crystal')!;
-    expect(stony.available).toBe(true);
-  });
-
-  it('gates a Bomb behind something volatile in the pot', () => {
+describe('bottling something volatile', () => {
+  it('takes only an iron-bound vessel', () => {
+    const sim = new Simulation(createWorld(1));
+    for (const vessel of ['clayVial', 'ironBoundJar']) sim.world.vessels[vessel] = 5;
     const brew = {
       recipeId: 'ignisTerra',
-      total: { ignis: 60, aqua: 0, terra: 20, aer: 0, umbra: 0 },
+      total: { ignis: 40, aqua: 0, terra: 40, aer: 0, umbra: 0 },
       grade: 'B' as const,
       purity: 80,
       totalEssence: 80,
       potencyTier: 'common' as const,
-      composition: { driedShare: 0, mineralShare: 0, traits: [], unitCount: 3 },
+      composition: { traits: [] as string[] },
     };
-    expect(availableForms(brew).find((f) => f.formId === 'bomb')!.reasonKey).toBe(
-      'workbench.reason.trait',
-    );
+    const calm = availableVessels(sim.world, brew);
+    expect(calm.find((v) => v.vesselId === 'clayVial')!.available).toBe(true);
 
-    const volatile = availableForms({
-      ...brew,
-      composition: { ...brew.composition, traits: ['volatile'] },
-    }).find((f) => f.formId === 'bomb')!;
-    expect(volatile.available).toBe(true);
+    const volatile = availableVessels(sim.world, { ...brew, composition: { traits: ['volatile'] } });
+    expect(volatile.find((v) => v.vesselId === 'clayVial')!.reasonKey).toBe(
+      'workbench.reason.volatile',
+    );
+    expect(volatile.find((v) => v.vesselId === 'ironBoundJar')!.available).toBe(true);
   });
 });
 
@@ -440,14 +248,12 @@ describe('the town you retire to changes the run', () => {
         {
           uid: 'a',
           recipeId: 'aquaTerra',
-          formId: 'potion',
           vesselId: 'clayVial',
           sealId: 'cork',
           grade: 'B',
           purity: 80,
           potencyTier: 'common',
           totalEssence: 57,
-          dosesLeft: 1,
           fairValue: 60,
           bottledAt: 0,
         },

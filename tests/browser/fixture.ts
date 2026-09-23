@@ -60,7 +60,7 @@ export function buildWorld(clock: Clock = 'night'): World {
     world.recipes[recipe.id] = { discovered: true, timesBrewed: 3 };
   }
 
-  for (const ingredient of ingredients) addIngredient(world, ingredient.id, 6, world.now, null);
+  for (const ingredient of ingredients) addIngredient(world, ingredient.id, 6, world.now);
 
   world.cauldrons.push(makeCauldron('cauldron-2', 'cauldronThree', false));
   world.cauldrons.push(makeCauldron('cauldron-3', 'cauldronFour', true));

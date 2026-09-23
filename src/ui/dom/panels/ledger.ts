@@ -50,7 +50,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'heroRecruited',
     'heroDismissed',
   ],
-  shop: ['installed', 'furnished', 'rankUp', 'strainBred', 'retired'],
+  shop: ['installed', 'furnished', 'rankUp', 'retired'],
 };
 
 let page = 1;
@@ -95,7 +95,6 @@ function renderSummary(sim: Simulation): HTMLElement {
     [t('ledger.stats.missions'), formatNumber(s.missionsCompleted)],
     [t('ledger.stats.contracts'), formatNumber(s.contractsDelivered)],
     [t('ledger.stats.haggles'), formatNumber(s.hagglesWon)],
-    [t('ledger.stats.strains'), formatNumber(s.strainsBred)],
     [t('ledger.stats.mastery'), formatNumber(sim.world.mastery), 'mastery'],
     [t('ledger.stats.day'), `${day.dayNumber + 1}`],
   ];

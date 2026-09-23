@@ -18,7 +18,6 @@ import {
   makeDropTarget,
   meter,
   modal,
-  outcomeCard,
   panelHeader,
   row,
   sectionHead,
@@ -33,9 +32,7 @@ import { showIngredientInfo } from '../ingredientInfo';
 import { caveConfig, crops, getCrop, getIngredient, shaftConfig } from '@/sim/config';
 import { isReady } from '@/sim/garden';
 import { isMature, maturityOf } from '@/sim/cave';
-import { previewCross } from '@/sim/greenhouse';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
-import { ESSENCES } from '@/sim/types';
 import { dominantEssence } from '@/ui/art';
 import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
@@ -140,25 +137,13 @@ function iconFor(ingredientId: string): Node {
 // ---------------------------------------------------------------------------
 
 function renderGarden(sim: Simulation, body: HTMLElement): void {
-  // Wild crops and bred strains sit in the same tray — a seed is a seed.
-  const wild = crops
-    .map((crop) => ({ id: crop.id, count: sim.world.seeds[crop.id] ?? 0, crop, strain: null }))
+  const held = crops
+    .map((crop) => ({ id: crop.id, count: sim.world.seeds[crop.id] ?? 0, crop }))
     .filter((entry) => entry.count > 0);
 
-  const bred = sim.world.strains
-    .map((strain) => ({
-      id: strain.id,
-      count: sim.world.seeds[strain.id] ?? 0,
-      crop: getCrop(strain.baseCropId),
-      strain,
-    }))
-    .filter((entry) => entry.count > 0);
-
-  const tiles = [...wild, ...bred].map(({ id, count, crop, strain }) => {
-    const growMs = strain?.growMs ?? crop.growMs;
-    const label = strain
-      ? t('greenhouse.strain', { crop: t(`crop.${crop.id}`), gen: strain.generation })
-      : t(`crop.${crop.id}`);
+  const tiles = held.map(({ id, count, crop }) => {
+    const growMs = crop.growMs;
+    const label = t(`crop.${crop.id}`);
 
     return slot({
       id,
@@ -178,7 +163,6 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
         chip(t(`soil.${crop.soil}`), 'plain'),
       ],
       dragType: SEED_DRAG,
-      tone: strain ? 'good' : 'default',
       /*
        * The tile opens what it grows into; the panel picks it up.
        *
@@ -200,9 +184,6 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
       onActivate: () => {
         const free = sim.world.plots.filter((plot) => !plot.crop);
         showIngredientInfo(sim, crop.yields, {
-          // A bred strain carries its own vector, not the wild plant's.
-          essence: strain?.essence,
-          title: strain ? label : undefined,
           action: {
             label: t('garden.seed.plant'),
             max: 1,
@@ -251,16 +232,13 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
   ]);
   for (const plot of sim.world.plots) plots.append(renderPlot(sim, plot));
   body.append(plots);
-
-  if (sim.hasGreenhouse) body.append(renderGreenhouse(sim));
-
 }
 
-/** Seeds and strains you actually hold, in the order the tray shows them. */
+/** Seeds you actually hold, in the order the tray shows them. */
 function seedsOnHand(
   sim: Simulation,
 ): Array<{ id: string; label: string; count: number; yields: string }> {
-  const wild = crops
+  return crops
     .map((crop) => ({
       id: crop.id,
       label: t(`crop.${crop.id}`),
@@ -268,21 +246,6 @@ function seedsOnHand(
       yields: crop.yields,
     }))
     .filter((entry) => entry.count > 0);
-
-  const bred = sim.world.strains
-    .map((strain) => ({
-      id: strain.id,
-      label: t('greenhouse.strain', {
-        crop: t(`crop.${strain.baseCropId}`),
-        gen: strain.generation,
-      }),
-      count: sim.world.seeds[strain.id] ?? 0,
-      // A strain grows what its parent grows, in a better or worse way.
-      yields: getCrop(strain.baseCropId).yields,
-    }))
-    .filter((entry) => entry.count > 0);
-
-  return [...wild, ...bred];
 }
 
 /** The nearest empty plot of a given soil, counting from the first bed. */
@@ -349,7 +312,7 @@ function openSeedPicker(sim: Simulation, plot: Plot): void {
         'div',
         { class: 'shelf-picker' },
         seeds.map((seed) => {
-          const suits = soilWantedBy(seed.id) === plot.soil;
+          const suits = getCrop(seed.id).soil === plot.soil;
           /*
            * The crop, not only its name.
            *
@@ -377,16 +340,7 @@ function openSeedPicker(sim: Simulation, plot: Plot): void {
 
 /** A planted plot's soil, marked good where it is the soil that crop wants. */
 function soilChipFor(plot: Plot, cropId: string): HTMLElement {
-  return chip(t(`soil.${plot.soil}`), soilWantedBy(cropId) === plot.soil ? 'good' : 'plain');
-}
-
-/** A strain keeps its parent's soil; an unknown seed id simply has no opinion. */
-function soilWantedBy(cropOrStrainId: string): string | null {
-  try {
-    return getCrop(cropOrStrainId).soil;
-  } catch {
-    return null;
-  }
+  return chip(t(`soil.${plot.soil}`), getCrop(cropId).soil === plot.soil ? 'good' : 'plain');
 }
 
 function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
@@ -472,105 +426,6 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
         : null,
     ],
   });
-}
-
-// ---------------------------------------------------------------------------
-// Greenhouse — you breed
-// ---------------------------------------------------------------------------
-
-let parentA: string | null = null;
-let parentB: string | null = null;
-
-/** Wild crops are keyed by crop id; bred strains by strain id. */
-function candidateKey(c: { cropId: string; strainId: string | null }): string {
-  return c.strainId ?? c.cropId;
-}
-
-function renderGreenhouse(sim: Simulation): HTMLElement {
-  const candidates = sim.crossCandidates();
-  const a = candidates.find((c) => candidateKey(c) === parentA);
-  const b = candidates.find((c) => candidateKey(c) === parentB);
-
-  const tiles = candidates.map((candidate) => {
-    const key = candidateKey(candidate);
-    const strain = candidate.strainId
-      ? sim.world.strains.find((s) => s.id === candidate.strainId)
-      : undefined;
-
-    const essences = ESSENCES.filter((e) => candidate.essence[e] > 0)
-      .map((e) => `${t(`essence.${e}.short`)} ${Math.round(candidate.essence[e])}`)
-      .join(' · ');
-
-    return slot({
-      id: key,
-      icon: iconFor(strain ? getCrop(candidate.cropId).yields : getCrop(candidate.cropId).yields),
-      label: strain
-        ? t('greenhouse.strain', { crop: t(`crop.${candidate.cropId}`), gen: strain.generation })
-        : t(`crop.${candidate.cropId}`),
-      caption: [
-        el('span', { text: essences }),
-        ...(strain?.traits ?? []).map((trait) => chip(t(`trait.${trait}`), 'good')),
-      ],
-      selected: key === parentA || key === parentB,
-      onActivate: () => {
-        if (key === parentA) parentA = null;
-        else if (key === parentB) parentB = null;
-        else if (!parentA) parentA = key;
-        else if (!parentB) parentB = key;
-        else parentB = key;
-        changed();
-      },
-    });
-  });
-
-  const section = el('section', { class: 'greenhouse' }, [
-    sectionHead(t('greenhouse.title'), t('greenhouse.hint')),
-    slotGrid(tiles),
-  ]);
-
-  if (a && b) {
-    const preview = previewCross(a.essence, b.essence);
-    section.append(
-      outcomeCard({
-        name: t('greenhouse.preview'),
-        body: [
-          el(
-            'div',
-            { class: 'chips' },
-            ESSENCES.filter((e) => preview[e] > 0).map((e) =>
-              chip(`${t(`essence.${e}.short`)} ${Math.round(preview[e])}`),
-            ),
-          ),
-          el('span', { class: 'field-note', text: t('greenhouse.mutationNote') }),
-        ],
-      }),
-    );
-  }
-
-  section.append(
-    el('div', { class: 'row-actions' }, [
-      button(
-        t('greenhouse.cross'),
-        () => {
-          if (!a || !b) return;
-          const result = sim.crossStrains(a, b);
-          if (result) {
-            toast(
-              result.mutation
-                ? t('greenhouse.crossedMutation', { mutation: t(`mutation.${result.mutation}`) })
-                : t('greenhouse.crossed'),
-            );
-            parentA = null;
-            parentB = null;
-            changed();
-          }
-        },
-        { disabled: !a || !b },
-      ),
-    ]),
-  );
-
-  return section;
 }
 
 // ---------------------------------------------------------------------------

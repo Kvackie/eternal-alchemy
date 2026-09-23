@@ -75,8 +75,6 @@ export function createWorld(seed = freshSeed()): World {
     haggle: null,
     servedToday: { dayNumber: -1, customerIds: [] },
 
-    strains: [],
-    nextStrainId: 1,
 
     mastery: 0,
     codex: {},
@@ -104,7 +102,6 @@ export function createWorld(seed = freshSeed()): World {
       contractsDelivered: 0,
       contractsFailed: 0,
       hagglesWon: 0,
-      strainsBred: 0,
     },
   };
 

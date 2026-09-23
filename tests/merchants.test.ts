@@ -248,14 +248,12 @@ describe('bartering with the Ashwalker', () => {
     return {
       uid,
       recipeId: 'aquaTerra',
-      formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',
       grade,
       purity: 80,
       potencyTier: 'common',
       totalEssence: 57,
-      dosesLeft: 1,
       fairValue: value,
       bottledAt: 0,
     };

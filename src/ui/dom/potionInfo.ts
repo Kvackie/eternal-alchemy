@@ -24,7 +24,7 @@ import {
 } from './components';
 import type { QuantityActionSpec } from './components';
 import { formatGold, formatNumber, t } from '@/i18n';
-import { getForm, getHeroDef, getSeal, getVessel } from '@/sim/config';
+import { getHeroDef, getSeal, getVessel } from '@/sim/config';
 import type { Simulation } from '@/sim/sim';
 import type { BottledItem } from '@/sim/types';
 
@@ -93,12 +93,8 @@ export function showPotionInfo(
     stat(t('potionInfo.essence'), formatNumber(Math.round(item.totalEssence))),
     stat(t('potionInfo.vessel'), t(`vessel.${item.vesselId}`)),
     stat(t('potionInfo.seal'), t(`seal.${item.sealId}`)),
-    stat(t('potionInfo.form'), t(`form.${item.formId}`)),
   ];
 
-  if (getForm(item.formId).doses > 1) {
-    facts.push(stat(t('potionInfo.doses'), formatNumber(item.dosesLeft)));
-  }
   facts.push(stat(t('potionInfo.value'), formatGold(item.fairValue), 'good'));
   if (supplyBonus > 0) {
     facts.push(stat(t('potionInfo.supplyBonus'), `+${supplyBonus}`, 'good'));

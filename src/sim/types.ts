@@ -25,12 +25,6 @@ export interface IngredientStack {
   count: number;
   /** World time of harvest. Minerals pass `null` — they never age. */
   harvestedAt: number | null;
-  /**
-   * Set when this came from a crossbred line, whose essence differs from the
-   * wild plant's. Without it, a bred strain would look identical to its parent
-   * in the pot and breeding would be decorative.
-   */
-  strainId?: string | null;
 }
 
 export interface Plot {
@@ -41,15 +35,13 @@ export interface Plot {
     cropId: string;
     plantedAt: number;
     readyAt: number;
-    /** Set when a crossbred seed was planted rather than a wild one. */
-    strainId?: string | null;
   } | null;
 }
 
 /** The cauldron's contents before distillation. */
 export interface CauldronContents {
   /** Parallel to the ingredient list; each entry is one unit added. */
-  units: Array<{ ingredientId: string; harvestedAt: number | null; strainId?: string | null }>;
+  units: Array<{ ingredientId: string; harvestedAt: number | null }>;
 }
 
 /**
@@ -90,16 +82,10 @@ export interface BrewOutcome {
   overCapacity: boolean;
   grade: Grade;
   /**
-   * What physically went in. Some forms read this rather than the blend —
-   * Powder wants dry material, Crystal wants stone, a Bomb wants something
-   * volatile — and none of that survives into the essence vector.
+   * What physically went in, where the blend cannot say: a volatile
+   * ingredient needs an iron-bound vessel however it balances.
    */
-  composition: {
-    driedShare: number;
-    mineralShare: number;
-    traits: string[];
-    unitCount: number;
-  };
+  composition: { traits: string[] };
 }
 
 /** An accepted brew, sitting in the pot until it is ready to bottle. */
@@ -113,14 +99,12 @@ export interface BrewInProgress {
 export interface BottledItem {
   uid: string;
   recipeId: string;
-  formId: string;
   vesselId: string;
   sealId: string;
   grade: Grade;
   purity: number;
   potencyTier: PotencyTierId;
   totalEssence: number;
-  dosesLeft: number;
   fairValue: number;
   bottledAt: number;
 }
@@ -194,7 +178,6 @@ export type LogKind =
   | 'contractFailed'
   | 'haggleWon'
   | 'haggleLost'
-  | 'strainBred'
   | 'retired'
   | 'recipeFound';
 
@@ -271,23 +254,6 @@ export interface MissionOutcome {
   suppliesFilled: number;
   favouriteSupplied: boolean;
   returnedAt: number;
-}
-
-/**
- * A crossbred plant line.
- *
- * The one kind of content the player makes rather than finds, so it lives on the
- * world rather than in the data files.
- */
-export interface Strain {
-  id: string;
-  baseCropId: string;
-  /** How many crosses deep this line is. */
-  generation: number;
-  essence: EssenceVector;
-  traits: string[];
-  growMs: number;
-  yieldBonus: number;
 }
 
 /** What the player has worked out about a recipe: whether they have made it, and how often. */
@@ -480,10 +446,6 @@ export interface World {
   /** Walk-ins already served today, so one visit is one sale. */
   servedToday: { dayNumber: number; customerIds: string[] };
 
-  /** Crossbred lines, and the counter that names them. */
-  strains: Strain[];
-  nextStrainId: number;
-
   /**
    * Prestige. These four are the only things that survive a retirement, which
    * is what makes them worth spending a whole run to earn.
@@ -511,6 +473,5 @@ export interface World {
     contractsDelivered: number;
     contractsFailed: number;
     hagglesWon: number;
-    strainsBred: number;
   };
 }

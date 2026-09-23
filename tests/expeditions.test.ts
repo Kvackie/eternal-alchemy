@@ -28,14 +28,12 @@ function bottle(uid: string, grade: Grade, recipeId = 'aquaTerra', sealId = 'cor
   return {
     uid,
     recipeId,
-    formId: 'potion',
     vesselId: 'clayVial',
     sealId,
     grade,
     purity: 80,
     potencyTier: 'common',
     totalEssence: 57,
-    dosesLeft: 1,
     fairValue: 30,
     bottledAt: 0,
   };

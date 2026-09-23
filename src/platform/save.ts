@@ -15,7 +15,8 @@ import { emptySpots } from '@/sim/decor';
 import { rankIndexFor } from '@/sim/progression';
 import { Rng } from '@/sim/rng';
 import { generateVeins } from '@/sim/shaft';
-import type { World } from '@/sim/types';
+import { fairValue } from '@/sim/market';
+import type { BottledItem, World } from '@/sim/types';
 import { LEGACY_RECIPES } from './legacyRecipes';
 
 const KEY_PREFIX = 'eternal-alchemy/save';
@@ -291,7 +292,8 @@ const MIGRATIONS: Record<number, Migration> = {
   },
 
   /**
-   * v5 → v6: haggling, crossbreeding and prestige.
+   * v5 → v6: haggling, crossbreeding and prestige. (Crossbreeding is gone
+   * again since v15, which is why nothing here fills its fields.)
    *
    * `lifetimeRenown` seeds from current renown rather than zero — a shop that
    * earned its reputation before the Codex existed should not have that erased
@@ -300,8 +302,6 @@ const MIGRATIONS: Record<number, Migration> = {
   6: (world) => {
     world.haggle ??= null;
     world.servedToday ??= { dayNumber: -1, customerIds: [] };
-    world.strains ??= [];
-    world.nextStrainId ??= 1;
     world.mastery ??= 0;
     world.codex ??= {};
     world.lifetimeRenown ??= world.renown ?? 0;
@@ -625,6 +625,53 @@ const MIGRATIONS: Record<number, Migration> = {
     if (world.codex) delete world.codex.deftHands;
     return world;
   },
+  /**
+   * v14 → v15: bottle forms and the greenhouse are gone.
+   *
+   * Every bottle becomes a plain potion. Its value is worked out again, since
+   * the form's multiplier was part of it. Bred strains fold back into the crop
+   * they came from: their seeds become that crop's seeds, and their harvests
+   * and pot contents become the plain ingredient. The greenhouse leaves the
+   * shop, but the two beds it added stay, because plots are never taken away.
+   */
+  15: (world) => {
+    const loose = world as unknown as Record<string, unknown>;
+    const strains = (loose.strains ?? []) as Array<{ id: string; baseCropId: string }>;
+
+    const reform = (node: unknown): void => {
+      if (Array.isArray(node)) return node.forEach(reform);
+      if (!node || typeof node !== 'object') return;
+      const item = node as Record<string, unknown>;
+      if ('formId' in item && 'recipeId' in item) {
+        delete item.formId;
+        delete item.dosesLeft;
+        item.fairValue = fairValue(item as unknown as BottledItem);
+      }
+      delete item.strainId;
+      for (const value of Object.values(item)) reform(value);
+    };
+    reform(world);
+
+    for (const strain of strains) {
+      const held = world.seeds[strain.id] ?? 0;
+      delete world.seeds[strain.id];
+      if (held > 0) world.seeds[strain.baseCropId] = (world.seeds[strain.baseCropId] ?? 0) + held;
+    }
+
+    // A brew's composition was read by forms; only its traits are left to read.
+    for (const pot of world.cauldrons ?? []) {
+      for (const outcome of [pot.brewing?.outcome, pot.pendingBrew]) {
+        if (outcome?.composition) outcome.composition = { traits: outcome.composition.traits ?? [] };
+      }
+    }
+
+    delete loose.strains;
+    delete loose.nextStrainId;
+    delete (world.statistics as unknown as Record<string, unknown>).strainsBred;
+    if (world.equipment) delete world.equipment.greenhouse;
+    world.log = (world.log ?? []).filter((entry) => (entry.kind as string) !== 'strainBred');
+    return world;
+  },
 };
 
 /** Every counter at zero, so a migration can fill only what it actually knows. */
@@ -642,7 +689,6 @@ function emptyStatistics(): World['statistics'] {
     contractsDelivered: 0,
     contractsFailed: 0,
     hagglesWon: 0,
-    strainsBred: 0,
   };
 }
 

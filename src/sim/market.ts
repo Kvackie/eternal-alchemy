@@ -7,7 +7,7 @@
  * out of sync with the live one.
  */
 
-import { baseShelfTier, config, findShelfTier, getRecipe, getVessel, getSeal, getForm } from './config';
+import { baseShelfTier, config, findShelfTier, getRecipe, getVessel, getSeal } from './config';
 import { dayStateAt } from './clock';
 import { potencyMultiplier } from './essences';
 import { derivedStats } from './progression';
@@ -19,19 +19,17 @@ const GRADE_SCORE: Record<Grade, number> = { S: 6, A: 5, B: 4, C: 3, D: 2, E: 1,
 
 /**
  * What an item is honestly worth. The player's asking price is expressed as a
- * ratio of this, so the price slider means the same thing for a 4g tincture and
- * a 400g philtre.
+ * ratio of this, so the price slider means the same thing for a 4g Minor potion
+ * and a 400g Sovereign one.
  */
 export function fairValue(item: {
   recipeId: string;
-  formId: string;
   vesselId: string;
   sealId: string;
   grade: Grade;
   potencyTier: BottledItem['potencyTier'];
 }): number {
   const recipe = getRecipe(item.recipeId);
-  const form = getForm(item.formId);
   const vessel = getVessel(item.vesselId);
   const seal = getSeal(item.sealId);
 
@@ -43,7 +41,6 @@ export function fairValue(item: {
   const value =
     recipe.baseValue *
     potencyMultiplier(item.potencyTier) *
-    form.valueMultiplier *
     vessel.valueMultiplier *
     seal.valueMultiplier *
     gradeFactor;
@@ -211,7 +208,6 @@ export function fitBoard(world: World, slotId: string, tierId: string): boolean 
 export function sameGoods(a: BottledItem, b: BottledItem): boolean {
   return (
     a.recipeId === b.recipeId &&
-    a.formId === b.formId &&
     a.vesselId === b.vesselId &&
     a.sealId === b.sealId &&
     a.grade === b.grade

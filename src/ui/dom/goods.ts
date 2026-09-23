@@ -29,9 +29,6 @@ export function goodsNotes(kind: string, id: string): string[] {
   if (kind === 'vessel') {
     const def = getVessel(id);
     notes.push(t('goods.potencyCap', { potency: t(`potency.${def.potencyCap}`) }));
-    if (def.onlyForms?.length) {
-      notes.push(t('goods.onlyForms', { forms: def.onlyForms.map((f) => t(`form.${f}`)).join(', ') }));
-    }
     if (def.appealBonus > 0) notes.push(t('goods.appeal', { percent: pct(def.appealBonus) }));
     value(def.valueMultiplier);
     if (def.supplyGradeBonus) notes.push(t('goods.supplyGrade'));

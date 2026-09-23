@@ -18,7 +18,6 @@ export function addIngredient(
   ingredientId: string,
   count: number,
   harvestedAt: number | null,
-  strainId: string | null = null,
 ): void {
   if (count <= 0) return;
   const isMineral = getIngredient(ingredientId).category === 'mineral';
@@ -27,15 +26,13 @@ export function addIngredient(
   const existing = world.inventory.find(
     (stack) =>
       stack.ingredientId === ingredientId &&
-      // Two strains of the same plant are different ingredients and must not merge.
-      (stack.strainId ?? null) === strainId &&
       (stack.harvestedAt === null || stamp === null
         ? stack.harvestedAt === stamp
         : Math.abs(stack.harvestedAt - stamp) <= MERGE_WINDOW_MS),
   );
 
   if (existing) existing.count += count;
-  else world.inventory.push({ ingredientId, count, harvestedAt: stamp, strainId });
+  else world.inventory.push({ ingredientId, count, harvestedAt: stamp });
 }
 
 export function countOf(world: World, ingredientId: string, freshness?: Freshness): number {
@@ -66,14 +63,12 @@ export function takeUnit(
   world: World,
   ingredientId: string,
   freshness?: Freshness,
-  strainId: string | null = null,
-): { ingredientId: string; harvestedAt: number | null; strainId: string | null } | null {
+): { ingredientId: string; harvestedAt: number | null } | null {
   const candidates = world.inventory
     .filter(
       (stack) =>
         stack.ingredientId === ingredientId &&
         stack.count > 0 &&
-        (stack.strainId ?? null) === strainId &&
         (freshness === undefined ||
           freshnessOf(stack.ingredientId, stack.harvestedAt, world.now) === freshness),
     )
@@ -85,15 +80,15 @@ export function takeUnit(
   stack.count -= 1;
   const harvestedAt = stack.harvestedAt;
   pruneEmpty(world);
-  return { ingredientId, harvestedAt, strainId };
+  return { ingredientId, harvestedAt };
 }
 
 /** Put a unit back — used when an ingredient is pulled out of the cauldron. */
 export function returnUnit(
   world: World,
-  unit: { ingredientId: string; harvestedAt: number | null; strainId?: string | null },
+  unit: { ingredientId: string; harvestedAt: number | null },
 ): void {
-  addIngredient(world, unit.ingredientId, 1, unit.harvestedAt, unit.strainId ?? null);
+  addIngredient(world, unit.ingredientId, 1, unit.harvestedAt);
 }
 
 export function pruneEmpty(world: World): void {
@@ -105,12 +100,11 @@ export interface InventoryRow {
   count: number;
   harvestedAt: number | null;
   freshness: Freshness;
-  strainId: string | null;
 }
 
 /**
- * Inventory grouped for display: one row per ingredient, per freshness stage,
- * per strain. All three are things that make two units genuinely different.
+ * Inventory grouped for display: one row per ingredient, per freshness stage.
+ * Both are things that make two units genuinely different.
  */
 export function inventoryRows(world: World, now: number): InventoryRow[] {
   const rows = new Map<string, InventoryRow>();
@@ -118,8 +112,7 @@ export function inventoryRows(world: World, now: number): InventoryRow[] {
   for (const stack of world.inventory) {
     if (stack.count <= 0) continue;
     const freshness = freshnessOf(stack.ingredientId, stack.harvestedAt, now);
-    const strainId = stack.strainId ?? null;
-    const key = `${stack.ingredientId}:${freshness}:${strainId ?? ''}`;
+    const key = `${stack.ingredientId}:${freshness}`;
     const existing = rows.get(key);
     if (existing) {
       existing.count += stack.count;
@@ -136,7 +129,6 @@ export function inventoryRows(world: World, now: number): InventoryRow[] {
         count: stack.count,
         harvestedAt: stack.harvestedAt,
         freshness,
-        strainId,
       });
     }
   }

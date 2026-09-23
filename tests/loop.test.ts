@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { availableForms, availableVessels } from '@/sim/bottling';
+import { availableVessels } from '@/sim/bottling';
 import { config, getCrop } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
 
@@ -224,13 +224,6 @@ describe('bottling and shelf', () => {
     return sim;
   }
 
-  it('offers the tincture for an aqua-heavy brew', () => {
-    const sim = readyToBottle();
-    const forms = availableForms(sim.pendingBrew!);
-    expect(forms.find((f) => f.formId === 'potion')?.available).toBe(true);
-    expect(forms.find((f) => f.formId === 'tincture')?.available).toBe(true);
-  });
-
   it('blocks a vessel that cannot hold the brew, with a reason', () => {
     const sim = readyToBottle();
     sim.cauldron.pendingBrew!.potencyTier = 'grand';
@@ -245,7 +238,6 @@ describe('bottling and shelf', () => {
     const before = sim.world.vessels.clayVial ?? 0;
 
     const item = sim.bottlePending({
-      formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',
     });
@@ -260,16 +252,15 @@ describe('bottling and shelf', () => {
     const sim = readyToBottle();
     sim.world.seals.cork = 0;
     expect(
-      sim.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' }),
+      sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' }),
     ).not.toBeNull();
   });
 
   it('prices a wax-sealed flask above a corked vial', () => {
     const a = readyToBottle();
     const b = readyToBottle();
-    const plain = a.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' })!;
+    const plain = a.bottlePending({ vesselId: 'clayVial', sealId: 'cork' })!;
     const fancy = b.bottlePending({
-      formId: 'potion',
       vesselId: 'glassFlask',
       sealId: 'waxRibbon',
     })!;
@@ -278,7 +269,7 @@ describe('bottling and shelf', () => {
 
   it('moves a bottled item onto the shelf and back', () => {
     const sim = readyToBottle();
-    const item = sim.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' })!;
+    const item = sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' })!;
 
     expect(sim.stock('shelf-1', item.uid)).toBe(true);
     expect(sim.world.bottled).toHaveLength(0);
@@ -316,7 +307,6 @@ describe('the whole loop', () => {
     expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
 
     const item = sim.bottlePending({
-      formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'waxRibbon',
     })!;

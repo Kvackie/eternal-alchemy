@@ -25,7 +25,6 @@ import {
   decorConfig,
   decorPieces,
   equipment,
-  forms,
   heroesConfig,
   ingredients,
   merchants,
@@ -169,7 +168,6 @@ describe('every data id can be shown to a player', () => {
     for (const x of recipes) need(`recipe.${x.id}`);
     for (const x of vessels) need(`vessel.${x.id}`);
     for (const x of seals) need(`seal.${x.id}`);
-    for (const x of forms) need(`form.${x.id}`);
     for (const x of ranks) need(`rank.${x.id}`);
     for (const x of caveConfig.species) need(`ingredient.${x.id}`);
     for (const x of heroesConfig.roster) need(`hero.${x.id}`);

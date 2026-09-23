@@ -10,8 +10,9 @@ including while the app is closed.
 spreads on its own; a mining shaft that depletes and deepens; heroes who take your own potions on
 expeditions; and a contract board.
 
-**M3 — depth.** Face-to-face haggling; the greenhouse and crossbreeding; the full bottling range
-(10 forms, 8 vessels, 7 seals); ranks V–X; and the Long Distillation with its Mastery Codex.
+**M3 — depth.** Face-to-face haggling; the full bottling range (8 vessels, 7 seals); ranks V–X; and
+the Long Distillation with its Mastery Codex. (The greenhouse and bottle forms shipped here too, and
+were taken out again in the potion overhaul.)
 
 Design document: `docs/design.html` (open it in a browser). It is the design record rather than a
 description of the build — it still describes the alembic wheel that M1's rework replaced, among
@@ -164,7 +165,7 @@ update as you go. Nothing is spent yet.
 **2 · Outcome.** What you would make right now, with its grade and potency. **Accept** spends the
 ingredients and starts the brew timer; **Pour it back** returns every ingredient unchanged.
 
-Then **Bottle** — form, vessel, seal — once the timer finishes.
+Then **Bottle** — vessel and seal — once the timer finishes.
 
 The two numbers of a brew are independent:
 
@@ -227,16 +228,6 @@ counters have landed.
 
 Patience hitting zero ends the haggle at the customer's last standing offer, and a refused price
 costs you the visit, never the stock.
-
-## Crossbreeding
-
-The long-tail hook. Two parents produce a seed whose essence sits **midway between them**, so
-repeated crossing walks a lineage toward a ratio no wild plant can hit. A cross sometimes throws a
-mutation — Potent, Pure, Twinned or Volatile — that neither parent had.
-
-A strain is the one kind of content the player makes rather than finds, so it lives on the save
-rather than in the data files, and it carries its own essence all the way into the pot. A bred line
-drops its own seed on harvest, so it can be replanted forever.
 
 ## Prestige — the Long Distillation
 

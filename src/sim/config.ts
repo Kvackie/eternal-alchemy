@@ -12,7 +12,6 @@ import rawCrops from '@/data/crops.json';
 import rawRecipes from '@/data/recipes.json';
 import rawVessels from '@/data/vessels.json';
 import rawSeals from '@/data/seals.json';
-import rawForms from '@/data/forms.json';
 import rawRanks from '@/data/ranks.json';
 import rawEquipment from '@/data/equipment.json';
 import rawDecor from '@/data/decor.json';
@@ -88,10 +87,6 @@ export interface VesselDef {
   valueMultiplier: number;
   appealBonus: number;
   startingStock: number;
-  /** Restricts the vessel to certain forms — a pouch will not hold a liquid. */
-  onlyForms?: string[];
-  /** Extra doses on a multi-dose form. */
-  bonusDoses?: number;
   /** How many shelf-slot units one of these occupies when stacked. */
   shelfStack?: number;
   /** Counts as this many units toward a contract. */
@@ -121,20 +116,6 @@ export interface SealDef {
   shelfAppealOverride?: number;
   /** Multiplies what a barter merchant will give. */
   barterMultiplier?: number;
-}
-
-export interface FormDef {
-  id: string;
-  doses: number;
-  valueMultiplier: number;
-  requires: {
-    minPotencyTier?: PotencyTierId;
-    minEssenceShare?: { essence: Essence; share: number };
-    /** Every ingredient must have been Dried. */
-    driedOnly?: boolean;
-    minMineralShare?: number;
-    requiresTrait?: string;
-  };
 }
 
 export interface RankDef {
@@ -523,12 +504,6 @@ export interface GameConfig {
     weekdayFootfall: Record<string, number>;
   };
   shop: { startingShelves: number };
-  greenhouse: {
-    mutationChance: number;
-    seedsPerCross: number;
-    maxStrains: number;
-    crossableCrops: string[];
-  };
   economy: {
     startingGold: number;
     startingRenown: number;
@@ -563,7 +538,6 @@ export const crops = rawCrops as unknown as CropDef[];
 export const recipes = buildRecipes(rawRecipes as unknown as RawRecipe[]);
 export const vessels = rawVessels as unknown as VesselDef[];
 export const seals = rawSeals as unknown as SealDef[];
-export const forms = rawForms as unknown as FormDef[];
 export const ranks = rawRanks as unknown as RankDef[];
 export const equipment = rawEquipment as unknown as EquipmentDef[];
 export const decorConfig = rawDecor as unknown as DecorConfig;
@@ -593,7 +567,6 @@ const cropIndex = index(crops);
 const recipeIndex = index(recipes);
 const vesselIndex = index(vessels);
 const sealIndex = index(seals);
-const formIndex = index(forms);
 const equipmentIndex = index(equipment);
 const decorIndex = index(decorPieces);
 const shelfTierIndex = index(shelfTiers);
@@ -612,7 +585,6 @@ export const getCrop = (id: string): CropDef => require_(cropIndex, id, 'crop');
 export const getRecipe = (id: string): RecipeDef => require_(recipeIndex, id, 'recipe');
 export const getVessel = (id: string): VesselDef => require_(vesselIndex, id, 'vessel');
 export const getSeal = (id: string): SealDef => require_(sealIndex, id, 'seal');
-export const getForm = (id: string): FormDef => require_(formIndex, id, 'form');
 export const getEquipment = (id: string): EquipmentDef =>
   require_(equipmentIndex, id, 'equipment');
 export const getDecor = (id: string): DecorDef => require_(decorIndex, id, 'decor');

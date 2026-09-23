@@ -104,7 +104,6 @@ import {
   suggestedAsk,
   walkInsToday,
 } from './haggle';
-import { cross, crossCandidates, hasGreenhouse, type CrossCandidate } from './greenhouse';
 import { buyCodex, canRetire, masteryFor, retire } from './prestige';
 import { discoveredRecipes, isDiscovered, learnFrom } from './discovery';
 import {
@@ -380,21 +379,16 @@ export class Simulation {
   addToCauldron(
     ingredientId: string,
     freshness?: Freshness,
-    strainId: string | null = null,
     cauldronId?: string,
   ): boolean {
     const pot = this.pot(cauldronId);
     if (pot.brewing || pot.pendingBrew) return false;
     if (pot.contents.units.length >= maxIngredientsOf(pot, this.stats.maxIngredients)) return false;
-    const unit = takeUnit(this.world, ingredientId, freshness, strainId);
+    const unit = takeUnit(this.world, ingredientId, freshness);
     if (!unit) return false;
     pot.contents.units.push(unit);
     return true;
   }
-
-  /** A crossbred unit brings its strain's essence, not the wild plant's. */
-  private strainEssence = (strainId: string) =>
-    this.world.strains.find((entry) => entry.id === strainId)?.essence ?? null;
 
   removeFromCauldron(index: number, cauldronId?: string): boolean {
     const pot = this.pot(cauldronId);
@@ -416,7 +410,7 @@ export class Simulation {
   blend(cauldronId?: string): EssenceVector | null {
     const pot = this.pot(cauldronId);
     if (pot.contents.units.length === 0) return null;
-    return cauldronVector(pot.contents, this.world.now, this.strainEssence);
+    return cauldronVector(pot.contents, this.world.now);
   }
 
   /**
@@ -432,7 +426,7 @@ export class Simulation {
       // This pot's own capacity, not the shop's best: brewing a heavy blend in
       // the starter bowl should boil over even when a great pot sits beside it.
       capacity: capacityOf(pot),
-      composition: cauldronComposition(pot.contents, this.world.now),
+      composition: cauldronComposition(pot.contents),
     });
   }
 
@@ -789,29 +783,6 @@ export class Simulation {
     return suggestedAsk(this.world);
   }
 
-  // -- Greenhouse -----------------------------------------------------------
-
-  get hasGreenhouse(): boolean {
-    return hasGreenhouse(this.world);
-  }
-
-  crossCandidates() {
-    return crossCandidates(this.world);
-  }
-
-  crossStrains(a: CrossCandidate, b: CrossCandidate) {
-    if (!this.hasGreenhouse) return null;
-    const result = cross(this.world, this.rng, a, b);
-    this.world.rngSeed = this.rng.seed;
-    if (result) {
-      record(this.world, 'strainBred', {
-        strain: result.strain.id,
-        mutation: result.mutation ?? '',
-      });
-    }
-    return result;
-  }
-
   // -- Prestige -------------------------------------------------------------
 
   get canRetire(): boolean {
@@ -1158,15 +1129,14 @@ export class Simulation {
    * Force a batch to Dried without waiting two days.
    *
    * Turns freshness from something that happens to you into something you can
-   * choose, which is what makes Powder and the Terra-leaning recipes reachable
-   * on purpose rather than by accident.
+   * choose: a dried ingredient is a weaker one, which is another strength to
+   * balance a ratio with.
    */
-  forceDry(ingredientId: string, strainId: string | null = null): boolean {
+  forceDry(ingredientId: string): boolean {
     if (!this.stats.canForceDry) return false;
     const target = this.world.inventory.find(
       (stack) =>
         stack.ingredientId === ingredientId &&
-        (stack.strainId ?? null) === strainId &&
         stack.harvestedAt !== null &&
         freshnessOf(stack.ingredientId, stack.harvestedAt, this.world.now) !== 'dried',
     );
@@ -1241,14 +1211,12 @@ export class Simulation {
         const item: BottledItem = {
           uid: nextUid(this.world.now),
           recipeId: recipe.id,
-          formId: 'potion',
           vesselId: 'clayVial',
           sealId: 'cork',
           grade: grades[(index + copy) % grades.length]!,
           purity: 60 + ((index * 7 + copy * 11) % 40),
           potencyTier: 'common',
           totalEssence: 40,
-          dosesLeft: 1,
           fairValue: 0,
           bottledAt: this.world.now,
         };
@@ -1302,14 +1270,12 @@ export class Simulation {
         const item: BottledItem = {
           uid: `debug-${recipe.id}-${i}`,
           recipeId: recipe.id,
-          formId: 'potion',
           vesselId: 'clayVial',
           sealId: 'cork',
           grade: 'A',
           purity: 90,
           potencyTier: 'common',
           totalEssence: 60,
-          dosesLeft: 1,
           fairValue: 0,
           bottledAt: this.world.now,
         };

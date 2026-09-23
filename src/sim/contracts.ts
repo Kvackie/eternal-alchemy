@@ -245,7 +245,6 @@ export function generateContract(
 
   const unitValue = fairValue({
     recipeId: terms.recipeId,
-    formId: 'potion',
     vesselId: terms.requiresVessel ?? 'clayVial',
     sealId: terms.requiresSeal ?? 'cork',
     grade: terms.minGrade,

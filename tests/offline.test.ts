@@ -19,14 +19,12 @@ function stockedWorld(seed = 12345): World {
   const item: BottledItem = {
     uid: 'test-item',
     recipeId: 'aquaTerra',
-    formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
     grade: 'B',
     purity: 80,
     potencyTier: 'common',
     totalEssence: 57,
-    dosesLeft: 1,
     fairValue: 30,
     bottledAt: 0,
   };

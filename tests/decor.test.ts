@@ -29,14 +29,12 @@ function bottle(uid = 'b') {
   return {
     uid,
     recipeId: 'aquaTerra',
-    formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
     grade: 'C' as const,
     purity: 80,
     potencyTier: 'common' as const,
     totalEssence: 57,
-    dosesLeft: 1,
     fairValue: 60,
     bottledAt: 0,
   };
@@ -381,14 +379,12 @@ describe('shelf boards', () => {
   const bottled = () => ({
     uid: 'x',
     recipeId: 'aquaTerra',
-    formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
     grade: 'C' as const,
     purity: 80,
     potencyTier: 'common' as const,
     totalEssence: 57,
-    dosesLeft: 1,
     fairValue: 60,
     bottledAt: 0,
   });

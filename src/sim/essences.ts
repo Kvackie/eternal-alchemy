@@ -117,32 +117,19 @@ export function applyFreshness(base: EssenceVector, freshness: Freshness): Essen
   return scaleVector(base, f.driedEssenceMultiplier);
 }
 
-/**
- * One unit of an ingredient, aged to `now`.
- *
- * A crossbred unit uses its strain's own essence rather than the wild plant's —
- * that difference is the entire point of breeding, so it has to survive all the
- * way into the pot.
- */
+/** One unit of an ingredient, aged to `now`. */
 export function unitVector(
   ingredientId: string,
   harvestedAt: number | null,
   now: number,
-  strainEssence?: EssenceVector | null,
 ): EssenceVector {
-  const base = strainEssence ?? getIngredient(ingredientId).essence;
-  return applyFreshness(base, freshnessOf(ingredientId, harvestedAt, now));
+  return applyFreshness(getIngredient(ingredientId).essence, freshnessOf(ingredientId, harvestedAt, now));
 }
 
-export function cauldronVector(
-  contents: CauldronContents,
-  now: number,
-  strainEssenceOf?: (strainId: string) => EssenceVector | null,
-): EssenceVector {
+export function cauldronVector(contents: CauldronContents, now: number): EssenceVector {
   let total = zeroVector();
   for (const unit of contents.units) {
-    const strain = unit.strainId ? (strainEssenceOf?.(unit.strainId) ?? null) : null;
-    total = addVectors(total, unitVector(unit.ingredientId, unit.harvestedAt, now, strain));
+    total = addVectors(total, unitVector(unit.ingredientId, unit.harvestedAt, now));
   }
   return total;
 }
@@ -185,48 +172,25 @@ export function worseOf(a: Grade, b: Grade): Grade {
 /**
  * What physically went into the pot, as opposed to what it adds up to.
  *
- * Some forms care about the ingredients rather than the blend: Powder needs dry
- * material, Crystal needs stone, a Bomb needs something volatile in it. None of
- * that survives into the essence vector, so it is summarised here at the moment
- * the cauldron is read.
+ * Only one thing is read now: whether anything volatile went in, which decides
+ * the vessel it can be bottled in. That never survives into the essence
+ * vector, so it is summarised here at the moment the cauldron is read.
  */
 export interface BrewComposition {
-  /** 0..1 of units that were Dried. */
-  driedShare: number;
-  /** 0..1 of units that were minerals. */
-  mineralShare: number;
   /** Every trait carried by anything in the pot. */
   traits: string[];
-  unitCount: number;
 }
 
-export function cauldronComposition(contents: CauldronContents, now: number): BrewComposition {
-  const units = contents.units;
-  if (units.length === 0) {
-    return { driedShare: 0, mineralShare: 0, traits: [], unitCount: 0 };
-  }
-
-  let dried = 0;
-  let mineral = 0;
+export function cauldronComposition(contents: CauldronContents): BrewComposition {
   const traits = new Set<string>();
-
-  for (const unit of units) {
-    const def = getIngredient(unit.ingredientId);
-    if (freshnessOf(unit.ingredientId, unit.harvestedAt, now) === 'dried') dried += 1;
-    if (def.category === 'mineral') mineral += 1;
-    for (const trait of def.traits) traits.add(trait);
+  for (const unit of contents.units) {
+    for (const trait of getIngredient(unit.ingredientId).traits) traits.add(trait);
   }
-
-  return {
-    driedShare: dried / units.length,
-    mineralShare: mineral / units.length,
-    traits: [...traits],
-    unitCount: units.length,
-  };
+  return { traits: [...traits] };
 }
 
 export function emptyComposition(): BrewComposition {
-  return { driedShare: 0, mineralShare: 0, traits: [], unitCount: 0 };
+  return { traits: [] };
 }
 
 /** Share of the blend made up by one essence, 0..1. */

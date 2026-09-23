@@ -53,16 +53,6 @@
     }
   },
   {
-    "id": "greenhouse",
-    "tree": "garden",
-    "cost": 1400,
-    "requiresRank": 3,
-    "repeatable": 1,
-    "effect": {
-      "addPlots": 2
-    }
-  },
-  {
     "id": "vesselMoulds",
     "tree": "bottling",
     "cost": 900,

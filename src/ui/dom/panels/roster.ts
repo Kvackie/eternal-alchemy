@@ -467,7 +467,6 @@ function renderSupplies(sim: Simulation): HTMLElement {
       supplyQuery,
       t(`recipe.${first.recipeId}`),
       first.grade,
-      t(`form.${first.formId}`),
     );
   });
 

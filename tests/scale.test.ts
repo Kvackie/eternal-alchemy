@@ -21,7 +21,7 @@ import type { RecipeDef } from '@/sim/config';
 import { assessOutcome } from '@/sim/brewing';
 import { makePlots } from '@/sim/garden';
 import { makeShelf } from '@/sim/market';
-import { availableForms, availableSeals, availableVessels } from '@/sim/bottling';
+import { availableSeals, availableVessels } from '@/sim/bottling';
 import type { BottleRequest } from '@/sim/bottling';
 import { addVectors, angleBetween, totalEssence, zeroVector } from '@/sim/essences';
 import type { Grade, World } from '@/sim/types';
@@ -74,7 +74,7 @@ function blendFor(recipe: RecipeDef, cap = 7): string[] {
 }
 
 /**
- * A vessel, form and seal that will actually take this brew.
+ * A vessel and seal that will actually take this brew.
  *
  * Hardcoding the clay vial bottled two potions and then stopped: a vial has a
  * `potencyCap`, a seven-ingredient blend blows past it, and a brew that cannot
@@ -83,11 +83,9 @@ function blendFor(recipe: RecipeDef, cap = 7): string[] {
  */
 function bottleFor(sim: Simulation): BottleRequest {
   const brew = sim.cauldron.pendingBrew!;
-  const formId = availableForms(brew).find((f) => f.available)?.formId ?? 'potion';
-  const vesselId =
-    availableVessels(sim.world, brew, formId).find((v) => v.available)?.vesselId ?? 'clayVial';
+  const vesselId = availableVessels(sim.world, brew).find((v) => v.available)?.vesselId ?? 'clayVial';
   const sealId = availableSeals(sim.world, brew).find((s) => s.available)?.sealId ?? 'cork';
-  return { formId, vesselId, sealId };
+  return { vesselId, sealId };
 }
 
 /** Brew one potion end to end, the way the workbench does. Returns the grade. */
@@ -249,14 +247,12 @@ describe('a shop at scale', () => {
       slot.item = {
         uid: `stock-${slot.id}`,
         recipeId: 'aquaTerra',
-        formId: 'potion',
         vesselId: 'clayVial',
         sealId: 'cork',
         grade: 'B' as Grade,
         purity: 0.9,
         potencyTier: 'common',
         totalEssence: 6,
-        dosesLeft: 1,
         fairValue: 40,
         bottledAt: sim.now,
       };

@@ -158,17 +158,6 @@
   "shop": {
     "startingShelves": 4
   },
-  "greenhouse": {
-    "$comment": "Crossing produces a seed, not a plant — you still have to grow it. That keeps breeding a project rather than a button.",
-    "mutationChance": 0.22,
-    "seedsPerCross": 2,
-    "maxStrains": 24,
-    "crossableCrops": [
-      "sunleaf",
-      "emberroot",
-      "dewcap"
-    ]
-  },
   "economy": {
     "startingGold": 60,
     "startingRenown": 0,
@@ -188,6 +177,6 @@
   "save": {
     "slots": 3,
     "autosaveDebounceMs": 1500,
-    "schemaVersion": 14
+    "schemaVersion": 15
   }
 }

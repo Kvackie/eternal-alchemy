@@ -6,7 +6,6 @@
     "valueMultiplier": 0.85,
     "appealBonus": 0,
     "startingStock": 0,
-    "onlyForms": ["powder", "tincture"],
     "shelfStack": 5
   },
   {
@@ -40,8 +39,7 @@
     "potencyCap": "greater",
     "valueMultiplier": 1.2,
     "appealBonus": 0.05,
-    "startingStock": 0,
-    "bonusDoses": 1
+    "startingStock": 0
   },
   {
     "id": "ironBoundJar",
@@ -59,7 +57,6 @@
     "valueMultiplier": 1.25,
     "appealBonus": 0.05,
     "startingStock": 0,
-    "bonusDoses": 2,
     "contractUnits": 3
   },
   {

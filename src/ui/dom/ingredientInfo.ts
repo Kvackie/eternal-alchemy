@@ -152,17 +152,6 @@ function essenceRows(essence: EssenceVector): HTMLElement {
  */
 export interface IngredientInfoOptions {
   action?: QuantityActionSpec;
-  /**
-   * The vector to report, where it is not the wild ingredient's own.
-   *
-   * A bred strain yields its base crop's ingredient but carries a crossbred
-   * essence, so reading the definition gave the wild plant's numbers — a
-   * generation-3 strain opened a panel that contradicted the tooltip on the
-   * tile that opened it, and pointed at recipes chosen from the wrong vector.
-   */
-  essence?: EssenceVector;
-  /** The name to show, where it is not the ingredient's own. */
-  title?: string;
 }
 
 export function showIngredientInfo(
@@ -170,9 +159,9 @@ export function showIngredientInfo(
   ingredientId: string,
   options: IngredientInfoOptions = {},
 ): void {
-  const { action, title } = options;
+  const { action } = options;
   const def = getIngredient(ingredientId);
-  const essence = options.essence ?? def.essence;
+  const essence = def.essence;
   const total = totalEssence(essence);
 
   const tags: HTMLElement[] = [chip(t(`category.${def.category as IngredientCategory}`))];
@@ -185,7 +174,7 @@ export function showIngredientInfo(
   const build = (dismiss: () => void) => [el('div', { class: 'ingredient-info' }, [
     infoHead({
       art: ingredientIcon(ingredientId, 44),
-      title: title ?? t(`ingredient.${ingredientId}`),
+      title: t(`ingredient.${ingredientId}`),
       chips: tags,
     }),
 

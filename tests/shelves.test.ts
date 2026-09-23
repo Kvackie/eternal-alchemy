@@ -35,14 +35,12 @@ function shopWith(bottles: Array<Partial<BottledItem> & { count: number }>, shel
       sim.world.bottled.push({
         uid: `b${n++}`,
         recipeId: spec.recipeId ?? 'aquaTerra',
-        formId: 'potion',
         vesselId: spec.vesselId ?? 'clayVial',
         sealId: 'cork',
         grade: (spec.grade ?? 'C') as Grade,
         purity: 70,
         potencyTier: 'common',
         totalEssence: 16,
-        dosesLeft: 1,
         fairValue: 50,
         bottledAt: 0,
       });

@@ -47,14 +47,12 @@ function bottle(uid: string, grade: Grade, value = 60): BottledItem {
   return {
     uid,
     recipeId: 'aquaTerra',
-    formId: 'potion',
     vesselId: 'clayVial',
     sealId: 'cork',
     grade,
     purity: 80,
     potencyTier: 'common',
     totalEssence: 57,
-    dosesLeft: 1,
     fairValue: value,
     bottledAt: 0,
   };
@@ -140,8 +138,7 @@ describe('grade reflects effort, not luck', () => {
   /** A perfectly on-ratio Aqua–Terra blend, `units` ingredients' worth. */
   function assess(units: number) {
     const blend = { ignis: 0, aqua: 12 * units, terra: 12 * units, aer: 0, umbra: 0 };
-    const composition = { driedShare: 0, mineralShare: 0, traits: [], unitCount: units };
-    return assessOutcome({ blend, capacity: 400, composition })!;
+    return assessOutcome({ blend, capacity: 400 })!;
   }
 
   /*
@@ -218,7 +215,6 @@ describe('the selling channels stay in their lanes', () => {
     // contract's payout against a made-up shelf price measures nothing.
     const shelfValue = fairValue({
       recipeId: 'aquaTerra',
-      formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',
       grade: 'C',
@@ -612,7 +608,7 @@ describe('nothing sold is inert', () => {
   it('stacks a waxed pouch into one shelf slot and sells it down one at a time', () => {
     const sim = new Simulation(createWorld(2));
     for (let i = 0; i < 5; i += 1) {
-      sim.world.bottled.push({ ...bottle(`p${i}`, 'C'), formId: 'powder', vesselId: 'waxedPouch' });
+      sim.world.bottled.push({ ...bottle(`p${i}`, 'C'), vesselId: 'waxedPouch' });
     }
 
     expect(sim.stock('shelf-1', 'p0')).toBe(true);

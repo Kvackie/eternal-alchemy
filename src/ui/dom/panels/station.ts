@@ -43,7 +43,7 @@ import {
 import { countdown, formatDuration, formatGold, t } from '@/i18n';
 import { config, getIngredient, getSeal } from '@/sim/config';
 import { inventoryRows } from '@/sim/inventory';
-import { availableForms, availableSeals, availableVessels } from '@/sim/bottling';
+import { availableSeals, availableVessels } from '@/sim/bottling';
 import { outcomeProblems } from '@/sim/brewing';
 import { totalEssence } from '@/sim/essences';
 import { fairValue } from '@/sim/market';
@@ -101,7 +101,6 @@ const PRESENT = 0.5;
 
 let open = false;
 
-let formId = 'potion';
 let vesselId = 'clayVial';
 let sealId = 'cork';
 
@@ -357,11 +356,7 @@ function renderStores(sim: Simulation): HTMLElement {
      */
     if (ingredientFreshness.size > 0 && !ingredientFreshness.has(entry.freshness)) return false;
     if (ingredientEssences.size === 0) return true;
-    const strain = entry.strainId
-      ? sim.world.strains.find((s) => s.id === entry.strainId)
-      : undefined;
-    const profile = strain?.essence ?? def.essence;
-    return [...ingredientEssences].every((essence) => profile[essence] > 0);
+    return [...ingredientEssences].every((essence) => def.essence[essence] > 0);
   });
 
   const pageCount = Math.max(1, Math.ceil(rows.length / STORE_PAGE));
@@ -494,11 +489,7 @@ function ingredientCard(
   entry: ReturnType<typeof inventoryRows>[number],
   full: boolean,
 ): HTMLElement {
-  const def = getIngredient(entry.ingredientId);
-  const strain = entry.strainId
-    ? sim.world.strains.find((s) => s.id === entry.strainId)
-    : undefined;
-  const profile = strain?.essence ?? def.essence;
+  const profile = getIngredient(entry.ingredientId).essence;
 
   let caption = t(`freshness.${entry.freshness}`);
   if (entry.harvestedAt !== null && entry.freshness !== 'dried') {
@@ -510,12 +501,7 @@ function ingredientCard(
     if (left > 0) caption = `${caption} · ${formatDuration(left)}`;
   }
 
-  const name = strain
-    ? t('greenhouse.strain', {
-        crop: t(`ingredient.${entry.ingredientId}`),
-        gen: strain.generation,
-      })
-    : t(`ingredient.${entry.ingredientId}`);
+  const name = t(`ingredient.${entry.ingredientId}`);
 
   const face = el('button', { class: 'ingredient-card', type: 'button' }, [
     el(
@@ -535,7 +521,7 @@ function ingredientCard(
   face.dataset.tone = FRESHNESS_TONE[entry.freshness];
   face.disabled = full;
   face.addEventListener('click', () => {
-    if (sim.addToCauldron(entry.ingredientId, entry.freshness, entry.strainId)) changed();
+    if (sim.addToCauldron(entry.ingredientId, entry.freshness)) changed();
     else toast(t('cauldron.pot.full'));
   });
 
@@ -543,7 +529,7 @@ function ingredientCard(
   if (!full) {
     face.draggable = true;
     face.addEventListener('dragstart', (event) => {
-      const payload = `${entry.ingredientId}:${entry.freshness}:${entry.strainId ?? ''}`;
+      const payload = `${entry.ingredientId}:${entry.freshness}`;
       event.dataTransfer?.setData(INGREDIENT_DRAG, payload);
       event.dataTransfer?.setData('text/plain', payload);
     });
@@ -604,11 +590,9 @@ function renderPot(sim: Simulation): HTMLElement {
 
   const stage = el('div', { class: 'pot-stage' });
   makeDropTarget(stage, INGREDIENT_DRAG, (payload) => {
-    const [ingredientId, freshness, strainId] = payload.split(':');
+    const [ingredientId, freshness] = payload.split(':');
     if (!ingredientId) return;
-    if (sim.addToCauldron(ingredientId, freshness as Freshness | undefined, strainId || null)) {
-      changed();
-    }
+    if (sim.addToCauldron(ingredientId, freshness as Freshness | undefined)) changed();
   });
 
   const vessel = el('div', { class: 'pot-vessel' }, [
@@ -779,8 +763,7 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
 /**
  * Bottling, in a window of its own.
  *
- * It used to unfold inside the middle column, under the pot: three option
- * groups, a value line and two buttons appended to the column you were already
+ * It used to unfold inside the middle column, under the pot: option groups, a value line and two buttons appended to the column you were already
  * reading the outcome in — on a phone that is most of a screen of controls
  * arriving unannounced under a cauldron, and the thing it is asking about
  * scrolls off the top while you answer. A finished brew is a decision of its
@@ -790,13 +773,9 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
   const brew = sim.pendingBrew!;
   const section = el('section', { class: 'station-block' });
 
-  const forms = availableForms(brew);
   const vessels = availableVessels(sim.world, brew);
   const seals = availableSeals(sim.world);
 
-  if (!forms.find((f) => f.formId === formId)?.available) {
-    formId = forms.find((f) => f.available)?.formId ?? formId;
-  }
   if (!vessels.find((v) => v.vesselId === vesselId)?.available) {
     vesselId = vessels.find((v) => v.available)?.vesselId ?? vesselId;
   }
@@ -811,21 +790,6 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
       chips: [chip(t(`potency.${brew.potencyTier}`))],
       body: [stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`)],
     }),
-    el('div', { class: 'field' }, [
-      el('span', { class: 'field-label', text: t('workbench.form') }),
-      optionGroup(
-        forms.map((form) => ({
-          label: t(`form.${form.formId}`),
-          detail: form.available ? undefined : t(form.reasonKey ?? 'workbench.reason.potency'),
-          selected: form.formId === formId,
-          disabled: !form.available,
-          onSelect: () => {
-            formId = form.formId;
-            redraw();
-          },
-        })),
-      ),
-    ]),
     el('div', { class: 'field' }, [
       el('span', { class: 'field-label', text: t('workbench.vessel') }),
       optionGroup(
@@ -866,7 +830,6 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
       formatGold(
         fairValue({
           recipeId: brew.recipeId,
-          formId,
           vesselId,
           sealId,
           grade: brew.grade,
@@ -887,7 +850,7 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
       button(
         t('workbench.action.bottle'),
         () => {
-          const item = sim.bottlePending({ formId, vesselId, sealId });
+          const item = sim.bottlePending({ vesselId, sealId });
           if (item) {
             dismiss();
             toast(t('toast.bottled', { recipe: t(`recipe.${item.recipeId}`), grade: item.grade }));

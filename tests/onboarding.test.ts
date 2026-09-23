@@ -45,7 +45,7 @@ describe('the opening checklist', () => {
     expect(ticked(sim)).not.toContain('bottle');
 
     sim.advanceBy(HOUR);
-    const item = sim.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' });
+    const item = sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' });
     expect(item).not.toBeNull();
     expect(ticked(sim)).toContain('bottle');
     expect(ticked(sim)).not.toContain('stock');

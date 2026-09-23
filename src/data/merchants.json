@@ -1439,12 +1439,6 @@
       },
       {
         "kind": "equipment",
-        "id": "greenhouse",
-        "weight": 2,
-        "tier": 2
-      },
-      {
-        "kind": "equipment",
         "id": "vesselMoulds",
         "weight": 2,
         "tier": 3

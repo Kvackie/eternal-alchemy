@@ -40,21 +40,11 @@ export function isReady(plot: Plot, now: number): boolean {
   return plot.crop !== null && now >= plot.crop.readyAt;
 }
 
-/**
- * Seeds are keyed by crop id for wild plants and by strain id for bred ones, so
- * a seed id resolves to one or the other.
- */
-function resolveSeed(
-  world: World,
-  seedId: string,
-): { cropId: string; strainId: string | null; growMs: number } | null {
-  const strain = world.strains.find((entry) => entry.id === seedId);
-  if (strain) {
-    return { cropId: strain.baseCropId, strainId: strain.id, growMs: strain.growMs };
-  }
+/** Seeds are keyed by crop id; one the shop has never held resolves to nothing. */
+function resolveSeed(world: World, seedId: string): { cropId: string; growMs: number } | null {
   const crop = world.seeds[seedId] !== undefined ? getCrop(seedId) : null;
   if (!crop) return null;
-  return { cropId: crop.id, strainId: null, growMs: crop.growMs };
+  return { cropId: crop.id, growMs: crop.growMs };
 }
 
 export function canPlant(world: World, plotId: string, seedId: string): boolean {
@@ -73,7 +63,6 @@ export function plant(world: World, plotId: string, seedId: string): boolean {
   world.seeds[seedId] = (world.seeds[seedId] ?? 0) - 1;
   plot.crop = {
     cropId: seed.cropId,
-    strainId: seed.strainId,
     plantedAt: world.now,
     // Green Thumb in the Codex shortens everything that grows, and the town's
     // soil decides the rest — Cinderhold's is poor, Saltmarsh's is not.
@@ -121,12 +110,9 @@ export function destroyCrop(world: World, plotId: string): string | null {
  * decorative field. A bonus rather than a penalty on purpose: wrong soil still
  * grows, so the choice is "where is this best" and never "you planted it wrong".
  */
-export function harvestSize(world: World, plot: Plot): number {
+export function harvestSize(plot: Plot): number {
   if (!plot.crop) return 0;
   const crop = getCrop(plot.crop.cropId);
-  const strain = plot.crop.strainId
-    ? world.strains.find((entry) => entry.id === plot.crop!.strainId)
-    : undefined;
 
   /*
    * One multiplier, set at what a tended plot used to give.
@@ -140,9 +126,7 @@ export function harvestSize(world: World, plot: Plot): number {
 
   return Math.max(
     1,
-    Math.round(crop.yieldCount * config.garden.yieldMultiplier) +
-      (strain?.yieldBonus ?? 0) +
-      suited,
+    Math.round(crop.yieldCount * config.garden.yieldMultiplier) + suited,
   );
 }
 
@@ -151,12 +135,9 @@ export function harvest(world: World, plotId: string, rng: Rng): HarvestResult |
   if (!plot?.crop || !isReady(plot, world.now)) return null;
 
   const crop = getCrop(plot.crop.cropId);
-  const strainId = plot.crop.strainId ?? null;
-  const count = harvestSize(world, plot);
+  const count = harvestSize(plot);
 
-  // A bred line drops its own seed, not its wild parent's — otherwise a strain
-  // could only ever be planted as many times as it was crossed.
-  const seedId = strainId ?? crop.id;
+  const seedId = crop.id;
   const dropChance = derivedStats(world).seedDropChance;
   let seeds = 0;
   for (let i = 0; i < count; i += 1) {
@@ -166,7 +147,7 @@ export function harvest(world: World, plotId: string, rng: Rng): HarvestResult |
 
   // Harvest stamps the *current* world time, so a crop that finished while the
   // player was away is Dewfresh when they pick it, not stale on arrival.
-  addIngredient(world, crop.yields, count, world.now, strainId);
+  addIngredient(world, crop.yields, count, world.now);
   plot.crop = null;
   world.statistics.cropsHarvested += count;
   world.statistics.seedsRecovered += seeds;

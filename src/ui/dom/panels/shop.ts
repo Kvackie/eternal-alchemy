@@ -386,7 +386,6 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
         el('div', { class: 'shelf-head' }, [
           gradeBadge(item.grade),
           el('span', { class: 'shelf-name', text: t(`recipe.${item.recipeId}`) }),
-          chip(t(`form.${item.formId}`)),
           // A stacked slot has to say so, or it looks like one bottle that will
           // not sell out.
           ...(shelfSlot.quantity > 1
@@ -586,7 +585,6 @@ function renderInventory(sim: Simulation): HTMLElement {
         stackQuery,
         t(`recipe.${item.recipeId}`),
         item.grade,
-        t(`form.${item.formId}`),
         t(`vessel.${item.vesselId}`),
         t(`seal.${item.sealId}`),
       ),
@@ -657,7 +655,7 @@ function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
     count,
     caption: [gradeBadge(item.grade), goldText(item.fairValue)],
     dimmed: room === 0,
-    // Form, vessel and seal are three of the lines in the card this opens.
+    // Vessel and seal are two of the lines in the card this opens.
     /*
      * How many, in one press.
      *

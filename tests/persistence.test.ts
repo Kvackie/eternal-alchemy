@@ -8,6 +8,7 @@ import { SaveManager, memoryAdapter } from '@/platform/save';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config } from '@/sim/config';
+import { fairValue } from '@/sim/market';
 import type { BottledItem } from '@/sim/types';
 
 const HOUR = 3_600_000;
@@ -76,7 +77,7 @@ describe('a brew waiting to be bottled', () => {
 
     expect(resumed.pendingBrew?.grade).toBe(grade);
     expect(
-      resumed.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' }),
+      resumed.bottlePending({ vesselId: 'clayVial', sealId: 'cork' }),
     ).not.toBeNull();
   });
 });
@@ -163,7 +164,7 @@ describe('migrating a save from the alembic era', () => {
     // The tonic it was brewing is the Aqua–Terra potion now.
     expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
     expect(
-      sim.bottlePending({ formId: 'potion', vesselId: 'clayVial', sealId: 'cork' }),
+      sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' }),
     ).not.toBeNull();
   });
 
@@ -184,7 +185,6 @@ describe('a stocked shelf', () => {
     const original = brewing(31);
     original.finishAllTimers();
     const item = original.bottlePending({
-      formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',
     })!;
@@ -205,7 +205,6 @@ describe('migrating a save from the 197-recipe book', () => {
     return {
       uid,
       recipeId,
-      formId: 'potion',
       vesselId: 'clayVial',
       sealId: 'cork',
       grade: 'B',
@@ -255,5 +254,57 @@ describe('migrating a save from the 197-recipe book', () => {
     expect(world.bottled.some((item) => item.recipeId === 'murk')).toBe(false);
     expect(world.shelf[0]!.item).toBeNull();
     expect(world.shelf[0]!.quantity).toBe(0);
+  });
+});
+
+describe('migrating a save from before forms and the greenhouse went', () => {
+  function v14Save(): string {
+    const world = createWorld(1) as unknown as Record<string, unknown> & ReturnType<typeof createWorld>;
+    world.bottled = [
+      {
+        uid: 'a',
+        recipeId: 'aquaTerra',
+        formId: 'tincture',
+        dosesLeft: 2,
+        vesselId: 'clayVial',
+        sealId: 'cork',
+        grade: 'B',
+        purity: 80,
+        potencyTier: 'common',
+        totalEssence: 70,
+        fairValue: 3,
+        bottledAt: 0,
+      } as unknown as BottledItem,
+    ];
+    world.strains = [{ id: 'strain-1', baseCropId: 'sunleaf', generation: 1 }];
+    world.nextStrainId = 2;
+    world.seeds['strain-1'] = 3;
+    world.seeds.sunleaf = 1;
+    world.inventory = [{ ingredientId: 'sunleaf', count: 2, harvestedAt: 0, strainId: 'strain-1' } as never];
+    (world.statistics as unknown as Record<string, number>).strainsBred = 1;
+    world.equipment.greenhouse = 1;
+    return JSON.stringify({ schemaVersion: 14, savedAt: Date.now(), world });
+  }
+
+  it('makes every bottle a plain potion and prices it again', () => {
+    const world = new SaveManager(memoryAdapter()).import(v14Save())!;
+    const item = world.bottled[0]! as unknown as Record<string, unknown>;
+
+    expect('formId' in item).toBe(false);
+    expect('dosesLeft' in item).toBe(false);
+    // A tincture was priced at 0.65 of a potion; the value is worked out anew.
+    expect(item.fairValue).toBe(fairValue(world.bottled[0]!));
+  });
+
+  it('folds bred strains back into the crop they came from', () => {
+    const world = new SaveManager(memoryAdapter()).import(v14Save())!;
+    const loose = world as unknown as Record<string, unknown>;
+
+    expect(world.seeds.sunleaf).toBe(4);
+    expect(world.seeds['strain-1']).toBeUndefined();
+    expect('strainId' in world.inventory[0]!).toBe(false);
+    expect('strains' in loose).toBe(false);
+    expect(world.equipment.greenhouse).toBeUndefined();
+    expect('strainsBred' in world.statistics).toBe(false);
   });
 });

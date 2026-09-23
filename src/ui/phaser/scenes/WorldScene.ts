@@ -495,7 +495,7 @@ export class WorldScene extends Phaser.Scene {
           crop.cropId,
           Math.floor(growth * 20),
           isReady(plot, this.sim.now) ? 'r' : '-',
-          harvestSize(this.sim.world, plot),
+          harvestSize(plot),
         ].join(':'),
       );
     }
@@ -689,7 +689,7 @@ export class WorldScene extends Phaser.Scene {
     const span = Math.max(1, crop.readyAt - crop.plantedAt);
     const growth = Math.min(1, elapsed / span);
 
-    const count = Math.max(1, Math.min(9, harvestSize(this.sim.world, plot)));
+    const count = Math.max(1, Math.min(9, harvestSize(plot)));
 
     /** Inside the fence: the painted frame takes roughly a sixth of each edge. */
     const innerW = tileW * 0.68;

@@ -64,8 +64,8 @@ describe('cauldron art harness', () => {
       const recipe = getRecipe(BY_ESSENCE[i % BY_ESSENCE.length]!);
       for (const id of blendFor(recipe.target, 3)) {
         sim.grant({ ingredient: { id, count: 2 } });
-        sim.addToCauldron(id, undefined, null, pot.id);
-        sim.addToCauldron(id, undefined, null, pot.id);
+        sim.addToCauldron(id, undefined, pot.id);
+        sim.addToCauldron(id, undefined, pot.id);
       }
       sim.acceptBrew(pot.id);
     });
