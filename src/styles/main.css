@@ -4321,6 +4321,18 @@ input[type='range'] {
   border-radius: var(--radius);
 }
 
+/*
+ * A heading keeps clear of the debug toggle.
+ *
+ * The toggle floats in the top corner of every screen, and on a phone it sat on
+ * the heading and on the first card under it. Where it is showing, a heading
+ * leaves its width free and stands at least as tall as it.
+ */
+#panels:has(> .debug-toggle) .panel-head {
+  padding-right: 5rem;
+  min-height: calc(var(--tap) + 0.75rem);
+}
+
 .debug {
   position: absolute;
   top: 0;
@@ -4471,6 +4483,23 @@ input[type='range'] {
    */
   #panels[data-checklist='true'] .view-controls {
     bottom: calc(1.5rem + var(--checklist-h, 0px));
+  }
+
+  /*
+   * Room under the list for the view buttons.
+   *
+   * They float over the bottom corner wherever there is a scene behind the
+   * panel, and sat on the label of the last plot with nowhere further to
+   * scroll it. Their height again at the foot of the page, and more when the
+   * checklist stacks under them. On the panel, which is what scrolls here: its
+   * body is a fixed box its content overflows, so padding there moved nothing.
+   */
+  #panels[data-scene='true'] > .panel {
+    padding-bottom: calc(var(--tap) + 1.5rem);
+  }
+
+  #panels[data-scene='true'][data-checklist='true'] > .panel {
+    padding-bottom: calc(var(--checklist-h, 0px) + var(--tap) + 2.25rem);
   }
 
   /*

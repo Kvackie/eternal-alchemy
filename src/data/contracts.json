@@ -73,7 +73,7 @@
       "requiresRank": 0
     },
     {
-      "id": "sealedTonics",
+      "id": "guildTonics",
       "faction": "hearthGuild",
       "recipeId": "aquaTerra",
       "quantityMin": 3,

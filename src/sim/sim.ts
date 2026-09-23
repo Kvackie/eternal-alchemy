@@ -20,8 +20,8 @@ import {
   type RecipeDef,
 } from './config';
 import {
-  canBuyDecor,
   clearSpot,
+  decorAvailability,
   grantDecor,
   placeDecor,
   spotViews,
@@ -66,8 +66,8 @@ import {
   type StockEntry,
 } from './merchants';
 import {
-  canBuyEquipment,
   derivedStats,
+  equipmentAvailability,
   grantEquipment,
   rankIdFor,
   rankIndexFor,
@@ -886,13 +886,18 @@ export class Simulation {
   }
 
   /** What stops this being bought at all, as opposed to not being affordable. */
+  /**
+   * Why this entry cannot be bought yet, in the words the tile already shows.
+   *
+   * It said "needs a higher rank" for everything, which was wrong for an
+   * upgrade shown a rank early whose real block is the one before it — the
+   * sixth plot waiting on the fifth.
+   */
   private purchaseGate(entry: StockEntry): string | undefined {
-    if (entry.kind === 'equipment' && !canBuyEquipment(this.world, getEquipment(entry.id))) {
-      return 'market.reason.rank';
+    if (entry.kind === 'equipment') {
+      return equipmentAvailability(this.world, getEquipment(entry.id)).reasonKey;
     }
-    if (entry.kind === 'decor' && !canBuyDecor(this.world, getDecor(entry.id))) {
-      return 'market.reason.rank';
-    }
+    if (entry.kind === 'decor') return decorAvailability(this.world, getDecor(entry.id)).reasonKey;
     return undefined;
   }
 

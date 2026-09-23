@@ -451,3 +451,25 @@ describe('migrating a save from before vessels and seals went', () => {
     expect('requiresSeal' in migrated.contracts[0]!.terms!).toBe(false);
   });
 });
+
+describe('migrating a save from before the guild order was renamed', () => {
+  it('points a posted sealedTonics order at guildTonics', () => {
+    const world = createWorld(1);
+    world.contracts = [
+      {
+        id: 'contract-1',
+        templateId: 'sealedTonics',
+        quantity: 3,
+        delivered: 0,
+        payout: 100,
+        renown: 5,
+        msRemaining: 1000,
+        deadlineDays: 4,
+        postedAt: 0,
+      },
+    ];
+    const raw = JSON.stringify({ schemaVersion: 18, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+    expect(migrated.contracts[0]!.templateId).toBe('guildTonics');
+  });
+});

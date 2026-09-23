@@ -836,6 +836,17 @@ const MIGRATIONS: Record<number, Migration> = {
     for (const entry of world.log) delete entry.params.vessel;
     return world;
   },
+
+  /**
+   * v18 → v19: the Hearth Guild's wax-sealed order lost its seal in v18, and
+   * now its name: `sealedTonics` is `guildTonics`.
+   */
+  19: (world) => {
+    for (const contract of world.contracts ?? []) {
+      if (contract.templateId === 'sealedTonics') contract.templateId = 'guildTonics';
+    }
+    return world;
+  },
 };
 
 /** Every counter at zero, so a migration can fill only what it actually knows. */

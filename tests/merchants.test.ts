@@ -394,6 +394,27 @@ describe('equipment', () => {
     expect(canBuyEquipment(world, getEquipment('shelfSix'))).toBe(false);
   });
 
+  it('says an earlier upgrade is missing, not the rank, when that is the block', () => {
+    const sim = new Simulation(createWorld(3));
+    sim.world.gold = 100000;
+    sim.world.renown = 100000;
+
+    let found: { merchantId: string; index: number } | null = null;
+    for (let day = 0; day < 40 && !found; day += 1) {
+      sim.advanceTo(midday(day));
+      for (const visit of sim.merchants()) {
+        const index = visit.entries.findIndex((e) => e.id === 'plotSix');
+        if (index >= 0) found = { merchantId: visit.merchantId, index };
+      }
+    }
+    expect(found, 'no visit carried the sixth plot').not.toBeNull();
+
+    // Rank is no obstacle at this renown; the missing fifth plot is.
+    const result = sim.buy(found!.merchantId, found!.index);
+    expect(result.ok).toBe(false);
+    expect(result.reasonKey).toBe('market.reason.requires');
+  });
+
   it('actually creates the plot when a plot upgrade is bought', () => {
     const sim = new Simulation(createWorld(3));
     sim.world.gold = 100000;
