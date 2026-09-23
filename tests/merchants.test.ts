@@ -504,9 +504,11 @@ describe('buying several at once', () => {
     const sim = new Simulation(world);
 
     const visit = sim.merchants().find((v) => v.merchantId === 'vessa')!;
-    const index = 1;
+    // Found rather than assumed: which slot the flask lands in is a roll over
+    // Vessa's whole pool, and moves whenever anything is added to it.
+    const index = visit.entries.findIndex((entry) => entry.id === 'glassFlask');
+    expect(index).toBeGreaterThanOrEqual(0);
     const chosen = visit.entries[index]!;
-    expect(chosen.id).toBe('glassFlask');
 
     const unit = chosen.price ?? 0;
     const before = sim.world.gold;

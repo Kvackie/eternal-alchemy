@@ -168,7 +168,7 @@
     "glyph": "mineral"
   },
   {
-    "$comment": "Umbra with nothing else in it. Only at the bottom of the shaft, because a clean single essence is what makes the hardest ratios hittable at all.",
+    "$comment": "Umbra with nothing else in it, 80m down the quarry. It used to be the only clean Umbra in the game; Gloamroot, Gloomcap and Shade Spar now cover the weak, middling and strong levels earlier on, and this stays the rare one in between.",
     "id": "nullstone",
     "category": "mineral",
     "essence": {
@@ -5744,6 +5744,99 @@
   },
   {
     "id": "zephyrQuartz",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 38,
+      "umbra": 0
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "$comment": "Umbra and nothing else, at the herb level. Umbra only ever came blended with Aer, or as one mineral 80m down; this is the early, weak, clean one. Slow in the ground, so patience is still the price of Umbra.",
+    "id": "gloamroot",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 16
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "root"
+  },
+  {
+    "$comment": "Umbra and nothing else, at the cave level. The cave is where darkness is grown on purpose, so this is its dark mushroom.",
+    "id": "gloomcap",
+    "category": "fungus",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 24
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "fungus"
+  },
+  {
+    "$comment": "Umbra and nothing else, at the mineral level — the dense one for hitting a ratio exactly.",
+    "id": "shadeSpar",
+    "category": "mineral",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 0,
+      "umbra": 38
+    },
+    "traits": [
+      "stable"
+    ],
+    "baseValue": 36,
+    "glyph": "mineral"
+  },
+  {
+    "$comment": "Aer and nothing else, at the herb level. Gale Thistle is close but not clean; nothing single-essence Aer existed below the rank-2 expedition.",
+    "id": "windwort",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 16,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 8,
+    "glyph": "leaf"
+  },
+  {
+    "id": "featherfern",
+    "category": "herb",
+    "essence": {
+      "ignis": 0,
+      "aqua": 0,
+      "terra": 0,
+      "aer": 24,
+      "umbra": 0
+    },
+    "traits": [],
+    "baseValue": 23,
+    "glyph": "leaf"
+  },
+  {
+    "$comment": "Aer and nothing else, at the mineral level, 200m shallower than the two that were already there.",
+    "id": "skySpar",
     "category": "mineral",
     "essence": {
       "ignis": 0,

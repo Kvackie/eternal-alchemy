@@ -35,6 +35,7 @@ import {
   seals,
   vessels,
   contractsConfig,
+  shaftConfig,
   caveConfig,
   customersConfig,
   realRecipes,
@@ -296,5 +297,57 @@ describe('the data that only documents itself still has to be true', () => {
       0,
     );
     expect(4 + fromUpgrades).toBeLessThanOrEqual(16);
+  });
+});
+
+describe('clean ingredients', () => {
+  /*
+   * One essence and nothing else, for every essence, at every strength.
+   *
+   * A clean single essence is what makes a lopsided ratio hittable: blending
+   * only ever reaches the hull of what you hold, so a recipe that wants mostly
+   * Umbra needs something that is only Umbra. For a long while Umbra had one —
+   * a mineral 80m down the quarry — and Aer had nothing below the rank-2
+   * expedition, while Terra had thirty-eight.
+   *
+   * "Early" is deliberately generous: any merchant at any relationship tier,
+   * the quarry's first two strata, or an expedition open from the start.
+   */
+  const LEVELS = [
+    { name: 'weak', min: 1, max: 17 },
+    { name: 'middling', min: 18, max: 30 },
+    { name: 'strong', min: 31, max: Infinity },
+  ];
+  const ESSENCE_KEYS = ['ignis', 'aqua', 'terra', 'aer', 'umbra'] as const;
+
+  function reachableEarly(): Set<string> {
+    const out = new Set<string>();
+    const sold = new Set(merchants.flatMap((m) => m.pool.map((entry) => entry.id)));
+    for (const id of sold) out.add(id);
+    for (const crop of crops) if (sold.has(crop.id)) out.add(crop.yields);
+    for (const stratum of shaftConfig.strata) {
+      if (stratum.minDepth <= 40) for (const vein of stratum.veins) out.add(vein.ingredientId);
+    }
+    for (const biome of heroesConfig.biomes) {
+      if (biome.requiresRank > 0) continue;
+      for (const drop of [...biome.loot, ...biome.rare]) out.add(drop.ingredientId);
+    }
+    return out;
+  }
+
+  it('offers every essence on its own, weak, middling and strong, early on', () => {
+    const early = reachableEarly();
+    const missing: string[] = [];
+    for (const essence of ESSENCE_KEYS) {
+      for (const level of LEVELS) {
+        const found = ingredients.some((ing) => {
+          const vector = ing.essence as EssenceVector;
+          const clean = ESSENCE_KEYS.every((k) => k === essence || vector[k] === 0);
+          return clean && vector[essence] >= level.min && vector[essence] <= level.max && early.has(ing.id);
+        });
+        if (!found) missing.push(`${level.name} ${essence}`);
+      }
+    }
+    expect(missing, 'no clean single-essence ingredient reachable early for these').toEqual([]);
   });
 });

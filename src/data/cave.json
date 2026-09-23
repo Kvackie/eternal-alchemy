@@ -80,6 +80,12 @@
       "light": "lit"
     },
     {
+      "id": "gloomcap",
+      "growMs": 3600000,
+      "spreadChance": 0.063,
+      "light": "dark"
+    },
+    {
       "id": "goldcap",
       "growMs": 3600000,
       "spreadChance": 0.063,

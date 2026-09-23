@@ -275,6 +275,13 @@
     "soil": "ash"
   },
   {
+    "id": "featherfern",
+    "yields": "featherfern",
+    "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
     "id": "flamepetal",
     "yields": "flamepetal",
     "growMs": 1500000,
@@ -299,6 +306,13 @@
     "id": "ghostroot",
     "yields": "ghostroot",
     "growMs": 1500000,
+    "yieldCount": 2,
+    "soil": "loam"
+  },
+  {
+    "id": "gloamroot",
+    "yields": "gloamroot",
+    "growMs": 1800000,
     "yieldCount": 2,
     "soil": "loam"
   },
@@ -748,6 +762,13 @@
     "yields": "whitedaisy",
     "growMs": 1500000,
     "yieldCount": 2,
+    "soil": "silt"
+  },
+  {
+    "id": "windwort",
+    "yields": "windwort",
+    "growMs": 600000,
+    "yieldCount": 3,
     "soil": "silt"
   },
   {

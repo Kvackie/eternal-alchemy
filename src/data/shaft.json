@@ -177,6 +177,18 @@
           "size": 12,
           "batch": 2,
           "weight": 4
+        },
+        {
+          "ingredientId": "shadeSpar",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
+        },
+        {
+          "ingredientId": "skySpar",
+          "size": 12,
+          "batch": 2,
+          "weight": 4
         }
       ]
     },
