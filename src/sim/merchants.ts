@@ -17,6 +17,8 @@ import { config, findBooster, findDecor, findEquipment, getMerchant, merchants }
 import type { MerchantDef, MerchantStockDef } from './config';
 import { hashKey, Rng } from './rng';
 import { rankOf } from './progression';
+import { onlyForTheCounter } from './decor';
+import { WALK_INS_PAUSED } from './haggle';
 import { codexBonuses } from './prestige';
 import { merchantPriceMultiplier } from './town';
 import type { Grade, World } from './types';
@@ -230,6 +232,12 @@ function drawPicks(
     if (!definition) return false;
 
     if (rank < definition.requiresRank - 1) return false;
+
+    // A piece that only works at the counter does nothing while walk-ins are
+    // paused, so it is not sold until they come back.
+    if (item.kind === 'decor' && WALK_INS_PAUSED && onlyForTheCounter(findDecor(item.id)!)) {
+      return false;
+    }
 
     /*
      * Only the next step of a ladder, never the ones after it.

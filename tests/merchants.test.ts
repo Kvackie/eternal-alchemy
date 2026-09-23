@@ -833,3 +833,30 @@ describe('ranks that ask for a potion', () => {
     expect(next.requires).toEqual({ grade: 'A', essences: 2, potency: 'common' });
   });
 });
+
+describe('pieces that only work at the counter', () => {
+  it('are not sold while walk-ins are paused', () => {
+    const counterOnly = ['boneChalice', 'lockedChest', 'skullChalice'];
+    const world = createWorld(6);
+    world.renown = 100_000;
+    world.bottledKinds['S|5|sovereign'] = true;
+    // They sit in the higher standing tiers, so a stranger would never see them
+    // and this would pass with nothing checked.
+    world.merchantRelations = Object.fromEntries(merchants.map((def) => [def.id, 1e9]));
+    const sim = new Simulation(world);
+    const decorSeen = new Set<string>();
+    for (let day = 0; day < 120; day += 1) {
+      for (const at of [0.2, 0.5, 0.9]) {
+        sim.advanceTo(day * DAY + DAY * at);
+        for (const visit of sim.merchants()) {
+          for (const entry of visit.entries) {
+            if (entry.kind === 'decor') decorSeen.add(entry.id);
+            expect(counterOnly).not.toContain(entry.id);
+          }
+        }
+      }
+    }
+    // The same stalls do deal décor, so the draw was really looked at.
+    expect(decorSeen.size).toBeGreaterThan(4);
+  });
+});

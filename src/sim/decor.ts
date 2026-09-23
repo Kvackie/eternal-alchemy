@@ -112,3 +112,9 @@ export function emptySpots(): Record<string, string | null> {
   for (const spot of decorSpots) spots[spot] = null;
   return spots;
 }
+
+/** Whether every effect a piece has is on haggling, which only walk-ins use. */
+export function onlyForTheCounter(def: DecorDef): boolean {
+  const effects = Object.keys(def.effect);
+  return effects.length > 0 && effects.every((key) => key === 'haggleCeilingBonus');
+}
