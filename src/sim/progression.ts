@@ -27,16 +27,19 @@ import {
   shaftConfig,
   type RankRequirement,
 } from './config';
-import { potencyRank } from './essences';
+import { gradeAtLeast, potencyRank } from './essences';
 import type { DecorEffect, EquipmentDef, EquipmentEffect } from './config';
 import { caveTilesBonus } from './town';
-import type { BottledItem, PotencyTierId, World } from './types';
+import type { BottledItem, Grade, PotencyTierId, World } from './types';
 
-const GRADE_ORDER = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+/** The key a kind of potion is recorded under: `grade|essences|potency`. */
+export function kindKey(grade: Grade, essences: number, potency: PotencyTierId): string {
+  return `${grade}|${essences}|${potency}`;
+}
 
-/** The key a bottled potion is recorded under: `grade|essences|potency`. */
+/** The key a bottled potion is recorded under. */
 export function bottledKindKey(item: BottledItem): string {
-  return `${item.grade}|${getRecipe(item.recipeId).elements.length}|${item.potencyTier}`;
+  return kindKey(item.grade, getRecipe(item.recipeId).elements.length, item.potencyTier);
 }
 
 /** Remember what kind of potion was just bottled, for the rank requirements. */
@@ -44,14 +47,37 @@ export function recordBottled(world: World, item: BottledItem): void {
   world.bottledKinds[bottledKindKey(item)] = true;
 }
 
+/** Record a potion that exactly meets a rank's requirement, as if it had been bottled. */
+export function recordRequirement(world: World, requires: RankRequirement): void {
+  world.bottledKinds[kindKey(requires.grade, requires.essences, requires.potency)] = true;
+}
+
+/** Keys split once: rank checks run on every market row and every tick. */
+const parsedKinds = new Map<string, { grade: Grade; essences: number; potency: number }>();
+
+function parseKind(key: string): { grade: Grade; essences: number; potency: number } {
+  let parsed = parsedKinds.get(key);
+  if (!parsed) {
+    const [grade, essences, potency] = key.split('|');
+    parsed = {
+      grade: grade as Grade,
+      essences: Number(essences),
+      potency: potencyRank(potency as PotencyTierId),
+    };
+    parsedKinds.set(key, parsed);
+  }
+  return parsed;
+}
+
 /** Whether anything bottled this run is at least as good as a rank asks for. */
 export function meetsRequirement(world: World, requires: RankRequirement): boolean {
+  const potency = potencyRank(requires.potency);
   return Object.keys(world.bottledKinds ?? {}).some((key) => {
-    const [grade, essences, potency] = key.split('|');
+    const kind = parseKind(key);
     return (
-      GRADE_ORDER.indexOf(grade!) <= GRADE_ORDER.indexOf(requires.grade) &&
-      Number(essences) >= requires.essences &&
-      potencyRank(potency as PotencyTierId) >= potencyRank(requires.potency)
+      gradeAtLeast(kind.grade, requires.grade) &&
+      kind.essences >= requires.essences &&
+      kind.potency >= potency
     );
   });
 }

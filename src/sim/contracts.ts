@@ -15,18 +15,12 @@
 
 import { contractsConfig, getContractTemplate, getFaction, getRecipe } from './config';
 import { discoveredRecipes } from './discovery';
-import { angleBetween } from './essences';
+import { angleBetween, GRADE_ORDER, gradeAtLeast } from './essences';
 import { fairValue } from './market';
 import { rankOf } from './progression';
 import { contractPayoutMultiplier } from './town';
 import { Rng } from './rng';
 import type { BottledItem, Contract, ContractTerms, Grade, World } from './types';
-
-const GRADE_ORDER: Grade[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
-
-export function gradeAtLeast(grade: Grade, minimum: Grade): boolean {
-  return GRADE_ORDER.indexOf(grade) <= GRADE_ORDER.indexOf(minimum);
-}
 
 /**
  * What this contract asks for, whoever wrote it.

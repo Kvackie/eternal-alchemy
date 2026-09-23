@@ -23,7 +23,10 @@ describe('mastery', () => {
     const sim = new Simulation(createWorld(1));
     expect(canRetire(sim.world)).toBe(false);
 
+    // Renown alone is not the top rank: the top rank's potion is asked for too.
     sim.world.renown = ranks[prestigeConfig.requiresRank]!.renown;
+    expect(canRetire(sim.world)).toBe(false);
+
     sim.world.bottledKinds['S|5|sovereign'] = true;
     expect(canRetire(sim.world)).toBe(true);
   });

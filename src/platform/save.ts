@@ -21,7 +21,7 @@ import {
 } from '@/sim/config';
 import { makeCaveTiles } from '@/sim/cave';
 import { emptySpots } from '@/sim/decor';
-import { rankIndexFor, recordBottled } from '@/sim/progression';
+import { rankIndexFor, recordBottled, recordRequirement } from '@/sim/progression';
 import { Rng } from '@/sim/rng';
 import { generateVeins } from '@/sim/shaft';
 import { fairValue } from '@/sim/market';
@@ -924,10 +924,11 @@ const MIGRATIONS: Record<number, Migration> = {
     for (const item of held) {
       if (recipes.some((recipe) => recipe.id === item.recipeId)) recordBottled(world, item);
     }
-    const earned = ranks[rankIndexFor(world.renown ?? 0)]?.requires;
-    if (earned) {
-      world.bottledKinds[`${earned.grade}|${earned.essences}|${earned.potency}`] = true;
-    }
+    // Every rank up to the earned one: the ladders are not nested, so an
+    // Adept's S Common does not stand in for a Master's A Grand.
+    ranks.slice(0, rankIndexFor(world.renown ?? 0) + 1).forEach((rank) => {
+      if (rank.requires) recordRequirement(world, rank.requires);
+    });
     return world;
   },
 };

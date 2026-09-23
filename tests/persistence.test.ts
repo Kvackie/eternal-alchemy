@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { SaveManager, memoryAdapter } from '@/platform/save';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
+import { rankIndexFor } from '@/sim/progression';
 import { caveConfig, config, crops, ingredients } from '@/sim/config';
 import { fairValue } from '@/sim/market';
 import type { BottledItem, World } from '@/sim/types';
@@ -533,5 +534,17 @@ describe('migrating a save from before ranks asked for a potion', () => {
     const raw = JSON.stringify({ schemaVersion: 21, savedAt: Date.now(), world });
     const sim = new Simulation(new SaveManager(memoryAdapter()).import(raw)!);
     expect(sim.rankId).toBe('chandler');
+  });
+
+  it('keeps a high rank whose requirements are not nested', () => {
+    // Master asks for an A five-way Grand, which an earlier rank's S Common
+    // does not satisfy: every rank up to the earned one has to be recorded.
+    const world = createWorld(1);
+    world.renown = 3_000;
+    world.acknowledgedRank = rankIndexFor(3_000);
+    delete (world as unknown as Record<string, unknown>).bottledKinds;
+    const raw = JSON.stringify({ schemaVersion: 21, savedAt: Date.now(), world });
+    const sim = new Simulation(new SaveManager(memoryAdapter()).import(raw)!);
+    expect(sim.rankIndex).toBe(rankIndexFor(3_000));
   });
 });

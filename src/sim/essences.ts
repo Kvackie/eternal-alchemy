@@ -177,8 +177,14 @@ export function gradeFor(purity: number, essenceCount = 1): Grade {
   return 'F';
 }
 
-/** Grades are ordered S..F; lower index is better. Used to clamp an Unstable brew. */
-const GRADE_ORDER: Grade[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+/** Grades run S..F, best first: a lower index is a better grade. */
+export const GRADE_ORDER: readonly Grade[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+
+/** Whether `grade` is `minimum` or better. A grade this build does not know never is. */
+export function gradeAtLeast(grade: Grade, minimum: Grade): boolean {
+  const index = GRADE_ORDER.indexOf(grade);
+  return index >= 0 && index <= GRADE_ORDER.indexOf(minimum);
+}
 
 export function worseOf(a: Grade, b: Grade): Grade {
   return GRADE_ORDER.indexOf(a) >= GRADE_ORDER.indexOf(b) ? a : b;

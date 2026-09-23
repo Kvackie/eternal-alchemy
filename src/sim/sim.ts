@@ -28,7 +28,7 @@ import {
   spotViews,
   type SpotView,
 } from './decor';
-import { cauldronVector } from './essences';
+import { agingRateFor, cauldronVector, freshnessOf, gradeAtLeast } from './essences';
 import {
   activeCauldron,
   brewSpeedOf,
@@ -72,6 +72,7 @@ import {
   grantEquipment,
   rankIdOf,
   recordBottled,
+  recordRequirement,
   rankOf,
 } from './progression';
 import {
@@ -113,7 +114,6 @@ import {
   onboardingSteps,
   shouldShowOnboarding,
 } from './onboarding';
-import { agingRateFor, freshnessOf } from './essences';
 import { Rng } from './rng';
 import { createWorld } from './state';
 import { assessOutcome, brewDurationFor } from './brewing';
@@ -128,13 +128,6 @@ import type {
   SaleRecord,
   World,
 } from './types';
-
-/** Grades run S..F, best first. */
-const GRADE_ORDER: Grade[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
-
-function gradeAtLeast(grade: Grade, minimum: Grade): boolean {
-  return GRADE_ORDER.indexOf(grade) <= GRADE_ORDER.indexOf(minimum);
-}
 
 export interface AwaySummary {
   awayMs: number;
@@ -213,6 +206,9 @@ export class Simulation {
    */
   private noticeRankUp(): void {
     const current = rankOf(this.world);
+    // A save that came in above its rank (an older one, from before potions
+    // were asked for) is brought down quietly, so its next promotion is logged.
+    this.world.acknowledgedRank = Math.min(this.world.acknowledgedRank, current);
     while (this.world.acknowledgedRank < current) {
       this.world.acknowledgedRank += 1;
       record(this.world, 'rankUp', { rank: ranks[this.world.acknowledgedRank]?.id ?? '' });
@@ -1149,6 +1145,8 @@ export class Simulation {
     seed?: { id: string; count: number };
     /** Finished stock, so the Shop and the Roster can be looked at. */
     bottles?: { kinds: number; each: number };
+    /** Count every rank's potion as made, so renown alone decides the rank. */
+    rankPotions?: boolean;
   }): void {
     if (patch.gold) this.world.gold += patch.gold;
     if (patch.renown) this.world.renown += patch.renown;
@@ -1164,6 +1162,9 @@ export class Simulation {
       this.world.seeds[patch.seed.id] = (this.world.seeds[patch.seed.id] ?? 0) + patch.seed.count;
     }
     if (patch.bottles) this.grantBottles(patch.bottles.kinds, patch.bottles.each);
+    if (patch.rankPotions) {
+      for (const rank of ranks) if (rank.requires) recordRequirement(this.world, rank.requires);
+    }
     this.noticeRankUp();
   }
 
@@ -1258,6 +1259,7 @@ export class Simulation {
         };
         item.fairValue = fairValue(item);
         this.world.bottled.push(item);
+        recordBottled(this.world, item);
 
         // Bottling normally discovers a recipe; a shelf full of potions the
         // book has never heard of would break every screen that names them.
@@ -1265,6 +1267,7 @@ export class Simulation {
         this.world.recipes[recipe.id]!.discovered = true;
       }
     }
+    this.noticeRankUp();
   }
 
   /** Finish every running timer immediately. */

@@ -13,9 +13,9 @@
  * Prestige is always optional. The top rank with no reset is a complete game.
  */
 
-import { config, getCodexNode, getRecipe, prestigeConfig, ranks, shaftConfig } from './config';
+import { config, getCodexNode, getRecipe, prestigeConfig, shaftConfig } from './config';
 import { makeCaveTiles } from './cave';
-import { derivedStats } from './progression';
+import { derivedStats, rankOf } from './progression';
 import { Rng } from './rng';
 import { openTo } from './shaft';
 import { createWorld } from './state';
@@ -24,15 +24,7 @@ import type { CodexEffect } from './config';
 import type { World } from './types';
 
 export function canRetire(world: World): boolean {
-  return rankIndexOf(world) >= prestigeConfig.requiresRank;
-}
-
-function rankIndexOf(world: World): number {
-  let index = 0;
-  ranks.forEach((rank, i) => {
-    if (world.renown >= rank.renown) index = i;
-  });
-  return index;
+  return rankOf(world) >= prestigeConfig.requiresRank;
 }
 
 /**

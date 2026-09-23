@@ -105,14 +105,15 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
      * Enough of everything to stop counting.
      *
      * The existing grants are nudges — 500 gold, 50 renown — which suit testing
-     * one transaction. This is for testing the *game*: past the top rank, so
-     * branching out is unlocked, and 600 Mastery, which is more than the whole
+     * one transaction. This is for testing the *game*: past the top rank (its
+     * renown and every rank's potion), so branching out is unlocked, and 600
+     * Mastery, which is more than the whole
      * Codex costs at six tiers apiece (504).
      */
     button(
       t('debug.grant.riches'),
       () => {
-        sim.grant({ gold: 250_000, renown: 20_000, mastery: 600 });
+        sim.grant({ gold: 250_000, renown: 20_000, mastery: 600, rankPotions: true });
         changed();
       },
       { variant: 'gold', small: true },
