@@ -618,8 +618,8 @@ export class Simulation {
     return startWorking(this.world, veinId);
   }
 
-  stopVein(): void {
-    stopWorking(this.world);
+  stopVein(veinId: string): void {
+    stopWorking(this.world, veinId);
   }
 
   canDeepenShaft(): boolean {

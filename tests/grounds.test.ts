@@ -141,6 +141,25 @@ describe('the shaft', () => {
     return sim;
   }
 
+  it('moves its one crew to a new vein, and works two with a second crew', () => {
+    const sim = new Simulation(createWorld(33));
+    const [a, b] = sim.shaft.veins;
+    expect(b).toBeDefined();
+
+    sim.workVein(a!.id);
+    sim.workVein(b!.id);
+    expect(sim.shaft.workingVeinIds).toEqual([b!.id]);
+
+    sim.world.equipment.secondCrew = 1;
+    sim.workVein(a!.id);
+    expect([...sim.shaft.workingVeinIds].sort()).toEqual([a!.id, b!.id].sort());
+
+    const before = [a!.remaining, b!.remaining];
+    sim.advanceBy(HOUR);
+    expect(a!.remaining).toBeLessThan(before[0]!);
+    expect(b!.remaining).toBeLessThan(before[1]!);
+  });
+
   it('opens at the surface with veins to work, and the first metres free to dig', () => {
     const sim = new Simulation(createWorld(1));
     expect(sim.shaft.depth).toBe(0);
@@ -175,7 +194,7 @@ describe('the shaft', () => {
     sim.advanceBy(48 * HOUR);
 
     expect(sim.shaft.veins[0]!.remaining).toBe(0);
-    expect(sim.shaft.workingVeinId).toBeNull();
+    expect(sim.shaft.workingVeinIds).toEqual([]);
     expect(sim.shaft.veins[0]!.refillsAt).not.toBeNull();
   });
 

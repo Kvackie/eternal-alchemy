@@ -30,6 +30,42 @@
       },
       {
         "kind": "equipment",
+        "id": "plotSeven",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "plotEight",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "plotNine",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "plotTen",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "plotEleven",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "plotTwelve",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
         "id": "shelfFive",
         "weight": 3,
         "tier": 0
@@ -1064,8 +1100,26 @@
       },
       {
         "kind": "equipment",
+        "id": "caveGalleries",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "caveDepths",
+        "weight": 3,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
         "id": "steelPick",
         "weight": 4,
+        "tier": 0
+      },
+      {
+        "kind": "equipment",
+        "id": "secondCrew",
+        "weight": 3,
         "tier": 0
       },
       {

@@ -23,6 +23,85 @@
     }
   },
   {
+    "$comment": "Beds seven to twelve, for a shop whose garden is what it waits on. Each costs well over the one before, so the last few are a late-game use for gold rather than an early rush.",
+    "id": "plotSeven",
+    "tree": "garden",
+    "cost": 600,
+    "requiresRank": 3,
+    "requires": [
+      "plotSix"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "plotEight",
+    "tree": "garden",
+    "cost": 1000,
+    "requiresRank": 4,
+    "requires": [
+      "plotSeven"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "plotNine",
+    "tree": "garden",
+    "cost": 1600,
+    "requiresRank": 5,
+    "requires": [
+      "plotEight"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "plotTen",
+    "tree": "garden",
+    "cost": 2500,
+    "requiresRank": 6,
+    "requires": [
+      "plotNine"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "plotEleven",
+    "tree": "garden",
+    "cost": 4000,
+    "requiresRank": 7,
+    "requires": [
+      "plotTen"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
+    "id": "plotTwelve",
+    "tree": "garden",
+    "cost": 6000,
+    "requiresRank": 8,
+    "requires": [
+      "plotEleven"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addPlots": 1
+    }
+  },
+  {
     "id": "richLoam",
     "tree": "garden",
     "cost": 210,
@@ -63,6 +142,33 @@
     }
   },
   {
+    "$comment": "More of the cave opened up, six beds at a time, below the first set of beds.",
+    "id": "caveGalleries",
+    "tree": "cave",
+    "cost": 1400,
+    "requiresRank": 4,
+    "requires": [
+      "caveBeds"
+    ],
+    "repeatable": 2,
+    "effect": {
+      "addCaveTiles": 6
+    }
+  },
+  {
+    "id": "caveDepths",
+    "tree": "cave",
+    "cost": 3500,
+    "requiresRank": 6,
+    "requires": [
+      "caveGalleries"
+    ],
+    "repeatable": 2,
+    "effect": {
+      "addCaveTiles": 6
+    }
+  },
+  {
     "id": "humidityWard",
     "tree": "cave",
     "cost": 300,
@@ -80,6 +186,20 @@
     "repeatable": 1,
     "effect": {
       "oreBatchBonus": 1
+    }
+  },
+  {
+    "$comment": "A second crew in the shaft, working another vein at the same time.",
+    "id": "secondCrew",
+    "tree": "shaft",
+    "cost": 2500,
+    "requiresRank": 5,
+    "requires": [
+      "steelPick"
+    ],
+    "repeatable": 1,
+    "effect": {
+      "addShaftCrews": 1
     }
   },
   {

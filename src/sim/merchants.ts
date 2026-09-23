@@ -238,6 +238,15 @@ function drawPicks(
 
     if (rank < definition.requiresRank - 1) return false;
 
+    /*
+     * Only the next step of a ladder, never the ones after it.
+     *
+     * Plots five to twelve are one ladder, and every rung was in the draw at
+     * once: the stall's one equipment slot went to a seventh plot the shop could
+     * not buy while the fifth, which it could, turned up a few times a season.
+     */
+    if (equipmentDef?.requires?.some((id) => (world.equipment[id] ?? 0) <= 0)) return false;
+
     const owned =
       item.kind === 'equipment'
         ? (world.equipment[item.id] ?? 0)

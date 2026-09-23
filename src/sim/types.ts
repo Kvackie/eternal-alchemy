@@ -409,7 +409,8 @@ export interface World {
   shaft: {
     depth: number;
     supportedDepth: number;
-    workingVeinId: string | null;
+    /** The veins being worked, one per crew. */
+    workingVeinIds: string[];
     veins: ShaftVein[];
   };
 

@@ -59,7 +59,7 @@ export function createWorld(seed = freshSeed()): World {
       // The shaft opens at the surface; the first beams' worth is free to dig.
       depth: 0,
       supportedDepth: shaftConfig.startingDepth,
-      workingVeinId: null,
+      workingVeinIds: [],
       veins: generateVeins(seed, 0, new Rng(seed ^ 0x5eed)),
     },
 

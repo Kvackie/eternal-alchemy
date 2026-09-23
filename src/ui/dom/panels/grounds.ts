@@ -697,7 +697,7 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
     const ordinal = new Map<string, number>();
 
     const rows = group.veins.map((vein) => {
-      const working = shaft.workingVeinId === vein.id;
+      const working = shaft.workingVeinIds.includes(vein.id);
       const workable = isWorkable(vein, sim.now);
       const status = working
         ? t('shaft.working', {
@@ -724,7 +724,7 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
             ? button(
                 t('shaft.stop'),
                 () => {
-                  sim.stopVein();
+                  sim.stopVein(vein.id);
                   changed();
                 },
                 { variant: 'quiet', small: true },

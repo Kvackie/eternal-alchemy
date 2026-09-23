@@ -104,6 +104,8 @@ export interface DerivedStats {
   caveTiles: number;
   caveSpreadBonus: number;
   oreBatchBonus: number;
+  /** How many veins can be worked at once. */
+  shaftCrews: number;
   supportedDepth: number;
   heroSlots: number;
   appealBonus: number;
@@ -122,6 +124,7 @@ export function derivedStats(world: World): DerivedStats {
     caveTiles: caveConfig.startingTiles,
     caveSpreadBonus: 0,
     oreBatchBonus: 0,
+    shaftCrews: 1,
     supportedDepth: shaftConfig.startingDepth,
     heroSlots: heroesConfig.startingSlots,
     appealBonus: 0,
@@ -188,6 +191,7 @@ function apply(stats: DerivedStats, effect: EquipmentEffect, count: number): voi
   if (effect.addCaveTiles !== undefined) stats.caveTiles += effect.addCaveTiles * count;
   if (effect.caveSpreadBonus !== undefined) stats.caveSpreadBonus += effect.caveSpreadBonus * count;
   if (effect.oreBatchBonus !== undefined) stats.oreBatchBonus += effect.oreBatchBonus * count;
+  if (effect.addShaftCrews !== undefined) stats.shaftCrews += effect.addShaftCrews * count;
   if (effect.addSupportedDepth !== undefined) {
     stats.supportedDepth += effect.addSupportedDepth * count;
   }

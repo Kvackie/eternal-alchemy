@@ -287,7 +287,7 @@ const MIGRATIONS: Record<number, Migration> = {
     world.shaft ??= {
       depth: shaftConfig.startingDepth,
       supportedDepth: shaftConfig.startingDepth,
-      workingVeinId: null,
+      workingVeinIds: [],
       veins: generateVeins(seed, shaftConfig.startingDepth, new Rng(seed ^ 0x5eed)),
     };
 
@@ -890,6 +890,19 @@ const MIGRATIONS: Record<number, Migration> = {
     if (world.decorOwned) delete world.decorOwned.ironPot;
     for (const spot of Object.keys(world.decor ?? {})) {
       if (world.decor[spot] === 'ironPot') world.decor[spot] = null;
+    }
+    return world;
+  },
+
+  /**
+   * v20 → v21: the shaft can hold more than one crew, so the vein being
+   * worked is a list.
+   */
+  21: (world) => {
+    const shaft = world.shaft as World['shaft'] & { workingVeinId?: string | null };
+    if (shaft) {
+      shaft.workingVeinIds ??= shaft.workingVeinId ? [shaft.workingVeinId] : [];
+      delete shaft.workingVeinId;
     }
     return world;
   },

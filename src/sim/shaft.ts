@@ -76,15 +76,24 @@ export function startWorking(world: World, veinId: string): boolean {
     vein.refillsAt = null;
   }
 
-  world.shaft.workingVeinId = veinId;
+  const working = world.shaft.workingVeinIds;
+  if (working.includes(veinId)) return true;
+
+  /*
+   * One vein per crew. With every crew busy, the one that has been at it
+   * longest moves to the new vein — the same thing one crew always did when
+   * told to work somewhere else.
+   */
+  if (working.length >= derivedStats(world).shaftCrews) stopWorking(world, working[0]!);
+  world.shaft.workingVeinIds.push(veinId);
   vein.nextBatchAt = world.now + shaftConfig.batchTickMs;
   return true;
 }
 
-export function stopWorking(world: World): void {
-  const vein = world.shaft.workingVeinId ? veinById(world, world.shaft.workingVeinId) : undefined;
+export function stopWorking(world: World, veinId: string): void {
+  const vein = veinById(world, veinId);
   if (vein) vein.nextBatchAt = null;
-  world.shaft.workingVeinId = null;
+  world.shaft.workingVeinIds = world.shaft.workingVeinIds.filter((id) => id !== veinId);
 }
 
 export function canDeepen(world: World): boolean {
@@ -124,40 +133,45 @@ export interface ShaftBatch {
  */
 export function runShaft(world: World, now: number): ShaftBatch[] {
   const batches: ShaftBatch[] = [];
-  const veinId = world.shaft.workingVeinId;
-  if (!veinId) return batches;
-
-  const vein = veinById(world, veinId);
-  if (!vein) {
-    world.shaft.workingVeinId = null;
-    return batches;
-  }
 
   // A steel pick, and Deep Veins in the Codex, both put more in each batch —
   // then the town's rock decides how much of it there was to begin with.
   const batchBonus = derivedStats(world).oreBatchBonus + codexBonuses(world).oreBatchBonus;
   const richness = oreBatchMultiplier(world);
 
-  let budget = 20_000;
-  while (vein.nextBatchAt !== null && vein.nextBatchAt <= now && vein.remaining > 0 && budget > 0) {
-    budget -= 1;
-    // At least one, so a poor town slows the shaft rather than stopping it.
-    const perBatch = Math.max(1, Math.round((vein.batch + batchBonus) * richness));
-    const count = Math.min(perBatch, vein.remaining);
-    vein.remaining -= count;
+  for (const veinId of [...world.shaft.workingVeinIds]) {
+    const vein = veinById(world, veinId);
+    if (!vein) {
+      world.shaft.workingVeinIds = world.shaft.workingVeinIds.filter((id) => id !== veinId);
+      continue;
+    }
 
-    // Minerals pass a null harvest stamp; stone does not age.
-    addIngredient(world, vein.ingredientId, count, null);
-    world.statistics.oreExtracted += count;
-    batches.push({ ingredientId: vein.ingredientId, count });
+    let budget = 20_000;
+    while (
+      vein.nextBatchAt !== null &&
+      vein.nextBatchAt <= now &&
+      vein.remaining > 0 &&
+      budget > 0
+    ) {
+      budget -= 1;
+      // At least one, so a poor town slows the shaft rather than stopping it.
+      const perBatch = Math.max(1, Math.round((vein.batch + batchBonus) * richness));
+      const count = Math.min(perBatch, vein.remaining);
+      vein.remaining -= count;
 
-    vein.nextBatchAt += shaftConfig.batchTickMs;
-  }
+      // Minerals pass a null harvest stamp; stone does not age.
+      addIngredient(world, vein.ingredientId, count, null);
+      world.statistics.oreExtracted += count;
+      batches.push({ ingredientId: vein.ingredientId, count });
 
-  if (vein.remaining <= 0) {
-    vein.nextBatchAt = null;
-    vein.refillsAt = now + shaftConfig.veinRefillMs;
-    world.shaft.workingVeinId = null;
+      vein.nextBatchAt += shaftConfig.batchTickMs;
+    }
+
+    if (vein.remaining <= 0) {
+      vein.nextBatchAt = null;
+      vein.refillsAt = now + shaftConfig.veinRefillMs;
+      world.shaft.workingVeinIds = world.shaft.workingVeinIds.filter((id) => id !== veinId);
+    }
   }
 
   return batches;

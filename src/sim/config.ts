@@ -93,6 +93,8 @@ export interface EquipmentEffect {
   addCaveTiles?: number;
   caveSpreadBonus?: number;
   oreBatchBonus?: number;
+  /** More crews in the shaft, each working a vein of its own. */
+  addShaftCrews?: number;
   addSupportedDepth?: number;
   addHeroSlots?: number;
   appealBonus?: number;
