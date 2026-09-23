@@ -2291,9 +2291,18 @@ input[type='range'] {
   position: absolute;
   top: 0.125rem;
   right: 0.125rem;
+  display: flex;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.ingredient-details > span {
+  display: grid;
+  place-items: center;
   width: 1.125rem;
   height: 1.125rem;
-  padding: 0;
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: 50%;
@@ -2301,10 +2310,9 @@ input[type='range'] {
   font-size: 0.625rem;
   font-style: italic;
   line-height: 1;
-  cursor: pointer;
 }
 
-.ingredient-details:hover {
+.ingredient-details:hover > span {
   color: var(--text);
   border-color: var(--text-faint);
 }
@@ -3206,6 +3214,25 @@ input[type='range'] {
   text-overflow: ellipsis;
   font-size: 0.8125rem;
   color: var(--text-dim);
+}
+
+/*
+ * Room to scroll the last row out from under the pill.
+ *
+ * The pill floats over the bottom corner, so whatever a list ends with was
+ * sitting under it at the far end of the scroll with nowhere further to go —
+ * the last seed on the Market, the last face on the tavern board. The same
+ * height again at the foot of the page lets the end of every list come up
+ * clear of it. Only the last panel of a stacked pair, or the gap would open
+ * between the two.
+ */
+#panels[data-checklist='true'] .panel-body,
+#panels[data-checklist='true'] .station-col {
+  padding-bottom: calc(var(--checklist-h, 0px) + 1.25rem);
+}
+
+#panels[data-checklist='true'] .panel-pair > .panel:not(:last-child) .panel-body {
+  padding-bottom: 0.875rem;
 }
 
 /* Seven steps at 150% text is taller than a phone, so the list scrolls itself. */
@@ -4810,5 +4837,31 @@ input[type='range'] {
 
   .view-button {
     min-width: var(--tap);
+  }
+
+  /*
+   * The station's small marks, grown for a thumb without growing on screen.
+   *
+   * The details mark is an 18px circle in the corner of a tile the size of a
+   * playing card, and the rest of the tile adds to the pot — so a missed mark
+   * is an ingredient spent. The button takes the whole corner; the circle
+   * stays the size it was, drawn by the span inside it.
+   */
+  .ingredient-details {
+    top: 0;
+    right: 0;
+    width: var(--tap);
+    height: var(--tap);
+    padding: 0.125rem;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .recipe-pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--tap);
+    min-height: var(--tap);
   }
 }

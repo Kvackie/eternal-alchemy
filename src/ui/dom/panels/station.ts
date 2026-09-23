@@ -534,13 +534,16 @@ function ingredientCard(
     });
   }
 
-  const info = el('button', {
-    class: 'ingredient-details',
-    type: 'button',
-    text: 'i',
-    title: t('common.details'),
-    'aria-label': t('common.details'),
-  });
+  const info = el(
+    'button',
+    {
+      class: 'ingredient-details',
+      type: 'button',
+      title: t('common.details'),
+      'aria-label': t('common.details'),
+    },
+    [el('span', { text: 'i' })],
+  );
   info.addEventListener('click', (event) => {
     event.stopPropagation();
     showIngredientInfo(sim, entry.ingredientId);

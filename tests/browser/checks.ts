@@ -56,7 +56,10 @@ export async function checkStrings(page: Page): Promise<string[]> {
 export async function checkTapTargets(page: Page, tap: number = TAP): Promise<string[]> {
   return page.evaluate((min) => {
     const seen = new Map<string, number>();
-    for (const node of document.querySelectorAll('#panels button, #panels input')) {
+    for (const node of document.querySelectorAll('#panels button, #panels input, .overlay button, .overlay input')) {
+      // The debug drawer is a developer's tool, not a player's, and packs a
+      // column of buttons tight on purpose.
+      if (node.closest('.debug')) continue;
       const box = node.getBoundingClientRect();
       if (box.width === 0 || box.height === 0) continue;
       if (box.height < min || box.width < min) {
@@ -83,7 +86,20 @@ export async function checkTapTargets(page: Page, tap: number = TAP): Promise<st
 export async function checkCoveredControls(page: Page): Promise<string[]> {
   return page.evaluate(() => {
     const seen = new Map<string, number>();
-    const controls = '#panels .panel button, #panels .panel input, #panels .panel [role="tab"]';
+
+    /*
+     * Which layer is being looked at.
+     *
+     * A dialog, and the debug drawer, sit over the panel on purpose: everything
+     * under them is covered because that is what they are for. So while one is
+     * up, the controls worth asking about are its own — a button inside a
+     * dialog that something else in the dialog sits on is still broken.
+     */
+    const layers = document.querySelectorAll('.overlay');
+    const top = layers[layers.length - 1] ?? document.querySelector('#panels .debug');
+    const nodes = top
+      ? top.querySelectorAll('button, input, [role="tab"]')
+      : document.querySelectorAll('#panels .panel button, #panels .panel input, #panels .panel [role="tab"]');
 
     /*
      * What of a control is actually on the screen.
@@ -126,12 +142,35 @@ export async function checkCoveredControls(page: Page): Promise<string[]> {
       return rect.width * rect.height >= full.width * full.height * 0.25 ? rect : null;
     };
 
-    for (const node of document.querySelectorAll(controls)) {
+    /*
+     * Under the checklist's pill for now, not for good.
+     *
+     * The pill floats over the bottom corner, so on any list long enough to
+     * run under it something is under it on landing — that is what floating
+     * means. What matters is whether scrolling brings the control up clear of
+     * it. A control that its scroller cannot lift above the pill is the one no
+     * thumb will ever reach.
+     */
+    const clearsPill = (node: Element, over: Element): boolean => {
+      const pill = over.closest('.checklist-pill');
+      if (!pill) return false;
+      const needed = node.getBoundingClientRect().bottom - pill.getBoundingClientRect().top;
+      for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+        const overflow = getComputedStyle(parent).overflowY;
+        if (overflow !== 'auto' && overflow !== 'scroll') continue;
+        const room = parent.scrollHeight - parent.clientHeight - parent.scrollTop;
+        if (room >= needed) return true;
+      }
+      return false;
+    };
+
+    for (const node of nodes) {
       const rect = visible(node);
       if (!rect) continue;
 
       const over = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
       if (!over || node.contains(over) || over.contains(node)) continue;
+      if (clearsPill(node, over)) continue;
 
       const name = (over.closest('[class]')?.className ?? over.tagName).toString().split(' ')[0];
       const key = `${(node.textContent ?? '').slice(0, 24).trim() || node.className} is under .${name}`;

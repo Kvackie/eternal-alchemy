@@ -87,7 +87,19 @@ export async function launch(): Promise<Browser> {
   return chromium.launch({ executablePath: resolveChromium() });
 }
 
-export async function open(browser: Browser, size: SizeName, clock: Clock = 'night'): Promise<Harness> {
+/**
+ * Open the game at a size.
+ *
+ * `save` replaces the fixture — the fresh-game pass loads a brand new shop —
+ * and `keepOverlays` leaves whatever greets the player on screen, so the
+ * greeting itself can be measured.
+ */
+export async function open(
+  browser: Browser,
+  size: SizeName,
+  clock: Clock = 'night',
+  options: { save?: string; keepOverlays?: boolean } = {},
+): Promise<Harness> {
   const { width, height, mobile } = SIZES[size];
   const context = await browser.newContext({
     viewport: { width, height },
@@ -109,13 +121,28 @@ export async function open(browser: Browser, size: SizeName, clock: Clock = 'nig
     } catch {
       /* Private mode, which the game already survives. */
     }
-  }, buildSave(clock));
+  }, options.save ?? buildSave(clock));
 
   await page.goto('http://127.0.0.1:5178/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(900);
-  await dismiss(page);
+  if (!options.keepOverlays) await dismiss(page);
 
   return { page, errors, close: () => context.close() };
+}
+
+/**
+ * Close every open dialog the way a player would, with Escape.
+ *
+ * Unlike `dismiss`, which presses a dialog's last button — the right way to
+ * get past a greeting, and the wrong way to leave a bottling window, whose last
+ * button bottles.
+ */
+export async function closeDialogs(page: Page): Promise<void> {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if ((await page.locator('.overlay').count()) === 0) return;
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+  }
 }
 
 /** Clear the away summary, the checklist, or whatever dialog is in the way. */

@@ -54,10 +54,12 @@ export function buildWorld(clock: Clock = 'night'): World {
   world.renown = 1_800;
   world.mastery = 600;
 
-  // Every recipe known, so the book is at its full size — which is the size
-  // that matters for anything measuring how much the station has to draw.
+  // Nearly every recipe known, so the book is close to its full size — the
+  // size that matters for anything measuring how much the station has to
+  // draw — with a few left over so the hinted list has something in it.
+  const UNKNOWN = new Set(['ignisAquaTerra', 'aquaAerUmbra', 'ignisAquaTerraAerUmbra']);
   for (const recipe of recipes) {
-    world.recipes[recipe.id] = { discovered: true, timesBrewed: 3 };
+    if (!UNKNOWN.has(recipe.id)) world.recipes[recipe.id] = { discovered: true, timesBrewed: 3 };
   }
 
   for (const ingredient of ingredients) addIngredient(world, ingredient.id, 6, world.now);
@@ -65,6 +67,38 @@ export function buildWorld(clock: Clock = 'night'): World {
   world.cauldrons.push(makeCauldron('cauldron-2', 'cauldronThree', false));
   world.cauldrons.push(makeCauldron('cauldron-3', 'cauldronFour', true));
   world.nextCauldronId = 4;
+
+  /*
+   * Every state a pot can be looked at in: the first holds a blend, so the
+   * station has an outcome to show; the second has a brew waiting to be
+   * bottled, so the bottling window has something to ask about.
+   */
+  const sim = new Simulation(world);
+  for (const id of ['bilberry', 'broadleaf']) sim.addToCauldron(id, undefined, 'cauldron-1');
+  for (const id of ['bluecone', 'bluecone']) sim.addToCauldron(id, undefined, 'cauldron-2');
+  sim.acceptBrew('cauldron-2');
+  const pot = world.cauldrons.find((entry) => entry.id === 'cauldron-2')!;
+  if (pot.brewing) {
+    pot.pendingBrew = pot.brewing.outcome;
+    pot.brewing = null;
+  }
+
+  // A party home and waiting to be greeted, with every kind of find.
+  world.pendingClaims.push({
+    missionId: 'mission-fixture',
+    biomeId: heroesConfig.biomes[0]!.id,
+    quality: 'bountiful',
+    found: [
+      { kind: 'ingredient', ingredientId: 'bloodRose', count: 2 },
+      { kind: 'seed', ingredientId: 'curlflame', count: 3 },
+      { kind: 'spore', ingredientId: 'coalcap', count: 1 },
+    ],
+    injured: [],
+    heroIds: [],
+    suppliesFilled: 0,
+    favouriteSupplied: false,
+    returnedAt: world.now,
+  });
 
   for (const hero of heroesConfig.roster.slice(0, 4)) {
     world.heroes.push({ id: hero.id, level: 3, favour: 0, injuredUntil: 0, onMission: false } as never);
@@ -107,4 +141,18 @@ export function buildSave(clock: Clock = 'night'): string {
     savedAt: Date.now(),
     world: buildWorld(clock),
   });
+}
+
+/**
+ * A shop on its first morning: nothing bought, nothing brewed, the checklist
+ * still to do. Empty states are screens too, and the first ones anyone sees.
+ */
+export function buildFreshSave(): string {
+  const world = createWorld(777);
+  world.now = config.clock.dayLengthMs * CLOCKS.day;
+  world.lastSeenRealTime = Date.now();
+  world.lastMarketTick = world.now;
+  world.lastContractTick = world.now;
+  world.cave.lastTick = world.now;
+  return JSON.stringify({ schemaVersion: config.save.schemaVersion, savedAt: Date.now(), world });
 }
