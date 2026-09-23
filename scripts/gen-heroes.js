@@ -78,7 +78,7 @@ const CRAFT = ['delver', 'hunter', 'forager'];
 /** Favourites that suit the place, so a gift reads as thoughtful. */
 const FAVOURITES = {
   emberwaste: ['ignisTerra', 'ignisAqua', 'ignis', 'ignisUmbra', 'ignisTerraAerUmbra'],
-  mirefen: ['aquaTerra', 'aquaUmbra', 'aqua', 'aquaTerraAer', 'aquaUmbra'],
+  mirefen: ['aquaTerra', 'aquaUmbra', 'aqua', 'aquaTerraAer', 'aquaTerraUmbra'],
   sunkenBarrow: ['terraUmbra', 'umbra', 'ignisUmbra', 'aquaAerUmbra', 'aerUmbra'],
   skyreachSpires: ['aquaAer', 'aer', 'terraAer', 'ignisAer', 'aerUmbra'],
 };
