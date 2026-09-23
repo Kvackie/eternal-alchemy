@@ -60,6 +60,32 @@ const SCENE_WIDE = {
 const OUT = 'public/art';
 const manifest = {};
 
+/*
+ * The art the game can actually ask for, per kind that has a surplus.
+ *
+ * The packs brought far more ingredients, potions and faces than the data
+ * names — some four hundred sprites and several megabytes — and `public/`
+ * ships whole, so every player downloaded them. The sources stay in `art/` for
+ * the day the data grows into them; only what an id points at is built. Kinds
+ * missing from here (décor, scene, shelves, heroes) are built in full.
+ */
+const data = (file) => JSON.parse(readFileSync(path.join('src/data', file), 'utf8'));
+const USED = {
+  ingredient: new Set([
+    ...data('ingredients.json').map((entry) => entry.id),
+    ...data('crops.json').map((crop) => crop.id),
+  ]),
+  potion: new Set(data('recipes.json').map((recipe) => recipe.art ?? recipe.id)),
+  merchant: new Set(data('merchants.json').map((merchant) => merchant.id)),
+};
+
+/** The source files of a kind that the game will use. */
+function sourcesFor(kind, from) {
+  const all = readdirSync(from).filter((f) => /\.png$/i.test(f));
+  const used = USED[kind];
+  return used ? all.filter((f) => used.has(f.replace(/\.png$/i, ''))) : all;
+}
+
 /**
  * Delete built sprites whose source is gone, BEFORE writing the new ones.
  *
@@ -97,7 +123,7 @@ for (const [kind, spec] of Object.entries(KINDS)) {
   const outDir = path.join(OUT, kind);
   mkdirSync(outDir, { recursive: true });
 
-  const sources = readdirSync(spec.from).filter((f) => /\.png$/i.test(f));
+  const sources = sourcesFor(kind, spec.from);
   const ids = sources.map((f) => f.replace(/\.png$/i, ''));
   const stale = prune(outDir, ids);
 
@@ -162,7 +188,7 @@ for (const [kind, spec] of Object.entries(PORTRAITS)) {
   const outDir = path.join(OUT, kind);
   mkdirSync(outDir, { recursive: true });
 
-  const sources = readdirSync(spec.from).filter((f) => /\.png$/i.test(f));
+  const sources = sourcesFor(kind, spec.from);
   const ids = sources.map((f) => f.replace(/\.png$/i, ''));
   const stale = prune(outDir, ids);
 
