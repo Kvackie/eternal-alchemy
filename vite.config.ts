@@ -10,6 +10,15 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
+    /*
+     * Vite warns about any chunk over 500 kB, a threshold picked for pages
+     * that should load fast on a slow connection. Phaser alone is 1.7 MB
+     * minified, and it already sits in its own chunk that the browser caches
+     * until Phaser itself changes, so the warning says nothing actionable here.
+     * The limit sits just above it, so a chunk that grows past Phaser still
+     * gets flagged.
+     */
+    chunkSizeWarningLimit: 2000,
     // Phaser is large and stable; splitting it keeps the game bundle diffable.
     rollupOptions: {
       output: {
