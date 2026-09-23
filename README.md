@@ -191,7 +191,7 @@ The two numbers of a brew are independent:
 
 | Number | Decided by |
 | --- | --- |
-| **Grade** | The ratio. Purity is 100 on a recipe's exact ratio and falls to 0 at the edge of its cone, which is halfway to the nearest other recipe. A blend outside every cone makes nothing and cannot be brewed. |
+| **Grade** | The ratio. Purity is 100 on a recipe's exact ratio and falls to 0 at the edge of its cone, which is halfway to the nearest other recipe; S is 90 and up. A blend outside every cone makes nothing and cannot be brewed. |
 | **Potency** | The total essence: Minor 1–60, Common 61–110, Greater 111–190, Grand 191–320, Sovereign 321+. |
 
 So a small pot on the ratio is an S, and a Sovereign off it is an F. What makes the ratio hard is

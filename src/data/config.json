@@ -69,31 +69,31 @@
     }
   },
   "grading": {
-    "$comment": "Purity is 100 at a recipe's exact ratio and 0 at the edge of its cone, and the letter is read straight off it. Potency is a separate axis: a small pot on the ratio is an S, a huge one off it is an F.",
+    "$comment": "Purity is 100 at a recipe's exact ratio and 0 at the edge of its cone, and the letter is read straight off it: S from 90. Potency is a separate axis: a small pot on the ratio is an S, a huge one off it is an F.",
     "bands": [
       {
         "grade": "S",
-        "minPurity": 96
+        "minPurity": 90
       },
       {
         "grade": "A",
-        "minPurity": 88
+        "minPurity": 82
       },
       {
         "grade": "B",
-        "minPurity": 76
+        "minPurity": 70
       },
       {
         "grade": "C",
-        "minPurity": 64
+        "minPurity": 58
       },
       {
         "grade": "D",
-        "minPurity": 52
+        "minPurity": 46
       },
       {
         "grade": "E",
-        "minPurity": 30
+        "minPurity": 24
       },
       {
         "grade": "F",

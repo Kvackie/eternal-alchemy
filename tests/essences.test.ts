@@ -172,7 +172,7 @@ describe('purity', () => {
     expect(small.potencyTier).toBe('minor');
     expect(small.grade).toBe('S');
 
-    const huge = assessBlend({ ignis: 400, aqua: 120, terra: 0, aer: 0, umbra: 0 })!;
+    const huge = assessBlend({ ignis: 400, aqua: 140, terra: 0, aer: 0, umbra: 0 })!;
     expect(huge.recipeId).toBe('ignis');
     expect(huge.potencyTier).toBe('sovereign');
     expect(huge.grade).toBe('F');
@@ -196,10 +196,12 @@ describe('potency tiers', () => {
 describe('grading bands', () => {
   it('maps purity onto letters in order', () => {
     expect(gradeFor(100)).toBe('S');
-    expect(gradeFor(90)).toBe('A');
-    expect(gradeFor(80)).toBe('B');
-    expect(gradeFor(71)).toBe('C');
-    expect(gradeFor(55)).toBe('D');
+    expect(gradeFor(90)).toBe('S');
+    expect(gradeFor(89)).toBe('A');
+    expect(gradeFor(75)).toBe('B');
+    expect(gradeFor(60)).toBe('C');
+    expect(gradeFor(50)).toBe('D');
+    expect(gradeFor(30)).toBe('E');
     expect(gradeFor(0)).toBe('F');
   });
 });
