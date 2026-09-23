@@ -682,7 +682,6 @@
   "workbench.reason.stock": "None in stock",
   "shop.title": "Shop",
   "shop.shelves": "Shelves",
-  "shop.slot.empty": "Empty shelf",
   "shop.slot.remove": "Remove",
   "shop.noShelf": "Every shelf is full",
   "shop.price": "Asking {percent} of fair value",

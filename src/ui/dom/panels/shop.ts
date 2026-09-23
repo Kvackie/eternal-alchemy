@@ -244,12 +244,13 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
       id: shelfSlot.id,
       icon: el('span', { class: 'slot-glyph', text: '🪵' }),
       label: t('shop.shelf.numbered', { number }),
-      // "Empty shelf" was the tooltip, which is the one thing this tile had to
-      // say and the one place it could not be read.
-      caption: [
-        el('span', { text: t('shop.slot.empty') }),
-        el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
-      ],
+      /*
+       * The board it is, and nothing else.
+       *
+       * It used to say "Empty shelf" above that, which a dimmed tile showing a
+       * bare plank and no potion has already said.
+       */
+      caption: [el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) })],
       dimmed: true,
       onActivate: () => openShelfDetails(sim, entry),
     });
@@ -357,7 +358,6 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
       content: (dismiss) => [
         el('h2', { text: t('shop.shelf.numbered', { number }) }),
         boardLine,
-        emptyNote(t('shop.slot.empty')),
         el('div', { class: 'dialog-actions' }, [
           button(t('common.close'), dismiss, { variant: 'quiet' }),
           button(t('shop.slot.stockThis'), () => {
