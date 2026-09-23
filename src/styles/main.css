@@ -82,16 +82,6 @@
   --grade-e: #e0913f;
   --grade-f: #e05c4a;
 
-  /*
-   * A hue each for the two terms a contract can add to a grade.
-   *
-   * Both used to be amber, which is also the deadline warning, the selected
-   * sort chip and the picked-hero wash — so a row of terms read as "some amber
-   * things". Far apart from each other and from the gold a reward is drawn in.
-   */
-  --req-vessel: #6fb0d8;
-  --req-seal: #b58ad8;
-
   /* Paid in potions rather than coin — deliberately nothing like gold. */
   --value-barter: #e59ac4;
 
@@ -1158,7 +1148,7 @@ input[type='range'] {
 /*
  * Wide enough for the longest thing a tile has to say on one line.
  *
- * The Ashwalker's price — "Pay 1 sealed potion, D+" — is a sentence rather than
+ * The Ashwalker's price — "Pay 1 potion, D+" — is a sentence rather than
  * a number, and at 7rem it broke across two lines with the grade stranded at
  * the end of the first. The pictures grew here too, so the extra width is for
  * both.
@@ -1552,16 +1542,6 @@ input[type='range'] {
 .chip.good {
   color: var(--good-text);
   background: var(--good-wash);
-}
-
-.chip.term-vessel {
-  color: var(--req-vessel);
-  background: color-mix(in srgb, var(--req-vessel) 14%, transparent);
-}
-
-.chip.term-seal {
-  color: var(--req-seal);
-  background: color-mix(in srgb, var(--req-seal) 14%, transparent);
 }
 
 /* The grade keeps the colour of the grade; the chip only holds it. */

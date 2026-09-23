@@ -2,7 +2,7 @@
  * The contract board.
  *
  * Contracts are the planned selling channel: a named quantity at a named grade
- * by a deadline, often with a constraint on the seal or vessel. They are the
+ * by a deadline. They are the
  * main gold faucet and the reason to plan a supply chain rather than brewing
  * whatever is to hand.
  *
@@ -13,16 +13,7 @@
  * than punishing.
  */
 
-import {
-  contractsConfig,
-  getContractTemplate,
-  getFaction,
-  getRecipe,
-  getVessel,
-  getSeal,
-  seals,
-  vessels,
-} from './config';
+import { contractsConfig, getContractTemplate, getFaction, getRecipe } from './config';
 import { discoveredRecipes } from './discovery';
 import { angleBetween } from './essences';
 import { fairValue } from './market';
@@ -51,8 +42,6 @@ export function contractTerms(contract: Contract): ContractTerms {
     faction: template.faction,
     recipeId: template.recipeId,
     minGrade: template.minGrade,
-    ...(template.requiresSeal ? { requiresSeal: template.requiresSeal } : {}),
-    ...(template.requiresVessel ? { requiresVessel: template.requiresVessel } : {}),
   };
 }
 
@@ -61,10 +50,7 @@ export function qualifyingItems(world: World, contract: Contract): BottledItem[]
   const terms = contractTerms(contract);
   return world.bottled.filter((item) => {
     if (item.recipeId !== terms.recipeId) return false;
-    if (!gradeAtLeast(item.grade, terms.minGrade)) return false;
-    if (terms.requiresSeal && item.sealId !== terms.requiresSeal) return false;
-    if (terms.requiresVessel && item.vesselId !== terms.requiresVessel) return false;
-    return true;
+    return gradeAtLeast(item.grade, terms.minGrade);
   });
 }
 
@@ -135,31 +121,7 @@ function deriveTerms(world: World, rng: Rng, rank: number): ContractTerms | null
     }
   }
 
-  const terms = pickWeighted(candidates, rng);
-  if (!terms) return null;
-
-  /*
-   * An occasional condition on the goods.
-   *
-   * Drawn from what the player can actually buy rather than from everything
-   * that exists, or an early commission asks for a sealed amphora the shop has
-   * no way to obtain yet.
-   */
-  const holds = (stock: Record<string, number>, id: string) => (stock[id] ?? 0) > 0;
-  const affordableSeals = seals.filter(
-    (seal) => seal.cost === 0 || holds(world.seals, seal.id),
-  );
-  const affordableVessels = vessels.filter(
-    (vessel) => vessel.startingStock > 0 || holds(world.vessels, vessel.id),
-  );
-  if (rng.next() < contractsConfig.derived.sealChance && affordableSeals.length > 1) {
-    terms.requiresSeal = affordableSeals[rng.int(0, affordableSeals.length - 1)]!.id;
-  }
-  if (rng.next() < contractsConfig.derived.vesselChance && affordableVessels.length > 1) {
-    terms.requiresVessel = affordableVessels[rng.int(0, affordableVessels.length - 1)]!.id;
-  }
-
-  return terms;
+  return pickWeighted(candidates, rng);
 }
 
 /** The grade floor expected of a shop at this rank. */
@@ -189,8 +151,7 @@ function quantityFor(recipeId: string, rng: Rng): number {
  * One draw of an order's terms.
  *
  * Most of the board is commissioned from a palate; the rest keeps the
- * hand-authored orders in rotation, because those carry the specific
- * vessel-and-seal set pieces and the flavour that a generator cannot.
+ * hand-authored orders in rotation, for the flavour a generator cannot write.
  */
 function drawTerms(
   world: World,
@@ -216,8 +177,6 @@ function drawTerms(
       faction: template.faction,
       recipeId: template.recipeId,
       minGrade: template.minGrade,
-      ...(template.requiresSeal ? { requiresSeal: template.requiresSeal } : {}),
-      ...(template.requiresVessel ? { requiresVessel: template.requiresVessel } : {}),
     };
   }
 
@@ -275,9 +234,7 @@ export function generateContract(
         contract.quantity === quantity &&
         other.faction === drawn.faction &&
         other.recipeId === drawn.recipeId &&
-        other.minGrade === drawn.minGrade &&
-        other.requiresSeal === drawn.requiresSeal &&
-        other.requiresVessel === drawn.requiresVessel
+        other.minGrade === drawn.minGrade
       );
     });
     if (!repeats) break;
@@ -287,8 +244,6 @@ export function generateContract(
 
   const unitValue = fairValue({
     recipeId: terms.recipeId,
-    vesselId: terms.requiresVessel ?? 'clayVial',
-    sealId: terms.requiresSeal ?? 'cork',
     grade: terms.minGrade,
     potencyTier: 'common',
   });
@@ -334,21 +289,7 @@ export function deliver(world: World, contractId: string): DeliveryResult | null
     (a, b) => GRADE_ORDER.indexOf(b.grade) - GRADE_ORDER.indexOf(a.grade),
   );
 
-  /*
-   * Count *units*, not bottles. A sealed amphora holds three doses and settles
-   * three units of an order, which is the entire reason to buy one — a contract
-   * for nine tonics can be met with three amphorae.
-   *
-   * Stop as soon as the order is covered so a large vessel is never wasted
-   * overfilling a small remainder.
-   */
-  const handing: BottledItem[] = [];
-  let units = 0;
-  for (const item of qualifying) {
-    if (units >= wanted) break;
-    handing.push(item);
-    units += unitsPerBottle(item);
-  }
+  const handing = qualifying.slice(0, wanted);
   if (handing.length === 0) return null;
 
   for (const item of handing) {
@@ -356,23 +297,15 @@ export function deliver(world: World, contractId: string): DeliveryResult | null
     if (index >= 0) world.bottled.splice(index, 1);
   }
 
-  // A bottle that over-covers the remainder still only settles what was owed.
-  const credited = Math.min(units, wanted);
+  const credited = handing.length;
   contract.delivered += credited;
   const complete = contract.delivered >= contract.quantity;
 
   // Pro rata on partial delivery, with the remainder still owed.
   const share = credited / contract.quantity;
 
-  // A guild stamp on the goods is worth real money to a guild buyer. Averaged
-  // across what was actually handed over, so a mixed batch pays honestly.
-  const stampBonus =
-    handing.reduce((sum, item) => sum + (getSeal(item.sealId).contractPayoutBonus ?? 0), 0) /
-    handing.length;
   // Highmarch has the noble money, and it is the contracts that show it.
-  const gold = Math.round(
-    contract.payout * share * (1 + stampBonus) * contractPayoutMultiplier(world),
-  );
+  const gold = Math.round(contract.payout * share * contractPayoutMultiplier(world));
   const renown = complete ? contract.renown : 0;
 
   world.gold += gold;
@@ -387,11 +320,6 @@ export function deliver(world: World, contractId: string): DeliveryResult | null
   }
 
   return { delivered: credited, gold, renown, complete };
-}
-
-/** How many units of an order one bottle settles. */
-export function unitsPerBottle(item: BottledItem): number {
-  return getVessel(item.vesselId).contractUnits ?? 1;
 }
 
 export function abandon(world: World, contractId: string): boolean {
@@ -456,14 +384,12 @@ export function contractSummary(world: World, contract: Contract) {
   const terms = contractTerms(contract);
   return {
     contract,
-    // The board reads `.faction`, `.recipeId`, `.minGrade` and the two
-    // requirements off this — all of which terms carries, whether the order was
-    // written by hand or commissioned from a palate.
+    // The board reads `.faction`, `.recipeId` and `.minGrade` off this, all of
+    // which terms carries, whether the order was written by hand or
+    // commissioned from a palate.
     template: terms,
     terms,
     recipe: getRecipe(terms.recipeId),
-    vessel: terms.requiresVessel ? getVessel(terms.requiresVessel) : null,
-    seal: terms.requiresSeal ? getSeal(terms.requiresSeal) : null,
     ready: qualifyingItems(world, contract).length,
     wanted: contract.quantity - contract.delivered,
   };

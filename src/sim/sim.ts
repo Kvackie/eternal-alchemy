@@ -15,7 +15,6 @@ import {
   getCrop,
   getDecor,
   getEquipment,
-  getSeal,
   ranks,
   recipes,
   type RecipeDef,
@@ -28,7 +27,7 @@ import {
   spotViews,
   type SpotView,
 } from './decor';
-import { cauldronComposition, cauldronVector } from './essences';
+import { cauldronVector } from './essences';
 import {
   activeCauldron,
   brewSpeedOf,
@@ -116,7 +115,7 @@ import { agingRateFor, freshnessOf } from './essences';
 import { Rng } from './rng';
 import { createWorld } from './state';
 import { assessOutcome, brewDurationFor } from './brewing';
-import { bottle, nextUid, type BottleRequest } from './bottling';
+import { bottle, nextUid } from './bottling';
 import type {
   BottledItem,
   BrewOutcome,
@@ -426,7 +425,6 @@ export class Simulation {
       // This pot's own capacity, not the shop's best: brewing a heavy blend in
       // the starter bowl should boil over even when a great pot sits beside it.
       capacity: capacityOf(pot),
-      composition: cauldronComposition(pot.contents),
     });
   }
 
@@ -507,25 +505,15 @@ export class Simulation {
     return this.cauldron.pendingBrew;
   }
 
-  bottlePending(req: BottleRequest, cauldronId?: string): BottledItem | null {
+  /** Bottle a finished brew. Nothing to choose: one press, one potion. */
+  bottlePending(cauldronId?: string): BottledItem | null {
     const pot = this.pot(cauldronId);
     const brew = pot.pendingBrew;
     if (!brew) return null;
-    const item = bottle(this.world, brew, req, this.rankIndex);
-    if (item) {
-      pot.pendingBrew = null;
-      record(this.world, 'bottled', {
-        recipe: item.recipeId,
-        grade: item.grade,
-        vessel: item.vesselId,
-      });
-    }
-    return item;
-  }
-
-  discardPending(cauldronId?: string): void {
-    const pot = this.pot(cauldronId);
+    const item = bottle(this.world, brew);
     pot.pendingBrew = null;
+    record(this.world, 'bottled', { recipe: item.recipeId, grade: item.grade });
+    return item;
   }
 
   // -- Cave, shaft, missions, board -----------------------------------------
@@ -935,7 +923,7 @@ export class Simulation {
   }
 
   /**
-   * Hand over sealed potions instead of gold.
+   * Hand over potions instead of gold.
    *
    * Spends the *cheapest* qualifying bottles first — the player asked to trade
    * some potions, not to lose their best one to a rounding decision.
@@ -948,22 +936,8 @@ export class Simulation {
       .filter((item) => gradeAtLeast(item.grade, barter.minGrade))
       .sort((a, b) => a.fairValue - b.fairValue);
 
-    /*
-     * The Ashwalker's own mark doubles what a bottle is worth to him, so a
-     * marked potion settles two of whatever he asked for. That is the only thing
-     * the mark is good for — villagers refuse it outright.
-     */
-    const worthOf = (item: BottledItem) => getSeal(item.sealId).barterMultiplier ?? 1;
-
-    const handing: BottledItem[] = [];
-    let value = 0;
-    for (const item of qualifying) {
-      if (value >= barter.potions) break;
-      handing.push(item);
-      value += worthOf(item);
-    }
-
-    if (value < barter.potions) {
+    const handing = qualifying.slice(0, barter.potions);
+    if (handing.length < barter.potions) {
       return { ok: false, reasonKey: 'market.error.potions' };
     }
 
@@ -994,12 +968,6 @@ export class Simulation {
         break;
       case 'ingredient':
         addIngredient(this.world, entry.id, 1, this.world.now);
-        break;
-      case 'vessel':
-        this.world.vessels[entry.id] = (this.world.vessels[entry.id] ?? 0) + 1;
-        break;
-      case 'seal':
-        this.world.seals[entry.id] = (this.world.seals[entry.id] ?? 0) + 1;
         break;
       case 'equipment':
         grantEquipment(
@@ -1209,8 +1177,6 @@ export class Simulation {
         const item: BottledItem = {
           uid: nextUid(this.world.now),
           recipeId: recipe.id,
-          vesselId: 'clayVial',
-          sealId: 'cork',
           grade: grades[(index + copy) % grades.length]!,
           purity: 60 + ((index * 7 + copy * 11) % 40),
           potencyTier: 'common',
@@ -1268,8 +1234,6 @@ export class Simulation {
         const item: BottledItem = {
           uid: `debug-${recipe.id}-${i}`,
           recipeId: recipe.id,
-          vesselId: 'clayVial',
-          sealId: 'cork',
           grade: 'A',
           purity: 90,
           potencyTier: 'common',

@@ -10,7 +10,6 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { getVessel } from '@/sim/config';
 import type { BottledItem, Grade } from '@/sim/types';
 
 /** A shop with `shelves` shelves and a pile of bottles in the store room. */
@@ -35,8 +34,6 @@ function shopWith(bottles: Array<Partial<BottledItem> & { count: number }>, shel
       sim.world.bottled.push({
         uid: `b${n++}`,
         recipeId: spec.recipeId ?? 'aquaTerra',
-        vesselId: spec.vesselId ?? 'clayVial',
-        sealId: 'cork',
         grade: (spec.grade ?? 'C') as Grade,
         purity: 70,
         potencyTier: 'common',
@@ -53,8 +50,8 @@ const onShelves = (sim: Simulation) =>
   sim.world.shelf.reduce((total, slot) => total + (slot.item ? slot.quantity : 0), 0);
 
 describe('putting several out at once', () => {
-  it('fills one shelf per bottle when the vessel does not stack', () => {
-    const sim = shopWith([{ count: 6, vesselId: 'clayVial' }]);
+  it('fills one shelf per bottle', () => {
+    const sim = shopWith([{ count: 6 }]);
     const uid = sim.world.bottled[0]!.uid;
 
     expect(sim.stockMany(uid, 3)).toBe(3);
@@ -63,7 +60,7 @@ describe('putting several out at once', () => {
   });
 
   it('stops at the shelf room there is, and says how many went out', () => {
-    const sim = shopWith([{ count: 10, vesselId: 'clayVial' }], 4);
+    const sim = shopWith([{ count: 10 }], 4);
     const uid = sim.world.bottled[0]!.uid;
 
     // Asked for ten, four shelves: four go out, and the answer is four.
@@ -72,30 +69,8 @@ describe('putting several out at once', () => {
     expect(sim.world.bottled).toHaveLength(6);
   });
 
-  it('uses a stacking vessel to put several on one shelf', () => {
-    const capacity = getVessel('waxedPouch').shelfStack ?? 1;
-    expect(capacity).toBeGreaterThan(1);
-
-    const sim = shopWith([{ count: capacity + 2, vesselId: 'waxedPouch' }]);
-    const uid = sim.world.bottled[0]!.uid;
-
-    expect(sim.stockMany(uid, capacity)).toBe(capacity);
-    expect(sim.world.shelf.filter((slot) => slot.item)).toHaveLength(1);
-    expect(sim.world.shelf[0]!.quantity).toBe(capacity);
-  });
-
-  it('does not overshoot a small count onto a stacking shelf', () => {
-    const sim = shopWith([{ count: 8, vesselId: 'waxedPouch' }]);
-    const uid = sim.world.bottled[0]!.uid;
-
-    // Two asked for, and a pouch shelf that would happily have taken five.
-    expect(sim.stockMany(uid, 2)).toBe(2);
-    expect(onShelves(sim)).toBe(2);
-    expect(sim.world.bottled).toHaveLength(6);
-  });
-
   it('never loses or duplicates a bottle', () => {
-    const sim = shopWith([{ count: 9, vesselId: 'clayVial' }]);
+    const sim = shopWith([{ count: 9 }]);
     const uid = sim.world.bottled[0]!.uid;
 
     sim.stockMany(uid, 4);
@@ -125,30 +100,24 @@ describe('putting several out at once', () => {
 
 describe('how many could go out', () => {
   it('is bounded by the stock', () => {
-    const sim = shopWith([{ count: 2, vesselId: 'clayVial' }], 6);
+    const sim = shopWith([{ count: 2 }], 6);
     expect(sim.placeable(sim.world.bottled[0]!)).toBe(2);
   });
 
   it('is bounded by the empty shelves', () => {
-    const sim = shopWith([{ count: 9, vesselId: 'clayVial' }], 3);
+    const sim = shopWith([{ count: 9 }], 3);
     expect(sim.placeable(sim.world.bottled[0]!)).toBe(3);
   });
 
-  it('counts a stacking vessel as several per shelf', () => {
-    const capacity = getVessel('waxedPouch').shelfStack ?? 1;
-    const sim = shopWith([{ count: 99, vesselId: 'waxedPouch' }], 2);
-    expect(sim.placeable(sim.world.bottled[0]!)).toBe(2 * capacity);
-  });
-
   it('is what stockMany can actually deliver', () => {
-    const sim = shopWith([{ count: 20, vesselId: 'clayVial' }], 5);
+    const sim = shopWith([{ count: 20 }], 5);
     const item = sim.world.bottled[0]!;
     const offered = sim.placeable(item);
     expect(sim.stockMany(item.uid, offered)).toBe(offered);
   });
 
   it('is zero when every shelf is taken', () => {
-    const sim = shopWith([{ count: 6, vesselId: 'clayVial' }], 2);
+    const sim = shopWith([{ count: 6 }], 2);
     sim.stockMany(sim.world.bottled[0]!.uid, 2);
     expect(sim.placeable(sim.world.bottled[0]!)).toBe(0);
   });
@@ -192,17 +161,6 @@ describe('rearranging the floor', () => {
     expect(sim.world.shelf[1]!.item).not.toBeNull();
   });
 
-  it('carries a whole stack, not just the top bottle', () => {
-    const capacity = getVessel('waxedPouch').shelfStack ?? 1;
-    const sim = shopWith([{ count: capacity, vesselId: 'waxedPouch' }], 2);
-    sim.stockMany(sim.world.bottled[0]!.uid, capacity);
-    expect(sim.world.shelf[0]!.quantity).toBe(capacity);
-
-    sim.moveStock('shelf-1', 'shelf-2');
-    expect(sim.world.shelf[1]!.quantity).toBe(capacity);
-    expect(sim.world.shelf[0]!.quantity).toBe(0);
-  });
-
   it('refuses a move from an empty shelf, or onto itself', () => {
     const sim = shopWith([{ count: 1 }], 2);
     sim.stock('shelf-1', sim.world.bottled[0]!.uid);
@@ -217,23 +175,23 @@ describe('rearranging the floor', () => {
 describe('the count a caller already has', () => {
   it('agrees with counting the bottles again', () => {
     const sim = shopWith([
-      { count: 7, recipeId: 'aquaTerra', vesselId: 'clayVial' },
-      { count: 3, recipeId: 'ignisTerra', vesselId: 'waxedPouch' },
+      { count: 7, recipeId: 'aquaTerra' },
+      { count: 3, recipeId: 'ignisTerra' },
     ], 6);
 
     for (const item of sim.world.bottled) {
       const counted = sim.world.bottled.filter(
         (entry) =>
           entry.recipeId === item.recipeId &&
-          entry.vesselId === item.vesselId &&
-          entry.grade === item.grade,
+          entry.grade === item.grade &&
+          entry.potencyTier === item.potencyTier,
       ).length;
       expect(sim.placeable(item, counted)).toBe(sim.placeable(item));
     }
   });
 
   it('still honours the shelf room when handed a count', () => {
-    const sim = shopWith([{ count: 20, vesselId: 'clayVial' }], 3);
+    const sim = shopWith([{ count: 20 }], 3);
     expect(sim.placeable(sim.world.bottled[0]!, 20)).toBe(3);
   });
 });

@@ -15,7 +15,7 @@
  * You never walk away with nothing; the worst outcome is a shelf-price sale.
  */
 
-import { config, customersConfig, getCustomer, getRecipe, getSeal } from './config';
+import { config, customersConfig, getCustomer, getRecipe } from './config';
 import type { CustomerActionDef, CustomerDef } from './config';
 import { dayStateAt } from './clock';
 import { angleBetween } from './essences';
@@ -130,15 +130,9 @@ export function buys(def: CustomerDef, recipeId: string): boolean {
   return off < (def.spreadDeg * Math.PI) / 180;
 }
 
-/**
- * What the customer would pay at most, before any pitching.
- *
- * A silver clasp raises the ceiling outright — it is the seal that exists to be
- * haggled with.
- */
+/** What the customer would pay at most, before any pitching. */
 export function ceilingFor(item: BottledItem, def: CustomerDef, variance = 1): number {
-  const seal = getSeal(item.sealId);
-  return item.fairValue * def.budgetMultiplier * variance * (1 + (seal.haggleCeilingBonus ?? 0));
+  return item.fairValue * def.budgetMultiplier * variance;
 }
 
 /**
@@ -269,9 +263,7 @@ export function close(world: World, askingPrice: number): HaggleClose | null {
     world.statistics.hagglesWon += 1;
     if (item) {
       world.renown +=
-        config.economy.renownPerSale +
-        (config.economy.renownPerGradeBonus[item.grade] ?? 0) +
-        (getSeal(item.sealId).renownPerSale ?? 0);
+        config.economy.renownPerSale + (config.economy.renownPerGradeBonus[item.grade] ?? 0);
     }
   }
 

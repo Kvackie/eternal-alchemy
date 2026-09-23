@@ -20,7 +20,6 @@
 import {
   button,
   chip,
-  clear,
   collapsible,
   el,
   emptyNote,
@@ -31,8 +30,6 @@ import {
   makeDropTarget,
   matchesSearch,
   meter,
-  modal,
-  optionGroup,
   outcomeCard,
   pager,
   searchField,
@@ -40,13 +37,11 @@ import {
   stat,
   tabStrip,
 } from '../components';
-import { countdown, formatDuration, formatGold, t } from '@/i18n';
-import { config, getIngredient, getSeal } from '@/sim/config';
+import { countdown, formatDuration, t } from '@/i18n';
+import { config, getIngredient } from '@/sim/config';
 import { inventoryRows } from '@/sim/inventory';
-import { availableSeals, availableVessels } from '@/sim/bottling';
 import { outcomeProblems } from '@/sim/brewing';
 import { totalEssence } from '@/sim/essences';
-import { fairValue } from '@/sim/market';
 import { showIngredientInfo } from '../ingredientInfo';
 import { ESSENCES } from '@/sim/types';
 import type {
@@ -98,9 +93,6 @@ const PRESENT = 0.5;
 // -- state -------------------------------------------------------------------
 
 let open = false;
-
-let vesselId = 'clayVial';
-let sealId = 'cork';
 
 /** Filters, held here so they survive the panel being rebuilt. */
 let ingredientCategories = new Set<IngredientCategory>();
@@ -651,7 +643,7 @@ function renderPot(sim: Simulation): HTMLElement {
       'aria-label': t('cauldron.bottle.open'),
       title: t('cauldron.bottle.open'),
     });
-    door.addEventListener('click', () => openBottling(sim));
+    door.addEventListener('click', () => bottleReady(sim));
     stage.append(door);
   }
 
@@ -763,148 +755,17 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
 }
 
 /**
- * Bottling, in a window of its own.
+ * Bottle the finished brew, wherever the finished pot was pressed.
  *
- * It used to unfold inside the middle column, under the pot: option groups, a
- * value line and two buttons appended to the column you were already reading
- * the outcome in — on a phone that is most of a screen of controls
- * arriving unannounced under a cauldron, and the thing it is asking about
- * scrolls off the top while you answer. A finished brew is a decision of its
- * own, so it gets a window, and the column keeps a card that opens it.
+ * There is nothing to choose — no vessel, no seal — so there is no window:
+ * the press that asks for it is the press that does it, and a toast says what
+ * came out. Exported because the bench's Ready card bottles too.
  */
-function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void): HTMLElement {
-  const brew = sim.pendingBrew!;
-  const section = el('section', { class: 'station-block' });
-
-  const vessels = availableVessels(sim.world, brew);
-  // The brew and the rank both decide which seals may go on — the same checks
-  // bottling makes, so a seal offered here is one the Bottle button will take.
-  const seals = availableSeals(sim.world, brew, sim.rankIndex);
-
-  if (!vessels.find((v) => v.vesselId === vesselId)?.available) {
-    vesselId = vessels.find((v) => v.available)?.vesselId ?? vesselId;
-  }
-  if (!seals.find((s) => s.sealId === sealId)?.available) {
-    sealId = seals.find((s) => s.available)?.sealId ?? sealId;
-  }
-
-  section.append(
-    outcomeCard({
-      badge: gradeBadge(brew.grade),
-      name: t(`recipe.${brew.recipeId}`),
-      chips: [chip(t(`potency.${brew.potencyTier}`))],
-      body: [stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`)],
-    }),
-    el('div', { class: 'field' }, [
-      el('span', { class: 'field-label', text: t('workbench.vessel') }),
-      optionGroup(
-        vessels.map((vessel) => ({
-          label: t(`vessel.${vessel.vesselId}`),
-          detail: vessel.available
-            ? t('workbench.stock', { count: vessel.inStock })
-            : t(vessel.reasonKey ?? 'workbench.reason.stock'),
-          selected: vessel.vesselId === vesselId,
-          disabled: !vessel.available,
-          onSelect: () => {
-            vesselId = vessel.vesselId;
-            redraw();
-          },
-        })),
-      ),
-    ]),
-    el('div', { class: 'field' }, [
-      el('span', { class: 'field-label', text: t('workbench.seal') }),
-      optionGroup(
-        seals.map((seal) => ({
-          label: t(`seal.${seal.sealId}`),
-          detail: !seal.available
-            ? t(seal.reasonKey ?? 'workbench.reason.stock')
-            : getSeal(seal.sealId).cost === 0
-              ? t('workbench.stock.unlimited')
-              : t('workbench.stock', { count: seal.inStock }),
-          selected: seal.sealId === sealId,
-          disabled: !seal.available,
-          onSelect: () => {
-            sealId = seal.sealId;
-            redraw();
-          },
-        })),
-      ),
-    ]),
-    stat(
-      t('workbench.value.label'),
-      formatGold(
-        fairValue({
-          recipeId: brew.recipeId,
-          vesselId,
-          sealId,
-          grade: brew.grade,
-          potencyTier: brew.potencyTier,
-        }),
-      ),
-    ),
-    el('div', { class: 'row-actions center' }, [
-      button(
-        t('workbench.action.discard'),
-        () => {
-          dismiss();
-          sim.discardPending();
-          changed();
-        },
-        { variant: 'danger' },
-      ),
-      button(
-        t('workbench.action.bottle'),
-        () => {
-          const item = sim.bottlePending({ vesselId, sealId });
-          if (item) {
-            dismiss();
-            toast(t('toast.bottled', { recipe: t(`recipe.${item.recipeId}`), grade: item.grade }));
-            changed();
-          }
-        },
-        { variant: 'gold' },
-      ),
-    ]),
-  );
-
-  return section;
-}
-
-/**
- * Open it, wherever the finished pot was pressed.
- *
- * Exported because the bench opens it too: a card that says Ready is a pot
- * asking to be bottled, and making the player open the station to find that
- * out puts a screen between the question and the answer.
- */
-export function openBottling(sim: Simulation): void {
-  if (!sim.pendingBrew) return;
-
-  /*
-   * The dialog redraws itself, rather than riding the panel's render.
-   *
-   * A modal is mounted on the stage precisely so a rebuild of `#panels` cannot
-   * tear it out — which also means `changed()` does not redraw it. Picking a
-   * vessel has to change what the vessel row looks like, so the body is rebuilt
-   * in place, the way the shop's stack picker pages in place.
-   */
-  modal({
-    className: 'bottling-dialog',
-    content: (dismiss) => {
-      const brew = sim.pendingBrew!;
-      const body = el('div', { class: 'bottling-body' });
-      const redraw = () => {
-        clear(body);
-        body.append(bottlingBody(sim, dismiss, redraw));
-      };
-      redraw();
-      return [
-        el('h2', { text: t('cauldron.ready.title', { recipe: t(`recipe.${brew.recipeId}`) }) }),
-        body,
-      ];
-    },
-  });
+export function bottleReady(sim: Simulation): void {
+  const item = sim.bottlePending();
+  if (!item) return;
+  toast(t('toast.bottled', { recipe: t(`recipe.${item.recipeId}`), grade: item.grade }));
+  changed();
 }
 
 /** The card the middle column keeps while a pot is waiting to be bottled. */
@@ -918,7 +779,7 @@ function renderReadyCard(sim: Simulation): HTMLElement {
       body: [
         stat(t('cauldron.readout.purity'), `${Math.round(brew.purity)} / 100`),
         el('div', { class: 'row-actions center' }, [
-          button(t('cauldron.bottle.open'), () => openBottling(sim), { variant: 'gold' }),
+          button(t('cauldron.bottle.open'), () => bottleReady(sim), { variant: 'gold' }),
         ]),
       ],
     }),

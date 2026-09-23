@@ -16,12 +16,10 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, crops, ingredients, recipes, shelfTiers, vessels } from '@/sim/config';
+import { config, crops, ingredients, recipes, shelfTiers } from '@/sim/config';
 import { assessOutcome } from '@/sim/brewing';
 import { makePlots } from '@/sim/garden';
 import { makeShelf } from '@/sim/market';
-import { availableSeals, availableVessels } from '@/sim/bottling';
-import type { BottleRequest } from '@/sim/bottling';
 import { totalEssence } from '@/sim/essences';
 import { addIngredient } from '@/sim/inventory';
 import type { Essence, Grade, World } from '@/sim/types';
@@ -45,21 +43,6 @@ function cleanHerb(essence: Essence, strength: number): string {
   );
   if (!found) throw new Error(`no clean ${strength}-strength ${essence} herb`);
   return found.id;
-}
-
-/**
- * A vessel and seal that will actually take this brew.
- *
- * Hardcoding the clay vial bottled two potions and then stopped: a vial has a
- * `potencyCap`, a seven-ingredient blend blows past it, and a brew that cannot
- * be bottled stays in `pendingBrew` and blocks every accept after it. Asking
- * the same availability the workbench asks is what a player does.
- */
-function bottleFor(sim: Simulation): BottleRequest {
-  const brew = sim.cauldron.pendingBrew!;
-  const vesselId = availableVessels(sim.world, brew).find((v) => v.available)?.vesselId ?? 'clayVial';
-  const sealId = availableSeals(sim.world, brew).find((s) => s.available)?.sealId ?? 'cork';
-  return { vesselId, sealId };
 }
 
 /** Brew one potion end to end, the way the workbench does. Returns the grade. */
@@ -93,13 +76,9 @@ function brewOne(sim: Simulation, index: number, tally?: Record<string, number>)
   }
   sim.advanceBy(HOUR, false);
 
-  const item = sim.bottlePending(bottleFor(sim));
+  const item = sim.bottlePending();
   if (!item) {
-    // `pendingBrew` IS the outcome, not a wrapper around one.
-    note(`refused:bottle:${sim.cauldron.pendingBrew?.potencyTier ?? 'none'}`);
-    // Never leave a brew in the pot: pendingBrew blocks the next accept, and one
-    // stuck bottle would silently end the run.
-    sim.discardPending();
+    note('refused:bottle');
     return null;
   }
   return item.grade;
@@ -118,7 +97,6 @@ function bigShop(seed = 4242): Simulation {
 
   world.gold = 500_000;
   world.renown = 250_000;
-  for (const vessel of vessels) world.vessels[vessel.id] = 999;
 
   return new Simulation(world);
 }
@@ -227,8 +205,6 @@ describe('a shop at scale', () => {
       slot.item = {
         uid: `stock-${slot.id}`,
         recipeId: 'aquaTerra',
-        vesselId: 'clayVial',
-        sealId: 'cork',
         grade: 'B' as Grade,
         purity: 0.9,
         potencyTier: 'common',

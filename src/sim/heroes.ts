@@ -12,7 +12,7 @@
  * punish a week away.
  */
 
-import { getBiome, getHeroDef, getSeal, getVessel, heroesConfig } from './config';
+import { getBiome, getHeroDef, heroesConfig } from './config';
 import { addIngredient } from './inventory';
 import type { Rng } from './rng';
 import type { Grade, Hero, Mission, MissionOutcome, World } from './types';
@@ -139,14 +139,7 @@ export function estimateMission(
     if (!item) continue;
     filled += 1;
 
-    /*
-     * A horn phial and a warding sigil both promise "+1 grade when supplied to
-     * heroes", so the supply maths reads the bottle as one grade better than it
-     * is. Capped at the top of the scale — nothing makes a potion better than S.
-     */
-    const carried =
-      (getVessel(item.vesselId).supplyGradeBonus ?? 0) + (getSeal(item.sealId).supplyGradeBonus ?? 0);
-    const points = Math.min(GRADE_POINTS.S, GRADE_POINTS[item.grade] + carried);
+    const points = GRADE_POINTS[item.grade];
     success += points * s.successPerGradePoint;
     rareFind += points * s.rareFindPerGradePoint;
     injury += points * s.injuryPerGradePoint;

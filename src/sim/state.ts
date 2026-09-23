@@ -2,7 +2,7 @@
  * A brand-new world, and the shape every save must deserialise into.
  */
 
-import { baseCauldronTier, caveConfig, config, shaftConfig, vessels, seals } from './config';
+import { baseCauldronTier, caveConfig, config, shaftConfig } from './config';
 import { makeCauldron } from './cauldrons';
 import { makeCaveTiles } from './cave';
 import { emptySpots } from './decor';
@@ -25,8 +25,6 @@ export function createWorld(seed = freshSeed()): World {
     plots: makePlots(config.garden.startingPlots),
     inventory: [],
     seeds: {},
-    vessels: {},
-    seals: {},
 
     // One pot to start. More are bought, not upgraded into.
     cauldrons: [
@@ -106,15 +104,9 @@ export function createWorld(seed = freshSeed()): World {
     },
   };
 
-  // Opening loadout: enough seeds and vessels to run the whole loop once
-  // without touching a merchant.
+  // Opening loadout: enough seeds to run the whole loop once without touching
+  // a merchant.
   for (const { id, count } of config.economy.startingSeeds) world.seeds[id] = count;
-  for (const vessel of vessels) {
-    world.vessels[vessel.id] = vessel.startingStock;
-  }
-  for (const seal of seals) {
-    world.seals[seal.id] = seal.cost === 0 ? 0 : 5;
-  }
 
   // A cluster of a starter mushroom, so the cave is usable the moment it opens
   // rather than blocked behind a merchant visit.

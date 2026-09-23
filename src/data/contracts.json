@@ -51,10 +51,7 @@
     "quantityAtHighValue": 2,
     "lowValue": 12,
     "highValue": 56,
-    "quantitySpread": 2,
-    "$requirementComment": "How often a derived order carries a vessel or seal condition. Kept low: the constraint is a spike of difficulty, and every order having one turns it into a tax.",
-    "sealChance": 0.18,
-    "vesselChance": 0.14
+    "quantitySpread": 2
   },
   "templates": [
     {
@@ -82,7 +79,6 @@
       "quantityMin": 3,
       "quantityMax": 6,
       "minGrade": "B",
-      "requiresSeal": "waxRibbon",
       "requiresRank": 1
     },
     {
@@ -101,11 +97,10 @@
       "quantityMin": 2,
       "quantityMax": 4,
       "minGrade": "A",
-      "requiresVessel": "glassFlask",
       "requiresRank": 2
     },
     {
-      "$comment": "Plain water in quantity. A big, undemanding order, which is what a stacking vessel is actually for.",
+      "$comment": "Plain water in quantity. A big, undemanding order.",
       "id": "wellRations",
       "faction": "greycloaks",
       "recipeId": "aqua",
@@ -133,14 +128,13 @@
       "requiresRank": 2
     },
     {
-      "$comment": "The deepest order in the game: pure Umbra means the shaft is fully beamed, and the amphora keeps the count sane.",
+      "$comment": "The deepest order in the game: pure Umbra at grade A.",
       "id": "valenNightwork",
       "faction": "houseValen",
       "recipeId": "umbra",
       "quantityMin": 3,
       "quantityMax": 6,
       "minGrade": "A",
-      "requiresVessel": "sealedAmphora",
       "requiresRank": 3
     }
   ]

@@ -8,7 +8,7 @@ import { describe, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { cauldronTiers, config, getRecipe, ingredients, vessels } from '@/sim/config';
+import { cauldronTiers, config, getRecipe, ingredients } from '@/sim/config';
 import { addVectors, angleBetween, zeroVector } from '@/sim/essences';
 import { makeCauldron } from '@/sim/cauldrons';
 import type { EssenceVector } from '@/sim/types';
@@ -49,7 +49,6 @@ describe('cauldron art harness', () => {
     world.gold = 500_000;
     world.renown = 300_000;
     world.onboardingDismissed = true;
-    for (const v of vessels) world.vessels[v.id] = 99;
 
     // One of every tier, or five of one tier.
     const tiers =

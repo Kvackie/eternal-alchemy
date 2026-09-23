@@ -181,30 +181,6 @@ export function worseOf(a: Grade, b: Grade): Grade {
   return GRADE_ORDER.indexOf(a) >= GRADE_ORDER.indexOf(b) ? a : b;
 }
 
-/**
- * What physically went into the pot, as opposed to what it adds up to.
- *
- * Only one thing is read now: whether anything volatile went in, which decides
- * the vessel it can be bottled in. That never survives into the essence
- * vector, so it is summarised here at the moment the cauldron is read.
- */
-export interface BrewComposition {
-  /** Every trait carried by anything in the pot. */
-  traits: string[];
-}
-
-export function cauldronComposition(contents: CauldronContents): BrewComposition {
-  const traits = new Set<string>();
-  for (const unit of contents.units) {
-    for (const trait of getIngredient(unit.ingredientId).traits) traits.add(trait);
-  }
-  return { traits: [...traits] };
-}
-
-export function emptyComposition(): BrewComposition {
-  return { traits: [] };
-}
-
 /** Share of the blend made up by one essence, 0..1. */
 export function essenceShare(v: EssenceVector, essence: Essence): number {
   const total = totalEssence(v);

@@ -4,7 +4,7 @@
  * The tiles carried a name, a picture and five bare numbers, which tells you
  * what an ingredient IS without telling you what it is FOR. Everything a player
  * needs to reason about a blend is derivable — the essence it contributes, how
- * it ages, whether it will fit in the vessel you meant to use, and which
+ * it ages, and which
  * recipes it points toward — so none of it should have to be guessed at.
  *
  * The recipe list is the part that answers the question directly: an ingredient
@@ -165,9 +165,6 @@ export function showIngredientInfo(
   const total = totalEssence(essence);
 
   const tags: HTMLElement[] = [chip(t(`category.${def.category as IngredientCategory}`))];
-  for (const trait of def.traits ?? []) {
-    tags.push(chip(t(`trait.${trait}`), trait === 'volatile' ? 'warn' : 'good'));
-  }
 
   const suggestions = pointsToward(sim, essence);
 

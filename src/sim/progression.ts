@@ -109,8 +109,6 @@ export interface DerivedStats {
   appealBonus: number;
   haggleCeilingBonus: number;
   canForceDry: boolean;
-  craftsVessels: boolean;
-  craftsSeals: boolean;
 }
 
 export function derivedStats(world: World): DerivedStats {
@@ -129,8 +127,6 @@ export function derivedStats(world: World): DerivedStats {
     appealBonus: 0,
     haggleCeilingBonus: 0,
     canForceDry: false,
-    craftsVessels: false,
-    craftsSeals: false,
   };
 
   for (const def of equipment) {
@@ -202,8 +198,6 @@ function apply(stats: DerivedStats, effect: EquipmentEffect, count: number): voi
   }
   // Capability flags: owning one is enough, so count is irrelevant.
   if (effect.canForceDry) stats.canForceDry = true;
-  if (effect.craftsVessels) stats.craftsVessels = true;
-  if (effect.craftsSeals) stats.craftsSeals = true;
 }
 
 /**

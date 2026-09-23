@@ -53,26 +53,6 @@
     }
   },
   {
-    "id": "vesselMoulds",
-    "tree": "bottling",
-    "cost": 900,
-    "requiresRank": 4,
-    "repeatable": 1,
-    "effect": {
-      "craftsVessels": true
-    }
-  },
-  {
-    "id": "sealPress",
-    "tree": "bottling",
-    "cost": 1200,
-    "requiresRank": 5,
-    "repeatable": 1,
-    "effect": {
-      "craftsSeals": true
-    }
-  },
-  {
     "id": "caveBeds",
     "tree": "cave",
     "cost": 200,

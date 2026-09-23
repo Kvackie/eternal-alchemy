@@ -7,7 +7,7 @@
  * out of sync with the live one.
  */
 
-import { baseShelfTier, config, findShelfTier, getRecipe, getVessel, getSeal } from './config';
+import { baseShelfTier, config, findShelfTier, getRecipe } from './config';
 import { dayStateAt } from './clock';
 import { potencyMultiplier } from './essences';
 import { derivedStats } from './progression';
@@ -24,43 +24,27 @@ const GRADE_SCORE: Record<Grade, number> = { S: 6, A: 5, B: 4, C: 3, D: 2, E: 1,
  */
 export function fairValue(item: {
   recipeId: string;
-  vesselId: string;
-  sealId: string;
   grade: Grade;
   potencyTier: BottledItem['potencyTier'];
 }): number {
   const recipe = getRecipe(item.recipeId);
-  const vessel = getVessel(item.vesselId);
-  const seal = getSeal(item.sealId);
 
   const gradeFactor = Math.pow(
     (GRADE_SCORE[item.grade] + 1) / 4,
     config.market.gradeValueExponent,
   );
 
-  const value =
-    recipe.baseValue *
-    potencyMultiplier(item.potencyTier) *
-    vessel.valueMultiplier *
-    seal.valueMultiplier *
-    gradeFactor;
+  const value = recipe.baseValue * potencyMultiplier(item.potencyTier) * gradeFactor;
 
   return Math.max(1, Math.round(value));
 }
 
 /**
- * How readily an item catches a customer's eye.
- *
- * A seal can override appeal outright rather than adjusting it: the Ashwalker's
- * mark makes villagers refuse the bottle entirely, and no amount of nice
- * glassware changes that.
+ * How readily an item catches a customer's eye: the same for every bottle,
+ * raised by what the shelf and the shop around it are fitted with.
  */
-export function appealOf(item: BottledItem, fittingsBonus = 0): number {
-  const seal = getSeal(item.sealId);
-  // An override is absolute: no amount of nice glassware makes a villager take
-  // the Ashwalker's mark.
-  if (seal.shelfAppealOverride !== undefined) return seal.shelfAppealOverride;
-  return 1 + getVessel(item.vesselId).appealBonus + seal.appealBonus + fittingsBonus;
+export function appealOf(fittingsBonus = 0): number {
+  return 1 + fittingsBonus;
 }
 
 /**
@@ -99,7 +83,7 @@ export function saleChance(world: World, slot: ShelfSlot, now: number, online: b
   if (!slot.item) return 0;
   const footfall = footfallAt(world, now, online);
   // The shop's fittings and this shelf's own board both flatter the goods on it.
-  const appeal = appealOf(slot.item, derivedStats(world).appealBonus + shelfQualityBonus(slot));
+  const appeal = appealOf(derivedStats(world).appealBonus + shelfQualityBonus(slot));
   return Math.min(0.95, footfall * appeal * priceCurve(slot.priceRatio) * 0.22);
 }
 
@@ -134,10 +118,7 @@ export function runMarket(world: World, rng: Rng, online: boolean): MarketTickRe
       const item = slot.item;
       const gold = Math.max(1, Math.round(item.fairValue * slot.priceRatio));
       const renown =
-        config.economy.renownPerSale +
-        (config.economy.renownPerGradeBonus[item.grade] ?? 0) +
-        // Your own mark on a bottle spreads the shop's name as it sells.
-        (getSeal(item.sealId).renownPerSale ?? 0);
+        config.economy.renownPerSale + (config.economy.renownPerGradeBonus[item.grade] ?? 0);
 
       world.gold += gold;
       world.renown += renown;
@@ -206,28 +187,11 @@ export function fitBoard(world: World, slotId: string, tierId: string): boolean 
 
 /** Two bottles are interchangeable on a shelf only if nothing about them differs. */
 export function sameGoods(a: BottledItem, b: BottledItem): boolean {
-  return (
-    a.recipeId === b.recipeId &&
-    a.vesselId === b.vesselId &&
-    a.sealId === b.sealId &&
-    a.grade === b.grade
-  );
+  return a.recipeId === b.recipeId && a.grade === b.grade && a.potencyTier === b.potencyTier;
 }
 
-/**
- * Put an item out.
- *
- * A stackable vessel fills the slot with as many identical bottles as it will
- * hold, rather than making the player tap the same shelf five times — the point
- * of a pouch is shelf space, and space you have to click for is not space.
- */
-export function stockShelf(
-  world: World,
-  slotId: string,
-  itemUid: string,
-  /** Stop here even if the vessel would hold more — see `stockGoods`. */
-  limit = Number.POSITIVE_INFINITY,
-): boolean {
+/** Put one bottle out on an empty shelf. */
+export function stockShelf(world: World, slotId: string, itemUid: string): boolean {
   const slot = world.shelf.find((s) => s.id === slotId);
   if (!slot || slot.item) return false;
 
@@ -239,15 +203,6 @@ export function stockShelf(
 
   slot.item = item;
   slot.quantity = 1;
-
-  const capacity = Math.min(getVessel(item.vesselId).shelfStack ?? 1, Math.max(1, limit));
-  while (slot.quantity < capacity) {
-    const next = world.bottled.findIndex((entry) => sameGoods(entry, item));
-    if (next < 0) break;
-    world.bottled.splice(next, 1);
-    slot.quantity += 1;
-  }
-
   return true;
 }
 
@@ -283,8 +238,7 @@ export function placeableCount(world: World, item: BottledItem, inStore?: number
    */
   const have = inStore ?? world.bottled.filter((entry) => sameGoods(entry, item)).length;
   const free = world.shelf.filter((slot) => !slot.item).length;
-  const perShelf = getVessel(item.vesselId).shelfStack ?? 1;
-  return Math.min(have, free * perShelf);
+  return Math.min(have, free);
 }
 
 /**
@@ -293,8 +247,7 @@ export function placeableCount(world: World, item: BottledItem, inStore?: number
  * Stocking was one bottle per press, and each press meant finding a free shelf
  * first — putting eight bottles out was eight rounds of that. How many is the
  * player's decision; which shelf each one lands on is not a decision worth
- * making eight times, so shelves are filled in order and each takes as many as
- * its vessel allows.
+ * making eight times, so shelves are filled in order, one bottle to each.
  *
  * Returns how many actually went out, which is fewer than asked when the shop
  * runs out of shelf before it runs out of stock.
@@ -317,8 +270,8 @@ export function stockGoods(world: World, itemUid: string, quantity: number): num
     const next = world.bottled.find((entry) => sameGoods(entry, wanted));
     if (!next) break;
 
-    if (!stockShelf(world, slot.id, next.uid, quantity - placed)) break;
-    placed += slot.quantity;
+    if (!stockShelf(world, slot.id, next.uid)) break;
+    placed += 1;
   }
 
   return placed;

@@ -28,7 +28,7 @@ import { findCauldronTier } from '@/sim/config';
 import type { BrewInProgress, Cauldron } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, confirm, toast } from '@/ui/bus';
-import { isStationOpen, openBottling, openStation, renderStation } from './station';
+import { bottleReady, isStationOpen, openStation, renderStation } from './station';
 
 export { INGREDIENT_DRAG } from './station';
 
@@ -147,17 +147,14 @@ function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
     face.disabled = true;
   } else if (activity === 'ready') {
     /*
-     * A finished pot asks one question, and the card answers it here.
+     * A finished pot is bottled from its card.
      *
-     * The card already says Ready; pressing it used to open the station and
-     * leave the player to find the bottling controls in a column. Opening the
-     * window directly is the same route the drawn pot takes inside the station,
-     * so "it is done" and "here is what to do about it" are one press apart
-     * wherever you are standing.
+     * The card already says Ready, and bottling asks nothing, so pressing it
+     * bottles — the same as the drawn pot and the button inside the station.
      */
     face.addEventListener('click', () => {
       sim.setActiveCauldron(pot.id);
-      openBottling(sim);
+      bottleReady(sim);
     });
   } else {
     face.addEventListener('click', () => openStation(sim, pot.id));

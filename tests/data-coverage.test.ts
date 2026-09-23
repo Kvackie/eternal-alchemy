@@ -32,8 +32,6 @@ import {
   prestigeConfig,
   ranks,
   recipes,
-  seals,
-  vessels,
   contractsConfig,
   shaftConfig,
   caveConfig,
@@ -167,8 +165,6 @@ describe('every data id can be shown to a player', () => {
     for (const x of ingredients) need(`ingredient.${x.id}`);
     for (const x of crops) need(`crop.${x.id}`);
     for (const x of recipes) need(`recipe.${x.id}`);
-    for (const x of vessels) need(`vessel.${x.id}`);
-    for (const x of seals) need(`seal.${x.id}`);
     for (const x of ranks) need(`rank.${x.id}`);
     for (const x of caveConfig.species) need(`ingredient.${x.id}`);
     for (const x of heroesConfig.roster) need(`hero.${x.id}`);
@@ -212,8 +208,6 @@ describe('the data that only documents itself still has to be true', () => {
    */
   it('stocks every merchant with things that exist', () => {
     const known: Record<string, Set<string>> = {
-      vessel: new Set(vessels.map((x) => x.id)),
-      seal: new Set(seals.map((x) => x.id)),
       equipment: new Set(equipment.map((x) => x.id)),
       decor: new Set(decorPieces.map((x) => x.id)),
       board: new Set(shelfTiers.map((x) => x.id)),

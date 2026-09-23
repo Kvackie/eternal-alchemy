@@ -87,9 +87,6 @@ const existing = new Map(
   read('ingredients.json').map((ing) => [key(ing.category, ing.essence), ing]),
 );
 
-// Something unstable in an exotic: fire and air together, or either alone at full strength.
-const volatile = (v) => (v.ignis > 0 && v.aer > 0) || v.ignis === 48 || v.aer === 48;
-
 const missing = [];
 const ingredients = [];
 for (const [category, essence] of slots) {
@@ -99,12 +96,7 @@ for (const [category, essence] of slots) {
     missing.push(`${category} ${JSON.stringify(essence)}`);
     continue;
   }
-  ingredients.push({
-    id: found.id,
-    category,
-    essence,
-    traits: category === 'exotic' && volatile(essence) ? ['volatile'] : [],
-  });
+  ingredients.push({ id: found.id, category, essence });
 }
 if (missing.length > 0 || existing.size > 0) {
   for (const slot of missing) console.error(`no ingredient fills  ${slot}`);

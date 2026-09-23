@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import { getDecor, getSeal, getShelfTier, getVessel } from '@/sim/config';
+import { getDecor, getShelfTier } from '@/sim/config';
 
 /**
  * What a thing does, in sentences.
@@ -21,20 +21,6 @@ export function goodsNotes(kind: string, id: string): string[] {
   const notes: string[] = [];
   const pct = (n: number) => Math.round(Math.abs(n) * 100);
 
-  const value = (multiplier: number) => {
-    if (multiplier > 1) notes.push(t('goods.valueMore', { percent: pct(multiplier - 1) }));
-    if (multiplier < 1) notes.push(t('goods.valueLess', { percent: pct(1 - multiplier) }));
-  };
-
-  if (kind === 'vessel') {
-    const def = getVessel(id);
-    notes.push(t('goods.potencyCap', { potency: t(`potency.${def.potencyCap}`) }));
-    if (def.appealBonus > 0) notes.push(t('goods.appeal', { percent: pct(def.appealBonus) }));
-    value(def.valueMultiplier);
-    if (def.supplyGradeBonus) notes.push(t('goods.supplyGrade'));
-    if (def.shelfStack && def.shelfStack > 1) notes.push(t('goods.shelfStack', { count: def.shelfStack }));
-  }
-
   if (kind === 'board') {
     const def = getShelfTier(id);
     if (def.appealBonus > 0) {
@@ -52,30 +38,6 @@ export function goodsNotes(kind: string, id: string): string[] {
     }
     if (effect.haggleCeilingBonus) {
       notes.push(t('goods.haggleCeiling', { percent: pct(effect.haggleCeilingBonus) }));
-    }
-  }
-
-  if (kind === 'seal') {
-    const def = getSeal(id);
-    if (def.umbraOnly) notes.push(t('goods.umbraOnly'));
-    // An override replaces appeal rather than adjusting it, so it is the only
-    // thing worth saying about how this one sells.
-    if (def.shelfAppealOverride !== undefined) {
-      notes.push(t('goods.appealOverride', { percent: pct(def.shelfAppealOverride) }));
-    } else if (def.appealBonus > 0) {
-      notes.push(t('goods.appeal', { percent: pct(def.appealBonus) }));
-    }
-    value(def.valueMultiplier);
-    if (def.renownPerSale) notes.push(t('goods.renownPerSale', { count: def.renownPerSale }));
-    if (def.contractPayoutBonus) {
-      notes.push(t('goods.contractPayout', { percent: pct(def.contractPayoutBonus) }));
-    }
-    if (def.supplyGradeBonus) notes.push(t('goods.supplyGrade'));
-    if (def.haggleCeilingBonus) {
-      notes.push(t('goods.haggleCeiling', { percent: pct(def.haggleCeilingBonus) }));
-    }
-    if (def.barterMultiplier && def.barterMultiplier !== 1) {
-      notes.push(t('goods.barter', { times: def.barterMultiplier }));
     }
   }
 

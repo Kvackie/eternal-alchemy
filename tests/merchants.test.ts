@@ -135,8 +135,10 @@ describe('merchant stock', () => {
     sim.world.gold = 500_000;
     sim.world.renown = 20_000;
 
+    // Décor has no prerequisites, so it is the one-off that can always be
+    // bought; an upgrade shown a rank early may still be waiting on another.
     const before = sim.merchants()[0]!;
-    const upgrade = before.entries.findIndex((e) => e.kind === 'equipment' || e.kind === 'decor');
+    const upgrade = before.entries.findIndex((e) => e.kind === 'decor');
     expect(upgrade, 'this visit carries no one-off to buy').toBeGreaterThanOrEqual(0);
 
     expect(sim.buy(before.merchantId, upgrade).ok).toBe(true);
@@ -252,8 +254,6 @@ describe('bartering with the Ashwalker', () => {
     return {
       uid,
       recipeId: 'aquaTerra',
-      vesselId: 'clayVial',
-      sealId: 'cork',
       grade,
       purity: 80,
       potencyTier: 'common',
@@ -396,13 +396,17 @@ describe('equipment', () => {
 
   it('actually creates the plot when a plot upgrade is bought', () => {
     const sim = new Simulation(createWorld(3));
-    sim.advanceTo(midday(2));
     sim.world.gold = 100000;
     sim.world.renown = 100000;
 
-    const visit = sim.merchants()[0]!;
-    const index = visit.entries.findIndex((e) => e.kind === 'equipment' && e.id.startsWith('plot'));
-    if (index < 0) return; // this visit didn't stock one; covered by the stock tests
+    // The first plot upgrade has no prerequisite; wait for a visit that carries it.
+    let index = -1;
+    for (let day = 0; day < 40 && index < 0; day += 2) {
+      sim.advanceTo(midday(day));
+      const visit = sim.merchants().find((v) => v.merchantId === 'bramm');
+      index = visit?.entries.findIndex((e) => e.id === 'plotFive') ?? -1;
+    }
+    expect(index, 'Bramm never carried the fifth plot').toBeGreaterThanOrEqual(0);
 
     const before = sim.world.plots.length;
     expect(sim.buy('bramm', index).ok).toBe(true);
@@ -506,24 +510,24 @@ describe('buying several at once', () => {
     const sim = new Simulation(world);
 
     const visit = sim.merchants().find((v) => v.merchantId === 'vessa')!;
-    // Found rather than assumed: which slot the flask lands in is a roll over
+    // Found rather than assumed: which slot a spore lands in is a roll over
     // Vessa's whole pool, and moves whenever anything is added to it.
-    const index = visit.entries.findIndex((entry) => entry.id === 'glassFlask');
+    const index = visit.entries.findIndex((entry) => entry.kind === 'spore' && entry.remaining >= 3);
     expect(index).toBeGreaterThanOrEqual(0);
     const chosen = visit.entries[index]!;
 
     const unit = chosen.price ?? 0;
     const before = sim.world.gold;
-    // The shop opens with some glassware already on the shelf, so count the
-    // change rather than the total.
-    const heldBefore = sim.world.vessels.glassFlask ?? 0;
+    // The shop opens with a spore or two already, so count the change rather
+    // than the total.
+    const heldBefore = sim.world.spores[chosen.id] ?? 0;
     const { bought } = sim.buyQuantity('vessa', index, 3);
 
     expect(bought).toBe(3);
     // Charged for what was shown, at the price that was shown.
     expect(before - sim.world.gold).toBe(unit * 3);
     // And three of the thing itself arrived, not two and something else.
-    expect((sim.world.vessels.glassFlask ?? 0) - heldBefore).toBe(3);
+    expect((sim.world.spores[chosen.id] ?? 0) - heldBefore).toBe(3);
   });
 
   it('stops at the stock and reports nothing bought when it cannot start', () => {

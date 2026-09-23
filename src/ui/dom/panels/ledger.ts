@@ -180,7 +180,6 @@ function renderEntry(entry: LogEntry): HTMLElement {
   if (typeof params.recipe === 'string') params.recipe = t(`recipe.${params.recipe}`);
   if (typeof params.ingredient === 'string') params.ingredient = t(`ingredient.${params.ingredient}`);
   if (typeof params.crop === 'string') params.crop = t(`crop.${params.crop}`);
-  if (typeof params.vessel === 'string') params.vessel = t(`vessel.${params.vessel}`);
   if (typeof params.rank === 'string') params.rank = t(`rank.${params.rank}`);
   if (typeof params.hero === 'string') params.hero = t(`hero.${params.hero}`);
   if (typeof params.biome === 'string') params.biome = t(`biome.${params.biome}`);
@@ -195,7 +194,7 @@ function renderEntry(entry: LogEntry): HTMLElement {
   // A bought item could be any kind, so try each namespace and fall back to the id.
   if (typeof params.item === 'string') {
     const id = params.item;
-    for (const namespace of ['equipment', 'decor', 'ingredient', 'vessel', 'seal', 'crop']) {
+    for (const namespace of ['equipment', 'decor', 'ingredient', 'crop']) {
       const key = `${namespace}.${id}`;
       if (has(key)) {
         params.item = t(key);

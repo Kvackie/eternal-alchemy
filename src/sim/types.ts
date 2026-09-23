@@ -81,11 +81,6 @@ export interface BrewOutcome {
   potencyTier: PotencyTierId;
   overCapacity: boolean;
   grade: Grade;
-  /**
-   * What physically went in, where the blend cannot say: a volatile
-   * ingredient needs an iron-bound vessel however it balances.
-   */
-  composition: { traits: string[] };
 }
 
 /** An accepted brew, sitting in the pot until it is ready to bottle. */
@@ -95,12 +90,10 @@ export interface BrewInProgress {
   readyAt: number;
 }
 
-/** A finished, bottled, sealed item. Immutable once created. */
+/** A finished, bottled potion. Immutable once created. */
 export interface BottledItem {
   uid: string;
   recipeId: string;
-  vesselId: string;
-  sealId: string;
   grade: Grade;
   purity: number;
   potencyTier: PotencyTierId;
@@ -114,11 +107,11 @@ export interface ShelfSlot {
   id: string;
   item: BottledItem | null;
   /**
-   * How many identical bottles this slot holds.
+   * How many bottles this slot holds: 1 with something on it, 0 without.
    *
-   * Almost always 1. A vessel with `shelfStack` — the waxed pouch — lets one
-   * slot carry several, which is the whole reason to bottle cheap goods in one:
-   * shelf space, not value.
+   * A slot once stacked several of a kind, when the waxed pouch let one shelf
+   * carry five. Vessels are gone and a shelf holds one bottle; the count stays
+   * so the sale and the stock mover read the same way they always have.
    */
   quantity: number;
   /**
@@ -302,8 +295,6 @@ export interface ContractTerms {
   faction: string;
   recipeId: string;
   minGrade: Grade;
-  requiresSeal?: string;
-  requiresVessel?: string;
 }
 
 export interface Contract {
@@ -343,8 +334,6 @@ export interface World {
   plots: Plot[];
   inventory: IngredientStack[];
   seeds: Record<string, number>;
-  vessels: Record<string, number>;
-  seals: Record<string, number>;
 
   /**
    * Every pot the shop owns, each brewing on its own.

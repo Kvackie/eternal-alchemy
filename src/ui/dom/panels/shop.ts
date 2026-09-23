@@ -424,7 +424,7 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
  * Fill this one shelf, from whatever is in the store room.
  *
  * Paged, for the same reason the store room itself is: 31 potions in every
- * grade, vessel and seal is hundreds of kinds of bottle, and building all of
+ * grade and potency is hundreds of kinds of bottle, and building all of
  * them into a dialog is the cost that grid was paged to avoid — inside a click handler,
  * where it is felt most. Ordered by the same chip the store room is set to, so
  * the page you are shown is the one you were just looking at.
@@ -562,7 +562,7 @@ function stackSortRow(): HTMLElement {
  * A count at the head, a way to order it, and only a screenful drawn at a
  * time. The tiles were already tiles — what made this the slowest thing left
  * in the game was simply how many of them there are: 31 potions in every
- * grade, vessel and seal is hundreds of kinds of bottle, and two hundred tiles
+ * grade and potency is hundreds of kinds of bottle, and two hundred tiles
  * is sixteen hundred elements for the browser to lay out on every single press.
  *
  * Paged, not truncated. Sorting decides what reaches the first page, so the
@@ -585,8 +585,6 @@ function renderInventory(sim: Simulation): HTMLElement {
         stackQuery,
         t(`recipe.${item.recipeId}`),
         item.grade,
-        t(`vessel.${item.vesselId}`),
-        t(`seal.${item.sealId}`),
       ),
     )
     .map(({ item, count }) => ({
@@ -655,7 +653,6 @@ function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
     count,
     caption: [gradeBadge(item.grade), goldText(item.fairValue)],
     dimmed: room === 0,
-    // Vessel and seal are two of the lines in the card this opens.
     /*
      * How many, in one press.
      *

@@ -17,30 +17,6 @@
     "discountPerTier": 0.05,
     "pool": [
       {
-        "kind": "vessel",
-        "id": "clayVial",
-        "price": 3,
-        "stock": 20,
-        "weight": 4,
-        "tier": 0
-      },
-      {
-        "kind": "seal",
-        "id": "waxRibbon",
-        "price": 4,
-        "stock": 12,
-        "weight": 3,
-        "tier": 0
-      },
-      {
-        "kind": "vessel",
-        "id": "glassFlask",
-        "price": 12,
-        "stock": 6,
-        "weight": 2,
-        "tier": 1
-      },
-      {
         "kind": "equipment",
         "id": "plotFive",
         "weight": 3,
@@ -620,14 +596,6 @@
     "discountPerTier": 0.05,
     "pool": [
       {
-        "kind": "vessel",
-        "id": "glassFlask",
-        "price": 10,
-        "stock": 10,
-        "weight": 3,
-        "tier": 0
-      },
-      {
         "kind": "equipment",
         "id": "wideRim",
         "weight": 3,
@@ -1072,7 +1040,7 @@
     ]
   },
   {
-    "$comment": "The outfitter. Everything that makes the shop BIGGER rather than fuller — beams, beds, moulds, the order book — and the strong minerals from the bottom half of the quarry, for a shop that wants them before it has dug that deep. Slow and dear.",
+    "$comment": "The outfitter. Everything that makes the shop BIGGER rather than fuller — beams, beds and tools — and the strong minerals from the bottom half of the quarry, for a shop that wants them before it has dug that deep. Slow and dear.",
     "id": "hesk",
     "cycleDays": 3,
     "offsetDays": 2,
@@ -1122,34 +1090,6 @@
         "kind": "equipment",
         "id": "dryingRack",
         "weight": 3,
-        "tier": 2
-      },
-      {
-        "kind": "equipment",
-        "id": "vesselMoulds",
-        "weight": 2,
-        "tier": 3
-      },
-      {
-        "kind": "equipment",
-        "id": "sealPress",
-        "weight": 2,
-        "tier": 3
-      },
-      {
-        "kind": "vessel",
-        "id": "ironBoundJar",
-        "price": 26,
-        "stock": 4,
-        "weight": 3,
-        "tier": 1
-      },
-      {
-        "kind": "seal",
-        "id": "guildStamp",
-        "price": 18,
-        "stock": 6,
-        "weight": 2,
         "tier": 2
       },
       {
@@ -1381,7 +1321,7 @@
     ]
   },
   {
-    "$comment": "The one night trader, and the only one who deals in exotics. Takes no gold: his prices are sealed potions, and the rarest finds wait on a long acquaintance, so an expedition is still the cheaper way to them.",
+    "$comment": "The one night trader, and the only one who deals in exotics. Takes no gold: his prices are potions, and the rarest finds wait on a long acquaintance, so an expedition is still the cheaper way to them.",
     "id": "ashwalker",
     "cycleDays": 8,
     "offsetDays": 3,

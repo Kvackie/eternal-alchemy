@@ -15,12 +15,10 @@ import type { BottledItem, Grade, HaggleStance } from '@/sim/types';
 
 const DAY = config.clock.dayLengthMs;
 
-function bottle(uid: string, recipeId = 'aquaTerra', grade: Grade = 'B', sealId = 'cork'): BottledItem {
+function bottle(uid: string, recipeId = 'aquaTerra', grade: Grade = 'B'): BottledItem {
   return {
     uid,
     recipeId,
-    vesselId: 'clayVial',
-    sealId,
     grade,
     purity: 80,
     potencyTier: 'common',
@@ -221,15 +219,6 @@ describe('a haggle', () => {
     const clone = new Simulation(JSON.parse(JSON.stringify(sim.world)));
     expect(WALK_INS_PAUSED).toBe(true);
     expect(clone.haggle).toBeNull();
-  });
-
-  it('pays more for a silver-clasped bottle', () => {
-    const { customerId } = shopWithCustomer();
-    const def = getCustomer(customerId);
-
-    const plain = ceilingFor(bottle('p'), def);
-    const clasped = ceilingFor(bottle('c', 'aquaTerra', 'B', 'silverClasp'), def);
-    expect(clasped).toBeGreaterThan(plain);
   });
 
   it('only sends the night customer after dark', () => {

@@ -674,12 +674,8 @@ const MIGRATIONS: Record<number, Migration> = {
       if (held > 0) world.seeds[strain.baseCropId] = (world.seeds[strain.baseCropId] ?? 0) + held;
     }
 
-    // A brew's composition was read by forms; only its traits are left to read.
-    for (const pot of world.cauldrons ?? []) {
-      for (const outcome of [pot.brewing?.outcome, pot.pendingBrew]) {
-        if (outcome?.composition) outcome.composition = { traits: outcome.composition.traits ?? [] };
-      }
-    }
+    // A brew's composition was read by forms, and later by the volatile trait;
+    // v18 drops what was left of it.
 
     delete loose.strains;
     delete loose.nextStrainId;
@@ -775,6 +771,69 @@ const MIGRATIONS: Record<number, Migration> = {
     }
 
     for (const visit of Object.values(world.merchantVisits ?? {})) delete visit.picks;
+    return world;
+  },
+
+  /**
+   * v17 → v18: vessels and seals are gone, and bottling is one press.
+   *
+   * Every bottle loses the vessel and seal it was made with and is revalued
+   * as the plain potion it now is; an order stops asking for either; a shelf
+   * that stacked several pouches keeps one and hands the rest back to the store
+   * room. The vessel moulds and the sealing press never did anything, and are
+   * refunded at what they cost. Stalls are dealt again, so none still shows
+   * glass for sale.
+   */
+  18: (world) => {
+    const loose = world as unknown as Record<string, unknown>;
+    delete loose.vessels;
+    delete loose.seals;
+
+    const refunds: Record<string, number> = { vesselMoulds: 900, sealPress: 1200 };
+    for (const [id, cost] of Object.entries(refunds)) {
+      const owned = world.equipment?.[id] ?? 0;
+      if (owned > 0) world.gold = (world.gold ?? 0) + cost * owned;
+      if (world.equipment) delete world.equipment[id];
+    }
+
+    const unbottle = (node: unknown): void => {
+      if (!node || typeof node !== 'object') return;
+      if (Array.isArray(node)) {
+        for (const entry of node) unbottle(entry);
+        return;
+      }
+      const item = node as Record<string, unknown>;
+      if ('recipeId' in item && ('vesselId' in item || 'sealId' in item)) {
+        delete item.vesselId;
+        delete item.sealId;
+        if ('fairValue' in item) item.fairValue = fairValue(item as unknown as BottledItem);
+      }
+      delete item.requiresSeal;
+      delete item.requiresVessel;
+      delete item.composition;
+      for (const value of Object.values(item)) unbottle(value);
+    };
+    unbottle(world);
+
+    for (const slot of world.shelf ?? []) {
+      if (!slot.item || slot.quantity <= 1) continue;
+      for (let i = 1; i < slot.quantity; i += 1) {
+        world.bottled.push({ ...slot.item, uid: `${slot.item.uid}-${i}` });
+      }
+      slot.quantity = 1;
+    }
+
+    for (const visit of Object.values(world.merchantVisits ?? {})) delete visit.picks;
+
+    const gone = new Set([
+      'waxedPouch', 'clayVial', 'hornPhial', 'glassFlask', 'copperBottle', 'ironBoundJar',
+      'sealedAmphora', 'crystalOrb', 'cork', 'waxRibbon', 'alchemistsMark', 'guildStamp',
+      'wardingSigil', 'silverClasp', 'ashwalkerMark', 'vesselMoulds', 'sealPress',
+    ]);
+    world.log = (world.log ?? []).filter(
+      (entry) => !(typeof entry.params.item === 'string' && gone.has(entry.params.item)),
+    );
+    for (const entry of world.log) delete entry.params.vessel;
     return world;
   },
 };

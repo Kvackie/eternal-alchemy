@@ -17,8 +17,8 @@ describe('plural forms', () => {
   });
 
   it('carries the other parameters into the chosen form', () => {
-    expect(t('market.barter.cost', { count: 1, grade: 'D' })).toBe('Pay 1 sealed potion, D+');
-    expect(t('market.barter.cost', { count: 3, grade: 'C' })).toBe('Pay 3 sealed potions, C+');
+    expect(t('market.barter.cost', { count: 1, grade: 'D' })).toBe('Pay 1 potion, D+');
+    expect(t('market.barter.cost', { count: 3, grade: 'C' })).toBe('Pay 3 potions, C+');
   });
 
   it('leaves a key with no plural forms exactly as it was', () => {

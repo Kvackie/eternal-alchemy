@@ -106,12 +106,13 @@ export const VIEWS: View[] = [
   },
   {
     screen: 'cauldron',
-    name: 'bottling',
-    // A Ready card on the bench opens the bottling window itself; the button
-    // in the station is the way back to it once that has been closed.
+    name: 'bottled',
+    // Bottling asks nothing: pressing a Ready card bottles, and the bench is
+    // what is left to look at — with no pot still saying Ready.
     open: async (page) =>
       (await station(page, /Ready/)) &&
-      ((await dialogOpen(page)) || ((await press(page, 'button', /Bottle it/)) && dialogOpen(page))),
+      !(await dialogOpen(page)) &&
+      (await page.locator('.bench-card').filter({ hasText: /Ready/ }).count()) === 0,
   },
   {
     screen: 'cauldron',

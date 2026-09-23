@@ -432,9 +432,8 @@ function odds(
  * Bottles that are the same bottle, as one tile.
  *
  * Two potions the mission maths cannot tell apart should not be two decisions.
- * The key is everything that changes what a bottle is worth as a supply —
- * recipe, grade, and the vessel and seal, both of which can carry a grade bonus
- * into the estimate — so a stack is safe to spend from in any order.
+ * The key is everything that tells two bottles apart — recipe, grade and
+ * potency — so a stack is safe to spend from in any order.
  *
  * Without this a well-stocked shop laid out several hundred near-identical
  * icons, and finding the right one meant reading all of them.
@@ -443,7 +442,7 @@ function supplyStacks(sim: Simulation) {
   const stacks = new Map<string, { items: typeof sim.world.bottled; sort: string }>();
 
   for (const item of sim.world.bottled) {
-    const key = `${item.recipeId}:${item.grade}:${item.vesselId}:${item.sealId}`;
+    const key = `${item.recipeId}:${item.grade}:${item.potencyTier}`;
     const stack = stacks.get(key);
     if (stack) stack.items.push(item);
     else stacks.set(key, { items: [item], sort: `${item.grade}${t(`recipe.${item.recipeId}`)}` });
@@ -485,8 +484,8 @@ function renderSupplies(sim: Simulation): HTMLElement {
      * The tile is a door; the stepper is the decision.
      *
      * Tapping a bottle used to pack it, which meant the only way to look at
-     * something was to commit to it — and a bottle carries a purity, a vessel
-     * and a seal that decide how much it is worth to a party. Reading and
+     * something was to commit to it — and a bottle carries a grade and a purity
+     * that decide how much it is worth to a party. Reading and
      * choosing are separate gestures now, the way they already are in the
      * tavern.
      */

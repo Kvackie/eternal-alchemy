@@ -24,7 +24,7 @@ import {
 } from './components';
 import type { QuantityActionSpec } from './components';
 import { formatGold, formatNumber, t } from '@/i18n';
-import { getHeroDef, getSeal, getVessel } from '@/sim/config';
+import { getHeroDef } from '@/sim/config';
 import type { Simulation } from '@/sim/sim';
 import type { BottledItem } from '@/sim/types';
 
@@ -74,31 +74,14 @@ export function showPotionInfo(
   count = 1,
   action?: QuantityActionSpec,
 ): void {
-  const vessel = getVessel(item.vesselId);
-  const seal = getSeal(item.sealId);
 
-
-  /*
-   * The two bonuses a bottle can carry into an expedition.
-   *
-   * A horn phial and a warding sigil each read as one grade better when packed
-   * as supplies, and they stack. It is the one number on this screen that is
-   * about the Roster rather than the shelf, and without it a player has no way
-   * to know why one B-grade bottle helps a party more than another.
-   */
-  const supplyBonus = (vessel.supplyGradeBonus ?? 0) + (seal.supplyGradeBonus ?? 0);
 
   const facts: HTMLElement[] = [
     stat(t('potionInfo.purity'), `${Math.round(item.purity)} / 100`),
     stat(t('potionInfo.essence'), formatNumber(Math.round(item.totalEssence))),
-    stat(t('potionInfo.vessel'), t(`vessel.${item.vesselId}`)),
-    stat(t('potionInfo.seal'), t(`seal.${item.sealId}`)),
   ];
 
   facts.push(stat(t('potionInfo.value'), formatGold(item.fairValue), 'good'));
-  if (supplyBonus > 0) {
-    facts.push(stat(t('potionInfo.supplyBonus'), `+${supplyBonus}`, 'good'));
-  }
 
   modal({
     className: 'potion-info',

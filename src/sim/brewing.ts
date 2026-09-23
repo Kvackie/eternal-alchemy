@@ -14,12 +14,10 @@
 import { config, recipes } from './config';
 import {
   angleBetween,
-  emptyComposition,
   gradeFor,
   potencyTierFor,
   totalEssence,
   worseOf,
-  type BrewComposition,
 } from './essences';
 import type { BrewOutcome, EssenceVector, PotencyTierId } from './types';
 
@@ -42,7 +40,6 @@ function purityAt(offIdealRad: number, toleranceDeg: number): number {
 export function assessOutcome(args: {
   blend: EssenceVector;
   capacity: number;
-  composition?: BrewComposition;
 }): BrewOutcome | null {
   const { blend, capacity } = args;
   const essence = totalEssence(blend);
@@ -70,7 +67,6 @@ export function assessOutcome(args: {
       potencyTier: potencyTierFor(essence),
       overCapacity,
       grade,
-      composition: args.composition ?? emptyComposition(),
     };
   }
   return null;

@@ -22,7 +22,6 @@ import {
   equipment,
   getMerchant,
   getEquipment,
-  getSeal,
   ingredients,
   merchants,
   prestigeConfig,
@@ -33,7 +32,7 @@ import {
 import { grantDecor, placeDecor } from '@/sim/decor';
 import { angleBetween, gradeFor, potencyMultiplier, potencyTierFor } from '@/sim/essences';
 import { assessOutcome } from '@/sim/brewing';
-import { appealOf, fairValue } from '@/sim/market';
+import { fairValue } from '@/sim/market';
 import { isMature, spreadChanceFor } from '@/sim/cave';
 import { derivedStats, equipmentAvailability } from '@/sim/progression';
 import { codexBonuses } from '@/sim/prestige';
@@ -47,8 +46,6 @@ function bottle(uid: string, grade: Grade, value = 60): BottledItem {
   return {
     uid,
     recipeId: 'aquaTerra',
-    vesselId: 'clayVial',
-    sealId: 'cork',
     grade,
     purity: 80,
     potencyTier: 'common',
@@ -219,8 +216,6 @@ describe('the selling channels stay in their lanes', () => {
     // contract's payout against a made-up shelf price measures nothing.
     const shelfValue = fairValue({
       recipeId: 'aquaTerra',
-      vesselId: 'clayVial',
-      sealId: 'cork',
       grade: 'C',
       potencyTier: 'common',
     });
@@ -562,79 +557,6 @@ describe('nothing sold is inert', () => {
    * far end cannot pass.
    */
 
-  /**
-   * Vessels and seals carry their own effect fields, and checking only
-   * equipment and the Codex is what let five of them ship inert. Each of these
-   * does the thing the item's description promises and asserts the outcome
-   * differs — the only check a disconnected field cannot pass.
-   */
-  it('makes a horn phial and a warding sigil worth supplying', () => {
-    const sim = new Simulation(createWorld(6));
-    sim.world.gold = 100_000;
-    sim.recruitHero('corin');
-
-    sim.world.bottled.push(
-      { ...bottle('plain', 'C'), vesselId: 'clayVial', sealId: 'cork' },
-      { ...bottle('phial', 'C'), vesselId: 'hornPhial', sealId: 'cork' },
-      { ...bottle('sigil', 'C'), vesselId: 'clayVial', sealId: 'wardingSigil' },
-    );
-
-    const base = sim.estimate('emberwaste', ['corin'], ['plain']).success;
-    expect(sim.estimate('emberwaste', ['corin'], ['phial']).success).toBeGreaterThan(base);
-    expect(sim.estimate('emberwaste', ['corin'], ['sigil']).success).toBeGreaterThan(base);
-  });
-
-  it('settles three units of a contract with one sealed amphora', () => {
-    const sim = new Simulation(createWorld(9));
-    sim.world.contracts = [
-      {
-        id: 'contract-test',
-        templateId: 'barrackTonics',
-        quantity: 6,
-        delivered: 0,
-        payout: 600,
-        renown: 5,
-        msRemaining: 5 * DAY,
-        deadlineDays: 5,
-        postedAt: 0,
-      },
-    ];
-
-    sim.world.bottled.push({ ...bottle('amphora', 'B'), vesselId: 'sealedAmphora' });
-
-    const result = sim.deliverContract('contract-test')!;
-    // One bottle handed over, three units of the order settled — the entire
-    // reason to buy an amphora.
-    expect(result.delivered).toBe(3);
-    expect(sim.world.bottled).toHaveLength(0);
-  });
-
-  it('stacks a waxed pouch into one shelf slot and sells it down one at a time', () => {
-    const sim = new Simulation(createWorld(2));
-    for (let i = 0; i < 5; i += 1) {
-      sim.world.bottled.push({ ...bottle(`p${i}`, 'C'), vesselId: 'waxedPouch' });
-    }
-
-    expect(sim.stock('shelf-1', 'p0')).toBe(true);
-    expect(sim.world.shelf[0]!.quantity).toBe(5);
-    expect(sim.world.bottled).toHaveLength(0);
-
-    sim.setPrice('shelf-1', 0.4);
-    sim.advanceBy(2 * DAY, true);
-    const slot = sim.world.shelf[0]!;
-    // Sold *some*, not all at once and not none — a stack empties by the unit.
-    expect(slot.quantity).toBeLessThan(5);
-    expect(sim.world.statistics.itemsSold).toBeGreaterThan(0);
-  });
-
-  it('makes the Ashwalker mark worth double to the Ashwalker', () => {
-    expect(getSeal('ashwalkerMark').barterMultiplier).toBe(2);
-    // And nearly worthless on a shelf, which is the trade.
-    expect(appealOf({ ...bottle('m', 'B'), sealId: 'ashwalkerMark' })).toBeLessThan(
-      appealOf({ ...bottle('c', 'B'), sealId: 'cork' }),
-    );
-  });
-
   it('sells spore clusters somewhere, so the cave is not stuck on its starter', () => {
     // Two of three species were unobtainable and the lantern had nothing to
     // steer, because nothing stocked a cluster.
@@ -799,12 +721,8 @@ describe('nothing sold is inert', () => {
     const known = tierOf(getMerchant('bramm'), 0, 1);
     expect(known).toBeGreaterThan(stranger);
 
-    // Drying rack, moulds, press, standing orders — capability flags flip.
-    for (const [id, flag] of [
-      ['dryingRack', 'canForceDry'],
-      ['vesselMoulds', 'craftsVessels'],
-      ['sealPress', 'craftsSeals'],
-    ] as const) {
+    // Drying rack — a capability flag flips.
+    for (const [id, flag] of [['dryingRack', 'canForceDry']] as const) {
       const world = createWorld(1);
       expect(derivedStats(world)[flag]).toBe(false);
       world.equipment[id] = 1;

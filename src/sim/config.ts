@@ -10,8 +10,6 @@ import rawConfig from '@/data/config.json';
 import rawIngredients from '@/data/ingredients.json';
 import rawCrops from '@/data/crops.json';
 import rawRecipes from '@/data/recipes.json';
-import rawVessels from '@/data/vessels.json';
-import rawSeals from '@/data/seals.json';
 import rawRanks from '@/data/ranks.json';
 import rawEquipment from '@/data/equipment.json';
 import rawDecor from '@/data/decor.json';
@@ -40,7 +38,6 @@ export interface IngredientDef {
   id: string;
   category: IngredientCategory;
   essence: EssenceVector;
-  traits: string[];
 }
 
 export interface CropDef {
@@ -79,44 +76,6 @@ export interface RecipeDef extends RawRecipe {
   toleranceDeg: number;
 }
 
-export interface VesselDef {
-  id: string;
-  cost: number;
-  potencyCap: PotencyTierId;
-  valueMultiplier: number;
-  appealBonus: number;
-  startingStock: number;
-  /** How many shelf-slot units one of these occupies when stacked. */
-  shelfStack?: number;
-  /** Counts as this many units toward a contract. */
-  contractUnits?: number;
-  /** The only vessel that will hold a Volatile brew. */
-  requiredForVolatile?: boolean;
-  /** Raises the effective grade when supplied to a hero. */
-  supplyGradeBonus?: number;
-}
-
-export interface SealDef {
-  id: string;
-  cost: number;
-  appealBonus: number;
-  valueMultiplier: number;
-  requiresRank?: number;
-  /** Renown earned each time an item with this seal sells. */
-  renownPerSale?: number;
-  /** Fraction added to a contract's payout. */
-  contractPayoutBonus?: number;
-  supplyGradeBonus?: number;
-  /** Fraction added to a haggling customer's ceiling. */
-  haggleCeilingBonus?: number;
-  /** Only applies to brews with real Umbra in them. */
-  umbraOnly?: boolean;
-  /** Replaces shelf appeal outright — villagers refuse some marks. */
-  shelfAppealOverride?: number;
-  /** Multiplies what a barter merchant will give. */
-  barterMultiplier?: number;
-}
-
 export interface RankDef {
   id: string;
   renown: number;
@@ -139,8 +98,6 @@ export interface EquipmentEffect {
   appealBonus?: number;
   haggleCeilingBonus?: number;
   canForceDry?: boolean;
-  craftsVessels?: boolean;
-  craftsSeals?: boolean;
 }
 
 export interface EquipmentDef {
@@ -202,7 +159,7 @@ export interface ShelfTierDef {
 }
 
 export interface MerchantStockDef {
-  kind: 'seed' | 'spore' | 'ingredient' | 'vessel' | 'seal' | 'equipment' | 'decor' | 'board';
+  kind: 'seed' | 'spore' | 'ingredient' | 'equipment' | 'decor' | 'board';
   id: string;
   /** Gold price. Absent on a barter merchant. */
   price?: number;
@@ -210,7 +167,7 @@ export interface MerchantStockDef {
   weight: number;
   /** Relationship tier this entry unlocks at. */
   tier: number;
-  /** Price in sealed potions, for merchants who take no gold. */
+  /** Price in bottled potions, for merchants who take no gold. */
   barter?: { potions: number; minGrade: Grade };
 }
 
@@ -337,8 +294,6 @@ export interface ContractTemplateDef {
   quantityMin: number;
   quantityMax: number;
   minGrade: Grade;
-  requiresSeal?: string;
-  requiresVessel?: string;
   requiresRank: number;
 }
 
@@ -389,8 +344,6 @@ export interface DerivedContractConfig {
   lowValue: number;
   highValue: number;
   quantitySpread: number;
-  sealChance: number;
-  vesselChance: number;
 }
 
 export interface ContractsConfig {
@@ -563,8 +516,6 @@ export function resetConfig(): void {
 export const ingredients = rawIngredients as unknown as IngredientDef[];
 export const crops = rawCrops as unknown as CropDef[];
 export const recipes = buildRecipes(rawRecipes as unknown as RawRecipe[]);
-export const vessels = rawVessels as unknown as VesselDef[];
-export const seals = rawSeals as unknown as SealDef[];
 export const ranks = rawRanks as unknown as RankDef[];
 export const equipment = rawEquipment as unknown as EquipmentDef[];
 export const decorConfig = rawDecor as unknown as DecorConfig;
@@ -592,8 +543,6 @@ function index<T extends { id: string }>(list: T[]): Map<string, T> {
 const ingredientIndex = index(ingredients);
 const cropIndex = index(crops);
 const recipeIndex = index(recipes);
-const vesselIndex = index(vessels);
-const sealIndex = index(seals);
 const equipmentIndex = index(equipment);
 const decorIndex = index(decorPieces);
 const shelfTierIndex = index(shelfTiers);
@@ -610,8 +559,6 @@ export const getIngredient = (id: string): IngredientDef =>
   require_(ingredientIndex, id, 'ingredient');
 export const getCrop = (id: string): CropDef => require_(cropIndex, id, 'crop');
 export const getRecipe = (id: string): RecipeDef => require_(recipeIndex, id, 'recipe');
-export const getVessel = (id: string): VesselDef => require_(vesselIndex, id, 'vessel');
-export const getSeal = (id: string): SealDef => require_(sealIndex, id, 'seal');
 export const getEquipment = (id: string): EquipmentDef =>
   require_(equipmentIndex, id, 'equipment');
 export const getDecor = (id: string): DecorDef => require_(decorIndex, id, 'decor');

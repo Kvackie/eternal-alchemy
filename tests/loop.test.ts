@@ -6,7 +6,6 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { availableVessels } from '@/sim/bottling';
 import { config, getCrop } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
 
@@ -222,52 +221,25 @@ describe('bottling and shelf', () => {
     return sim;
   }
 
-  it('blocks a vessel that cannot hold the brew, with a reason', () => {
+  it('bottles in one press and clears the pot', () => {
     const sim = readyToBottle();
-    sim.cauldron.pendingBrew!.potencyTier = 'grand';
-    const vessels = availableVessels(sim.world, sim.pendingBrew!);
-    const clay = vessels.find((v) => v.vesselId === 'clayVial');
-    expect(clay?.available).toBe(false);
-    expect(clay?.reasonKey).toBe('workbench.reason.vesselCap');
-  });
-
-  it('bottles, consumes the vessel, and clears the workbench', () => {
-    const sim = readyToBottle();
-    const before = sim.world.vessels.clayVial ?? 0;
-
-    const item = sim.bottlePending({
-      vesselId: 'clayVial',
-      sealId: 'cork',
-    });
+    const item = sim.bottlePending();
 
     expect(item).not.toBeNull();
-    expect(sim.world.vessels.clayVial).toBe(before - 1);
     expect(sim.cauldron.pendingBrew).toBeNull();
+    expect(sim.world.bottled).toHaveLength(1);
     expect(item!.fairValue).toBeGreaterThan(0);
   });
 
-  it('never runs out of cork, so bottling is always possible', () => {
+  it('bottles a brew of any potency', () => {
     const sim = readyToBottle();
-    sim.world.seals.cork = 0;
-    expect(
-      sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' }),
-    ).not.toBeNull();
-  });
-
-  it('prices a wax-sealed flask above a corked vial', () => {
-    const a = readyToBottle();
-    const b = readyToBottle();
-    const plain = a.bottlePending({ vesselId: 'clayVial', sealId: 'cork' })!;
-    const fancy = b.bottlePending({
-      vesselId: 'glassFlask',
-      sealId: 'waxRibbon',
-    })!;
-    expect(fancy.fairValue).toBeGreaterThan(plain.fairValue);
+    sim.cauldron.pendingBrew!.potencyTier = 'sovereign';
+    expect(sim.bottlePending()?.potencyTier).toBe('sovereign');
   });
 
   it('moves a bottled item onto the shelf and back', () => {
     const sim = readyToBottle();
-    const item = sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' })!;
+    const item = sim.bottlePending()!;
 
     expect(sim.stock('shelf-1', item.uid)).toBe(true);
     expect(sim.world.bottled).toHaveLength(0);
@@ -304,10 +276,7 @@ describe('the whole loop', () => {
     brew(sim);
     expect(sim.pendingBrew?.recipeId).toBe('aqua');
 
-    const item = sim.bottlePending({
-      vesselId: 'clayVial',
-      sealId: 'waxRibbon',
-    })!;
+    const item = sim.bottlePending()!;
     sim.stock('shelf-1', item.uid);
     sim.setPrice('shelf-1', 0.8);
 

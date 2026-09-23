@@ -71,7 +71,7 @@ export function renderMarket(sim: Simulation): HTMLElement {
  * Half again as big as the one on a tile you own something on. Everywhere else
  * the icon is a reminder of a thing already known — you brewed it, you planted
  * it — and the label carries the identification. Here it is the identification:
- * a pack is eleven unfamiliar names, and telling a seed from a seal from a
+ * a pack is eleven unfamiliar names, and telling a seed from a spore from a
  * shelf board at a glance is the whole job of the grid.
  */
 const MARKET_ICON = 34;
@@ -80,8 +80,6 @@ function entryIcon(entry: StockEntry): Node {
   if (entry.kind === 'equipment') {
     return el('span', { class: 'slot-glyph', text: '⚒' });
   }
-  if (entry.kind === 'vessel') return el('span', { class: 'slot-glyph', text: '🧴' });
-  if (entry.kind === 'seal') return el('span', { class: 'slot-glyph', text: '🕯' });
   if (entry.kind === 'decor') {
     const url = artUrlIf('decor', entry.id);
     return url
@@ -106,7 +104,7 @@ function entryIcon(entry: StockEntry): Node {
  * Every other price on this screen is a number of coins in gold, so the one
  * thing that is not paid in coins should not look like one. It reads as a
  * sentence rather than as fragments — how many, of what, at what grade — and
- * it stays on a single line, because "1 × sealed potion" wrapping above "D or
+ * it stays on a single line, because "1 × potion" wrapping above "D or
  * better" was three pieces of one fact arranged as two.
  */
 function barterCaption(count: number, grade: string): Array<Node | string> {
@@ -126,10 +124,6 @@ function entryLabel(entry: StockEntry): string {
       return t('market.sporeOf', { species: t(`ingredient.${entry.id}`) });
     case 'ingredient':
       return t(`ingredient.${entry.id}`);
-    case 'vessel':
-      return t(`vessel.${entry.id}`);
-    case 'seal':
-      return t(`seal.${entry.id}`);
     case 'equipment':
       return t(`equipment.${entry.id}`);
     case 'decor':
@@ -179,21 +173,19 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
  * The order a merchant's stock is laid out in.
  *
  * A trader's pack came out in whatever order the generator happened to fill it,
- * so eleven tiles alternated seed, phial, seed, wax, board — and on a phone,
+ * so eleven tiles alternated seed, spore, seed, board, seed — and on a phone,
  * where a name gets about eleven characters, telling what someone sells meant
  * reading every tile. Grouped, the shape of the stock is legible without
  * reading anything: this trader is three ingredients and a shelf.
  *
- * Things the pot will see come first, then the things you put a potion in, then
- * the things you keep it on, then the shop itself. Kinds absent from a pack are
+ * Things the pot will see come first, then the things you keep a potion on,
+ * then the shop itself. Kinds absent from a pack are
  * simply not drawn.
  */
 const KIND_ORDER: Array<StockEntry['kind']> = [
   'ingredient',
   'seed',
   'spore',
-  'vessel',
-  'seal',
   'board',
   'decor',
   'equipment',
@@ -301,7 +293,7 @@ function blockedReason(sim: Simulation, entry: StockEntry): string | undefined {
 /**
  * The panel for goods with no essence to report.
  *
- * A vessel, a seal, a tool or a furnishing has a description and a price and
+ * A tool, a board or a furnishing has a description and a price and
  * nothing a pot would recognise, so the ingredient panel would be mostly empty
  * headings. This is the same shape with only the parts that apply.
  */
@@ -309,9 +301,9 @@ function showGoodsInfo(entry: StockEntry, label: string, action: QuantityActionS
   /*
    * Only what the data actually holds.
    *
-   * Equipment and furnishings are written up; vessels, seals and boards are
-   * not, and `t()` renders a missing key as the key itself — "vessel.hornPhial.
-   * detail" on screen. So the prose is asked for rather than assumed, and what
+   * Equipment and furnishings are written up; boards are not, and `t()`
+   * renders a missing key as the key itself — "board.roughPine.detail" on
+   * screen. So the prose is asked for rather than assumed, and what
    * a thing does is read off its own numbers instead.
    */
   const lines: HTMLElement[] = [];
@@ -397,7 +389,7 @@ function openEntry(sim: Simulation, visit: MerchantVisit, entry: StockEntry, ind
     /*
      * What it costs, when the cost is not a number of coins.
      *
-     * The Ashwalker is paid in sealed potions, so `unitPrice` has nothing to
+     * The Ashwalker is paid in potions, so `unitPrice` has nothing to
      * say and the footer would show a Buy button over no price at all — the
      * terms were on the tile, and the tile is now only the way in. Thirteen of
      * his entries are bartered.

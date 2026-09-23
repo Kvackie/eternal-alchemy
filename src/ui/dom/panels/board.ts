@@ -9,7 +9,6 @@
 
 import {
   button,
-  chip,
   el,
   emptyNote,
   goldText,
@@ -72,19 +71,9 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
   // Deadlines are quoted in in-game days, and only run down while you're here.
   const daysLeft = contract.msRemaining / config.clock.dayLengthMs;
 
-  /*
-   * A colour per kind of term, because three terms used to share one.
-   *
-   * The grade, the seal and the vessel are three different demands, and two of
-   * them were drawn in the same amber as the deadline warning and the selected
-   * sort chip — so the row read as "some amber things" rather than as a grade,
-   * a stopper and a bottle. The grade now wears the colour of the grade itself,
-   * which is the scale the rest of the game already reads, and the other two
-   * get a hue each.
-   */
+  // The grade wears the colour of the grade itself, the scale the rest of the
+  // game already reads.
   const requirements: HTMLElement[] = [gradeFloor(template.minGrade)];
-  if (summary.vessel) requirements.push(chip(t(`vessel.${summary.vessel.id}`), 'term-vessel'));
-  if (summary.seal) requirements.push(chip(t(`seal.${summary.seal.id}`), 'term-seal'));
 
   /*
    * A contract is a card but not a row: its blocks stack rather than sitting

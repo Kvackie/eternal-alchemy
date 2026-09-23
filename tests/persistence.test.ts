@@ -9,7 +9,7 @@ import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { caveConfig, config, crops, ingredients } from '@/sim/config';
 import { fairValue } from '@/sim/market';
-import type { BottledItem } from '@/sim/types';
+import type { BottledItem, World } from '@/sim/types';
 
 const HOUR = 3_600_000;
 
@@ -77,7 +77,7 @@ describe('a brew waiting to be bottled', () => {
 
     expect(resumed.pendingBrew?.grade).toBe(grade);
     expect(
-      resumed.bottlePending({ vesselId: 'clayVial', sealId: 'cork' }),
+      resumed.bottlePending(),
     ).not.toBeNull();
   });
 });
@@ -164,7 +164,7 @@ describe('migrating a save from the alembic era', () => {
     // The tonic it was brewing is the Aqua–Terra potion now.
     expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
     expect(
-      sim.bottlePending({ vesselId: 'clayVial', sealId: 'cork' }),
+      sim.bottlePending(),
     ).not.toBeNull();
   });
 
@@ -184,10 +184,7 @@ describe('a stocked shelf', () => {
     const saves = new SaveManager(memoryAdapter());
     const original = brewing(31);
     original.finishAllTimers();
-    const item = original.bottlePending({
-      vesselId: 'clayVial',
-      sealId: 'cork',
-    })!;
+    const item = original.bottlePending()!;
     original.stock('shelf-1', item.uid);
     original.setPrice('shelf-1', 0.7);
 
@@ -205,8 +202,6 @@ describe('migrating a save from the 197-recipe book', () => {
     return {
       uid,
       recipeId,
-      vesselId: 'clayVial',
-      sealId: 'cork',
       grade: 'B',
       purity: 80,
       potencyTier: 'common',
@@ -266,8 +261,6 @@ describe('migrating a save from before forms and the greenhouse went', () => {
         recipeId: 'aquaTerra',
         formId: 'tincture',
         dosesLeft: 2,
-        vesselId: 'clayVial',
-        sealId: 'cork',
         grade: 'B',
         purity: 80,
         potencyTier: 'common',
@@ -393,5 +386,68 @@ describe('migrating a save from before the loose ends were tied', () => {
       expect(migrated.shaft.veins.some((vein) => vein.depth === depth), `${depth}m`).toBe(true);
     }
     expect(migrated.merchantVisits.bramm!.picks).toBeUndefined();
+  });
+});
+
+describe('migrating a save from before vessels and seals went', () => {
+  it('unbottles every potion, refunds the moulds and press, and unstacks shelves', () => {
+    const world = createWorld(1);
+    const loose = world as unknown as Record<string, unknown>;
+    loose.vessels = { clayVial: 4, glassFlask: 2 };
+    loose.seals = { waxRibbon: 3 };
+    world.equipment.vesselMoulds = 1;
+    world.equipment.sealPress = 1;
+    const goldBefore = world.gold;
+
+    const old = (uid: string) =>
+      ({
+        uid,
+        recipeId: 'aquaTerra',
+        vesselId: 'crystalOrb',
+        sealId: 'silverClasp',
+        grade: 'A',
+        purity: 85,
+        potencyTier: 'common',
+        totalEssence: 70,
+        fairValue: 999,
+        bottledAt: 0,
+      }) as unknown as BottledItem;
+    world.bottled = [old('a')];
+    world.shelf[0]!.item = old('pouch');
+    world.shelf[0]!.quantity = 3;
+    world.contracts = [
+      {
+        id: 'contract-1',
+        templateId: '',
+        terms: { faction: 'greycloaks', recipeId: 'aquaTerra', minGrade: 'C', requiresSeal: 'cork' },
+        quantity: 3,
+        delivered: 0,
+        payout: 100,
+        renown: 5,
+        msRemaining: 1000,
+        deadlineDays: 4,
+        postedAt: 0,
+      } as unknown as World['contracts'][number],
+    ];
+
+    const raw = JSON.stringify({ schemaVersion: 17, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+    const after = migrated as unknown as Record<string, unknown>;
+
+    expect(after.vessels).toBeUndefined();
+    expect(after.seals).toBeUndefined();
+    expect(migrated.gold).toBe(goldBefore + 900 + 1200);
+    expect(migrated.equipment.vesselMoulds).toBeUndefined();
+
+    // Two bottles came off the stacked shelf; every bottle is plain now and
+    // worth what a plain potion is worth.
+    expect(migrated.shelf[0]!.quantity).toBe(1);
+    expect(migrated.bottled).toHaveLength(3);
+    for (const item of [...migrated.bottled, migrated.shelf[0]!.item!]) {
+      expect('vesselId' in item).toBe(false);
+      expect('sealId' in item).toBe(false);
+      expect(item.fairValue).toBe(fairValue(item));
+    }
+    expect('requiresSeal' in migrated.contracts[0]!.terms!).toBe(false);
   });
 });

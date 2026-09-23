@@ -25,21 +25,6 @@ import { derivedStats } from '@/sim/progression';
 import { appealOf, fitBoard, footfallAt, saleChance } from '@/sim/market';
 import type { World } from '@/sim/types';
 
-function bottle(uid = 'b') {
-  return {
-    uid,
-    recipeId: 'aquaTerra',
-    vesselId: 'clayVial',
-    sealId: 'cork',
-    grade: 'C' as const,
-    purity: 80,
-    potencyTier: 'common' as const,
-    totalEssence: 57,
-    fairValue: 60,
-    bottledAt: 0,
-  };
-}
-
 describe('the data holds together', () => {
   it('puts every piece in a declared spot', () => {
     for (const piece of decorPieces) {
@@ -146,10 +131,10 @@ describe('placement is what pays', () => {
 describe('décor reaches the things it claims to change', () => {
   it('raises what a bottle looks worth', () => {
     const world = createWorld(1);
-    const plain = appealOf(bottle(), derivedStats(world).appealBonus);
+    const plain = appealOf(derivedStats(world).appealBonus);
 
     grantDecor(world, 'pottedFern');
-    const dressed = appealOf(bottle(), derivedStats(world).appealBonus);
+    const dressed = appealOf(derivedStats(world).appealBonus);
     expect(dressed).toBeGreaterThan(plain);
   });
 
@@ -379,8 +364,6 @@ describe('shelf boards', () => {
   const bottled = () => ({
     uid: 'x',
     recipeId: 'aquaTerra',
-    vesselId: 'clayVial',
-    sealId: 'cork',
     grade: 'C' as const,
     purity: 80,
     potencyTier: 'common' as const,

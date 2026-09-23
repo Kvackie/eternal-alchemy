@@ -8,8 +8,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "redSpices",
@@ -20,8 +19,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "pepper",
@@ -32,8 +30,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "cinderleaf",
@@ -44,8 +41,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "coalcap",
@@ -56,8 +52,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "flamefan",
@@ -68,8 +63,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "emberGarnet",
@@ -80,8 +74,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "emberCrystal",
@@ -92,8 +85,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "cinderQuartz",
@@ -104,8 +96,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "bloodRose",
@@ -116,10 +107,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "bluepetal",
@@ -130,8 +118,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "bluecoral",
@@ -142,8 +129,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "bluecone",
@@ -154,8 +140,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "bilberry",
@@ -166,8 +151,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "azurecap",
@@ -178,8 +162,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "bubblecap",
@@ -190,8 +173,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "deepJasper",
@@ -202,8 +184,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "deepCrystal",
@@ -214,8 +195,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "brineTopaz",
@@ -226,8 +206,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "magicRoot",
@@ -238,8 +217,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "duskberry",
@@ -250,8 +228,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "cleftleaf",
@@ -262,8 +239,7 @@
       "terra": 6,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "broomgrass",
@@ -274,8 +250,7 @@
       "terra": 8,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "broadleaf",
@@ -286,8 +261,7 @@
       "terra": 10,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "mosscap",
@@ -298,8 +272,7 @@
       "terra": 12,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "chalkgill",
@@ -310,8 +283,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "chalkNodule",
@@ -322,8 +294,7 @@
       "terra": 24,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "chalkGlass",
@@ -334,8 +305,7 @@
       "terra": 32,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "chalkGeode",
@@ -346,8 +316,7 @@
       "terra": 36,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "bonefang",
@@ -358,8 +327,7 @@
       "terra": 48,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "featherfern",
@@ -370,8 +338,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "windwort",
@@ -382,8 +349,7 @@
       "terra": 0,
       "aer": 6,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "pinklotus",
@@ -394,8 +360,7 @@
       "terra": 0,
       "aer": 8,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "galeThistle",
@@ -406,8 +371,7 @@
       "terra": 0,
       "aer": 10,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "trumpetgill",
@@ -418,8 +382,7 @@
       "terra": 0,
       "aer": 12,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "sunfungus",
@@ -430,8 +393,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "driftGarnet",
@@ -442,8 +404,7 @@
       "terra": 0,
       "aer": 24,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "zephyrQuartz",
@@ -454,8 +415,7 @@
       "terra": 0,
       "aer": 32,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "wispGarnet",
@@ -466,8 +426,7 @@
       "terra": 0,
       "aer": 36,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "skyreachFeather",
@@ -478,10 +437,7 @@
       "terra": 0,
       "aer": 48,
       "umbra": 0
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "pomegranate",
@@ -492,8 +448,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "honeydewPlant",
@@ -504,8 +459,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "gloamroot",
@@ -516,8 +470,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetroot",
@@ -528,8 +481,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 10
-    },
-    "traits": []
+    }
   },
   {
     "id": "gloomcap",
@@ -540,8 +492,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "gravecrown",
@@ -552,8 +503,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "nullstone",
@@ -564,8 +514,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 24
-    },
-    "traits": []
+    }
   },
   {
     "id": "veilGlass",
@@ -576,8 +525,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 32
-    },
-    "traits": []
+    }
   },
   {
     "id": "waneOnyx",
@@ -588,8 +536,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 36
-    },
-    "traits": []
+    }
   },
   {
     "id": "spectralRoot",
@@ -600,8 +547,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 48
-    },
-    "traits": []
+    }
   },
   {
     "id": "agilityFruit",
@@ -612,8 +558,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "heatBerry",
@@ -624,8 +569,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "frostfan",
@@ -636,8 +580,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "commonFlower",
@@ -648,8 +591,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "autumnmaple",
@@ -660,8 +602,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "dandelion",
@@ -672,8 +613,7 @@
       "terra": 8,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "ashfern",
@@ -684,8 +624,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "crimsonbloom",
@@ -696,8 +635,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetpod",
@@ -708,8 +646,7 @@
       "terra": 0,
       "aer": 8,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "beetMandragora",
@@ -720,8 +657,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "nightbloom",
@@ -732,8 +668,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetBeet",
@@ -744,8 +679,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "cyanFlower",
@@ -756,8 +690,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "seagrass",
@@ -768,8 +701,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "greensprig",
@@ -780,8 +712,7 @@
       "terra": 8,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "tulipsCharge",
@@ -792,8 +723,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "jellyfishCoral",
@@ -804,8 +734,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "duskplum",
@@ -816,8 +745,7 @@
       "terra": 0,
       "aer": 8,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "frostrosette",
@@ -828,8 +756,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "moonpetal",
@@ -840,8 +767,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "lighbulbLantern",
@@ -852,8 +778,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "blueBerry",
@@ -864,8 +789,7 @@
       "terra": 4,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "lilypad",
@@ -876,8 +800,7 @@
       "terra": 8,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetUmbrella",
@@ -888,8 +811,7 @@
       "terra": 4,
       "aer": 8,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "chrystaLily",
@@ -900,8 +822,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "purpleBerry",
@@ -912,8 +833,7 @@
       "terra": 8,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetgarlic",
@@ -924,8 +844,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetSpices",
@@ -936,8 +855,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "magentaleaf",
@@ -948,8 +866,7 @@
       "terra": 0,
       "aer": 8,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "roseSalt",
@@ -960,8 +877,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "coralFlower",
@@ -972,8 +888,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "sunleaf",
@@ -984,8 +899,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetshroom",
@@ -996,8 +910,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "sloeberry",
@@ -1008,8 +921,7 @@
       "terra": 4,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "uncommonFlower",
@@ -1020,8 +932,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "blackBerry",
@@ -1032,8 +943,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "cornflower",
@@ -1044,8 +954,7 @@
       "terra": 4,
       "aer": 4,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "ashsprig",
@@ -1056,8 +965,7 @@
       "terra": 4,
       "aer": 0,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "pinkPuff",
@@ -1068,8 +976,7 @@
       "terra": 0,
       "aer": 4,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetSwarm",
@@ -1080,8 +987,7 @@
       "terra": 4,
       "aer": 4,
       "umbra": 4
-    },
-    "traits": []
+    }
   },
   {
     "id": "ambercap",
@@ -1092,8 +998,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "loamcap",
@@ -1104,8 +1009,7 @@
       "terra": 12,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "poisonCap",
@@ -1116,8 +1020,7 @@
       "terra": 0,
       "aer": 6,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "toadstool",
@@ -1128,8 +1031,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "dewcap",
@@ -1140,8 +1042,7 @@
       "terra": 6,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "buttercap",
@@ -1152,8 +1053,7 @@
       "terra": 0,
       "aer": 12,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "goldcap",
@@ -1164,8 +1064,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "tubefungus",
@@ -1176,8 +1075,7 @@
       "terra": 6,
       "aer": 12,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "poffpuffBall",
@@ -1188,8 +1086,7 @@
       "terra": 12,
       "aer": 0,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "honeycap",
@@ -1200,8 +1097,7 @@
       "terra": 0,
       "aer": 6,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "tieredcap",
@@ -1212,8 +1108,7 @@
       "terra": 6,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "russetcap",
@@ -1224,8 +1119,7 @@
       "terra": 0,
       "aer": 6,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "crimsoncap",
@@ -1236,8 +1130,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "cellarcap",
@@ -1248,8 +1141,7 @@
       "terra": 6,
       "aer": 6,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "eyecap",
@@ -1260,8 +1152,7 @@
       "terra": 6,
       "aer": 0,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "puffnest",
@@ -1272,8 +1163,7 @@
       "terra": 0,
       "aer": 6,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "verdigriscap",
@@ -1284,8 +1174,7 @@
       "terra": 6,
       "aer": 6,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "stoutcap",
@@ -1296,8 +1185,7 @@
       "terra": 6,
       "aer": 0,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "violetcap",
@@ -1308,8 +1196,7 @@
       "terra": 0,
       "aer": 6,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "palecap",
@@ -1320,8 +1207,7 @@
       "terra": 6,
       "aer": 6,
       "umbra": 6
-    },
-    "traits": []
+    }
   },
   {
     "id": "dewGlass",
@@ -1332,8 +1218,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "deepTopaz",
@@ -1344,8 +1229,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "forgeOpal",
@@ -1356,8 +1240,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "cinderOpal",
@@ -1368,8 +1251,7 @@
       "terra": 12,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "coalGarnet",
@@ -1380,8 +1262,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "aetherShard",
@@ -1392,8 +1273,7 @@
       "terra": 0,
       "aer": 24,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "emberJasper",
@@ -1404,8 +1284,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "emberShard",
@@ -1416,8 +1295,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "brineGlass",
@@ -1428,8 +1306,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "barkAgate",
@@ -1440,8 +1317,7 @@
       "terra": 24,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "rillQuartz",
@@ -1452,8 +1328,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "mirePrism",
@@ -1464,8 +1339,7 @@
       "terra": 0,
       "aer": 12,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "deepOpal",
@@ -1476,8 +1350,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "voidGeode",
@@ -1488,8 +1361,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 24
-    },
-    "traits": []
+    }
   },
   {
     "id": "deepglass",
@@ -1500,8 +1372,7 @@
       "terra": 16,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "slateBeryl",
@@ -1512,8 +1383,7 @@
       "terra": 24,
       "aer": 12,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "clayShard",
@@ -1524,8 +1394,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "nightQuartz",
@@ -1536,8 +1405,7 @@
       "terra": 12,
       "aer": 0,
       "umbra": 24
-    },
-    "traits": []
+    }
   },
   {
     "id": "cloudJasper",
@@ -1548,8 +1416,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "galeGarnet",
@@ -1560,8 +1427,7 @@
       "terra": 0,
       "aer": 24,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "deepShard",
@@ -1572,8 +1438,7 @@
       "terra": 8,
       "aer": 8,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "scaldPrism",
@@ -1584,8 +1449,7 @@
       "terra": 8,
       "aer": 0,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "aetherJasper",
@@ -1596,8 +1460,7 @@
       "terra": 0,
       "aer": 8,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "barkOpal",
@@ -1608,8 +1471,7 @@
       "terra": 8,
       "aer": 8,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "veilJasper",
@@ -1620,8 +1482,7 @@
       "terra": 8,
       "aer": 8,
       "umbra": 8
-    },
-    "traits": []
+    }
   },
   {
     "id": "vampirRose",
@@ -1632,8 +1493,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "anglerPlant",
@@ -1644,10 +1504,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "cinderwraithAsh",
@@ -1658,8 +1515,7 @@
       "terra": 0,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "uniqueFlower",
@@ -1670,10 +1526,7 @@
       "terra": 16,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "dragonFruit",
@@ -1684,8 +1537,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "manaFruit",
@@ -1696,10 +1548,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 16
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "shrimp",
@@ -1710,8 +1559,7 @@
       "terra": 16,
       "aer": 16,
       "umbra": 0
-    },
-    "traits": []
+    }
   },
   {
     "id": "monsterBones",
@@ -1722,8 +1570,7 @@
       "terra": 16,
       "aer": 0,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "voideel",
@@ -1734,8 +1581,7 @@
       "terra": 0,
       "aer": 16,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "barrowAsh",
@@ -1746,8 +1592,7 @@
       "terra": 16,
       "aer": 16,
       "umbra": 16
-    },
-    "traits": []
+    }
   },
   {
     "id": "bonefrond",
@@ -1758,10 +1603,7 @@
       "terra": 12,
       "aer": 12,
       "umbra": 0
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "monsterMeat",
@@ -1772,8 +1614,7 @@
       "terra": 12,
       "aer": 0,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "magmaFish",
@@ -1784,10 +1625,7 @@
       "terra": 0,
       "aer": 12,
       "umbra": 12
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "monsterEgg",
@@ -1798,10 +1636,7 @@
       "terra": 12,
       "aer": 12,
       "umbra": 12
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   },
   {
     "id": "mirefenPearl",
@@ -1812,8 +1647,7 @@
       "terra": 12,
       "aer": 12,
       "umbra": 12
-    },
-    "traits": []
+    }
   },
   {
     "id": "quicksilverTear",
@@ -1824,9 +1658,6 @@
       "terra": 8,
       "aer": 8,
       "umbra": 8
-    },
-    "traits": [
-      "volatile"
-    ]
+    }
   }
 ]

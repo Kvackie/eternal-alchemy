@@ -7,7 +7,6 @@ import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config, prestigeConfig, ranks, shaftConfig } from '@/sim/config';
 import { canRetire, codexBonuses, masteryFor } from '@/sim/prestige';
-import { availableVessels } from '@/sim/bottling';
 import { derivedStats } from '@/sim/progression';
 import { spreadChanceFor } from '@/sim/cave';
 import { footfallAt } from '@/sim/market';
@@ -159,30 +158,6 @@ describe('the Long Distillation', () => {
   });
 });
 
-describe('bottling something volatile', () => {
-  it('takes only an iron-bound vessel', () => {
-    const sim = new Simulation(createWorld(1));
-    for (const vessel of ['clayVial', 'ironBoundJar']) sim.world.vessels[vessel] = 5;
-    const brew = {
-      recipeId: 'ignisTerra',
-      total: { ignis: 40, aqua: 0, terra: 40, aer: 0, umbra: 0 },
-      grade: 'B' as const,
-      purity: 80,
-      totalEssence: 80,
-      potencyTier: 'common' as const,
-      composition: { traits: [] as string[] },
-    };
-    const calm = availableVessels(sim.world, brew);
-    expect(calm.find((v) => v.vesselId === 'clayVial')!.available).toBe(true);
-
-    const volatile = availableVessels(sim.world, { ...brew, composition: { traits: ['volatile'] } });
-    expect(volatile.find((v) => v.vesselId === 'clayVial')!.reasonKey).toBe(
-      'workbench.reason.volatile',
-    );
-    expect(volatile.find((v) => v.vesselId === 'ironBoundJar')!.available).toBe(true);
-  });
-});
-
 /**
  * Town modifiers.
  *
@@ -276,8 +251,6 @@ describe('the town you retire to changes the run', () => {
         {
           uid: 'a',
           recipeId: 'aquaTerra',
-          vesselId: 'clayVial',
-          sealId: 'cork',
           grade: 'B',
           purity: 80,
           potencyTier: 'common',

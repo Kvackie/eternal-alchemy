@@ -1,18 +1,18 @@
 # Eternal Alchemy
 
 A cozy fantasy potion shop for web and mobile. Grow it, raise it, dig it up or send someone braver
-to fetch it — then match essences in the cauldron, seal it well, and price it right.
+to fetch it — then match essences in the cauldron, bottle it, and price it right.
 
-**M1 — the vertical slice.** Plant → tend → harvest → brew → bottle → seal → stock → price → sell,
+**M1 — the vertical slice.** Plant → tend → harvest → brew → bottle → stock → price → sell,
 including while the app is closed.
 
 **M2 — the other sources.** Merchants, renown ranks and bought equipment; a mushroom cave that
 spreads on its own; a mining shaft that depletes and deepens; heroes who take your own potions on
 expeditions; and a contract board.
 
-**M3 — depth.** Face-to-face haggling; the full bottling range (8 vessels, 7 seals); ranks V–X; and
-the Long Distillation with its Mastery Codex. (The greenhouse and bottle forms shipped here too, and
-were taken out again in the potion overhaul.)
+**M3 — depth.** Face-to-face haggling; ranks V–X; and the Long Distillation with its Mastery Codex.
+(The greenhouse, bottle forms, and a range of eight vessels and seven seals shipped here too, and
+were all taken out again: bottling is one press now.)
 
 Design document: `docs/design.html` (open it in a browser). It is the design record: draft 7 brought
 its topic sections in line with the build after the potion overhaul, while its changelog keeps each
@@ -78,9 +78,9 @@ So the tile opens the details, and the details carry the verb: **Buy** with a co
 total it will cost, **Plant this** for a seed, **Seed this** for a spore. The count is bounded by the
 stock and by the purse, so the stepper cannot offer a number the button behind it would refuse.
 
-A vessel or a seal says what it does in sentences rather than badges — what potency it will hold,
-what it does to appeal and to value, what it is worth to a hero or to the Ashwalker — each line read
-off the definition, so it cannot drift from the arithmetic.
+A board or a furnishing says what it does in sentences rather than badges — what it does to appeal,
+to footfall, to a haggler's ceiling — each line read off the definition, so it cannot drift from the
+arithmetic.
 
 ## The four ways ingredients arrive
 
@@ -124,11 +124,11 @@ Each merchant has one trade:
 
 A stall is eight to ten things. The trade goods are dealt in turn rather than drawn: each visit picks
 up round the list where the last left off, so anything a merchant sells turns up within a known number
-of visits. The staples beside them — vessels, seals, boards, furnishings, equipment — are still drawn
+of visits. The staples beside them — boards, furnishings, equipment — are still drawn
 at random.
 
 Bramm, Vessa and Hesk keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his
-prices are sealed potions of a minimum grade, and he spends your cheapest qualifying bottles first. The
+prices are potions of a minimum grade, and he spends your cheapest qualifying bottles first. The
 rarest exotics wait on a long acquaintance with him, so an expedition stays the cheaper way to them.
 
 ## Heroes and contracts
@@ -185,7 +185,7 @@ update as you go. Nothing is spent yet.
 **2 · Outcome.** What you would make right now, with its grade and potency. **Accept** spends the
 ingredients and starts the brew timer; **Pour it back** returns every ingredient unchanged.
 
-Then **Bottle** — vessel and seal — once the timer finishes.
+Then **Bottle it** once the timer finishes: one press, nothing to choose.
 
 The two numbers of a brew are independent:
 
@@ -230,7 +230,7 @@ square, chevron, crescent — used everywhere the colour is.
 +40% string length. English ships first; adding a language is a translation contract, not an
 engineering project.
 
-**Nothing is lost.** Untended crops still yield. Nothing wilts. Sealed goods never degrade. Rejecting
+**Nothing is lost.** Untended crops still yield. Nothing wilts. Bottled potions never degrade. Rejecting
 a brew returns every ingredient. A pot left mid-preparation keeps its contents across a reload, and a
 save from an older schema is migrated rather than dropped.
 

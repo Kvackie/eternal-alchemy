@@ -24,12 +24,10 @@ import type { BottledItem, Grade } from '@/sim/types';
 const HOUR = 3_600_000;
 const DAY = config.clock.dayLengthMs;
 
-function bottle(uid: string, grade: Grade, recipeId = 'aquaTerra', sealId = 'cork'): BottledItem {
+function bottle(uid: string, grade: Grade, recipeId = 'aquaTerra'): BottledItem {
   return {
     uid,
     recipeId,
-    vesselId: 'clayVial',
-    sealId,
     grade,
     purity: 80,
     potencyTier: 'common',
@@ -324,8 +322,6 @@ describe('the contract board', () => {
             terms.recipeId,
             terms.minGrade,
             contract.quantity,
-            terms.requiresSeal,
-            terms.requiresVessel,
           ].join('|');
         });
         expect(new Set(keys).size).toBe(keys.length);
