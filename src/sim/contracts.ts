@@ -17,7 +17,7 @@ import { contractsConfig, getContractTemplate, getFaction, getRecipe } from './c
 import { discoveredRecipes } from './discovery';
 import { angleBetween } from './essences';
 import { fairValue } from './market';
-import { rankIndexFor } from './progression';
+import { rankOf } from './progression';
 import { contractPayoutMultiplier } from './town';
 import { Rng } from './rng';
 import type { BottledItem, Contract, ContractTerms, Grade, World } from './types';
@@ -195,7 +195,7 @@ export function generateContract(
   id: number,
   dayLengthMs: number,
 ): Contract | null {
-  const rank = rankIndexFor(world.renown);
+  const rank = rankOf(world);
 
   /*
    * One draw from the shared stream; everything else from a private one.

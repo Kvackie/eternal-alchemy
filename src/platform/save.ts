@@ -15,12 +15,13 @@ import {
   caveConfig,
   config,
   findDecor,
+  ranks,
   recipes,
   shaftConfig,
 } from '@/sim/config';
 import { makeCaveTiles } from '@/sim/cave';
 import { emptySpots } from '@/sim/decor';
-import { rankIndexFor } from '@/sim/progression';
+import { rankIndexFor, recordBottled } from '@/sim/progression';
 import { Rng } from '@/sim/rng';
 import { generateVeins } from '@/sim/shaft';
 import { fairValue } from '@/sim/market';
@@ -906,6 +907,29 @@ const MIGRATIONS: Record<number, Migration> = {
     }
     return world;
   },
+
+  /**
+   * v21 → v22: ranks ask for a bottled potion as well as renown.
+   *
+   * Every potion the shop still holds is recorded, and so is one that meets
+   * the rank its renown had already given it — a shop is not demoted by a rule
+   * it could not have known. Ranks above that need the real thing.
+   */
+  22: (world) => {
+    world.bottledKinds ??= {};
+    const held = [
+      ...(world.bottled ?? []),
+      ...(world.shelf ?? []).flatMap((slot) => (slot.item ? [slot.item] : [])),
+    ];
+    for (const item of held) {
+      if (recipes.some((recipe) => recipe.id === item.recipeId)) recordBottled(world, item);
+    }
+    const earned = ranks[rankIndexFor(world.renown ?? 0)]?.requires;
+    if (earned) {
+      world.bottledKinds[`${earned.grade}|${earned.essences}|${earned.potency}`] = true;
+    }
+    return world;
+  },
 };
 
 /** Every counter at zero, so a migration can fill only what it actually knows. */
@@ -944,6 +968,7 @@ function migrate(world: World, fromVersion: number): World | null {
   current.boards ??= {};
   // Boosters arrived without a version bump: a save from before holds none.
   current.boosters ??= {};
+  current.bottledKinds ??= {};
   // A save from before parties waited to be greeted simply has none waiting.
   current.pendingClaims ??= [];
   // Every pot in a save from before storage existed was, by definition, out.

@@ -105,6 +105,23 @@ seeds for one weak clean herb of each essence and one cave species.
 appear in a merchant's stock, and you still pay. Equipment shows up one rank early, greyed with the
 reason, so you learn what a rank is *for* before you reach it.
 
+**A rank also asks for a potion.** Renown opens it, but from Journeyman up the shop must also have
+bottled, this run, something good enough for the title — at least a given grade, from a recipe of at
+least so many essences, at least so potent. Renown keeps building while it waits; the Ledger shows
+what the next rank still wants.
+
+| Rank | Renown | Potion |
+| --- | --- | --- |
+| II Journeyman | 60 | C, any |
+| III Steeped | 180 | B, 2 essences |
+| IV Distiller | 420 | A, 2 essences, Common |
+| V Chandler | 850 | A, 3 essences, Common |
+| VI Adept | 1,600 | S, 3 essences, Greater |
+| VII Master | 2,800 | A, 4 essences, Greater |
+| VIII Grandmaster | 4,600 | S, 4 essences, Grand |
+| IX Luminary | 7,200 | A, 5 essences, Grand |
+| X Arch-Alchemist | 11,000 | S, 5 essences, Sovereign |
+
 Merchant presence *and stock* are derived from the world clock — a merchant is in town on the days
 their cycle lands on, and their goods come from the visit number and an RNG seeded on `(merchant, day)`. Nothing about a
 visit is stored except what you have already bought, so offline catch-up needs no special handling

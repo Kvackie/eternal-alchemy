@@ -16,7 +16,7 @@ import { dayStateAt } from './clock';
 import { config, findBooster, findDecor, findEquipment, getMerchant, merchants } from './config';
 import type { MerchantDef, MerchantStockDef } from './config';
 import { Rng } from './rng';
-import { rankIndexFor } from './progression';
+import { rankOf } from './progression';
 import { codexBonuses } from './prestige';
 import { merchantPriceMultiplier } from './town';
 import type { Grade, World } from './types';
@@ -215,7 +215,7 @@ function drawPicks(
   tier: number,
 ): MerchantStockDef[] {
   const rng = new Rng(visitSeed(def.id, dayNumber));
-  const rank = rankIndexFor(world.renown);
+  const rank = rankOf(world);
 
   const pool = def.pool.filter((item) => {
     if (TRADE_KINDS.has(item.kind) || item.always) return false;

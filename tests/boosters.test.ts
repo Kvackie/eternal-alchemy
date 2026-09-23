@@ -90,6 +90,7 @@ describe('yield boosters', () => {
     const world = createWorld(3);
     world.gold = 100_000;
     world.renown = ranks[getBooster('gardenTonic').requiresRank]!.renown;
+    world.bottledKinds['S|5|sovereign'] = true;
     const sim = new Simulation(world);
 
     for (const day of [0, 2, 4, 6]) {
@@ -109,6 +110,7 @@ describe('yield boosters', () => {
     const world = createWorld(3);
     world.gold = 100_000;
     world.renown = ranks[getBooster('gardenTonic').requiresRank - 1]!.renown;
+    world.bottledKinds['S|5|sovereign'] = true;
     const sim = new Simulation(world);
     sim.advanceTo(DAY * 0.35);
     const bramm = sim.merchants().find((visit) => visit.merchantId === 'bramm')!;

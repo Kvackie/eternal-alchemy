@@ -24,6 +24,7 @@ describe('mastery', () => {
     expect(canRetire(sim.world)).toBe(false);
 
     sim.world.renown = ranks[prestigeConfig.requiresRank]!.renown;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     expect(canRetire(sim.world)).toBe(true);
   });
 
@@ -60,6 +61,7 @@ describe('the Long Distillation', () => {
   function readyToRetire(): Simulation {
     const sim = new Simulation(createWorld(31));
     sim.world.renown = ranks[prestigeConfig.requiresRank]!.renown;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.world.gold = 9999;
     sim.world.mastery = 4;
     sim.world.codex = { fullPurse: 1 };

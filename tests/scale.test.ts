@@ -97,6 +97,7 @@ function bigShop(seed = 4242): Simulation {
 
   world.gold = 500_000;
   world.renown = 250_000;
+  world.bottledKinds['S|5|sovereign'] = true;
 
   return new Simulation(world);
 }
@@ -251,6 +252,7 @@ describe('a shop at scale', () => {
     const sim = bigShop();
     sim.world.gold = 1_000_000;
     sim.world.renown = 1_000_000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     const best = sim.buyCauldron('cauldronSix')!;
     // Bought pots arrive in storage; put it out before brewing in it.
     sim.setCauldronStored(best.id, false);

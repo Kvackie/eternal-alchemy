@@ -341,6 +341,11 @@ export interface World {
   plots: Plot[];
   inventory: IngredientStack[];
   seeds: Record<string, number>;
+  /**
+   * The kinds of potion bottled this run, as `grade|essences|potency` keys:
+   * what a rank's potion requirement is checked against.
+   */
+  bottledKinds: Record<string, true>;
   /** Yield boosters held, by booster id. */
   boosters: Record<string, number>;
 

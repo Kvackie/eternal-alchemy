@@ -1,12 +1,48 @@
 [
   { "id": "apprentice", "renown": 0 },
-  { "id": "journeyman", "renown": 60 },
-  { "id": "steeped", "renown": 180 },
-  { "id": "distiller", "renown": 420 },
-  { "id": "chandler", "renown": 850 },
-  { "id": "adept", "renown": 1600 },
-  { "id": "master", "renown": 2800 },
-  { "id": "grandmaster", "renown": 4600 },
-  { "id": "luminary", "renown": 7200 },
-  { "id": "archAlchemist", "renown": 11000 }
+  {
+    "id": "journeyman",
+    "renown": 60,
+    "requires": { "grade": "C", "essences": 1, "potency": "minor" }
+  },
+  {
+    "id": "steeped",
+    "renown": 180,
+    "requires": { "grade": "B", "essences": 2, "potency": "minor" }
+  },
+  {
+    "id": "distiller",
+    "renown": 420,
+    "requires": { "grade": "A", "essences": 2, "potency": "common" }
+  },
+  {
+    "id": "chandler",
+    "renown": 850,
+    "requires": { "grade": "A", "essences": 3, "potency": "common" }
+  },
+  {
+    "id": "adept",
+    "renown": 1600,
+    "requires": { "grade": "S", "essences": 3, "potency": "greater" }
+  },
+  {
+    "id": "master",
+    "renown": 2800,
+    "requires": { "grade": "A", "essences": 4, "potency": "greater" }
+  },
+  {
+    "id": "grandmaster",
+    "renown": 4600,
+    "requires": { "grade": "S", "essences": 4, "potency": "grand" }
+  },
+  {
+    "id": "luminary",
+    "renown": 7200,
+    "requires": { "grade": "A", "essences": 5, "potency": "grand" }
+  },
+  {
+    "id": "archAlchemist",
+    "renown": 11000,
+    "requires": { "grade": "S", "essences": 5, "potency": "sovereign" }
+  }
 ]

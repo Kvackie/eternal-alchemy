@@ -52,6 +52,8 @@ export function buildWorld(clock: Clock = 'night'): World {
    * out of its own tile. Adept leaves plenty unlocked and plenty not.
    */
   world.renown = 1_800;
+  // Adept asks for an S of three essences at Greater; the fixture has made one.
+  world.bottledKinds['S|3|greater'] = true;
   world.mastery = 600;
 
   // Nearly every recipe known, so the book is close to its full size — the

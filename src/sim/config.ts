@@ -77,9 +77,21 @@ export interface RecipeDef extends RawRecipe {
   toleranceDeg: number;
 }
 
+/**
+ * The potion a rank asks to have been bottled: at least this grade, from a
+ * recipe of at least this many essences, at least this potent.
+ */
+export interface RankRequirement {
+  grade: Grade;
+  essences: number;
+  potency: PotencyTierId;
+}
+
 export interface RankDef {
   id: string;
   renown: number;
+  /** Absent on the first rank, which asks nothing. */
+  requires?: RankRequirement;
 }
 
 /** What one piece of equipment does. Every field is optional and folded in `progression.ts`. */

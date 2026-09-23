@@ -19,6 +19,7 @@ import {
   grantEquipment,
   derivedStats,
   rankIdFor,
+  nextRankProgress,
   rankIndexFor,
   renownToNextRank,
 } from '@/sim/progression';
@@ -138,6 +139,7 @@ describe('merchant stock', () => {
     sim.advanceTo(midday(2));
     sim.world.gold = 500_000;
     sim.world.renown = 20_000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
 
     // Décor has no prerequisites, so it is the one-off that can always be
     // bought; an upgrade shown a rank early may still be waiting on another.
@@ -357,6 +359,7 @@ describe('renown ranks', () => {
     // covers the other doors into it — waiting for a tick leaves rank and
     // renown disagreeing, and a backgrounded tab makes that wait unbounded.
     const sim = new Simulation(createWorld(4));
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.grant({ renown: 200 });
 
     expect(sim.rankIndex).toBe(2);
@@ -367,6 +370,7 @@ describe('renown ranks', () => {
   it('are announced once each, even across a long catch-up', () => {
     const sim = new Simulation(createWorld(4));
     sim.world.renown = 500;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.advanceBy(1000);
     sim.advanceBy(1000);
 
@@ -398,6 +402,7 @@ describe('equipment', () => {
     expect(canBuyEquipment(world, def)).toBe(false);
 
     world.renown = 100000;
+    world.bottledKinds['S|5|sovereign'] = true;
     world.equipment.shelfFive = 1;
     expect(canBuyEquipment(world, def)).toBe(true);
   });
@@ -405,6 +410,7 @@ describe('equipment', () => {
   it('is gated by its prerequisites too', () => {
     const world = createWorld(1);
     world.renown = 100000;
+    world.bottledKinds['S|5|sovereign'] = true;
     // Rank is satisfied; the missing shelfFive is what refuses it.
     expect(canBuyEquipment(world, getEquipment('shelfSix'))).toBe(false);
   });
@@ -413,6 +419,7 @@ describe('equipment', () => {
     const sim = new Simulation(createWorld(3));
     sim.world.gold = 100000;
     sim.world.renown = 100000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
 
     // With neither plot owned, no visit in a season carries the sixth.
     for (let day = 0; day < 60; day += 1) {
@@ -427,6 +434,7 @@ describe('equipment', () => {
     const sim = new Simulation(createWorld(3));
     sim.world.gold = 100000;
     sim.world.renown = 100000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
 
     // The first plot upgrade has no prerequisite; wait for a visit that carries it.
     let index = -1;
@@ -452,6 +460,7 @@ describe('equipment', () => {
     const sim = new Simulation(createWorld(3));
     sim.world.gold = 100_000;
     sim.world.renown = 250_000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
 
     const startingCapacity = sim.cauldronCapacity;
     const bought = sim.buyCauldron('cauldronFour')!;
@@ -475,6 +484,7 @@ describe('equipment', () => {
     const sim = new Simulation(createWorld(3));
     sim.world.gold = 100_000;
     sim.world.renown = 250_000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
 
     expect(sim.cauldrons).toHaveLength(1);
     const second = sim.buyCauldron('cauldronTwo')!;
@@ -500,6 +510,7 @@ describe('equipment', () => {
     const sim = new Simulation(createWorld(3));
     sim.world.gold = 100_000;
     sim.world.renown = 250_000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     const spare = sim.buyCauldron('cauldronTwo')!;
     sim.setCauldronStored(spare.id, false);
 
@@ -736,5 +747,70 @@ describe('how much a trader carries', () => {
     expect(stranger.stock).toBe(stranger.listed * config.merchantStock.tradeMultiplier);
     const regular = at(BRAMM.relationshipTiers[2]!);
     expect(regular.stock).toBeGreaterThan(stranger.stock);
+  });
+});
+
+describe('ranks that ask for a potion', () => {
+  const kind = (grade: string, essences: number, potency: string) =>
+    `${grade}|${essences}|${potency}`;
+
+  it('holds a rank back until its potion has been bottled, however much renown there is', () => {
+    const sim = new Simulation(createWorld(4));
+    sim.world.renown = 20_000;
+    expect(sim.rankIndex).toBe(0);
+
+    sim.world.bottledKinds[kind('C', 1, 'minor')] = true;
+    expect(sim.rankId).toBe('journeyman');
+
+    // An S of one essence does not make a two-essence Steeped.
+    sim.world.bottledKinds[kind('S', 1, 'sovereign')] = true;
+    expect(sim.rankId).toBe('journeyman');
+
+    // An A of four at Greater clears Chandler but not Adept, which wants an S.
+    sim.world.bottledKinds[kind('A', 4, 'greater')] = true;
+    expect(sim.rankId).toBe('chandler');
+
+    sim.world.bottledKinds[kind('S', 4, 'grand')] = true;
+    expect(sim.rankId).toBe('grandmaster');
+
+    sim.world.bottledKinds[kind('S', 5, 'sovereign')] = true;
+    expect(sim.rankId).toBe('archAlchemist');
+  });
+
+  it('still needs the renown when the potion is there', () => {
+    const sim = new Simulation(createWorld(4));
+    sim.world.bottledKinds[kind('S', 5, 'sovereign')] = true;
+    sim.world.renown = ranks.find((rank) => rank.id === 'distiller')!.renown;
+    expect(sim.rankId).toBe('distiller');
+  });
+
+  it('counts a potion the moment it is bottled', () => {
+    const sim = new Simulation(createWorld(4));
+    sim.world.renown = 100;
+    sim.cauldron.pendingBrew = {
+      recipeId: 'ignis',
+      total: { ignis: 8, aqua: 0, terra: 0, aer: 0, umbra: 0 },
+      totalEssence: 8,
+      offIdealRad: 0,
+      purity: 100,
+      potencyTier: 'minor',
+      overCapacity: false,
+      grade: 'S',
+    };
+    expect(sim.rankIndex).toBe(0);
+    sim.bottlePending();
+    expect(sim.rankId).toBe('journeyman');
+    expect(sim.world.log.some((entry) => entry.kind === 'rankUp')).toBe(true);
+  });
+
+  it('says what the next rank still asks for', () => {
+    const sim = new Simulation(createWorld(4));
+    sim.world.renown = 500;
+    sim.world.bottledKinds[kind('B', 2, 'minor')] = true;
+    const next = nextRankProgress(sim.world)!;
+    expect(next.nextId).toBe('distiller');
+    expect(next.renownNeeded).toBe(0);
+    expect(next.requirementMet).toBe(false);
+    expect(next.requires).toEqual({ grade: 'A', essences: 2, potency: 'common' });
   });
 });

@@ -371,6 +371,7 @@ describe('the contract board', () => {
       sim.world.recipes[recipe.id] = { discovered: true, timesBrewed: 1 };
     }
     sim.world.renown = 100000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.world.contracts = [];
     sim.advanceBy(1000);
 

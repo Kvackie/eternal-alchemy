@@ -19,6 +19,7 @@ import {
 import { formatGold, formatNumber, has, t } from '@/i18n';
 import { dayStateAt } from '@/sim/clock';
 import { logPage } from '@/sim/log';
+import { nextRankProgress } from '@/sim/progression';
 import type { LogEntry, LogKind } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed } from '@/ui/bus';
@@ -122,6 +123,57 @@ function renderSummary(sim: Simulation): HTMLElement {
         ]),
       ),
     ),
+    renderNextRank(sim),
+  ]);
+}
+
+/**
+ * What the next rank still asks for: the renown, and the potion.
+ *
+ * A rank waits on both, so a shop with the renown and not the potion would
+ * otherwise sit at a rank it cannot see a reason for. Each half says whether
+ * it is done.
+ */
+function renderNextRank(sim: Simulation): HTMLElement {
+  const next = nextRankProgress(sim.world);
+  if (!next) return el('p', { class: 'next-rank', text: t('ledger.nextRank.top') });
+
+  const line = (done: boolean, text: string) =>
+    el('li', { class: done ? 'done' : '' }, [
+      el('span', { class: 'next-rank-mark', text: done ? '✓' : '○' }),
+      el('span', { text }),
+    ]);
+
+  const items = [
+    line(
+      next.renownNeeded <= 0,
+      next.renownNeeded <= 0
+        ? t('ledger.nextRank.renownDone')
+        : t('ledger.nextRank.renown', {
+            count: next.renownNeeded,
+            amount: formatNumber(next.renownNeeded),
+          }),
+    ),
+  ];
+  if (next.requires) {
+    items.push(
+      line(
+        next.requirementMet,
+        t('ledger.nextRank.potion', {
+          count: next.requires.essences,
+          grade: next.requires.grade,
+          potency: t(`potency.${next.requires.potency}`),
+        }),
+      ),
+    );
+  }
+
+  return el('section', { class: 'next-rank' }, [
+    el('span', {
+      class: 'field-label',
+      text: t('ledger.nextRank', { rank: t(`rank.${next.nextId}`) }),
+    }),
+    el('ul', {}, items),
   ]);
 }
 

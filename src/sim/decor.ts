@@ -14,7 +14,7 @@
 
 import { decorConfig, decorForSpot, findDecor, getDecor } from './config';
 import type { DecorDef } from './config';
-import { rankIndexFor } from './progression';
+import { rankOf } from './progression';
 import type { World } from './types';
 
 export const decorSpots = decorConfig.spots;
@@ -54,7 +54,7 @@ export function decorAvailability(
   def: DecorDef,
 ): { visible: boolean; reasonKey?: string } {
   if (ownsDecor(world, def.id)) return { visible: false };
-  if (rankIndexFor(world.renown) < def.requiresRank) {
+  if (rankOf(world) < def.requiresRank) {
     return { visible: true, reasonKey: 'market.reason.rank' };
   }
   return { visible: true };

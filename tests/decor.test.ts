@@ -175,6 +175,7 @@ describe('buying décor', () => {
     const sim = new Simulation(createWorld(4));
     sim.world.gold = 5000;
     sim.world.renown = 400;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
 
     // Find whichever merchant is currently carrying a furnishing.
     let bought = false;

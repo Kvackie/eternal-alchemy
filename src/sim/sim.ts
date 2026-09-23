@@ -70,8 +70,9 @@ import {
   derivedStats,
   equipmentAvailability,
   grantEquipment,
-  rankIdFor,
-  rankIndexFor,
+  rankIdOf,
+  recordBottled,
+  rankOf,
 } from './progression';
 import {
   harvestAllMature,
@@ -199,9 +200,10 @@ export class Simulation {
   }
 
   /**
-   * Log a rank-up once, when renown crosses a threshold.
+   * Log a rank-up once, when renown crosses a threshold or a bottled potion
+   * meets what the next rank asks for.
    *
-   * Rank itself is derived from renown, so this is purely about noticing — the
+   * Rank itself is derived, so this is purely about noticing — the
    * acknowledged index exists so the same promotion isn't announced on every
    * tick of a catch-up that spanned it.
    *
@@ -210,7 +212,7 @@ export class Simulation {
    * meantime, and a backgrounded tab makes that meantime arbitrarily long.
    */
   private noticeRankUp(): void {
-    const current = rankIndexFor(this.world.renown);
+    const current = rankOf(this.world);
     while (this.world.acknowledgedRank < current) {
       this.world.acknowledgedRank += 1;
       record(this.world, 'rankUp', { rank: ranks[this.world.acknowledgedRank]?.id ?? '' });
@@ -307,11 +309,11 @@ export class Simulation {
   }
 
   get rankIndex(): number {
-    return rankIndexFor(this.world.renown);
+    return rankOf(this.world);
   }
 
   get rankId(): string {
-    return rankIdFor(this.world.renown);
+    return rankIdOf(this.world);
   }
 
   /**
@@ -512,6 +514,8 @@ export class Simulation {
     const item = bottle(this.world, brew);
     pot.pendingBrew = null;
     record(this.world, 'bottled', { recipe: item.recipeId, grade: item.grade });
+    // The potion a rank has been waiting on can be this one.
+    this.noticeRankUp();
     return item;
   }
 
@@ -1197,8 +1201,10 @@ export class Simulation {
         };
         item.fairValue = fairValue(item);
         this.world.bottled.push(item);
+        recordBottled(this.world, item);
       }
     });
+    this.noticeRankUp();
   }
 
   /**

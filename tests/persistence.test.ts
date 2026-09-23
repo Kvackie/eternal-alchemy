@@ -497,3 +497,41 @@ describe('migrating a save from before the Iron Pot went', () => {
     expect(migrated.decor.floor).toBeNull();
   });
 });
+
+describe('migrating a save from before ranks asked for a potion', () => {
+  it('keeps the rank the renown had given, and records the potions held', () => {
+    const world = createWorld(1);
+    world.renown = 1_000;
+    const loose = world as unknown as Record<string, unknown>;
+    delete loose.bottledKinds;
+    world.bottled = [
+      {
+        uid: 'held',
+        recipeId: 'ignisAquaTerraAerUmbra',
+        grade: 'S',
+        purity: 99,
+        potencyTier: 'sovereign',
+        totalEssence: 400,
+        fairValue: 1,
+        bottledAt: 0,
+      },
+    ];
+    const raw = JSON.stringify({ schemaVersion: 21, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+    const sim = new Simulation(migrated);
+
+    expect(migrated.bottledKinds['S|5|sovereign']).toBe(true);
+    // Chandler, where 1000 renown had put it; the held potion would allow more,
+    // and renown is what holds it here.
+    expect(sim.rankId).toBe('chandler');
+  });
+
+  it('does not demote a shop with nothing on hand', () => {
+    const world = createWorld(1);
+    world.renown = 1_000;
+    delete (world as unknown as Record<string, unknown>).bottledKinds;
+    const raw = JSON.stringify({ schemaVersion: 21, savedAt: Date.now(), world });
+    const sim = new Simulation(new SaveManager(memoryAdapter()).import(raw)!);
+    expect(sim.rankId).toBe('chandler');
+  });
+});

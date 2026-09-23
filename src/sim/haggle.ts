@@ -19,7 +19,7 @@ import { config, customersConfig, getCustomer, getRecipe } from './config';
 import type { CustomerActionDef, CustomerDef } from './config';
 import { dayStateAt } from './clock';
 import { angleBetween } from './essences';
-import { rankIndexFor } from './progression';
+import { rankOf } from './progression';
 import { Rng } from './rng';
 import type { BottledItem, HaggleSession, HaggleStance, World } from './types';
 
@@ -97,7 +97,7 @@ export function walkInsToday(world: World): WalkIn[] {
  */
 export function scheduledWalkIns(world: World): WalkIn[] {
   const day = dayStateAt(world.now);
-  const rank = rankIndexFor(world.renown);
+  const rank = rankOf(world);
   const night = day.phase === 'night';
 
   return customersConfig.roster

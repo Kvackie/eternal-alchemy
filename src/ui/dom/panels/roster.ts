@@ -43,7 +43,7 @@ import {
   isInjured,
   recruitCostOf,
 } from '@/sim/heroes';
-import { rankIndexFor } from '@/sim/progression';
+import { rankOf } from '@/sim/progression';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
@@ -326,7 +326,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
 }
 
 function renderDestinations(sim: Simulation): HTMLElement {
-  const rank = rankIndexFor(sim.world.renown);
+  const rank = rankOf(sim.world);
 
   const tiles = heroesConfig.biomes.map((biome) => {
     const locked = rank < biome.requiresRank;

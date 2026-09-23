@@ -11,7 +11,7 @@
  */
 
 import { baseCauldronTier, cauldronsConfig, findCauldronTier, getCauldronTier } from './config';
-import { rankIndexFor } from './progression';
+import { rankOf } from './progression';
 import type { Cauldron, World } from './types';
 
 /** A fresh, empty pot of the given tier. Bought pots start put away. */
@@ -105,7 +105,7 @@ export function brewSpeedOf(pot: Cauldron): number {
 
 /** Tiers the shop's rank has unlocked, cheapest first. */
 export function buyableTiers(world: World) {
-  const rank = rankIndexFor(world.renown);
+  const rank = rankOf(world);
   return cauldronsConfig.tiers
     .filter((tier) => tier.cost > 0 && tier.requiresRank <= rank)
     .sort((a, b) => a.cost - b.cost);
@@ -126,7 +126,7 @@ export function buyCauldron(world: World, tierId: string): Cauldron | null {
   const tier = getCauldronTier(tierId);
   if (tier.cost <= 0) return null;
   if (atCauldronLimit(world)) return null;
-  if (rankIndexFor(world.renown) < tier.requiresRank) return null;
+  if (rankOf(world) < tier.requiresRank) return null;
   if (world.gold < tier.cost) return null;
 
   world.gold -= tier.cost;

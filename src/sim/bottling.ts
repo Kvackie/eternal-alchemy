@@ -9,6 +9,7 @@
  */
 
 import { fairValue } from './market';
+import { recordBottled } from './progression';
 import type { BottledItem, EssenceVector, Grade, PotencyTierId, World } from './types';
 
 /** The subset of a finished brew that bottling actually reads. */
@@ -43,5 +44,6 @@ export function bottle(world: World, brew: PendingBrew): BottledItem {
 
   item.fairValue = fairValue(item);
   world.bottled.push(item);
+  recordBottled(world, item);
   return item;
 }

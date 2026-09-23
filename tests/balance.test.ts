@@ -34,7 +34,7 @@ import { angleBetween, gradeFor, potencyMultiplier, potencyTierFor } from '@/sim
 import { assessOutcome } from '@/sim/brewing';
 import { fairValue } from '@/sim/market';
 import { isMature, spreadChanceFor } from '@/sim/cave';
-import { derivedStats, equipmentAvailability } from '@/sim/progression';
+import { derivedStats, equipmentAvailability, rankIndexFor } from '@/sim/progression';
 import { codexBonuses } from '@/sim/prestige';
 import { tierOf } from '@/sim/merchants';
 import type { BottledItem, EssenceVector, Grade } from '@/sim/types';
@@ -234,6 +234,7 @@ describe('the selling channels stay in their lanes', () => {
     // Ceiling after two counters and a hold-firm, versus plain fair value.
     const sim = new Simulation(createWorld(77));
     sim.world.renown = 100000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.advanceTo(DAY * 0.4);
     sim.world.bottled.push(bottle('h', 'B'));
 
@@ -267,8 +268,10 @@ describe('the renown curve', () => {
     }
 
     // Real progress, but the last few ranks stay out of reach even here.
-    expect(sim.rankIndex).toBeGreaterThan(0);
-    expect(sim.rankIndex).toBeLessThan(8);
+    // The renown curve on its own: the potion each rank also asks for is not
+    // what this measures.
+    expect(rankIndexFor(sim.world.renown)).toBeGreaterThan(0);
+    expect(rankIndexFor(sim.world.renown)).toBeLessThan(8);
   });
 });
 
@@ -606,6 +609,7 @@ describe('nothing sold is inert', () => {
     for (const def of repeatable) {
       const world = createWorld(1);
       world.renown = 100_000;
+      world.bottledKinds['S|5|sovereign'] = true;
       // One short of the limit: it must still be on offer.
       world.equipment[def.id] = (def.repeatable ?? 1) - 1;
       expect(

@@ -227,6 +227,7 @@ describe('a haggle', () => {
 
     const sim = new Simulation(createWorld(5));
     sim.world.renown = 100000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.advanceTo(DAY * 0.4);
     sim.world.bottled.push(bottle('x', night!.wants[0]!));
     expect(sim.walkIns().some((w) => w.customerId === night!.id)).toBe(false);

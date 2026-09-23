@@ -26,6 +26,7 @@ export function createWorld(seed = freshSeed()): World {
     inventory: [],
     seeds: {},
     boosters: {},
+    bottledKinds: {},
 
     // One pot to start. More are bought, not upgraded into.
     cauldrons: [makeCauldron('cauldron-1', baseCauldronTier.id)],

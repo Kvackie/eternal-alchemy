@@ -48,6 +48,7 @@ describe('cauldron art harness', () => {
     const world = createWorld(404);
     world.gold = 500_000;
     world.renown = 300_000;
+    world.bottledKinds['S|5|sovereign'] = true;
     world.onboardingDismissed = true;
 
     // One of every tier, or five of one tier.

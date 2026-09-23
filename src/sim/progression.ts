@@ -6,9 +6,12 @@
  * stock, and you still pay for it. That keeps gold meaningful late and stops a
  * rank-up from dumping five upgrades at once.
  *
- * Rank is derived from renown rather than stored, so it can never disagree with
- * the number it comes from. Equipment effects are likewise derived on read; the
- * only stored state is which equipment you own.
+ * Rank is derived rather than stored, so it can never disagree with what it
+ * comes from: renown, and — from Journeyman up — having bottled a potion good
+ * enough for the title. A shop that has only ever made one-essence Minors does
+ * not get to call itself an Arch-Alchemist however much renown the shelf has
+ * earned it. Equipment effects are likewise derived on read; the only stored
+ * state is which equipment you own, and which kinds of potion you have made.
  */
 
 import {
@@ -18,15 +21,81 @@ import {
   equipment,
   findDecor,
   getEquipment,
+  getRecipe,
   heroesConfig,
   ranks,
   shaftConfig,
+  type RankRequirement,
 } from './config';
+import { potencyRank } from './essences';
 import type { DecorEffect, EquipmentDef, EquipmentEffect } from './config';
 import { caveTilesBonus } from './town';
-import type { World } from './types';
+import type { BottledItem, PotencyTierId, World } from './types';
 
-/** Zero-based index into ranks.json. Rank I is index 0. */
+const GRADE_ORDER = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+
+/** The key a bottled potion is recorded under: `grade|essences|potency`. */
+export function bottledKindKey(item: BottledItem): string {
+  return `${item.grade}|${getRecipe(item.recipeId).elements.length}|${item.potencyTier}`;
+}
+
+/** Remember what kind of potion was just bottled, for the rank requirements. */
+export function recordBottled(world: World, item: BottledItem): void {
+  world.bottledKinds[bottledKindKey(item)] = true;
+}
+
+/** Whether anything bottled this run is at least as good as a rank asks for. */
+export function meetsRequirement(world: World, requires: RankRequirement): boolean {
+  return Object.keys(world.bottledKinds ?? {}).some((key) => {
+    const [grade, essences, potency] = key.split('|');
+    return (
+      GRADE_ORDER.indexOf(grade!) <= GRADE_ORDER.indexOf(requires.grade) &&
+      Number(essences) >= requires.essences &&
+      potencyRank(potency as PotencyTierId) >= potencyRank(requires.potency)
+    );
+  });
+}
+
+/**
+ * The shop's rank: the highest one whose renown it has and whose potion — and
+ * every potion before it — it has bottled.
+ */
+export function rankOf(world: World): number {
+  let index = 0;
+  for (let i = 1; i < ranks.length; i += 1) {
+    const rank = ranks[i]!;
+    if (world.renown < rank.renown) break;
+    if (rank.requires && !meetsRequirement(world, rank.requires)) break;
+    index = i;
+  }
+  return index;
+}
+
+export function rankIdOf(world: World): string {
+  return ranks[rankOf(world)]?.id ?? 'apprentice';
+}
+
+/** What the next rank still asks for, or null at the top of the track. */
+export function nextRankProgress(world: World): {
+  nextId: string;
+  renownNeeded: number;
+  requires: RankRequirement | null;
+  requirementMet: boolean;
+} | null {
+  const next = ranks[rankOf(world) + 1];
+  if (!next) return null;
+  return {
+    nextId: next.id,
+    renownNeeded: Math.max(0, next.renown - world.renown),
+    requires: next.requires ?? null,
+    requirementMet: !next.requires || meetsRequirement(world, next.requires),
+  };
+}
+
+/**
+ * The rank renown alone would give, with no potion asked for. What the
+ * renown thresholds mean on their own; `rankOf` is the shop's actual rank.
+ */
 export function rankIndexFor(renown: number): number {
   let index = 0;
   ranks.forEach((rank, i) => {
@@ -68,7 +137,7 @@ export function equipmentAvailability(
   if (ownedCount(world, def.id) >= (def.repeatable ?? 1)) {
     return { visible: false };
   }
-  if (rankIndexFor(world.renown) < def.requiresRank) {
+  if (rankOf(world) < def.requiresRank) {
     return { visible: true, reasonKey: 'market.reason.rank' };
   }
   for (const prerequisite of def.requires ?? []) {
