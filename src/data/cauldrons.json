@@ -1,6 +1,6 @@
 {
   "$comment": "Cauldrons are both a capacity ladder and a parallel-brewing one. A better pot holds a heavier blend; a SECOND pot lets you brew two things at once. Buying one of each is therefore never the obvious move — a cheap second cauldron and an expensive first are different shops.",
-  "$capacityComment": "Capacity has to clear 300 for the Sovereign band to be reachable at all: over-capacity caps a brew at grade D, so before these existed the top two potency tiers were a trap you could enter and never score in. cauldronFour is the first pot that can hold a Sovereign brew.",
+  "$capacityComment": "Each pot tops out exactly where the next potency tier begins (60, 110, 190, 320 against tiers from 61, 111, 191, 321), so every pot up the ladder opens one tier more. Over-capacity caps a brew at grade D, so a tier above your pot is one you can enter but never score in. cauldronFive is the first pot that can hold a Sovereign brew.",
   "$stackComment": "You may own several of the same tier. maxOwned is the total across all tiers, so a late shop chooses between many small pots and a few great ones.",
   "maxOwned": 6,
   "tiers": [
@@ -30,7 +30,7 @@
       "brewSpeedMultiplier": 0.95
     },
     {
-      "$comment": "Crystal-set, and the first pot that can hold a Sovereign brew.",
+      "$comment": "Crystal-set, and the first pot that can hold a Grand brew.",
       "id": "cauldronFour",
       "cost": 2400,
       "requiresRank": 3,
@@ -39,6 +39,7 @@
       "brewSpeedMultiplier": 0.9
     },
     {
+      "$comment": "The first pot that can hold a Sovereign brew.",
       "id": "cauldronFive",
       "cost": 6200,
       "requiresRank": 4,

@@ -629,21 +629,9 @@
       },
       {
         "kind": "equipment",
-        "id": "cauldronHundred",
-        "weight": 4,
-        "tier": 0
-      },
-      {
-        "kind": "equipment",
         "id": "wideRim",
         "weight": 3,
         "tier": 1
-      },
-      {
-        "kind": "equipment",
-        "id": "cauldronOneEighty",
-        "weight": 3,
-        "tier": 2
       },
       {
         "kind": "decor",

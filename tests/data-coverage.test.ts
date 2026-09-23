@@ -38,6 +38,7 @@ import {
   shaftConfig,
   caveConfig,
   customersConfig,
+  shelfTiers,
 } from '@/sim/config';
 import { angleBetween } from '@/sim/essences';
 import type { EssenceVector } from '@/sim/types';
@@ -203,6 +204,32 @@ describe('every data id can be shown to a player', () => {
 });
 
 describe('the data that only documents itself still has to be true', () => {
+  /*
+   * A stall entry naming nothing is dropped from the draw without a word, so
+   * two cauldron upgrades sat in Vessa's list for a whole overhaul after the
+   * pots became their own ladder — harmless, and invisible, which is the
+   * problem.
+   */
+  it('stocks every merchant with things that exist', () => {
+    const known: Record<string, Set<string>> = {
+      vessel: new Set(vessels.map((x) => x.id)),
+      seal: new Set(seals.map((x) => x.id)),
+      equipment: new Set(equipment.map((x) => x.id)),
+      decor: new Set(decorPieces.map((x) => x.id)),
+      board: new Set(shelfTiers.map((x) => x.id)),
+      seed: new Set(crops.map((x) => x.id)),
+      spore: new Set(caveConfig.species.map((x) => x.id)),
+      ingredient: new Set(ingredients.map((x) => x.id)),
+    };
+    const missing: string[] = [];
+    for (const merchant of merchants) {
+      for (const item of merchant.pool) {
+        if (!known[item.kind]?.has(item.id)) missing.push(`${merchant.id}: ${item.kind} ${item.id}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
   it('gives every upgrade a tree that groups something real', () => {
     const trees = new Set(equipment.map((def) => def.tree));
     for (const tree of trees) {
