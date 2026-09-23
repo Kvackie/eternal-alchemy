@@ -173,9 +173,7 @@ function renderMissionsUnderway(sim: Simulation): HTMLElement {
      * — and rebuilding the panel is what used to make this screen unclickable
      * the moment a party was out.
      */
-    const clock = chip(
-      t('roster.returns', { time: countdown(mission.returnsAt, sim.now) }),
-    );
+    const clock = chip(t('roster.returns', { time: countdown(mission.returnsAt, sim.now) }));
     clock.dataset.countdownAt = String(mission.returnsAt);
     clock.dataset.countdownKey = 'roster.returns';
 
@@ -260,7 +258,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
     if (hurt) {
       const healing = chip(
         t('roster.injured', {
-          time: countdown((hero.injuredUntil ?? 0), sim.now),
+          time: countdown(hero.injuredUntil ?? 0, sim.now),
         }),
         'warn',
       );
@@ -464,11 +462,7 @@ function renderSupplies(sim: Simulation): HTMLElement {
    */
   const stacks = supplyStacks(sim).filter((stack) => {
     const first = stack.items[0]!;
-    return matchesSearch(
-      supplyQuery,
-      t(`recipe.${first.recipeId}`),
-      first.grade,
-    );
+    return matchesSearch(supplyQuery, t(`recipe.${first.recipeId}`), first.grade);
   });
 
   const tiles = stacks.map((stack) => {
@@ -553,9 +547,7 @@ function renderSupplies(sim: Simulation): HTMLElement {
 
   // "Nothing matches" and "you have no bottles" are different facts, and only
   // one of them is worth an instruction about brewing.
-  const empty = supplyQuery.trim()
-    ? t('common.search.none')
-    : t('roster.supplies.empty');
+  const empty = supplyQuery.trim() ? t('common.search.none') : t('roster.supplies.empty');
 
   return collapsible({
     className: 'supplies',
@@ -652,9 +644,7 @@ function sortTavern(defs: typeof heroesConfig.roster): typeof heroesConfig.roste
   const byName = (a: { id: string }, b: { id: string }) =>
     t(`hero.${a.id}`).localeCompare(t(`hero.${b.id}`));
 
-  const filtered = tavernArea
-    ? defs.filter((def) => def.affinity === tavernArea)
-    : defs;
+  const filtered = tavernArea ? defs.filter((def) => def.affinity === tavernArea) : defs;
 
   const sign = tavernDir === 'asc' ? 1 : -1;
   return [...filtered].sort((a, b) => {

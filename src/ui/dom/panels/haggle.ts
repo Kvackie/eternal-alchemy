@@ -173,23 +173,39 @@ function renderSession(sim: Simulation): HTMLElement {
 
   // The price stepper. Coarse and fine steps, no typing, no dragging.
   const stepper = el('div', { class: 'stepper' }, [
-    button('−25', () => {
-      ask = Math.max(1, ask - 25);
-      changed();
-    }, { variant: 'quiet', small: true }),
-    button('−5', () => {
-      ask = Math.max(1, ask - 5);
-      changed();
-    }, { variant: 'quiet', small: true }),
+    button(
+      '−25',
+      () => {
+        ask = Math.max(1, ask - 25);
+        changed();
+      },
+      { variant: 'quiet', small: true },
+    ),
+    button(
+      '−5',
+      () => {
+        ask = Math.max(1, ask - 5);
+        changed();
+      },
+      { variant: 'quiet', small: true },
+    ),
     el('span', { class: 'stepper-value num', text: formatGold(ask) }),
-    button('+5', () => {
-      ask += 5;
-      changed();
-    }, { variant: 'quiet', small: true }),
-    button('+25', () => {
-      ask += 25;
-      changed();
-    }, { variant: 'quiet', small: true }),
+    button(
+      '+5',
+      () => {
+        ask += 5;
+        changed();
+      },
+      { variant: 'quiet', small: true },
+    ),
+    button(
+      '+25',
+      () => {
+        ask += 25;
+        changed();
+      },
+      { variant: 'quiet', small: true },
+    ),
   ]);
 
   section.append(
@@ -211,9 +227,7 @@ function renderSession(sim: Simulation): HTMLElement {
         const result = sim.closeHaggle(ask);
         if (!result) return;
         toast(
-          result.sold
-            ? t('haggle.sold', { gold: formatGold(result.gold) })
-            : t('haggle.refused'),
+          result.sold ? t('haggle.sold', { gold: formatGold(result.gold) }) : t('haggle.refused'),
         );
         resetHaggle();
         changed();

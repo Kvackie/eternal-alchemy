@@ -178,7 +178,8 @@ function renderEntry(entry: LogEntry): HTMLElement {
 
   // Ids in the log become names here; the log itself stays language-free.
   if (typeof params.recipe === 'string') params.recipe = t(`recipe.${params.recipe}`);
-  if (typeof params.ingredient === 'string') params.ingredient = t(`ingredient.${params.ingredient}`);
+  if (typeof params.ingredient === 'string')
+    params.ingredient = t(`ingredient.${params.ingredient}`);
   if (typeof params.crop === 'string') params.crop = t(`crop.${params.crop}`);
   if (typeof params.rank === 'string') params.rank = t(`rank.${params.rank}`);
   if (typeof params.hero === 'string') params.hero = t(`hero.${params.hero}`);
@@ -207,9 +208,13 @@ function renderEntry(entry: LogEntry): HTMLElement {
   const sentence = t(`log.${entry.kind}`, params);
   const parts: Array<Node | string> = [
     el('span', { class: 'log-day num', text: t('ledger.log.day', { day: day.dayNumber + 1 }) }),
-    el('span', { class: 'log-text' }, goldValue === null
-      ? [sentence]
-      : splitOnValue(sentence, el('span', { class: 'gold', text: goldValue }))),
+    el(
+      'span',
+      { class: 'log-text' },
+      goldValue === null
+        ? [sentence]
+        : splitOnValue(sentence, el('span', { class: 'gold', text: goldValue })),
+    ),
   ];
   if (typeof grade === 'string') {
     parts.push(gradeBadge(grade as Parameters<typeof gradeBadge>[0]));

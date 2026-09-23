@@ -97,7 +97,12 @@ for (const [kind, size] of Object.entries(KINDS)) {
       path.join(OUT, `${name}.json`),
       JSON.stringify({
         frames,
-        meta: { image: `${name}.png`, format: 'RGBA8888', size: { w: width, h: height }, scale: '1' },
+        meta: {
+          image: `${name}.png`,
+          format: 'RGBA8888',
+          size: { w: width, h: height },
+          scale: '1',
+        },
       }),
       'utf8',
     );

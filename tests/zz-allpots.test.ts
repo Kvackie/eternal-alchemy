@@ -51,8 +51,7 @@ describe('cauldron art harness', () => {
     world.onboardingDismissed = true;
 
     // One of every tier, or five of one tier.
-    const tiers =
-      TIER === 'all' ? cauldronTiers.map((t) => t.id) : BY_ESSENCE.map(() => TIER);
+    const tiers = TIER === 'all' ? cauldronTiers.map((t) => t.id) : BY_ESSENCE.map(() => TIER);
 
     world.cauldrons = tiers.map((id, i) => makeCauldron(`cauldron-${i + 1}`, id));
     world.activeCauldronId = 'cauldron-1';
@@ -73,14 +72,14 @@ describe('cauldron art harness', () => {
 
     writeFileSync(
       OUT!,
-      JSON.stringify({ schemaVersion: config.save.schemaVersion, savedAt: Date.now() + 60000, world: sim.world }),
+      JSON.stringify({
+        schemaVersion: config.save.schemaVersion,
+        savedAt: Date.now() + 60000,
+        world: sim.world,
+      }),
       'utf8',
     );
     // eslint-disable-next-line no-console
-    console.log(
-      sim.cauldrons
-        .map((p) => `${p.tierId}=${p.brewing?.outcome.recipeId}`)
-        .join('  '),
-    );
+    console.log(sim.cauldrons.map((p) => `${p.tierId}=${p.brewing?.outcome.recipeId}`).join('  '));
   });
 });

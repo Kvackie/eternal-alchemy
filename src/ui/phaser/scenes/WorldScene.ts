@@ -202,12 +202,9 @@ export class WorldScene extends Phaser.Scene {
     this.input.on('gameout', stop);
 
     // The wheel zooms, which is what every map in the world does.
-    this.input.on(
-      'wheel',
-      (_p: Phaser.Input.Pointer, _o: unknown, _dx: number, dy: number) => {
-        this.zoomBy(dy > 0 ? 1 / ZOOM_STEP : ZOOM_STEP);
-      },
-    );
+    this.input.on('wheel', (_p: Phaser.Input.Pointer, _o: unknown, _dx: number, dy: number) => {
+      this.zoomBy(dy > 0 ? 1 / ZOOM_STEP : ZOOM_STEP);
+    });
   }
 
   /**
@@ -755,9 +752,7 @@ export class WorldScene extends Phaser.Scene {
         );
         this.content.add(shade);
 
-        const mound = this.add
-          .image(px, groundY, 'dirtMound')
-          .setDisplaySize(moundW, moundW * 0.6);
+        const mound = this.add.image(px, groundY, 'dirtMound').setDisplaySize(moundW, moundW * 0.6);
         this.content.add(mound);
       }
 
@@ -789,10 +784,5 @@ export class WorldScene extends Phaser.Scene {
       const halo = this.add.circle(x, y, Math.max(innerW, innerH) * 0.5, palette.good, 0.1);
       this.content.addAt(halo, Math.max(0, this.content.length - count * 2));
     }
-
   }
-
-
-
 }
-

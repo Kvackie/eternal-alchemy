@@ -106,7 +106,10 @@ if (!existsSync(SOURCE)) {
 const meta = await sharp(SOURCE).metadata();
 console.log(`${SOURCE} ${meta.width}x${meta.height}`);
 
-const { data, info } = await sharp(SOURCE).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+const { data, info } = await sharp(SOURCE)
+  .ensureAlpha()
+  .raw()
+  .toBuffer({ resolveWithObject: true });
 const { width, height, channels } = info;
 const at = (x, y) => (y * width + x) * channels;
 
@@ -304,10 +307,7 @@ async function poolUnderside(buffer, rimRow) {
     }
   }
 
-  return sharp(data, { raw: { width, height, channels } })
-    .trim({ threshold: 6 })
-    .png()
-    .toBuffer();
+  return sharp(data, { raw: { width, height, channels } }).trim({ threshold: 6 }).png().toBuffer();
 }
 
 console.log(`\n${ORDER.length} effects${APPLY ? ' written' : ''}`);

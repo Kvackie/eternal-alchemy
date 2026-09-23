@@ -1,0 +1,15 @@
+# Built output and native projects.
+dist
+android
+node_modules
+package-lock.json
+
+# Data the generators write, byte for byte: reformatting it would make
+# `gen-ingredients.js` and `art-build.js` report changes that are not there.
+src/data/*.json
+public
+art/*.json
+
+# Prose. Prettier pads table columns to the widest cell, which turns the
+# README's tables into walls of spaces.
+*.md

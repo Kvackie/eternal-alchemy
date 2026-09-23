@@ -44,12 +44,7 @@ import { outcomeProblems } from '@/sim/brewing';
 import { totalEssence } from '@/sim/essences';
 import { showIngredientInfo } from '../ingredientInfo';
 import { ESSENCES } from '@/sim/types';
-import type {
-  Essence,
-  EssenceVector,
-  Freshness,
-  IngredientCategory,
-} from '@/sim/types';
+import type { Essence, EssenceVector, Freshness, IngredientCategory } from '@/sim/types';
 import type { RecipeDef } from '@/sim/config';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
@@ -219,10 +214,7 @@ export function renderStation(sim: Simulation): HTMLElement {
                 renderVerdict(sim),
               ]),
             ]
-          : [
-              scroller('middle', 'station-col station-middle', [renderPot(sim)]),
-              renderRight(sim),
-            ],
+          : [scroller('middle', 'station-col station-middle', [renderPot(sim)]), renderRight(sim)],
       ),
     );
     // The columns above are the view this strip chose; name them as one.
@@ -390,7 +382,9 @@ function renderStores(sim: Simulation): HTMLElement {
 
   const filters = el('div', { class: 'station-filters' });
   filters.dataset.open = String(shown);
-  filters.append(el('div', { class: 'sort-row filter-bar' }, active > 0 ? [toggle, clear] : [toggle]));
+  filters.append(
+    el('div', { class: 'sort-row filter-bar' }, active > 0 ? [toggle, clear] : [toggle]),
+  );
   if (shown) {
     filters.append(
       el(
@@ -434,9 +428,7 @@ function renderStores(sim: Simulation): HTMLElement {
     search,
     filters,
     scroller('stores', 'station-scroll', [
-      tiles.length > 0
-        ? el('div', { class: 'ingredient-grid' }, tiles)
-        : emptyNote(empty),
+      tiles.length > 0 ? el('div', { class: 'ingredient-grid' }, tiles) : emptyNote(empty),
     ]),
   ];
 
@@ -588,7 +580,11 @@ function potGroups(
       group.count += 1;
       group.lastIndex = index;
     } else {
-      groups.set(unit.ingredientId, { ingredientId: unit.ingredientId, count: 1, lastIndex: index });
+      groups.set(unit.ingredientId, {
+        ingredientId: unit.ingredientId,
+        count: 1,
+        lastIndex: index,
+      });
     }
   });
   return [...groups.values()];
@@ -739,9 +735,13 @@ function renderOutcome(sim: Simulation): HTMLElement {
   section.append(
     el('div', { class: 'row-actions center' }, [
       reject,
-      button(t('cauldron.action.accept'), () => {
-        if (sim.acceptBrew()) changed();
-      }, { variant: 'gold' }),
+      button(
+        t('cauldron.action.accept'),
+        () => {
+          if (sim.acceptBrew()) changed();
+        },
+        { variant: 'gold' },
+      ),
     ]),
   );
   return section;
@@ -890,7 +890,11 @@ function renderRight(sim: Simulation): HTMLElement {
       sectionHead(t('cauldron.recipes'), t('station.showing', { count: recipes.length })),
       el('div', { class: 'sort-row' }, [
         (() => {
-          const node = el('button', { class: 'sort-chip', type: 'button', text: t('station.matchPot') });
+          const node = el('button', {
+            class: 'sort-chip',
+            type: 'button',
+            text: t('station.matchPot'),
+          });
           node.setAttribute('aria-pressed', String(matchPot));
           node.addEventListener('click', () => {
             matchPot = !matchPot;
@@ -1029,9 +1033,7 @@ function renderRecipe(recipe: RecipeDef, blend: EssenceVector | null): HTMLEleme
     ]),
   );
 
-  row.append(
-    el('div', { class: 'recipe-body' }, [el('div', { class: 'ratio-bars' }, bars)]),
-  );
+  row.append(el('div', { class: 'recipe-body' }, [el('div', { class: 'ratio-bars' }, bars)]));
 
   return row;
 }

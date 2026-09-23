@@ -27,9 +27,7 @@ export function createWorld(seed = freshSeed()): World {
     seeds: {},
 
     // One pot to start. More are bought, not upgraded into.
-    cauldrons: [
-      makeCauldron('cauldron-1', baseCauldronTier.id),
-    ],
+    cauldrons: [makeCauldron('cauldron-1', baseCauldronTier.id)],
     activeCauldronId: 'cauldron-1',
     nextCauldronId: 2,
 
@@ -50,7 +48,11 @@ export function createWorld(seed = freshSeed()): World {
     merchantVisits: {},
     acknowledgedRank: 0,
 
-    cave: { tiles: makeCaveTiles(caveConfig.startingTiles), lastTick: 0, seed: (seed ^ 0xca7e) >>> 0 },
+    cave: {
+      tiles: makeCaveTiles(caveConfig.startingTiles),
+      lastTick: 0,
+      seed: (seed ^ 0xca7e) >>> 0,
+    },
     spores: {},
 
     shaft: {
@@ -73,7 +75,6 @@ export function createWorld(seed = freshSeed()): World {
 
     haggle: null,
     servedToday: { dayNumber: -1, customerIds: [] },
-
 
     mastery: 0,
     codex: {},

@@ -28,10 +28,7 @@ const rows = [];
 for (const file of files) {
   const image = sharp(path.join(dir, file));
   const meta = await image.metadata();
-  const { data, info } = await image
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  const { data, info } = await image.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
 
   const { width, height, channels } = info;
   let minX = width;
@@ -56,9 +53,13 @@ for (const file of files) {
   const coverage = opaquePixels / (width * height);
   // Touching every edge means there is no margin to trim.
   const touches =
-    (minX <= 1 ? 1 : 0) + (minY <= 1 ? 1 : 0) + (maxX >= width - 2 ? 1 : 0) + (maxY >= height - 2 ? 1 : 0);
+    (minX <= 1 ? 1 : 0) +
+    (minY <= 1 ? 1 : 0) +
+    (maxX >= width - 2 ? 1 : 0) +
+    (maxY >= height - 2 ? 1 : 0);
 
-  const kind = !meta.hasAlpha || coverage > 0.97 ? 'opaque' : touches >= 3 ? 'full-bleed' : 'framed';
+  const kind =
+    !meta.hasAlpha || coverage > 0.97 ? 'opaque' : touches >= 3 ? 'full-bleed' : 'framed';
   if (kind === 'opaque') opaque += 1;
   else if (kind === 'full-bleed') fullBleed += 1;
   else framed += 1;
@@ -74,5 +75,6 @@ console.log(`  fully opaque (no alpha):   ${opaque}`);
 const odd = rows.filter((r) => r.kind !== 'framed');
 if (odd.length) {
   console.log('\n  not framed:');
-  for (const r of odd) console.log(`    ${r.file.padEnd(28)} ${r.kind.padEnd(12)} ${r.coverage}% covered`);
+  for (const r of odd)
+    console.log(`    ${r.file.padEnd(28)} ${r.kind.padEnd(12)} ${r.coverage}% covered`);
 }

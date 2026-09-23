@@ -76,9 +76,7 @@ describe('a brew waiting to be bottled', () => {
     const resumed = new Simulation(saves.load()!);
 
     expect(resumed.pendingBrew?.grade).toBe(grade);
-    expect(
-      resumed.bottlePending(),
-    ).not.toBeNull();
+    expect(resumed.bottlePending()).not.toBeNull();
   });
 });
 
@@ -163,9 +161,7 @@ describe('migrating a save from the alembic era', () => {
     expect(sim.pendingBrew?.grade).toBe('A');
     // The tonic it was brewing is the Aqua–Terra potion now.
     expect(sim.pendingBrew?.recipeId).toBe('aquaTerra');
-    expect(
-      sim.bottlePending(),
-    ).not.toBeNull();
+    expect(sim.bottlePending()).not.toBeNull();
   });
 
   it('still refuses a save from a schema newer than this build', () => {
@@ -254,7 +250,8 @@ describe('migrating a save from the 197-recipe book', () => {
 
 describe('migrating a save from before forms and the greenhouse went', () => {
   function v14Save(): string {
-    const world = createWorld(1) as unknown as Record<string, unknown> & ReturnType<typeof createWorld>;
+    const world = createWorld(1) as unknown as Record<string, unknown> &
+      ReturnType<typeof createWorld>;
     world.bottled = [
       {
         uid: 'a',
@@ -273,7 +270,9 @@ describe('migrating a save from before forms and the greenhouse went', () => {
     world.nextStrainId = 2;
     world.seeds['strain-1'] = 3;
     world.seeds.sunleaf = 1;
-    world.inventory = [{ ingredientId: 'sunleaf', count: 2, harvestedAt: 0, strainId: 'strain-1' } as never];
+    world.inventory = [
+      { ingredientId: 'sunleaf', count: 2, harvestedAt: 0, strainId: 'strain-1' } as never,
+    ];
     (world.statistics as unknown as Record<string, number>).strainsBred = 1;
     world.equipment.greenhouse = 1;
     return JSON.stringify({ schemaVersion: 14, savedAt: Date.now(), world });
@@ -316,7 +315,9 @@ describe('migrating a save from before the ingredient rebuild', () => {
     world.cave.tiles[0]!.speciesId = 'witchCap';
     world.plots[0]!.crop = { cropId: 'emberroot', plantedAt: 0, readyAt: 1 };
     world.cauldrons[0]!.contents.units = [{ ingredientId: 'emberroot', harvestedAt: 0 }];
-    world.log = [{ id: 1, at: 0, kind: 'harvested', params: { ingredient: 'emberroot', count: 3 } }];
+    world.log = [
+      { id: 1, at: 0, kind: 'harvested', params: { ingredient: 'emberroot', count: 3 } },
+    ];
     return JSON.stringify({ schemaVersion: 15, savedAt: Date.now(), world });
   }
 
@@ -358,7 +359,8 @@ describe('paying back what the overhaul took away', () => {
   });
 
   it('refunds the greenhouse, and names its strains by their crop in the Ledger', () => {
-    const world = createWorld(1) as unknown as Record<string, unknown> & ReturnType<typeof createWorld>;
+    const world = createWorld(1) as unknown as Record<string, unknown> &
+      ReturnType<typeof createWorld>;
     world.gold = 0;
     world.equipment.greenhouse = 1;
     world.strains = [{ id: 'strain-1', baseCropId: 'sunleaf', generation: 1 }];
@@ -383,7 +385,10 @@ describe('migrating a save from before the loose ends were tied', () => {
 
     expect(typeof migrated.cave.seed).toBe('number');
     for (const depth of [0, 5, 10, 15, 20]) {
-      expect(migrated.shaft.veins.some((vein) => vein.depth === depth), `${depth}m`).toBe(true);
+      expect(
+        migrated.shaft.veins.some((vein) => vein.depth === depth),
+        `${depth}m`,
+      ).toBe(true);
     }
     expect(migrated.merchantVisits.bramm!.picks).toBeUndefined();
   });
@@ -419,7 +424,12 @@ describe('migrating a save from before vessels and seals went', () => {
       {
         id: 'contract-1',
         templateId: '',
-        terms: { faction: 'greycloaks', recipeId: 'aquaTerra', minGrade: 'C', requiresSeal: 'cork' },
+        terms: {
+          faction: 'greycloaks',
+          recipeId: 'aquaTerra',
+          minGrade: 'C',
+          requiresSeal: 'cork',
+        },
         quantity: 3,
         delivered: 0,
         payout: 100,
@@ -487,4 +497,3 @@ describe('migrating a save from before the Iron Pot went', () => {
     expect(migrated.decor.floor).toBeNull();
   });
 });
-

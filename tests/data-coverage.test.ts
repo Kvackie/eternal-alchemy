@@ -218,7 +218,8 @@ describe('the data that only documents itself still has to be true', () => {
     const missing: string[] = [];
     for (const merchant of merchants) {
       for (const item of merchant.pool) {
-        if (!known[item.kind]?.has(item.id)) missing.push(`${merchant.id}: ${item.kind} ${item.id}`);
+        if (!known[item.kind]?.has(item.id))
+          missing.push(`${merchant.id}: ${item.kind} ${item.id}`);
       }
     }
     expect(missing).toEqual([]);
@@ -240,8 +241,7 @@ describe('the data that only documents itself still has to be true', () => {
      */
     const byFamily = new Map<string, { counters: Set<string>; backfires: Set<string> }>();
     for (const action of customersConfig.actions) {
-      const entry =
-        byFamily.get(action.family) ?? { counters: new Set(), backfires: new Set() };
+      const entry = byFamily.get(action.family) ?? { counters: new Set(), backfires: new Set() };
       entry.counters.add(action.counters);
       entry.backfires.add(action.backfiresAgainst);
       byFamily.set(action.family, entry);
@@ -359,7 +359,9 @@ describe('the ingredient set', () => {
     const mined = new Set(shaftConfig.strata.flatMap((s) => s.veins.map((v) => v.ingredientId)));
     const found = new Set(
       heroesConfig.biomes.flatMap((b) =>
-        [...b.loot, ...b.rare].filter((d) => (d.kind ?? 'ingredient') === 'ingredient').map((d) => d.ingredientId),
+        [...b.loot, ...b.rare]
+          .filter((d) => (d.kind ?? 'ingredient') === 'ingredient')
+          .map((d) => d.ingredientId),
       ),
     );
     const source = { herb: grown, fungus: spread, mineral: mined, exotic: found } as const;
@@ -368,7 +370,9 @@ describe('the ingredient set', () => {
   });
 
   it('brings the majority of ingredients back from expeditions', () => {
-    const found = new Set(heroesConfig.biomes.flatMap((b) => [...b.loot, ...b.rare].map((d) => d.ingredientId)));
+    const found = new Set(
+      heroesConfig.biomes.flatMap((b) => [...b.loot, ...b.rare].map((d) => d.ingredientId)),
+    );
     expect(found.size / ingredients.length).toBeGreaterThan(0.5);
   });
 
@@ -387,4 +391,3 @@ describe('the ingredient set', () => {
     shaftConfig.strata.forEach((stratum, i) => expect(stratum.minDepth).toBe(i * 5));
   });
 });
-

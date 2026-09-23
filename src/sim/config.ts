@@ -559,8 +559,7 @@ export const getIngredient = (id: string): IngredientDef =>
   require_(ingredientIndex, id, 'ingredient');
 export const getCrop = (id: string): CropDef => require_(cropIndex, id, 'crop');
 export const getRecipe = (id: string): RecipeDef => require_(recipeIndex, id, 'recipe');
-export const getEquipment = (id: string): EquipmentDef =>
-  require_(equipmentIndex, id, 'equipment');
+export const getEquipment = (id: string): EquipmentDef => require_(equipmentIndex, id, 'equipment');
 export const getDecor = (id: string): DecorDef => require_(decorIndex, id, 'decor');
 export const getShelfTier = (id: string): ShelfTierDef =>
   require_(shelfTierIndex, id, 'shelf tier');

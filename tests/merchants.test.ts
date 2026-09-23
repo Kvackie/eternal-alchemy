@@ -96,7 +96,11 @@ describe('merchant stock', () => {
 
   it('differs between visits', () => {
     const visits = [0, 2, 4, 6, 8, 10].map(
-      (day) => worldAt(midday(day)).merchants()[0]?.entries.map((e) => e.id).join(',') ?? '',
+      (day) =>
+        worldAt(midday(day))
+          .merchants()[0]
+          ?.entries.map((e) => e.id)
+          .join(',') ?? '',
     );
     expect(new Set(visits).size).toBeGreaterThan(1);
   });
@@ -154,14 +158,25 @@ describe('merchant stock', () => {
   it('re-deals on the next visit, not on this one', () => {
     const sim = new Simulation(createWorld(3));
     sim.advanceTo(midday(2));
-    const first = sim.merchants()[0]!.entries.map((e) => e.id).join(',');
+    const first = sim
+      .merchants()[0]!
+      .entries.map((e) => e.id)
+      .join(',');
 
     sim.advanceTo(midday(2) + 90_000);
-    expect(sim.merchants()[0]!.entries.map((e) => e.id).join(',')).toBe(first);
+    expect(
+      sim
+        .merchants()[0]!
+        .entries.map((e) => e.id)
+        .join(','),
+    ).toBe(first);
 
     // Two days on is Bramm's next visit, and that one is packed afresh.
     sim.advanceTo(midday(4));
-    const second = sim.merchants()[0]!.entries.map((e) => e.id).join(',');
+    const second = sim
+      .merchants()[0]!
+      .entries.map((e) => e.id)
+      .join(',');
     expect(second).not.toBe(first);
   });
 
@@ -533,7 +548,9 @@ describe('buying several at once', () => {
     const visit = sim.merchants().find((v) => v.merchantId === 'vessa')!;
     // Found rather than assumed: which slot a spore lands in is a roll over
     // Vessa's whole pool, and moves whenever anything is added to it.
-    const index = visit.entries.findIndex((entry) => entry.kind === 'spore' && entry.remaining >= 3);
+    const index = visit.entries.findIndex(
+      (entry) => entry.kind === 'spore' && entry.remaining >= 3,
+    );
     expect(index).toBeGreaterThanOrEqual(0);
     const chosen = visit.entries[index]!;
 
@@ -686,8 +703,10 @@ describe('what a trader brings, world by world', () => {
   it('deals each world its own trade goods but the same staples', () => {
     const a = visitOf(1, 2, 'bramm')!;
     const b = visitOf(2, 2, 'bramm')!;
-    const trade = (visit: typeof a) => visit.entries.filter((e) => TRADE.has(e.kind)).map((e) => e.id);
-    const staples = (visit: typeof a) => visit.entries.filter((e) => !TRADE.has(e.kind)).map((e) => e.id);
+    const trade = (visit: typeof a) =>
+      visit.entries.filter((e) => TRADE.has(e.kind)).map((e) => e.id);
+    const staples = (visit: typeof a) =>
+      visit.entries.filter((e) => !TRADE.has(e.kind)).map((e) => e.id);
 
     expect(trade(a)).not.toEqual(trade(b));
     expect(staples(a)).toEqual(staples(b));
@@ -695,7 +714,9 @@ describe('what a trader brings, world by world', () => {
 
   it('still brings every seed round within one pass of the list', () => {
     const def = getMerchant('bramm');
-    const seeds = def.pool.filter((item) => item.kind === 'seed' && item.tier === 0).map((item) => item.id);
+    const seeds = def.pool
+      .filter((item) => item.kind === 'seed' && item.tier === 0)
+      .map((item) => item.id);
     const passes = Math.ceil(seeds.length / def.rotation);
     const seen = new Set<string>();
     for (let visit = 0; visit < passes; visit += 1) {
@@ -705,4 +726,3 @@ describe('what a trader brings, world by world', () => {
     for (const seed of seeds) expect(seen.has(seed), seed).toBe(true);
   });
 });
-

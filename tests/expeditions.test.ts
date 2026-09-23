@@ -103,7 +103,14 @@ describe('favour', () => {
     expect(favourBandOf(50).id).toBe('warm');
     expect(favourBandOf(95).id).toBe('sworn');
 
-    const hero = { id: 'corin', level: 2, favour: 95, injuredUntil: null, onMission: false, missionsCompleted: 0 };
+    const hero = {
+      id: 'corin',
+      level: 2,
+      favour: 95,
+      injuredUntil: null,
+      onMission: false,
+      missionsCompleted: 0,
+    };
     expect(effectiveLevel(hero)).toBe(2 + favourBandOf(95).levelBonus);
   });
 
@@ -317,12 +324,7 @@ describe('the contract board', () => {
       for (let round = 0; round < 6; round += 1) {
         const keys = sim.world.contracts.map((contract) => {
           const terms = contractTerms(contract);
-          return [
-            terms.faction,
-            terms.recipeId,
-            terms.minGrade,
-            contract.quantity,
-          ].join('|');
+          return [terms.faction, terms.recipeId, terms.minGrade, contract.quantity].join('|');
         });
         expect(new Set(keys).size).toBe(keys.length);
         sim.world.contracts.splice(0, 1);

@@ -168,75 +168,77 @@ export function showIngredientInfo(
 
   const suggestions = pointsToward(sim, essence);
 
-  const build = (dismiss: () => void) => [el('div', { class: 'ingredient-info' }, [
-    infoHead({
-      art: ingredientIcon(ingredientId, 44),
-      title: t(`ingredient.${ingredientId}`),
-      chips: tags,
-    }),
+  const build = (dismiss: () => void) => [
+    el('div', { class: 'ingredient-info' }, [
+      infoHead({
+        art: ingredientIcon(ingredientId, 44),
+        title: t(`ingredient.${ingredientId}`),
+        chips: tags,
+      }),
 
-    el('span', {
-      class: 'field-label',
-      text: t('ingredientInfo.contributes', { total: String(total) }),
-    }),
-    essenceRows(essence),
+      el('span', {
+        class: 'field-label',
+        text: t('ingredientInfo.contributes', { total: String(total) }),
+      }),
+      essenceRows(essence),
 
-    el('span', { class: 'field-label', text: t('ingredientInfo.suits') }),
-    suggestions.known.length === 0 && suggestions.unknown === 0
-      ? emptyNote(t('ingredientInfo.suitsNothing'))
-      : el('div', { class: 'ingredient-info-recipes' }, [
-          ...suggestions.known.map((entry) =>
-            el('div', { class: 'ingredient-info-recipe' }, [
-              el('span', { text: t(`recipe.${entry.recipe.id}`) }),
-              chip(
-                t('ingredientInfo.off', { deg: entry.deg.toFixed(0) }),
-                entry.deg <= entry.recipe.toleranceDeg ? 'good' : 'default',
-              ),
-            ]),
-          ),
-          /*
-           * The unknown ones as a count, not a list.
-           *
-           * Naming them would hand over the discovery; listing them as four
-           * identical "not brewed yet" rows told the player nothing at all. A
-           * number is the honest middle: there is something here worth finding.
-           */
-          ...(suggestions.unknown > 0
-            ? [
-                el('p', {
-                  class: 'info-note',
-                  // "And 3 more" needs something to be more *than*. With no
-                  // known recipes above it, the count stands on its own.
-                  text: t(
-                    suggestions.known.length > 0
-                      ? 'ingredientInfo.undiscovered'
-                      : 'ingredientInfo.undiscoveredOnly',
-                    { count: suggestions.unknown },
-                  ),
-                }),
-              ]
-            : []),
-        ]),
-
-    /*
-     * How it behaves over time, and then the figures.
-     *
-     * Wrapped together so the sentence sits against the table it introduces.
-     * Which branch runs is the category's business now, not the `stable`
-     * trait's: stone and expedition finds have no schedule to show,
-     * and everything else gets one drawn at its own rate.
-     */
-    ...(agingRateFor(ingredientId) <= 0
-      ? [infoNote(t('ingredientInfo.stable'))]
-      : [
-          el('div', { class: 'freshness-block' }, [
-            infoNote(t('ingredientInfo.ages')),
-            freshnessTable(essence, agingRateFor(ingredientId)),
+      el('span', { class: 'field-label', text: t('ingredientInfo.suits') }),
+      suggestions.known.length === 0 && suggestions.unknown === 0
+        ? emptyNote(t('ingredientInfo.suitsNothing'))
+        : el('div', { class: 'ingredient-info-recipes' }, [
+            ...suggestions.known.map((entry) =>
+              el('div', { class: 'ingredient-info-recipe' }, [
+                el('span', { text: t(`recipe.${entry.recipe.id}`) }),
+                chip(
+                  t('ingredientInfo.off', { deg: entry.deg.toFixed(0) }),
+                  entry.deg <= entry.recipe.toleranceDeg ? 'good' : 'default',
+                ),
+              ]),
+            ),
+            /*
+             * The unknown ones as a count, not a list.
+             *
+             * Naming them would hand over the discovery; listing them as four
+             * identical "not brewed yet" rows told the player nothing at all. A
+             * number is the honest middle: there is something here worth finding.
+             */
+            ...(suggestions.unknown > 0
+              ? [
+                  el('p', {
+                    class: 'info-note',
+                    // "And 3 more" needs something to be more *than*. With no
+                    // known recipes above it, the count stands on its own.
+                    text: t(
+                      suggestions.known.length > 0
+                        ? 'ingredientInfo.undiscovered'
+                        : 'ingredientInfo.undiscoveredOnly',
+                      { count: suggestions.unknown },
+                    ),
+                  }),
+                ]
+              : []),
           ]),
-        ]),
 
-    infoActions({ dismiss, action }),
-  ])];
+      /*
+       * How it behaves over time, and then the figures.
+       *
+       * Wrapped together so the sentence sits against the table it introduces.
+       * Which branch runs is the category's business now, not the `stable`
+       * trait's: stone and expedition finds have no schedule to show,
+       * and everything else gets one drawn at its own rate.
+       */
+      ...(agingRateFor(ingredientId) <= 0
+        ? [infoNote(t('ingredientInfo.stable'))]
+        : [
+            el('div', { class: 'freshness-block' }, [
+              infoNote(t('ingredientInfo.ages')),
+              freshnessTable(essence, agingRateFor(ingredientId)),
+            ]),
+          ]),
+
+      infoActions({ dismiss, action }),
+    ]),
+  ];
 
   modal({ content: build });
 }

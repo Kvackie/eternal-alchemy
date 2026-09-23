@@ -23,7 +23,7 @@ import sharp from 'sharp';
  * stay untouched and a wrong call is undone by deleting a line.
  */
 const UPRIGHT = existsSync('art/upright.json')
-  ? JSON.parse(readFileSync('art/upright.json', 'utf8')).rotate ?? {}
+  ? (JSON.parse(readFileSync('art/upright.json', 'utf8')).rotate ?? {})
   : {};
 
 /** Target box per kind, and how much of it to leave as breathing room. */
@@ -147,7 +147,6 @@ for (const [kind, spec] of Object.entries(KINDS)) {
         .png({ compressionLevel: 9 })
         .toFile(path.join(outDir, `${id}.png`));
     }
-
   }
   manifest[kind] = [...ids].sort();
   console.log(
@@ -315,9 +314,9 @@ writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify(manifest) + '\n', 
  * at build time — the scene would need a loading state, and the DOM panels would
  * need to re-render once it arrived. Importing it keeps both synchronous.
  */
-writeFileSync(
-  'src/data/artManifest.json',
-  JSON.stringify(manifest, null, 2) + '\n',
-  'utf8',
+writeFileSync('src/data/artManifest.json', JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+console.log(
+  `\nmanifest: ${Object.entries(manifest)
+    .map(([k, v]) => `${k} ${v.length}`)
+    .join(', ')}`,
 );
-console.log(`\nmanifest: ${Object.entries(manifest).map(([k, v]) => `${k} ${v.length}`).join(', ')}`);

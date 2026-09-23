@@ -26,7 +26,10 @@ const files = readdirSync(dir).filter((f) => /\.png$/i.test(f));
 const groups = new Map();
 
 for (const file of files) {
-  const hash = crypto.createHash('md5').update(readFileSync(path.join(dir, file))).digest('hex');
+  const hash = crypto
+    .createHash('md5')
+    .update(readFileSync(path.join(dir, file)))
+    .digest('hex');
   if (!groups.has(hash)) groups.set(hash, []);
   groups.get(hash).push(file);
 }
@@ -61,9 +64,7 @@ console.log(
 
 const survivors = APPLY ? readdirSync(dir).filter((f) => /\.png$/i.test(f)) : [];
 if (APPLY) {
-  const unmapped = survivors
-    .map((f) => f.replace(/\.png$/i, ''))
-    .filter((id) => !known.has(id));
+  const unmapped = survivors.map((f) => f.replace(/\.png$/i, '')).filter((id) => !known.has(id));
   console.log(`${survivors.length} files remain, ${unmapped.length} not yet an ingredient`);
 } else {
   console.log('\nDry run. Re-run with --apply.');

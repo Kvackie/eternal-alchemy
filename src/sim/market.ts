@@ -29,10 +29,7 @@ export function fairValue(item: {
 }): number {
   const recipe = getRecipe(item.recipeId);
 
-  const gradeFactor = Math.pow(
-    (GRADE_SCORE[item.grade] + 1) / 4,
-    config.market.gradeValueExponent,
-  );
+  const gradeFactor = Math.pow((GRADE_SCORE[item.grade] + 1) / 4, config.market.gradeValueExponent);
 
   const value = recipe.baseValue * potencyMultiplier(item.potencyTier) * gradeFactor;
 
@@ -69,8 +66,7 @@ export function footfallAt(world: World, now: number, online: boolean): number {
 
   // Shop fittings raise footfall generally; a lit display raises it after dark,
   // which is what makes the night trade worth stocking for at all.
-  const fittings =
-    1 + stats.footfallBonus + (day.phase === 'night' ? stats.nightFootfallBonus : 0);
+  const fittings = 1 + stats.footfallBonus + (day.phase === 'night' ? stats.nightFootfallBonus : 0);
 
   // And the town decides how many people there were to catch.
   const town = footfallMultiplier(world);

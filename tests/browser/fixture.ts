@@ -101,7 +101,13 @@ export function buildWorld(clock: Clock = 'night'): World {
   });
 
   for (const hero of heroesConfig.roster.slice(0, 4)) {
-    world.heroes.push({ id: hero.id, level: 3, favour: 0, injuredUntil: 0, onMission: false } as never);
+    world.heroes.push({
+      id: hero.id,
+      level: 3,
+      favour: 0,
+      injuredUntil: 0,
+      onMission: false,
+    } as never);
   }
 
   for (let i = 0; i < 4; i += 1) {

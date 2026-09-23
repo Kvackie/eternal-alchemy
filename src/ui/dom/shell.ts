@@ -793,10 +793,14 @@ export class Shell {
         el('p', { text: request.body }),
         el('div', { class: 'dialog-actions' }, [
           button(t('common.cancel'), close, { variant: 'quiet' }),
-          button(request.confirm, () => {
-            close();
-            request.onConfirm();
-          }, { variant: request.danger ? 'danger' : 'warm' }),
+          button(
+            request.confirm,
+            () => {
+              close();
+              request.onConfirm();
+            },
+            { variant: request.danger ? 'danger' : 'warm' },
+          ),
         ]),
       ]),
     ]);
@@ -927,6 +931,3 @@ function readStoredScale(): number {
     return 1;
   }
 }
-
-
-

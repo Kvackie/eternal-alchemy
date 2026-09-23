@@ -73,8 +73,7 @@ export function spreadChanceFor(
   townMultiplier = 1,
 ): number {
   const species = getCaveSpecies(speciesId);
-  const suits =
-    species.light === 'any' || (species.light === 'lit' ? lit : !lit);
+  const suits = species.light === 'any' || (species.light === 'lit' ? lit : !lit);
   // A humidity ward adds flat encouragement on top of the species' own rate,
   // and the town decides how willing the ground was in the first place —
   // Hollowreach is caves for miles.

@@ -49,7 +49,11 @@ function walk(root: Element, visit: (node: Element, key: string) => void): void 
       const ordinal = seen.get(sig) ?? 0;
       seen.set(sig, ordinal + 1);
       const named = (child as HTMLElement).dataset?.keepScroll;
-      const key = named ? `#${named}` : prefix ? `${prefix}/${sig}[${ordinal}]` : `${sig}[${ordinal}]`;
+      const key = named
+        ? `#${named}`
+        : prefix
+          ? `${prefix}/${sig}[${ordinal}]`
+          : `${sig}[${ordinal}]`;
       visit(child, key);
       descend(child, key);
     }

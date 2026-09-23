@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { dayStateAt, isNight, merchantsAvailable, nextPhaseStart, phaseProgress } from '@/sim/clock';
+import {
+  dayStateAt,
+  isNight,
+  merchantsAvailable,
+  nextPhaseStart,
+  phaseProgress,
+} from '@/sim/clock';
 import { config } from '@/sim/config';
 
 const DAY = config.clock.dayLengthMs;

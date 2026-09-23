@@ -12,13 +12,7 @@
  */
 
 import { config, recipes } from './config';
-import {
-  angleBetween,
-  gradeFor,
-  potencyTierFor,
-  totalEssence,
-  worseOf,
-} from './essences';
+import { angleBetween, gradeFor, potencyTierFor, totalEssence, worseOf } from './essences';
 import type { BrewOutcome, EssenceVector, PotencyTierId } from './types';
 
 /**

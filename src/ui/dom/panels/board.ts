@@ -142,14 +142,11 @@ function renderContract(sim: Simulation, contractId: string): HTMLElement {
             title: t('board.abandon.title'),
             // Nothing delivered yet is the common case, and "and the 0 already
             // delivered are not returned" is a sentence about nothing.
-            body: t(
-              contract.delivered > 0 ? 'board.abandon.bodyDelivered' : 'board.abandon.body',
-              {
-                count: contract.quantity,
-                recipe: t(`recipe.${template.recipeId}`),
-                delivered: contract.delivered,
-              },
-            ),
+            body: t(contract.delivered > 0 ? 'board.abandon.bodyDelivered' : 'board.abandon.body', {
+              count: contract.quantity,
+              recipe: t(`recipe.${template.recipeId}`),
+              delivered: contract.delivered,
+            }),
             confirm: t('board.abandon'),
             onConfirm: () => {
               sim.abandonContract(contract.id);

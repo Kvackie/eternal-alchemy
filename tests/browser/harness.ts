@@ -57,7 +57,11 @@ export function resolveChromium(): string {
   const root = process.env.PLAYWRIGHT_BROWSERS_PATH;
   if (root && existsSync(root)) {
     for (const dir of readdirSync(root).filter((name) => name.startsWith('chromium-'))) {
-      for (const layout of ['chrome-linux/chrome', 'chrome-linux64/chrome', 'chrome-win/chrome.exe']) {
+      for (const layout of [
+        'chrome-linux/chrome',
+        'chrome-linux64/chrome',
+        'chrome-win/chrome.exe',
+      ]) {
         const candidate = join(root, dir, layout);
         if (existsSync(candidate)) return candidate;
       }
@@ -114,14 +118,17 @@ export async function open(
     if (message.type() === 'error') errors.push(`logged: ${message.text()}`);
   });
 
-  await page.addInitScript((save: string) => {
-    try {
-      localStorage.setItem('eternal-alchemy/save/0', save);
-      localStorage.setItem('eternal-alchemy/slot', '0');
-    } catch {
-      /* Private mode, which the game already survives. */
-    }
-  }, options.save ?? buildSave(clock));
+  await page.addInitScript(
+    (save: string) => {
+      try {
+        localStorage.setItem('eternal-alchemy/save/0', save);
+        localStorage.setItem('eternal-alchemy/slot', '0');
+      } catch {
+        /* Private mode, which the game already survives. */
+      }
+    },
+    options.save ?? buildSave(clock),
+  );
 
   await page.goto('http://127.0.0.1:5178/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(900);

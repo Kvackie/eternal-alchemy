@@ -218,9 +218,7 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
     group(t('debug.away'), [away]),
     group(t('debug.grant'), [grants]),
     group(t('debug.seed'), [seedInput]),
-    group('', [
-      button(t('debug.reset'), deps.onNewGame, { variant: 'warm', small: true }),
-    ]),
+    group('', [button(t('debug.reset'), deps.onNewGame, { variant: 'warm', small: true })]),
   ]);
 }
 

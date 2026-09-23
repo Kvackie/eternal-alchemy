@@ -10,16 +10,7 @@
  * the station once you have picked one. See `station.ts`.
  */
 
-import {
-  button,
-  chip,
-  collapsible,
-  el,
-  emptyNote,
-  meter,
-  panelHeader,
-  row,
-} from '../components';
+import { button, chip, collapsible, el, emptyNote, meter, panelHeader, row } from '../components';
 import { countdown, formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
 import { atCauldronLimit, activityOf, buyableTiers } from '@/sim/cauldrons';

@@ -65,7 +65,7 @@ function buildHeroInfo(
       tags.push(
         chip(
           t('roster.injured', {
-            time: countdown((hero.injuredUntil ?? 0), sim.now),
+            time: countdown(hero.injuredUntil ?? 0, sim.now),
           }),
           'warn',
         ),

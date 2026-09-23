@@ -148,7 +148,11 @@ export function budgetVariance(rng: Rng): number {
   return 1 + (rng.next() - 0.5) * customersConfig.budgetSpread;
 }
 
-export function beginHaggle(world: World, customerId: string, itemUid: string): HaggleSession | null {
+export function beginHaggle(
+  world: World,
+  customerId: string,
+  itemUid: string,
+): HaggleSession | null {
   const def = getCustomer(customerId);
   const item = world.bottled.find((entry) => entry.uid === itemUid);
   if (!item || !buys(def, item.recipeId)) return null;
@@ -208,9 +212,7 @@ export function pitch(world: World, actionId: string): PitchResult | null {
     const hold = customersConfig.holdFirm;
     session.patience += hold.patience;
     // The cash-out: everything the pitch has built becomes price.
-    session.ceiling = Math.round(
-      session.ceiling * (1 + session.interest * hold.interestToCeiling),
-    );
+    session.ceiling = Math.round(session.ceiling * (1 + session.interest * hold.interestToCeiling));
     session.interest = 0;
   } else {
     const outcome = customersConfig.outcomes[result];

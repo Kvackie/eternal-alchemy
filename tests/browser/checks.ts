@@ -28,7 +28,9 @@ export async function checkOverflow(page: Page): Promise<string[]> {
       if (box.width === 0 || box.height === 0) continue;
       if (box.right > width + 1 || box.left < -1) {
         const name = node.className || node.tagName;
-        out.push(`${name} "${(node.textContent ?? '').slice(0, 28).trim()}" spills past the window`);
+        out.push(
+          `${name} "${(node.textContent ?? '').slice(0, 28).trim()}" spills past the window`,
+        );
       }
     }
 
@@ -56,7 +58,9 @@ export async function checkStrings(page: Page): Promise<string[]> {
 export async function checkTapTargets(page: Page, tap: number = TAP): Promise<string[]> {
   return page.evaluate((min) => {
     const seen = new Map<string, number>();
-    for (const node of document.querySelectorAll('#panels button, #panels input, .overlay button, .overlay input')) {
+    for (const node of document.querySelectorAll(
+      '#panels button, #panels input, .overlay button, .overlay input',
+    )) {
       // The debug drawer is a developer's tool, not a player's, and packs a
       // column of buttons tight on purpose.
       if (node.closest('.debug')) continue;
@@ -99,7 +103,9 @@ export async function checkCoveredControls(page: Page): Promise<string[]> {
     const top = layers[layers.length - 1] ?? document.querySelector('#panels .debug');
     const nodes = top
       ? top.querySelectorAll('button, input, [role="tab"]')
-      : document.querySelectorAll('#panels .panel button, #panels .panel input, #panels .panel [role="tab"]');
+      : document.querySelectorAll(
+          '#panels .panel button, #panels .panel input, #panels .panel [role="tab"]',
+        );
 
     /*
      * What of a control is actually on the screen.
@@ -118,7 +124,12 @@ export async function checkCoveredControls(page: Page): Promise<string[]> {
         const clip = parent.getBoundingClientRect();
         const left = Math.max(rect.left, clip.left);
         const top = Math.max(rect.top, clip.top);
-        rect = new DOMRect(left, top, Math.min(rect.right, clip.right) - left, Math.min(rect.bottom, clip.bottom) - top);
+        rect = new DOMRect(
+          left,
+          top,
+          Math.min(rect.right, clip.right) - left,
+          Math.min(rect.bottom, clip.bottom) - top,
+        );
         if (rect.width <= 0 || rect.height <= 0) return null;
       }
       const left = Math.max(rect.left, 0);
@@ -255,8 +266,14 @@ export async function checkScrollMemory(page: Page): Promise<string[]> {
     if (!tallest) return null;
 
     const path: string[] = [];
-    for (let node: Element | null = tallest; node && node.id !== 'panels'; node = node.parentElement) {
-      const siblings = [...(node.parentElement?.children ?? [])].filter((s) => sig(s) === sig(node!));
+    for (
+      let node: Element | null = tallest;
+      node && node.id !== 'panels';
+      node = node.parentElement
+    ) {
+      const siblings = [...(node.parentElement?.children ?? [])].filter(
+        (s) => sig(s) === sig(node!),
+      );
       path.unshift(`${sig(node)}[${siblings.indexOf(node)}]`);
     }
     tallest.scrollTop = Math.min(140, tallest.scrollHeight - tallest.clientHeight);

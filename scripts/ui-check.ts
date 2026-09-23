@@ -99,10 +99,13 @@ try {
       add('scroll memory', await checkScrollMemory(page));
 
       const found = problems.filter((p) => p.screen === screen && p.size === size).length;
-      console.log(`${size.padEnd(8)} ${screen.padEnd(9)} ${found === 0 ? 'ok' : `${found} problems`}`);
+      console.log(
+        `${size.padEnd(8)} ${screen.padEnd(9)} ${found === 0 ? 'ok' : `${found} problems`}`,
+      );
     }
 
-    for (const error of errors) problems.push({ screen: '-', size, check: 'console', detail: error });
+    for (const error of errors)
+      problems.push({ screen: '-', size, check: 'console', detail: error });
     await close();
   }
 
@@ -134,10 +137,13 @@ try {
       await closeDialogs(page);
 
       const found = problems.filter((p) => p.screen === label && p.size === size).length;
-      console.log(`${size.padEnd(8)} ${label.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`);
+      console.log(
+        `${size.padEnd(8)} ${label.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`,
+      );
     }
 
-    for (const error of errors) problems.push({ screen: 'views', size, check: 'console', detail: error });
+    for (const error of errors)
+      problems.push({ screen: 'views', size, check: 'console', detail: error });
     await close();
   }
 
@@ -159,7 +165,9 @@ try {
         problems.push({ screen: 'market (day)', size, check: 'console', detail: error });
       }
       const found = problems.filter((p) => p.screen === 'market (day)' && p.size === size).length;
-      console.log(`${size.padEnd(8)} ${'market (day)'.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`);
+      console.log(
+        `${size.padEnd(8)} ${'market (day)'.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`,
+      );
       await close();
     }
   }
@@ -202,9 +210,12 @@ try {
       }
 
       const found = problems.filter((p) => p.screen === label && p.size === size).length;
-      console.log(`${size.padEnd(8)} ${label.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`);
+      console.log(
+        `${size.padEnd(8)} ${label.padEnd(26)} ${found === 0 ? 'ok' : `${found} problems`}`,
+      );
     }
-    for (const error of errors) problems.push({ screen: 'fresh', size, check: 'console', detail: error });
+    for (const error of errors)
+      problems.push({ screen: 'fresh', size, check: 'console', detail: error });
     await close();
   }
 } finally {

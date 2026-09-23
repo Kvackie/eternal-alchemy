@@ -309,7 +309,10 @@ function priceSlider(
     readouts.percent.textContent = formatPercent(shelfSlot.priceRatio);
     readouts.pace.textContent = paceLabel(chance);
     readouts.pace.className = `chip ${chance > 0.15 ? 'plain' : 'warn'}`;
-    slider.setAttribute('aria-label', t('shop.price', { percent: formatPercent(shelfSlot.priceRatio) }));
+    slider.setAttribute(
+      'aria-label',
+      t('shop.price', { percent: formatPercent(shelfSlot.priceRatio) }),
+    );
   });
 
   // Once the thumb is let go — the rest of the shop can catch up now that there
@@ -332,7 +335,9 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
   const art = artUrlIf('shelf', shelfSlot.quality);
 
   const boardLine = el('div', { class: 'board-row' }, [
-    ...(art ? [el('img', { class: 'board-thumb', src: art, alt: '', width: '46', height: '12' })] : []),
+    ...(art
+      ? [el('img', { class: 'board-thumb', src: art, alt: '', width: '46', height: '12' })]
+      : []),
     el('span', { class: 'field-note', text: t(`board.${shelfSlot.quality}`) }),
     /*
      * What the board does, in a sentence.
@@ -360,10 +365,14 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
         boardLine,
         el('div', { class: 'dialog-actions' }, [
           button(t('common.close'), dismiss, { variant: 'quiet' }),
-          button(t('shop.slot.stockThis'), () => {
-            dismiss();
-            openStackPicker(sim, shelfSlot);
-          }, { variant: 'good' }),
+          button(
+            t('shop.slot.stockThis'),
+            () => {
+              dismiss();
+              openStackPicker(sim, shelfSlot);
+            },
+            { variant: 'good' },
+          ),
         ]),
       ],
     });
@@ -580,13 +589,7 @@ function renderInventory(sim: Simulation): HTMLElement {
    * `captureFocus`.
    */
   const stacks: Stack[] = stacksOf(sim.world.bottled)
-    .filter(({ item }) =>
-      matchesSearch(
-        stackQuery,
-        t(`recipe.${item.recipeId}`),
-        item.grade,
-      ),
-    )
+    .filter(({ item }) => matchesSearch(stackQuery, t(`recipe.${item.recipeId}`), item.grade))
     .map(({ item, count }) => ({
       item,
       count,

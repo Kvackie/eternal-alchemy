@@ -4,6 +4,12 @@ Project orientation lives in `README.md` — the structural rules, the milestone
 breakdown and the build scripts are all there. This file is only for things an
 agent would otherwise get wrong.
 
+## Formatting
+
+Prettier is enforced: the deploy fails on any file it would change. Run
+`npm run format` before committing. Data files under `src/data/` and the art
+manifests are left alone — the generators write them.
+
 ## Commits and pull requests
 
 **Never add attribution trailers or footers.** No `Co-Authored-By:`, no

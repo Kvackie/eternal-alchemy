@@ -119,7 +119,10 @@ describe('the Long Distillation', () => {
       const next = readyToRetire().retire(town, 7)!.world;
       expect(next.shaft.supportedDepth - next.shaft.depth, town).toBe(shaftConfig.startingDepth);
       for (let depth = 0; depth <= next.shaft.depth; depth += shaftConfig.depthStep) {
-        expect(next.shaft.veins.some((vein) => vein.depth === depth), `${town} at ${depth}m`).toBe(true);
+        expect(
+          next.shaft.veins.some((vein) => vein.depth === depth),
+          `${town} at ${depth}m`,
+        ).toBe(true);
       }
     }
   });
@@ -143,8 +146,22 @@ describe('the Long Distillation', () => {
     const sim = readyToRetire();
     sim.world.codex = { loyalCompanion: 1 };
     sim.world.heroes = [
-      { id: 'corin', level: 2, favour: 80, injuredUntil: 999, onMission: true, missionsCompleted: 4 },
-      { id: 'ilse', level: 3, favour: 10, injuredUntil: null, onMission: false, missionsCompleted: 1 },
+      {
+        id: 'corin',
+        level: 2,
+        favour: 80,
+        injuredUntil: 999,
+        onMission: true,
+        missionsCompleted: 4,
+      },
+      {
+        id: 'ilse',
+        level: 3,
+        favour: 10,
+        injuredUntil: null,
+        onMission: false,
+        missionsCompleted: 1,
+      },
     ];
 
     const next = sim.retire('saltmarsh', 7)!.world;
@@ -184,9 +201,7 @@ describe('the town you retire to changes the run', () => {
     marsh.plant(marsh.world.plots[0]!.id, 'bluepetal');
     cinder.plant(cinder.world.plots[0]!.id, 'bluepetal');
 
-    expect(marsh.world.plots[0]!.crop!.readyAt).toBeLessThan(
-      cinder.world.plots[0]!.crop!.readyAt,
-    );
+    expect(marsh.world.plots[0]!.crop!.readyAt).toBeLessThan(cinder.world.plots[0]!.crop!.readyAt);
   });
 
   it('pulls more ore per batch in Cinderhold than in Saltmarsh', () => {
@@ -247,18 +262,16 @@ describe('the town you retire to changes the run', () => {
           postedAt: 0,
         },
       ];
-      sim.world.bottled.push(
-        {
-          uid: 'a',
-          recipeId: 'aquaTerra',
-          grade: 'B',
-          purity: 80,
-          potencyTier: 'common',
-          totalEssence: 57,
-          fairValue: 60,
-          bottledAt: 0,
-        },
-      );
+      sim.world.bottled.push({
+        uid: 'a',
+        recipeId: 'aquaTerra',
+        grade: 'B',
+        purity: 80,
+        potencyTier: 'common',
+        totalEssence: 57,
+        fairValue: 60,
+        bottledAt: 0,
+      });
       return sim.deliverContract('c1')!.gold;
     };
     expect(payoutIn('highmarch')).toBeGreaterThan(payoutIn('saltmarsh'));

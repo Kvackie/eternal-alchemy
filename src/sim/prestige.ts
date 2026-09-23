@@ -154,7 +154,10 @@ export function retire(world: World, townId: string, seed: number): RetirementRe
    */
   const head = bonuses.startingDepthBonus + (town.effects.startingDepthBonus ?? 0);
   openTo(next, head, new Rng(seed ^ 0xdee9));
-  next.shaft.supportedDepth = Math.max(next.shaft.supportedDepth, next.shaft.depth + shaftConfig.startingDepth);
+  next.shaft.supportedDepth = Math.max(
+    next.shaft.supportedDepth,
+    next.shaft.depth + shaftConfig.startingDepth,
+  );
 
   /*
    * A town that comes with extra cave beds has to come with the beds themselves.
@@ -165,7 +168,9 @@ export function retire(world: World, townId: string, seed: number): RetirementRe
    */
   const tiles = derivedStats(next).caveTiles;
   while (next.cave.tiles.length < tiles) {
-    next.cave.tiles.push(...makeCaveTiles(1).map((tile) => ({ ...tile, index: next.cave.tiles.length })));
+    next.cave.tiles.push(
+      ...makeCaveTiles(1).map((tile) => ({ ...tile, index: next.cave.tiles.length })),
+    );
   }
 
   // Remembered Recipes: carry the most-brewed discoveries forward. What you
@@ -193,4 +198,3 @@ export function retire(world: World, townId: string, seed: number): RetirementRe
 
   return { world: next, masteryEarned: earned, townId };
 }
-

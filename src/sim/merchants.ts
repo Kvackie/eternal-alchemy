@@ -49,7 +49,7 @@ export interface MerchantVisit {
 /** Day numbers a merchant appears on. Pure arithmetic on the day counter. */
 export function visitsOn(def: MerchantDef, dayNumber: number): boolean {
   const cycle = Math.max(1, def.cycleDays);
-  return ((dayNumber - def.offsetDays) % cycle + cycle) % cycle === 0;
+  return (((dayNumber - def.offsetDays) % cycle) + cycle) % cycle === 0;
 }
 
 /**
@@ -388,7 +388,11 @@ export function packArrivals(world: World): void {
     if (!isPresent(def, world.now)) continue;
     if (packedFor(world, def.id, day.dayNumber)) continue;
 
-    const tier = tierOf(def, relationshipOf(world, def.id), codexBonuses(world).startingMerchantTier);
+    const tier = tierOf(
+      def,
+      relationshipOf(world, def.id),
+      codexBonuses(world).startingMerchantTier,
+    );
     world.merchantVisits[def.id] = {
       dayNumber: day.dayNumber,
       bought: {},
@@ -428,7 +432,8 @@ export function nextVisit(def: MerchantDef, now: number): number {
     if (!visitsOn(def, day)) continue;
     const start =
       def.phase === 'night'
-        ? day * dayMs + (config.clock.phases.find((p) => p.id === 'night')?.startFraction ?? 0.75) * dayMs
+        ? day * dayMs +
+          (config.clock.phases.find((p) => p.id === 'night')?.startFraction ?? 0.75) * dayMs
         : day * dayMs;
     if (start > now) return start;
   }

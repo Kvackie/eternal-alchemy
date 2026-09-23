@@ -32,7 +32,8 @@ export function goodsNotes(kind: string, id: string): string[] {
   if (kind === 'decor') {
     const { effect } = getDecor(id);
     if (effect.appealBonus) notes.push(t('goods.appeal', { percent: pct(effect.appealBonus) }));
-    if (effect.footfallBonus) notes.push(t('goods.footfall', { percent: pct(effect.footfallBonus) }));
+    if (effect.footfallBonus)
+      notes.push(t('goods.footfall', { percent: pct(effect.footfallBonus) }));
     if (effect.nightFootfallBonus) {
       notes.push(t('goods.nightFootfall', { percent: pct(effect.nightFootfallBonus) }));
     }

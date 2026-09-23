@@ -175,64 +175,63 @@ function renderCodex(deps: SettingsDeps): HTMLElement {
       outcomeCard({
         name: t('prestige.title'),
         body: [
-        el('span', { class: 'field-note', text: t('prestige.body') }),
-        /*
-         * One sentence, not a label with the number pushed to the far margin.
-         *
-         * A `stat` line puts the figure against the opposite edge of the panel,
-         * which reads as a table of many rows — and this is the only row. Said
-         * as a sentence, the number stays where the eye already is.
-         */
-        el(
-          'p',
-          { class: 'prestige-earns' },
-          splitOnValue(
-            t('prestige.earns', { count: VALUE_MARK }),
-            el('span', { class: 'mastery num' }, [
-              // Placeholder until the medal art lands.
-              el('span', { class: 'mastery-mark', text: '🎖', 'aria-hidden': 'true' }),
-              formatNumber(sim.masteryOnRetire()),
-            ]),
-          ),
-        ),
-        el('div', { class: 'field prestige-towns' }, [
+          el('span', { class: 'field-note', text: t('prestige.body') }),
+          /*
+           * One sentence, not a label with the number pushed to the far margin.
+           *
+           * A `stat` line puts the figure against the opposite edge of the panel,
+           * which reads as a table of many rows — and this is the only row. Said
+           * as a sentence, the number stays where the eye already is.
+           */
           el(
-            'div',
-            { class: 'options' },
-            choices.map((town) => {
-              const node = el('button', { class: 'option', type: 'button' }, [
-                el('span', { text: t(`town.${town.id}`) }),
-                el('small', { text: t(`town.${town.id}.blurb`) }),
-                // Spans, not a list: a button may only hold phrasing content,
-                // and a <ul> inside one is invalid however well it renders.
-                el(
-                  'span',
-                  { class: 'town-effects' },
-                  townEffectLines(town.effects).map((line) => {
-                    const item = el('small', { text: line.text });
-                    item.dataset.tone = line.tone;
-                    return item;
-                  }),
-                ),
-              ]);
-              node.setAttribute('aria-pressed', String(chosenTown === town.id));
-              node.addEventListener('click', () => {
-                chosenTown = town.id;
-                changed();
-              });
-              return node;
+            'p',
+            { class: 'prestige-earns' },
+            splitOnValue(
+              t('prestige.earns', { count: VALUE_MARK }),
+              el('span', { class: 'mastery num' }, [
+                // Placeholder until the medal art lands.
+                el('span', { class: 'mastery-mark', text: '🎖', 'aria-hidden': 'true' }),
+                formatNumber(sim.masteryOnRetire()),
+              ]),
+            ),
+          ),
+          el('div', { class: 'field prestige-towns' }, [
+            el(
+              'div',
+              { class: 'options' },
+              choices.map((town) => {
+                const node = el('button', { class: 'option', type: 'button' }, [
+                  el('span', { text: t(`town.${town.id}`) }),
+                  el('small', { text: t(`town.${town.id}.blurb`) }),
+                  // Spans, not a list: a button may only hold phrasing content,
+                  // and a <ul> inside one is invalid however well it renders.
+                  el(
+                    'span',
+                    { class: 'town-effects' },
+                    townEffectLines(town.effects).map((line) => {
+                      const item = el('small', { text: line.text });
+                      item.dataset.tone = line.tone;
+                      return item;
+                    }),
+                  ),
+                ]);
+                node.setAttribute('aria-pressed', String(chosenTown === town.id));
+                node.addEventListener('click', () => {
+                  chosenTown = town.id;
+                  changed();
+                });
+                return node;
+              }),
+            ),
+          ]),
+          // Gold, and centred: opening a branch is the thing this section is for,
+          // and it is a reward, not a hazard. Warm red read as "are you sure?".
+          el('div', { class: 'row-actions center' }, [
+            button(t('prestige.retire'), () => confirmRetire(deps, chosenTown), {
+              variant: 'gold',
+              disabled: chosenTown === null,
             }),
-          ),
-        ]),
-        // Gold, and centred: opening a branch is the thing this section is for,
-        // and it is a reward, not a hazard. Warm red read as "are you sure?".
-        el('div', { class: 'row-actions center' }, [
-          button(
-            t('prestige.retire'),
-            () => confirmRetire(deps, chosenTown),
-            { variant: 'gold', disabled: chosenTown === null },
-          ),
-        ]),
+          ]),
         ],
       }),
     );
@@ -465,7 +464,12 @@ function townEffectLines(effects: TownDef['effects']): EffectLine[] {
   // much is down there. Anything grander would be overclaiming.
   pair(effects.oreBatchMultiplier, true, 'town.effect.oreBigger', 'town.effect.oreSmaller');
   pair(effects.caveSpreadMultiplier, true, 'town.effect.fungiFaster', 'town.effect.fungiSlower');
-  pair(effects.merchantPriceMultiplier, false, 'town.effect.pricesHigher', 'town.effect.pricesLower');
+  pair(
+    effects.merchantPriceMultiplier,
+    false,
+    'town.effect.pricesHigher',
+    'town.effect.pricesLower',
+  );
   pair(
     effects.contractPayoutMultiplier,
     true,

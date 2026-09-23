@@ -6,7 +6,14 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { caveConfig, crops, getEquipment, getIngredient, ingredients, shaftConfig } from '@/sim/config';
+import {
+  caveConfig,
+  crops,
+  getEquipment,
+  getIngredient,
+  ingredients,
+  shaftConfig,
+} from '@/sim/config';
 import { isMature, maturityOf, neighboursOf, spreadChanceFor, tileAt } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { countOf } from '@/sim/inventory';
@@ -237,7 +244,6 @@ describe('the shaft', () => {
       .map((ing) => `${ing.id} in ${seen.get(ing.id) ?? 0} of ${SEEDS}`);
     expect(rare, 'these minerals seldom or never surface').toEqual([]);
   });
-
 
   it('groups veins by depth for display, deepest first', () => {
     const sim = new Simulation(createWorld(1));

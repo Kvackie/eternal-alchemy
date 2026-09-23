@@ -357,7 +357,10 @@ function renderPlot(sim: Simulation, plot: Plot): HTMLElement {
     const empty = row({
       variant: 'plot plot-empty',
       title: t('garden.plot.empty'),
-      sub: [chip(t(`soil.${plot.soil}`), 'plain'), el('span', { text: t('garden.plot.emptyHint') })],
+      sub: [
+        chip(t(`soil.${plot.soil}`), 'plain'),
+        el('span', { text: t('garden.plot.emptyHint') }),
+      ],
       actions: [
         button(t('garden.action.plant'), () => openSeedPicker(sim, plot), {
           disabled: seeds.length === 0,
@@ -494,11 +497,13 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
          * read as tools — they read as tabs. The picture is what says "this is
          * the thing in your hand".
          */
-        ([
-          ['seed', '\u{1F344}'],
-          ['lantern', '\u{1F3EE}'],
-          ['tray', '\u{1F9FA}'],
-        ] as const).map(([id, glyph]) => {
+        (
+          [
+            ['seed', '\u{1F344}'],
+            ['lantern', '\u{1F3EE}'],
+            ['tray', '\u{1F9FA}'],
+          ] as const
+        ).map(([id, glyph]) => {
           /*
            * The strip is three short cells; the hint has a line of its own.
            *
@@ -598,23 +603,29 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
   // On the section, not the grid: the section's cap reads it, and a parent
   // cannot see a custom property set on its child.
   const cave = el('section', { class: 'cave' }, [
-      sectionHead(
-        t('cave.grid'),
-        t('cave.grid.hint'),
-        ripe > 0
-          ? button(
-              t('cave.harvestAll', { count: ripe }),
-              () => {
-                const results = sim.harvestCave();
-                toast(harvestToast(results, results.reduce((s, r) => s + r.count, 0), 0));
-                changed();
-              },
-              { small: true, variant: 'good' },
-            )
-          : null,
-      ),
-      grid,
-    ]);
+    sectionHead(
+      t('cave.grid'),
+      t('cave.grid.hint'),
+      ripe > 0
+        ? button(
+            t('cave.harvestAll', { count: ripe }),
+            () => {
+              const results = sim.harvestCave();
+              toast(
+                harvestToast(
+                  results,
+                  results.reduce((s, r) => s + r.count, 0),
+                  0,
+                ),
+              );
+              changed();
+            },
+            { small: true, variant: 'good' },
+          )
+        : null,
+    ),
+    grid,
+  ]);
   cave.style.setProperty('--cave-width', String(caveConfig.width));
   body.append(cave);
 }
@@ -690,12 +701,12 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
       const workable = isWorkable(vein, sim.now);
       const status = working
         ? t('shaft.working', {
-            time: countdown((vein.nextBatchAt ?? sim.now), sim.now),
+            time: countdown(vein.nextBatchAt ?? sim.now, sim.now),
           })
         : vein.remaining > 0
           ? t('shaft.idle')
           : t('shaft.refilling', {
-              time: countdown((vein.refillsAt ?? sim.now), sim.now),
+              time: countdown(vein.refillsAt ?? sim.now, sim.now),
             });
 
       return row({

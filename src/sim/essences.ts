@@ -122,7 +122,10 @@ export function unitVector(
   harvestedAt: number | null,
   now: number,
 ): EssenceVector {
-  return applyFreshness(getIngredient(ingredientId).essence, freshnessOf(ingredientId, harvestedAt, now));
+  return applyFreshness(
+    getIngredient(ingredientId).essence,
+    freshnessOf(ingredientId, harvestedAt, now),
+  );
 }
 
 export function cauldronVector(contents: CauldronContents, now: number): EssenceVector {

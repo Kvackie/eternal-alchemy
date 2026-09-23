@@ -71,7 +71,16 @@ describe('the opening checklist', () => {
 
   it('every step names a screen that exists and a line that is translated', () => {
     const sim = new Simulation(createWorld(1));
-    const screens = ['shop', 'board', 'market', 'grounds', 'cauldron', 'roster', 'ledger', 'settings'];
+    const screens = [
+      'shop',
+      'board',
+      'market',
+      'grounds',
+      'cauldron',
+      'roster',
+      'ledger',
+      'settings',
+    ];
 
     for (const step of sim.onboarding.steps) {
       expect(screens, `${step.id} points at ${step.screen}`).toContain(step.screen);

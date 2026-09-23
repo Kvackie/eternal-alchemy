@@ -29,6 +29,8 @@ npm run dev        # http://localhost:5173
 | `npm test` | Run the simulation test suite |
 | `npm run test:watch` | The same suite, watching |
 | `npm run typecheck` | Type check without building |
+| `npm run format` | Format every file with Prettier |
+| `npm run format:check` | Fail if any file is not formatted — the deploy runs this |
 | `npm run android:sync` | Build, then copy `dist/` into the native project |
 | `npm run android:apk` | Sync, then Gradle a debug APK (Windows — see `ANDROID.md`) |
 | `npm run android:open` | Open the native project in Android Studio |

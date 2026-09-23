@@ -38,7 +38,6 @@ export function renderMarket(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body' });
   const present = sim.merchants();
 
-
   if (present.length === 0) {
     body.append(emptyNote(t('market.closed')));
   }
@@ -242,7 +241,9 @@ function buildEntry(
     entry.kind === 'equipment' ? t(`equipment.${entry.id}.detail`) : '',
     entry.kind === 'decor' ? t(`decor.${entry.id}.detail`) : '',
     // Where a furnishing will stand, since that is what makes it a decision.
-    entry.kind === 'decor' ? t('decor.spotNote', { spot: t(`decor.spot.${getDecor(entry.id).spot}`) }) : '',
+    entry.kind === 'decor'
+      ? t('decor.spotNote', { spot: t(`decor.spot.${getDecor(entry.id).spot}`) })
+      : '',
     blockedKey ? t(blockedKey) : '',
   ]
     .filter(Boolean)
@@ -253,14 +254,14 @@ function buildEntry(
     icon: entryIcon(entry),
     label: entryLabel(entry),
     caption: blockedKey
-      // A reason in a chip, the way a blocked thing is marked everywhere else —
-      // it was loose amber text sitting where the price goes, which reads as a
-      // strangely coloured price rather than as "you cannot have this yet".
-      ? [chip(t(blockedKey), 'warn')]
+      ? // A reason in a chip, the way a blocked thing is marked everywhere else —
+        // it was loose amber text sitting where the price goes, which reads as a
+        // strangely coloured price rather than as "you cannot have this yet".
+        [chip(t(blockedKey), 'warn')]
       : entry.barter
         ? barterCaption(entry.barter.potions, entry.barter.minGrade)
-        // Gold is gold on every other screen; it was plain grey only here.
-        : [goldText(entry.price ?? 0)],
+        : // Gold is gold on every other screen; it was plain grey only here.
+          [goldText(entry.price ?? 0)],
     count: entry.remaining > 1 ? entry.remaining : undefined,
     tone: blockedKey ? 'warn' : 'default',
     dimmed: Boolean(blockedKey),
@@ -332,7 +333,13 @@ function showGoodsInfo(entry: StockEntry, label: string, action: QuantityActionS
 }
 
 /** Buy this entry `quantity` times, in one pass through the simulation. */
-function buyMany(sim: Simulation, merchantId: string, index: number, quantity: number, label: string): void {
+function buyMany(
+  sim: Simulation,
+  merchantId: string,
+  index: number,
+  quantity: number,
+  label: string,
+): void {
   const { bought, reasonKey } = sim.buyQuantity(merchantId, index, quantity);
   if (bought === 0) {
     if (reasonKey) toast(t(reasonKey));
@@ -367,8 +374,7 @@ function affordable(sim: Simulation, entry: StockEntry): number {
 
   // A tool is installed and a furnishing stands in one spot, so the world holds
   // one of either — but one is still one more than you can pay for.
-  const ceiling =
-    entry.kind === 'equipment' || entry.kind === 'decor' ? 1 : entry.remaining;
+  const ceiling = entry.kind === 'equipment' || entry.kind === 'decor' ? 1 : entry.remaining;
 
   return Math.min(ceiling, entry.remaining, byPurse);
 }
@@ -424,12 +430,14 @@ function whenDue(at: number, now: number): HTMLElement {
 }
 
 function renderUpcoming(sim: Simulation): HTMLElement {
-  const rows = sim.upcoming().map((entry) =>
-    el('div', { class: 'upcoming-row' }, [
-      el('span', { class: 'upcoming-name', text: t(`merchant.${entry.merchantId}`) }),
-      whenDue(entry.at, sim.now),
-    ]),
-  );
+  const rows = sim
+    .upcoming()
+    .map((entry) =>
+      el('div', { class: 'upcoming-row' }, [
+        el('span', { class: 'upcoming-name', text: t(`merchant.${entry.merchantId}`) }),
+        whenDue(entry.at, sim.now),
+      ]),
+    );
 
   return el('section', { class: 'upcoming' }, [
     el('span', { class: 'field-label', text: t('market.upcoming') }),

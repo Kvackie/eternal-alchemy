@@ -13,7 +13,10 @@ import { createWorld } from '@/sim/state';
 import type { BottledItem, Grade } from '@/sim/types';
 
 /** A shop with `shelves` shelves and a pile of bottles in the store room. */
-function shopWith(bottles: Array<Partial<BottledItem> & { count: number }>, shelves = 4): Simulation {
+function shopWith(
+  bottles: Array<Partial<BottledItem> & { count: number }>,
+  shelves = 4,
+): Simulation {
   const sim = new Simulation(createWorld(7));
 
   while (sim.world.shelf.length < shelves) {
@@ -125,10 +128,13 @@ describe('how many could go out', () => {
 
 describe('rearranging the floor', () => {
   it('swaps two full shelves, goods and asking price together', () => {
-    const sim = shopWith([
-      { count: 1, recipeId: 'aquaTerra' },
-      { count: 1, recipeId: 'ignisTerra' },
-    ], 2);
+    const sim = shopWith(
+      [
+        { count: 1, recipeId: 'aquaTerra' },
+        { count: 1, recipeId: 'ignisTerra' },
+      ],
+      2,
+    );
     sim.stock('shelf-1', sim.world.bottled.find((i) => i.recipeId === 'aquaTerra')!.uid);
     sim.stock('shelf-2', sim.world.bottled.find((i) => i.recipeId === 'ignisTerra')!.uid);
     sim.setPrice('shelf-1', 1.6);
@@ -174,10 +180,13 @@ describe('rearranging the floor', () => {
 
 describe('the count a caller already has', () => {
   it('agrees with counting the bottles again', () => {
-    const sim = shopWith([
-      { count: 7, recipeId: 'aquaTerra' },
-      { count: 3, recipeId: 'ignisTerra' },
-    ], 6);
+    const sim = shopWith(
+      [
+        { count: 7, recipeId: 'aquaTerra' },
+        { count: 3, recipeId: 'ignisTerra' },
+      ],
+      6,
+    );
 
     for (const item of sim.world.bottled) {
       const counted = sim.world.bottled.filter(

@@ -155,11 +155,23 @@ describe('purity', () => {
 
   it('reaches 0 at the edge of the cone, and nothing is made beyond it', () => {
     const edge = (getRecipe('ignis').toleranceDeg * Math.PI) / 180;
-    const inside = assessBlend({ ignis: 1, aqua: Math.tan(edge * 0.999), terra: 0, aer: 0, umbra: 0 });
+    const inside = assessBlend({
+      ignis: 1,
+      aqua: Math.tan(edge * 0.999),
+      terra: 0,
+      aer: 0,
+      umbra: 0,
+    });
     expect(inside?.recipeId).toBe('ignis');
     expect(inside?.purity).toBeLessThan(1);
 
-    const outside = assessBlend({ ignis: 1, aqua: Math.tan(edge * 1.001), terra: 0, aer: 0, umbra: 0 });
+    const outside = assessBlend({
+      ignis: 1,
+      aqua: Math.tan(edge * 1.001),
+      terra: 0,
+      aer: 0,
+      umbra: 0,
+    });
     expect(outside).toBeNull();
   });
 

@@ -72,7 +72,8 @@ for (const file of files) {
    * simply never finds one.
    */
   const first = at(0, 0);
-  const apart = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[2] - b[2]));
+  const apart = (a, b) =>
+    Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[2] - b[2]));
 
   let second = null;
   for (let x = 1; x < Math.min(width, 160); x += 1) {

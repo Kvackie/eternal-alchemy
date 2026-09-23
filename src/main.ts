@@ -146,4 +146,3 @@ function replaceWorld(world: World): void {
   saves.save(world);
   window.location.reload();
 }
-

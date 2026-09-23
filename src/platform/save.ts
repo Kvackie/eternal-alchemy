@@ -9,7 +9,15 @@
  * above this file knows the difference.
  */
 
-import { baseCauldronTier, baseShelfTier, caveConfig, config, findDecor, recipes, shaftConfig } from '@/sim/config';
+import {
+  baseCauldronTier,
+  baseShelfTier,
+  caveConfig,
+  config,
+  findDecor,
+  recipes,
+  shaftConfig,
+} from '@/sim/config';
 import { makeCaveTiles } from '@/sim/cave';
 import { emptySpots } from '@/sim/decor';
 import { rankIndexFor } from '@/sim/progression';
@@ -503,8 +511,11 @@ const MIGRATIONS: Record<number, Migration> = {
     };
 
     const owned = legacy.equipment ?? {};
-    const tierFromEquipment =
-      owned.cauldronOneEighty ? 'cauldronThree' : owned.cauldronHundred ? 'cauldronTwo' : baseCauldronTier.id;
+    const tierFromEquipment = owned.cauldronOneEighty
+      ? 'cauldronThree'
+      : owned.cauldronHundred
+        ? 'cauldronTwo'
+        : baseCauldronTier.id;
 
     world.cauldrons = [
       {
@@ -512,7 +523,10 @@ const MIGRATIONS: Record<number, Migration> = {
         tierId: tierFromEquipment,
         contents: (legacy.cauldron as World['cauldrons'][number]['contents']) ?? { units: [] },
         // Temperature and method moved into the pot here; v14 then drops them.
-        ...({ temperature: legacy.temperature ?? LEGACY_AMBIENT, method: legacy.method ?? null } as object),
+        ...({
+          temperature: legacy.temperature ?? LEGACY_AMBIENT,
+          method: legacy.method ?? null,
+        } as object),
         brewing: (legacy.brewing as World['cauldrons'][number]['brewing']) ?? null,
         pendingBrew: (legacy.pendingBrew as World['cauldrons'][number]['pendingBrew']) ?? null,
         // The one pot a save this old had was the one it was brewing in.
@@ -625,7 +639,8 @@ const MIGRATIONS: Record<number, Migration> = {
       (entry) => (entry.kind as string) !== 'bandLearned' && entry.params.recipe !== MURK,
     );
     for (const entry of world.log) {
-      if (typeof entry.params.recipe === 'string') entry.params.recipe = renamed(entry.params.recipe);
+      if (typeof entry.params.recipe === 'string')
+        entry.params.recipe = renamed(entry.params.recipe);
     }
 
     if (world.equipment?.lagged) {
@@ -767,7 +782,9 @@ const MIGRATIONS: Record<number, Migration> = {
     const dug = new Set((world.shaft?.veins ?? []).map((vein) => vein.depth));
     for (let depth = 0; depth <= (world.shaft?.depth ?? 0); depth += step) {
       if (dug.has(depth)) continue;
-      world.shaft.veins.push(...generateVeins(world.rngSeed, depth, new Rng((world.rngSeed ^ depth) >>> 0)));
+      world.shaft.veins.push(
+        ...generateVeins(world.rngSeed, depth, new Rng((world.rngSeed ^ depth) >>> 0)),
+      );
     }
 
     for (const visit of Object.values(world.merchantVisits ?? {})) delete visit.picks;
@@ -826,9 +843,23 @@ const MIGRATIONS: Record<number, Migration> = {
     for (const visit of Object.values(world.merchantVisits ?? {})) delete visit.picks;
 
     const gone = new Set([
-      'waxedPouch', 'clayVial', 'hornPhial', 'glassFlask', 'copperBottle', 'ironBoundJar',
-      'sealedAmphora', 'crystalOrb', 'cork', 'waxRibbon', 'alchemistsMark', 'guildStamp',
-      'wardingSigil', 'silverClasp', 'ashwalkerMark', 'vesselMoulds', 'sealPress',
+      'waxedPouch',
+      'clayVial',
+      'hornPhial',
+      'glassFlask',
+      'copperBottle',
+      'ironBoundJar',
+      'sealedAmphora',
+      'crystalOrb',
+      'cork',
+      'waxRibbon',
+      'alchemistsMark',
+      'guildStamp',
+      'wardingSigil',
+      'silverClasp',
+      'ashwalkerMark',
+      'vesselMoulds',
+      'sealPress',
     ]);
     world.log = (world.log ?? []).filter(
       (entry) => !(typeof entry.params.item === 'string' && gone.has(entry.params.item)),

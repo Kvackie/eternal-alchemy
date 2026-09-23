@@ -98,7 +98,12 @@ export function generatePlaceholders(scene: Phaser.Scene): void {
   makeBottle(scene);
 }
 
-function texture(scene: Phaser.Scene, key: string, width: number, height: number): {
+function texture(
+  scene: Phaser.Scene,
+  key: string,
+  width: number,
+  height: number,
+): {
   g: Phaser.GameObjects.Graphics;
   commit: () => void;
 } | null {

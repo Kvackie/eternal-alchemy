@@ -52,13 +52,17 @@ const restore = (root: Fake, memory: ReturnType<typeof capture>) =>
 describe('keeping the reader’s place across a rebuild', () => {
   it('puts a nested scroller back where it was', () => {
     const before = node('DIV', 'panels', [
-      node('DIV', 'panel panel-roomy', [node('DIV', 'panel-body', [node('DIV', 'collapsible-body')])]),
+      node('DIV', 'panel panel-roomy', [
+        node('DIV', 'panel-body', [node('DIV', 'collapsible-body')]),
+      ]),
     ]);
     at(before, 0, 0, 0).scrollTop = 340;
 
     const memory = capture(before);
     const after = node('DIV', 'panels', [
-      node('DIV', 'panel panel-roomy', [node('DIV', 'panel-body', [node('DIV', 'collapsible-body')])]),
+      node('DIV', 'panel panel-roomy', [
+        node('DIV', 'panel-body', [node('DIV', 'collapsible-body')]),
+      ]),
     ]);
     restore(after, memory);
 
@@ -66,10 +70,14 @@ describe('keeping the reader’s place across a rebuild', () => {
   });
 
   it('keeps the panel itself, which is the scroller below the breakpoint', () => {
-    const before = node('DIV', 'panels', [node('DIV', 'panel panel-roomy', [node('DIV', 'panel-body')])]);
+    const before = node('DIV', 'panels', [
+      node('DIV', 'panel panel-roomy', [node('DIV', 'panel-body')]),
+    ]);
     at(before, 0).scrollTop = 120;
 
-    const after = node('DIV', 'panels', [node('DIV', 'panel panel-roomy', [node('DIV', 'panel-body')])]);
+    const after = node('DIV', 'panels', [
+      node('DIV', 'panel panel-roomy', [node('DIV', 'panel-body')]),
+    ]);
     restore(after, capture(before));
 
     expect(at(after, 0).scrollTop).toBe(120);

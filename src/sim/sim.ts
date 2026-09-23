@@ -259,7 +259,6 @@ export class Simulation {
     return ok;
   }
 
-
   /** Clear a planted bed for nothing. See `destroyCrop`. */
   destroyCrop(plotId: string): boolean {
     const cropId = destroyCrop(this.world, plotId);
@@ -329,7 +328,9 @@ export class Simulation {
    * juggles pots has to say which.
    */
   private pot(cauldronId?: string): Cauldron {
-    return (cauldronId ? cauldronById(this.world, cauldronId) : undefined) ?? activeCauldron(this.world);
+    return (
+      (cauldronId ? cauldronById(this.world, cauldronId) : undefined) ?? activeCauldron(this.world)
+    );
   }
 
   /**
@@ -375,11 +376,7 @@ export class Simulation {
     return pot;
   }
 
-  addToCauldron(
-    ingredientId: string,
-    freshness?: Freshness,
-    cauldronId?: string,
-  ): boolean {
+  addToCauldron(ingredientId: string, freshness?: Freshness, cauldronId?: string): boolean {
     const pot = this.pot(cauldronId);
     if (pot.brewing || pot.pendingBrew) return false;
     if (pot.contents.units.length >= maxIngredientsOf(pot, this.stats.maxIngredients)) return false;
@@ -911,10 +908,7 @@ export class Simulation {
     return { ok: true };
   }
 
-  private payInGold(
-    entry: StockEntry,
-    merchantId: string,
-  ): { ok: boolean; reasonKey?: string } {
+  private payInGold(entry: StockEntry, merchantId: string): { ok: boolean; reasonKey?: string } {
     // The entry's price is the single truth — catalogue cost, relationship
     // discount and the town's price level are all already folded into it, so
     // what is charged is always what was shown.
@@ -933,10 +927,10 @@ export class Simulation {
    * Spends the *cheapest* qualifying bottles first — the player asked to trade
    * some potions, not to lose their best one to a rounding decision.
    */
-  private payInPotions(barter: {
-    potions: number;
-    minGrade: Grade;
-  }): { ok: boolean; reasonKey?: string } {
+  private payInPotions(barter: { potions: number; minGrade: Grade }): {
+    ok: boolean;
+    reasonKey?: string;
+  } {
     const qualifying = this.world.bottled
       .filter((item) => gradeAtLeast(item.grade, barter.minGrade))
       .sort((a, b) => a.fairValue - b.fairValue);
@@ -951,11 +945,7 @@ export class Simulation {
       if (at >= 0) this.world.bottled.splice(at, 1);
     }
 
-    addRelationship(
-      this.world,
-      'ashwalker',
-      barter.potions * config.economy.relationshipPerPotion,
-    );
+    addRelationship(this.world, 'ashwalker', barter.potions * config.economy.relationshipPerPotion);
     record(this.world, 'bartered', { count: barter.potions });
     return { ok: true };
   }
@@ -1012,7 +1002,8 @@ export class Simulation {
   stockMany(itemUid: string, quantity: number): number {
     const item = this.world.bottled.find((entry) => entry.uid === itemUid);
     const placed = stockGoods(this.world, itemUid, quantity);
-    if (placed > 0 && item) record(this.world, 'stocked', { recipe: item.recipeId, grade: item.grade });
+    if (placed > 0 && item)
+      record(this.world, 'stocked', { recipe: item.recipeId, grade: item.grade });
     return placed;
   }
 
@@ -1207,9 +1198,7 @@ export class Simulation {
   stockEverything(): void {
     for (const tier of cauldronTiers) {
       if (!this.world.cauldrons.some((pot) => pot.tierId === tier.id)) {
-        this.world.cauldrons.push(
-          makeCauldron(`cauldron-${this.world.nextCauldronId}`, tier.id),
-        );
+        this.world.cauldrons.push(makeCauldron(`cauldron-${this.world.nextCauldronId}`, tier.id));
         this.world.nextCauldronId += 1;
       }
     }
@@ -1288,4 +1277,3 @@ export class Simulation {
     this.rng = new Rng(seed);
   }
 }
-

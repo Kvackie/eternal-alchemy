@@ -253,7 +253,11 @@ export function row(options: RowOptions): HTMLElement {
   if (options.blocked) classes.push('is-blocked');
 
   const main = el('div', { class: 'row-main' }, [
-    el('div', { class: 'row-title' }, typeof options.title === 'string' ? [options.title] : options.title),
+    el(
+      'div',
+      { class: 'row-title' },
+      typeof options.title === 'string' ? [options.title] : options.title,
+    ),
     ...(options.sub?.length ? [el('div', { class: 'row-sub' }, options.sub)] : []),
     ...(options.extra ?? []),
   ]);
@@ -914,7 +918,11 @@ function quantityAction(spec: QuantityActionSpec): HTMLElement {
   const minus = step('−', -1, t('quantity.fewer'));
   const plus = step('+', 1, t('quantity.more'));
   const plusTen = step('+10', 10, t('quantity.more10'), true);
-  const most = el('button', { class: 'quantity-step wide', type: 'button', text: t('quantity.max') });
+  const most = el('button', {
+    class: 'quantity-step wide',
+    type: 'button',
+    text: t('quantity.max'),
+  });
   most.addEventListener('click', () => set(spec.max));
 
   const go = button(spec.label, () => spec.run(quantity), {

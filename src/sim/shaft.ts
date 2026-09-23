@@ -139,12 +139,7 @@ export function runShaft(world: World, now: number): ShaftBatch[] {
   const richness = oreBatchMultiplier(world);
 
   let budget = 20_000;
-  while (
-    vein.nextBatchAt !== null &&
-    vein.nextBatchAt <= now &&
-    vein.remaining > 0 &&
-    budget > 0
-  ) {
+  while (vein.nextBatchAt !== null && vein.nextBatchAt <= now && vein.remaining > 0 && budget > 0) {
     budget -= 1;
     // At least one, so a poor town slows the shaft rather than stopping it.
     const perBatch = Math.max(1, Math.round((vein.batch + batchBonus) * richness));

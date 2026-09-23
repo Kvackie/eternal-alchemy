@@ -155,9 +155,7 @@ describe('grade reflects effort, not luck', () => {
     expect(single.recipeId).toBe(full.recipeId);
     expect(single.grade).toBe('S');
     expect(single.potencyTier).toBe('minor');
-    expect(potencyMultiplier(single.potencyTier)).toBeLessThan(
-      potencyMultiplier(full.potencyTier),
-    );
+    expect(potencyMultiplier(single.potencyTier)).toBeLessThan(potencyMultiplier(full.potencyTier));
   });
 
   it('lets a properly filled cauldron reach the top', () => {
@@ -512,8 +510,8 @@ describe('the recipe book is internally consistent', () => {
       { ignis: 0, aqua: 12, terra: 3, aer: 0, umbra: 0 },
       { ignis: 0, aqua: 0, terra: 14, aer: 0, umbra: 2 },
     ];
-    const deg = (bestBlendAngle({ ignis: 0, aqua: 0, terra: 0, aer: 1, umbra: 0 }, pool) * 180) /
-      Math.PI;
+    const deg =
+      (bestBlendAngle({ ignis: 0, aqua: 0, terra: 0, aer: 1, umbra: 0 }, pool) * 180) / Math.PI;
     expect(deg).toBeGreaterThan(60);
 
     // And it finds an exact match when one exists, so it is not just pessimistic.
@@ -681,10 +679,9 @@ describe('nothing sold is inert', () => {
       const after = createWorld(1);
       after.codex[node.id] = 1;
 
-      expect(
-        JSON.stringify(codexBonuses(after)),
-        `codex node ${node.id} grants nothing`,
-      ).not.toBe(JSON.stringify(codexBonuses(before)));
+      expect(JSON.stringify(codexBonuses(after)), `codex node ${node.id} grants nothing`).not.toBe(
+        JSON.stringify(codexBonuses(before)),
+      );
     }
   });
 

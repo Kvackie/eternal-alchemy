@@ -113,7 +113,11 @@ body {
 body {
   background: var(--bg-page);
   color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 0.875rem;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
@@ -701,13 +705,27 @@ button {
 }
 
 /* Any element carrying a grade wears that grade's colour — badge or not. */
-[data-grade='S'] { color: var(--grade-s); }
-[data-grade='A'] { color: var(--grade-a); }
-[data-grade='B'] { color: var(--grade-b); }
-[data-grade='C'] { color: var(--grade-c); }
-[data-grade='D'] { color: var(--grade-d); }
-[data-grade='E'] { color: var(--grade-e); }
-[data-grade='F'] { color: var(--grade-f); }
+[data-grade='S'] {
+  color: var(--grade-s);
+}
+[data-grade='A'] {
+  color: var(--grade-a);
+}
+[data-grade='B'] {
+  color: var(--grade-b);
+}
+[data-grade='C'] {
+  color: var(--grade-c);
+}
+[data-grade='D'] {
+  color: var(--grade-d);
+}
+[data-grade='E'] {
+  color: var(--grade-e);
+}
+[data-grade='F'] {
+  color: var(--grade-f);
+}
 
 /*
  * Coin is always the colour of coin.
@@ -1092,7 +1110,9 @@ input[type='range'] {
   border-radius: 999px;
   background: var(--bg-inset);
   border: 1px solid var(--border);
-  transition: background 120ms ease, border-color 120ms ease;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
 }
 
 .switch-thumb {
@@ -1103,7 +1123,9 @@ input[type='range'] {
   height: 1rem;
   border-radius: 50%;
   background: var(--text-faint);
-  transition: transform 120ms ease, background 120ms ease;
+  transition:
+    transform 120ms ease,
+    background 120ms ease;
 }
 
 .switch[aria-checked='true'] {
@@ -3977,11 +3999,21 @@ input[type='range'] {
   background: var(--text-faint);
 }
 
-.essence-swatch.ignis { background: #d4703c; }
-.essence-swatch.aqua { background: #4a8fb8; }
-.essence-swatch.terra { background: #8a7a4e; }
-.essence-swatch.aer { background: #9fb6c4; }
-.essence-swatch.umbra { background: #6b5a86; }
+.essence-swatch.ignis {
+  background: #d4703c;
+}
+.essence-swatch.aqua {
+  background: #4a8fb8;
+}
+.essence-swatch.terra {
+  background: #8a7a4e;
+}
+.essence-swatch.aer {
+  background: #9fb6c4;
+}
+.essence-swatch.umbra {
+  background: #6b5a86;
+}
 
 .ingredient-info-recipes {
   display: flex;
@@ -4788,7 +4820,7 @@ input[type='range'] {
     margin-inline: 0;
   }
 
-/* Wide enough that three faces across still have room for a name and a price. */
+  /* Wide enough that three faces across still have room for a name and a price. */
   .panel-pair > .tavern-panel {
     flex: 0 0 26rem;
     max-width: 26rem;

@@ -67,8 +67,7 @@ export function plant(world: World, plotId: string, seedId: string): boolean {
     // Green Thumb in the Codex shortens everything that grows, and the town's
     // soil decides the rest — Cinderhold's is poor, Saltmarsh's is not.
     readyAt:
-      world.now +
-      seed.growMs * codexBonuses(world).timerMultiplier * cropGrowthMultiplier(world),
+      world.now + seed.growMs * codexBonuses(world).timerMultiplier * cropGrowthMultiplier(world),
   };
   return true;
 }
@@ -124,10 +123,7 @@ export function harvestSize(plot: Plot): number {
    */
   const suited = plot.soil === crop.soil ? config.garden.suitedSoilBonus : 0;
 
-  return Math.max(
-    1,
-    Math.round(crop.yieldCount * config.garden.yieldMultiplier) + suited,
-  );
+  return Math.max(1, Math.round(crop.yieldCount * config.garden.yieldMultiplier) + suited);
 }
 
 export function harvest(world: World, plotId: string, rng: Rng): HarvestResult | null {

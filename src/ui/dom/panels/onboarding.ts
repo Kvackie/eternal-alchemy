@@ -109,10 +109,7 @@ export function openOnboarding(sim: Simulation): void {
         if (event.type === 'world:changed') draw(dismiss);
       });
       return [
-        el('div', { class: 'checklist-head' }, [
-          el('h2', { text: t('onboarding.title') }),
-          count,
-        ]),
+        el('div', { class: 'checklist-head' }, [el('h2', { text: t('onboarding.title') }), count]),
         el('p', { text: t('onboarding.hint') }),
         rows,
         el('div', { class: 'dialog-actions' }, [
