@@ -40,6 +40,10 @@ jobs:
       # fails the deploy. `npm run format` fixes it.
       - run: npm run format:check
 
+      # The suite runs in seconds, and it is where the balance harness and the
+      # data-against-generator checks live: a failing test blocks the publish.
+      - run: npm test
+
       # `npm run build` type-checks before bundling, so a type error fails the
       # deploy instead of shipping.
       - run: npm run build
