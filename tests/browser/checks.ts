@@ -154,18 +154,27 @@ export async function checkCoveredControls(page: Page): Promise<string[]> {
     };
 
     /*
-     * Under the checklist's pill for now, not for good.
+     * Under something that floats for now, not for good.
      *
-     * The pill floats over the bottom corner, so on any list long enough to
-     * run under it something is under it on landing — that is what floating
-     * means. What matters is whether scrolling brings the control up clear of
-     * it. A control that its scroller cannot lift above the pill is the one no
-     * thumb will ever reach.
+     * The checklist's pill floats over the bottom corner, and the Roster's
+     * Send footer sticks to the foot of the page on a phone, so on any list
+     * long enough to run under them something is under them on landing — that
+     * is what floating means. What matters is whether scrolling brings the
+     * control up clear. A control its scroller cannot lift above the floating
+     * thing is the one no thumb will ever reach.
      */
-    const clearsPill = (node: Element, over: Element): boolean => {
-      const pill = over.closest('.checklist-pill');
-      if (!pill) return false;
-      const needed = node.getBoundingClientRect().bottom - pill.getBoundingClientRect().top;
+    const floating = (over: Element): Element | null => {
+      for (let node: Element | null = over; node; node = node.parentElement) {
+        if (node.classList.contains('checklist-pill')) return node;
+        const position = getComputedStyle(node).position;
+        if (position === 'sticky' || position === 'fixed') return node;
+      }
+      return null;
+    };
+    const clearsFloating = (node: Element, over: Element): boolean => {
+      const float = floating(over);
+      if (!float) return false;
+      const needed = node.getBoundingClientRect().bottom - float.getBoundingClientRect().top;
       for (let parent = node.parentElement; parent; parent = parent.parentElement) {
         const overflow = getComputedStyle(parent).overflowY;
         if (overflow !== 'auto' && overflow !== 'scroll') continue;
@@ -181,7 +190,7 @@ export async function checkCoveredControls(page: Page): Promise<string[]> {
 
       const over = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
       if (!over || node.contains(over) || over.contains(node)) continue;
-      if (clearsPill(node, over)) continue;
+      if (clearsFloating(node, over)) continue;
 
       const name = (over.closest('[class]')?.className ?? over.tagName).toString().split(' ')[0];
       const key = `${(node.textContent ?? '').slice(0, 24).trim() || node.className} is under .${name}`;
