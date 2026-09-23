@@ -510,6 +510,8 @@ export interface GameConfig {
     brewDuration: Record<PotencyTierId, number>;
   };
   grading: {
+    /** Where S starts, indexed by essence count − 1. */
+    sFromByEssenceCount: number[];
     bands: Array<{ grade: Grade; minPurity: number }>;
   };
   potency: { tiers: Array<{ id: PotencyTierId; minEssence: number; valueMultiplier: number }> };

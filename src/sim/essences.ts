@@ -154,9 +154,22 @@ export function potencyRank(tier: PotencyTierId): number {
   return config.potency.tiers.findIndex((t) => t.id === tier);
 }
 
-export function gradeFor(purity: number): Grade {
-  for (const band of config.grading.bands) {
-    if (purity >= band.minPurity) return band.grade;
+/**
+ * The letter for a purity, on the ladder for a potion of this many essences.
+ *
+ * The bands are written for S at 90. A bigger mix raises S, and every band
+ * above F rises with it by the same amount, so a three- or five-way blend has
+ * to sit closer to its ratio for each letter than a simple one does. F stays at
+ * 0: it is everything below E, however high E has gone.
+ */
+export function gradeFor(purity: number, essenceCount = 1): Grade {
+  const bands = config.grading.bands;
+  const sFromByEssenceCount = config.grading.sFromByEssenceCount;
+  const index = Math.min(Math.max(essenceCount, 1), sFromByEssenceCount.length) - 1;
+  const shift = sFromByEssenceCount[index]! - bands[0]!.minPurity;
+  for (const band of bands) {
+    const from = band.minPurity > 0 ? Math.min(100, band.minPurity + shift) : 0;
+    if (purity >= from) return band.grade;
   }
   return 'F';
 }

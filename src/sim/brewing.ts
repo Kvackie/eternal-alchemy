@@ -55,9 +55,10 @@ export function assessOutcome(args: {
     const purity = purityAt(offIdealRad, recipe.toleranceDeg);
     const overCapacity = essence > capacity;
 
-    // The letter is the purity and nothing else — a small pot on the ratio is
-    // an S, a great one off it an F. Boiling over is the one exception.
-    let grade = gradeFor(purity);
+    // The letter is the purity, read on the ladder for this many essences — a
+    // small pot on the ratio is an S, a great one off it an F. Boiling over is
+    // the one exception.
+    let grade = gradeFor(purity, recipe.elements.length);
     if (overCapacity) grade = worseOf(grade, config.cauldron.unstableGrade);
 
     return {

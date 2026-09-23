@@ -70,6 +70,8 @@
   },
   "grading": {
     "$comment": "Purity is 100 at a recipe's exact ratio and 0 at the edge of its cone, and the letter is read straight off it: S from 90. Potency is a separate axis: a small pot on the ratio is an S, a huge one off it is an F.",
+    "$sFromComment": "Where S starts, by how many essences the potion takes. The simple ones are forgiving; the big mixes ask for nearly the exact ratio. The bands below are written for S at 90, and every band but F moves up by the same amount as S does.",
+    "sFromByEssenceCount": [90, 90, 94, 97, 97],
     "bands": [
       {
         "grade": "S",

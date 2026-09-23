@@ -204,6 +204,18 @@ describe('grading bands', () => {
     expect(gradeFor(30)).toBe('E');
     expect(gradeFor(0)).toBe('F');
   });
+
+  it('asks bigger mixes to sit closer to their ratio', () => {
+    // One or two essences: S from 90. Three: every band up 4. Four or five: up 7.
+    expect(gradeFor(91, 2)).toBe('S');
+    expect(gradeFor(91, 3)).toBe('A');
+    expect(gradeFor(94, 3)).toBe('S');
+    expect(gradeFor(96, 5)).toBe('A');
+    expect(gradeFor(97, 4)).toBe('S');
+    expect(gradeFor(60, 5)).toBe('D');
+    expect(gradeFor(30, 5)).toBe('F');
+    expect(gradeFor(30, 1)).toBe('E');
+  });
 });
 
 describe('identifying a brew from real ingredients', () => {
