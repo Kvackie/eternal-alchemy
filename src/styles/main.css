@@ -2423,12 +2423,28 @@ input[type='range'] {
 }
 
 .pot-unit {
+  position: relative;
   padding: 0;
   background: none;
   border: 0;
   line-height: 0;
   cursor: pointer;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+}
+
+/* How many of this one are in, when it is more than one. */
+.pot-unit-count {
+  position: absolute;
+  right: -0.25rem;
+  bottom: -0.125rem;
+  padding: 0.0625rem 0.25rem;
+  border-radius: 999px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .pot-unit:hover {
@@ -2750,6 +2766,20 @@ input[type='range'] {
    */
   .station[data-view='pot'] .pot-stage {
     max-height: 34vh;
+  }
+
+  /*
+   * A phone's bowl is small and its contents are thumb-sized, so they take the
+   * bowl's whole width, and a mix of more different things than it can show
+   * scrolls inside it rather than disappearing under the rim.
+   */
+  .pot-contents {
+    width: 92%;
+    gap: 0.125rem;
+    max-height: 78%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
 }
 
@@ -4869,6 +4899,11 @@ input[type='range'] {
     justify-content: flex-end;
   }
 
+  /*
+   * Grouped, the pot holds one of these per ingredient rather than per unit,
+   * so they have the room to be a thumb's width.
+   */
+  .pot-unit,
   .recipe-pin {
     display: inline-flex;
     align-items: center;

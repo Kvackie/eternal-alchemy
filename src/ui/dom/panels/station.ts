@@ -571,6 +571,30 @@ function renderVerdict(sim: Simulation): HTMLElement {
 }
 
 /**
+ * What is in the pot, one entry per ingredient.
+ *
+ * Every unit used to be its own icon, which filled the bowl long before the
+ * big pots were full and kept each icon too small to tap. Repeats share one
+ * icon and a count, in the order each ingredient first went in, and remember
+ * where the newest of them sits so a tap can take that one back out.
+ */
+function potGroups(
+  units: Array<{ ingredientId: string }>,
+): Array<{ ingredientId: string; count: number; lastIndex: number }> {
+  const groups = new Map<string, { ingredientId: string; count: number; lastIndex: number }>();
+  units.forEach((unit, index) => {
+    const group = groups.get(unit.ingredientId);
+    if (group) {
+      group.count += 1;
+      group.lastIndex = index;
+    } else {
+      groups.set(unit.ingredientId, { ingredientId: unit.ingredientId, count: 1, lastIndex: index });
+    }
+  });
+  return [...groups.values()];
+}
+
+/**
  * The pot, with what is in it in it.
  *
  * Two layers that answer two different questions at a glance: the contents say
@@ -594,13 +618,17 @@ function renderPot(sim: Simulation): HTMLElement {
     el(
       'div',
       { class: 'pot-contents' },
-      units.map((unit, index) => {
+      potGroups(units).map(({ ingredientId, count, lastIndex }) => {
         const node = el('button', { class: 'pot-unit', type: 'button' }, [
-          ingredientIcon(unit.ingredientId, 26),
+          ingredientIcon(ingredientId, 26),
+          ...(count > 1 ? [el('span', { class: 'pot-unit-count', text: `×${count}` })] : []),
         ]);
-        node.title = `${t(`ingredient.${unit.ingredientId}`)} — ${t('cauldron.action.remove')}`;
+        const name = t(`ingredient.${ingredientId}`);
+        node.title = `${count > 1 ? `${name} ×${count}` : name} — ${t('cauldron.action.remove')}`;
+        node.setAttribute('aria-label', node.title);
+        // One at a time, newest first: the tap undoes the last one of these added.
         node.addEventListener('click', () => {
-          sim.removeFromCauldron(index);
+          sim.removeFromCauldron(lastIndex);
           changed();
         });
         return node;
