@@ -18,6 +18,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import en from '@/i18n/en.json';
 import {
@@ -348,6 +349,16 @@ describe('the ingredient set', () => {
   it('brings the majority of ingredients back from expeditions', () => {
     const found = new Set(heroesConfig.biomes.flatMap((b) => [...b.loot, ...b.rare].map((d) => d.ingredientId)));
     expect(found.size / ingredients.length).toBeGreaterThan(0.5);
+  });
+
+  /*
+   * Crops, cave species, strata, loot and trade stock all follow from the
+   * ingredients, and `scripts/gen-ingredients.js` is where that is worked out.
+   * A hand edit that disagrees with it would be undone the next time it runs.
+   */
+  it('matches what the ingredient generator derives', () => {
+    const report = execFileSync('node', ['scripts/gen-ingredients.js'], { encoding: 'utf8' });
+    expect(report).toContain('Nothing to change.');
   });
 
   it('puts a new stratum every five metres', () => {
