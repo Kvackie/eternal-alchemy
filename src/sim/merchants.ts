@@ -316,9 +316,14 @@ function priceEntries(
   const townPrice = merchantPriceMultiplier(world);
 
   return chosen.map((item, index) => {
-    // A one-off purchase is always a single unit, whatever the pool says.
+    // A one-off purchase is always a single unit, whatever the pool says. Trade
+    // goods come in quantity, and deeper the better you know the trader.
     const oneOff = item.kind === 'equipment' || item.kind === 'decor';
-    const stock = oneOff ? 1 : (item.stock ?? 1);
+    const listed = item.stock ?? 1;
+    const trade = TRADE_KINDS.has(item.kind)
+      ? config.merchantStock.tradeMultiplier + config.merchantStock.perTier * tier
+      : 1;
+    const stock = oneOff ? 1 : Math.round(listed * trade);
 
     /*
      * `price` is the one truth about what this costs, so buying and displaying

@@ -132,6 +132,11 @@
       }
     ]
   },
+  "merchantStock": {
+    "$comment": "How many of each trade good (seed, spore, ingredient) a merchant carries, against the count in merchants.json. Doubled so a busy shop is not starved between visits, and half the listed count again for every standing tier with that merchant, so a regular's stall is deeper.",
+    "tradeMultiplier": 2,
+    "perTier": 0.5
+  },
   "market": {
     "tickMs": 300000,
     "baseFootfall": 1.0,

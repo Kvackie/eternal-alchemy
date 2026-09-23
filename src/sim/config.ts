@@ -468,6 +468,7 @@ export interface GameConfig {
     bands: Array<{ grade: Grade; minPurity: number }>;
   };
   potency: { tiers: Array<{ id: PotencyTierId; minEssence: number; valueMultiplier: number }> };
+  merchantStock: { tradeMultiplier: number; perTier: number };
   market: {
     tickMs: number;
     baseFootfall: number;

@@ -726,3 +726,22 @@ describe('what a trader brings, world by world', () => {
     for (const seed of seeds) expect(seen.has(seed), seed).toBe(true);
   });
 });
+
+describe('how much a trader carries', () => {
+  it('brings double the listed trade goods, and more to a regular', () => {
+    const at = (relationship: number) => {
+      const world = createWorld(3);
+      world.merchantRelations = { bramm: relationship };
+      const sim = new Simulation(world);
+      sim.advanceTo(midday(2));
+      const visit = sim.merchants().find((v) => v.merchantId === 'bramm')!;
+      const seed = visit.entries.find((e) => e.kind === 'seed')!;
+      const listed = BRAMM.pool.find((item) => item.id === seed.id)!.stock!;
+      return { stock: seed.stock, listed };
+    };
+    const stranger = at(0);
+    expect(stranger.stock).toBe(stranger.listed * config.merchantStock.tradeMultiplier);
+    const regular = at(BRAMM.relationshipTiers[2]!);
+    expect(regular.stock).toBeGreaterThan(stranger.stock);
+  });
+});
