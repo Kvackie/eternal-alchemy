@@ -79,7 +79,6 @@ const ALLOWED_UNREAD: Record<string, string> = {
   // by game logic.
   tree: 'groups the upgrade trees; asserted consistent below',
   family: 'groups pitch actions; asserted consistent below',
-  glyph: 'placeholder-art hint; sprites currently tint by dominant essence',
 
   // Ceilings that no content can currently reach, kept as declared intent.
   maxPlots: 'upper bound on garden growth; asserted unreachable below',

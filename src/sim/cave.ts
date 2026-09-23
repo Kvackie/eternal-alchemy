@@ -151,10 +151,11 @@ export function harvestAllMature(world: World): CaveHarvest[] {
  * three-week catch-up run identical code. The budget stops a corrupted clock
  * from locking the main thread.
  *
- * Each tick draws from its own stream, keyed to the tick's moment, rather than
- * from the world's shared one. The market and the board spend the shared
- * stream differently live and offline, so drawing from it made the same night
- * grow a different cave depending on whether anyone watched.
+ * Each tick draws from its own stream, keyed to the world's cave seed and the
+ * tick's moment, rather than from the world's shared one. The market and the
+ * board spend the shared stream differently live and offline, so drawing from
+ * it made the same night grow a different cave depending on whether anyone
+ * watched.
  */
 export function runCave(world: World): void {
   const tickMs = caveConfig.spreadTickMs;
@@ -167,7 +168,8 @@ export function runCave(world: World): void {
 
   while (tick <= world.now && budget > 0) {
     budget -= 1;
-    const rng = new Rng(Math.imul(Math.floor(tick / tickMs), 0x9e3779b1) >>> 0);
+    const tickIndex = Math.floor(tick / tickMs);
+    const rng = new Rng((world.cave.seed ^ Math.imul(tickIndex, 0x9e3779b1)) >>> 0);
 
     // Snapshot which tiles are empty first: a tile colonised during this tick
     // should not immediately spread onward in the same tick.

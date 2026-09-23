@@ -31,7 +31,7 @@ import type { BottledItem } from '@/sim/types';
 /**
  * Anything about this bottle that is true of *this* bottle.
  *
- * Recipes carry no effect: a Night Glass and an Ember Draught differ in blend
+ * Recipes carry no effect: the Umbra potion and the Ignis–Terra one differ in blend
  * and price and in nothing else, so listing "sells from a shelf" and "packs as
  * supplies" against each one said the same two things on every potion in the
  * game. What is left is the pair of facts that actually vary — somebody on the

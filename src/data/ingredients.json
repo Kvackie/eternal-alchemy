@@ -9,9 +9,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 2,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "redSpices",
@@ -23,9 +21,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 3,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "pepper",
@@ -37,9 +33,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "cinderleaf",
@@ -51,9 +45,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 5,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "coalcap",
@@ -65,9 +57,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 7,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "flamefan",
@@ -79,9 +69,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 10,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "emberGarnet",
@@ -93,9 +81,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 17,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "emberCrystal",
@@ -107,9 +93,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "cinderQuartz",
@@ -121,9 +105,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "bloodRose",
@@ -137,9 +119,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "bluepetal",
@@ -151,9 +131,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 2,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "bluecoral",
@@ -165,9 +143,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 3,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "bluecone",
@@ -179,9 +155,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "bilberry",
@@ -193,9 +167,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 5,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "azurecap",
@@ -207,9 +179,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 7,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "bubblecap",
@@ -221,9 +191,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 10,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "deepJasper",
@@ -235,9 +203,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 17,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "deepCrystal",
@@ -249,9 +215,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "brineTopaz",
@@ -263,9 +227,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "magicRoot",
@@ -277,9 +239,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "duskberry",
@@ -291,9 +251,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 2,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "cleftleaf",
@@ -305,9 +263,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 3,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "broomgrass",
@@ -319,9 +275,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "broadleaf",
@@ -333,9 +287,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 5,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "mosscap",
@@ -347,9 +299,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 7,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "chalkgill",
@@ -361,9 +311,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 10,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "chalkNodule",
@@ -375,9 +323,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 17,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "chalkGlass",
@@ -389,9 +335,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "chalkGeode",
@@ -403,9 +347,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "bonefang",
@@ -417,9 +359,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "featherfern",
@@ -431,9 +371,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 2,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "windwort",
@@ -445,9 +383,7 @@
       "aer": 6,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 3,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "pinklotus",
@@ -459,9 +395,7 @@
       "aer": 8,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "galeThistle",
@@ -473,9 +407,7 @@
       "aer": 10,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 5,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "trumpetgill",
@@ -487,9 +419,7 @@
       "aer": 12,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 7,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "sunfungus",
@@ -501,9 +431,7 @@
       "aer": 16,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 10,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "driftGarnet",
@@ -515,9 +443,7 @@
       "aer": 24,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 17,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "zephyrQuartz",
@@ -529,9 +455,7 @@
       "aer": 32,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "wispGarnet",
@@ -543,9 +467,7 @@
       "aer": 36,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "skyreachFeather",
@@ -559,9 +481,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "beast"
+    ]
   },
   {
     "id": "pomegranate",
@@ -573,9 +493,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 2,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "honeydewPlant",
@@ -587,9 +505,7 @@
       "aer": 0,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 3,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "gloamroot",
@@ -601,9 +517,7 @@
       "aer": 0,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "violetroot",
@@ -615,9 +529,7 @@
       "aer": 0,
       "umbra": 10
     },
-    "traits": [],
-    "baseValue": 5,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "gloomcap",
@@ -629,9 +541,7 @@
       "aer": 0,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 7,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "gravecrown",
@@ -643,9 +553,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 10,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "nullstone",
@@ -657,9 +565,7 @@
       "aer": 0,
       "umbra": 24
     },
-    "traits": [],
-    "baseValue": 17,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "veilGlass",
@@ -671,9 +577,7 @@
       "aer": 0,
       "umbra": 32
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "waneOnyx",
@@ -685,9 +589,7 @@
       "aer": 0,
       "umbra": 36
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "spectralRoot",
@@ -699,9 +601,7 @@
       "aer": 0,
       "umbra": 48
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "agilityFruit",
@@ -713,9 +613,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "heatBerry",
@@ -727,9 +625,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "frostfan",
@@ -741,9 +637,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "commonFlower",
@@ -755,9 +649,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "autumnmaple",
@@ -769,9 +661,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "dandelion",
@@ -783,9 +673,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "ashfern",
@@ -797,9 +685,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "crimsonbloom",
@@ -811,9 +697,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetpod",
@@ -825,9 +709,7 @@
       "aer": 8,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "beetMandragora",
@@ -839,9 +721,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "nightbloom",
@@ -853,9 +733,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetBeet",
@@ -867,9 +745,7 @@
       "aer": 0,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "cyanFlower",
@@ -881,9 +757,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "seagrass",
@@ -895,9 +769,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "greensprig",
@@ -909,9 +781,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "tulipsCharge",
@@ -923,9 +793,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "jellyfishCoral",
@@ -937,9 +805,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "duskplum",
@@ -951,9 +817,7 @@
       "aer": 8,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "frostrosette",
@@ -965,9 +829,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "moonpetal",
@@ -979,9 +841,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "lighbulbLantern",
@@ -993,9 +853,7 @@
       "aer": 0,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "blueBerry",
@@ -1007,9 +865,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "lilypad",
@@ -1021,9 +877,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetUmbrella",
@@ -1035,9 +889,7 @@
       "aer": 8,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "chrystaLily",
@@ -1049,9 +901,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "purpleBerry",
@@ -1063,9 +913,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetgarlic",
@@ -1077,9 +925,7 @@
       "aer": 0,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetSpices",
@@ -1091,9 +937,7 @@
       "aer": 4,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 4,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "magentaleaf",
@@ -1105,9 +949,7 @@
       "aer": 8,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "roseSalt",
@@ -1119,9 +961,7 @@
       "aer": 4,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "coralFlower",
@@ -1133,9 +973,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "sunleaf",
@@ -1147,9 +985,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetshroom",
@@ -1161,9 +997,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "sloeberry",
@@ -1175,9 +1009,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "uncommonFlower",
@@ -1189,9 +1021,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "blackBerry",
@@ -1203,9 +1033,7 @@
       "aer": 4,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "cornflower",
@@ -1217,9 +1045,7 @@
       "aer": 4,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "ashsprig",
@@ -1231,9 +1057,7 @@
       "aer": 0,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "pinkPuff",
@@ -1245,9 +1069,7 @@
       "aer": 4,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "violetSwarm",
@@ -1259,9 +1081,7 @@
       "aer": 4,
       "umbra": 4
     },
-    "traits": [],
-    "baseValue": 6,
-    "glyph": "leaf"
+    "traits": []
   },
   {
     "id": "ambercap",
@@ -1273,9 +1093,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "loamcap",
@@ -1287,9 +1105,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "poisonCap",
@@ -1301,9 +1117,7 @@
       "aer": 6,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "toadstool",
@@ -1315,9 +1129,7 @@
       "aer": 0,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "dewcap",
@@ -1329,9 +1141,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "buttercap",
@@ -1343,9 +1153,7 @@
       "aer": 12,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "goldcap",
@@ -1357,9 +1165,7 @@
       "aer": 0,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "tubefungus",
@@ -1371,9 +1177,7 @@
       "aer": 12,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "poffpuffBall",
@@ -1385,9 +1189,7 @@
       "aer": 0,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "honeycap",
@@ -1399,9 +1201,7 @@
       "aer": 6,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "tieredcap",
@@ -1413,9 +1213,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "russetcap",
@@ -1427,9 +1225,7 @@
       "aer": 6,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "crimsoncap",
@@ -1441,9 +1237,7 @@
       "aer": 0,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "cellarcap",
@@ -1455,9 +1249,7 @@
       "aer": 6,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "eyecap",
@@ -1469,9 +1261,7 @@
       "aer": 0,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "puffnest",
@@ -1483,9 +1273,7 @@
       "aer": 6,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "verdigriscap",
@@ -1497,9 +1285,7 @@
       "aer": 6,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "stoutcap",
@@ -1511,9 +1297,7 @@
       "aer": 0,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "violetcap",
@@ -1525,9 +1309,7 @@
       "aer": 6,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "palecap",
@@ -1539,9 +1321,7 @@
       "aer": 6,
       "umbra": 6
     },
-    "traits": [],
-    "baseValue": 11,
-    "glyph": "fungus"
+    "traits": []
   },
   {
     "id": "dewGlass",
@@ -1553,9 +1333,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "deepTopaz",
@@ -1567,9 +1345,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "forgeOpal",
@@ -1581,9 +1357,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "cinderOpal",
@@ -1595,9 +1369,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "coalGarnet",
@@ -1609,9 +1381,7 @@
       "aer": 16,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "aetherShard",
@@ -1623,9 +1393,7 @@
       "aer": 24,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "emberJasper",
@@ -1637,9 +1405,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "emberShard",
@@ -1651,9 +1417,7 @@
       "aer": 0,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "brineGlass",
@@ -1665,9 +1429,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "barkAgate",
@@ -1679,9 +1441,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "rillQuartz",
@@ -1693,9 +1453,7 @@
       "aer": 16,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "mirePrism",
@@ -1707,9 +1465,7 @@
       "aer": 12,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "deepOpal",
@@ -1721,9 +1477,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "voidGeode",
@@ -1735,9 +1489,7 @@
       "aer": 0,
       "umbra": 24
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "deepglass",
@@ -1749,9 +1501,7 @@
       "aer": 16,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "slateBeryl",
@@ -1763,9 +1513,7 @@
       "aer": 12,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "clayShard",
@@ -1777,9 +1525,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "nightQuartz",
@@ -1791,9 +1537,7 @@
       "aer": 0,
       "umbra": 24
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "cloudJasper",
@@ -1805,9 +1549,7 @@
       "aer": 16,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "galeGarnet",
@@ -1819,9 +1561,7 @@
       "aer": 24,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 25,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "deepShard",
@@ -1833,9 +1573,7 @@
       "aer": 8,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "scaldPrism",
@@ -1847,9 +1585,7 @@
       "aer": 0,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "aetherJasper",
@@ -1861,9 +1597,7 @@
       "aer": 8,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "barkOpal",
@@ -1875,9 +1609,7 @@
       "aer": 8,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "veilJasper",
@@ -1889,9 +1621,7 @@
       "aer": 8,
       "umbra": 8
     },
-    "traits": [],
-    "baseValue": 22,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "vampirRose",
@@ -1903,9 +1633,7 @@
       "aer": 0,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "anglerPlant",
@@ -1919,9 +1647,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "cinderwraithAsh",
@@ -1933,9 +1659,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "uniqueFlower",
@@ -1949,9 +1673,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "dragonFruit",
@@ -1963,9 +1685,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "manaFruit",
@@ -1979,9 +1699,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "shrimp",
@@ -1993,9 +1711,7 @@
       "aer": 16,
       "umbra": 0
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "monsterBones",
@@ -2007,9 +1723,7 @@
       "aer": 0,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "voideel",
@@ -2021,9 +1735,7 @@
       "aer": 16,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "barrowAsh",
@@ -2035,9 +1747,7 @@
       "aer": 16,
       "umbra": 16
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "mineral"
+    "traits": []
   },
   {
     "id": "bonefrond",
@@ -2051,9 +1761,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "monsterMeat",
@@ -2065,9 +1773,7 @@
       "aer": 0,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "root"
+    "traits": []
   },
   {
     "id": "magmaFish",
@@ -2081,9 +1787,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "monsterEgg",
@@ -2097,9 +1801,7 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 72,
-    "glyph": "root"
+    ]
   },
   {
     "id": "mirefenPearl",
@@ -2111,9 +1813,7 @@
       "aer": 12,
       "umbra": 12
     },
-    "traits": [],
-    "baseValue": 72,
-    "glyph": "beast"
+    "traits": []
   },
   {
     "id": "quicksilverTear",
@@ -2127,8 +1827,6 @@
     },
     "traits": [
       "volatile"
-    ],
-    "baseValue": 60,
-    "glyph": "mineral"
+    ]
   }
 ]

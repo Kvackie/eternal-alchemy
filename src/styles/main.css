@@ -584,17 +584,6 @@ button {
   color: var(--bg-page);
 }
 
-.btn.cool {
-  background: transparent;
-  color: var(--aqua);
-  border-color: var(--aqua);
-}
-
-.btn.cool:hover:not(:disabled) {
-  background: var(--aqua);
-  color: var(--bg-page);
-}
-
 /*
  * The two answers a dialog can end on, in the two colours that mean them.
  *
@@ -1307,10 +1296,6 @@ input[type='range'] {
   font-size: 0.625rem;
 }
 
-.slot[data-tone='good'] .slot-caption {
-  color: var(--good-text);
-}
-
 .slot[data-tone='warn'] .slot-caption {
   color: var(--warn);
 }
@@ -1397,10 +1382,6 @@ input[type='range'] {
   border-radius: var(--radius);
 }
 
-.outcome[data-tone='warn'] {
-  border-left-color: var(--warn);
-}
-
 .outcome-head {
   display: flex;
   align-items: center;
@@ -1456,10 +1437,6 @@ input[type='range'] {
   display: flex;
   flex-direction: column;
   gap: 0.1875rem;
-}
-
-.recipes {
-  gap: 0.375rem;
 }
 
 .recipe {
@@ -2707,7 +2684,7 @@ input[type='range'] {
  * One half at a time on a phone.
  *
  * Three columns will not fit, and stacking them made one scroll five screens
- * long — stores, burners, method, pot, book — so picking a herb and seeing what
+ * long — stores, pot, book — so picking a herb and seeing what
  * it did to the blend were a screen apart, which is the thing the station
  * exists to avoid. The switcher at the top decides which half is up; see
  * `renderStation`.
@@ -2731,7 +2708,7 @@ input[type='range'] {
    * The stores list is capped so the outcome stays in reach.
    *
    * On the brew half the list shares a single column with what the pot would
-   * make, and an uncapped grid of two hundred ingredients puts that reading
+   * make, and an uncapped grid of a full larder puts that reading
    * below the fold for ever.
    */
   .station[data-view='brew'] .station-scroll {

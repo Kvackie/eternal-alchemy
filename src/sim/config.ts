@@ -41,8 +41,6 @@ export interface IngredientDef {
   category: IngredientCategory;
   essence: EssenceVector;
   traits: string[];
-  baseValue: number;
-  glyph: string;
 }
 
 export interface CropDef {
@@ -259,6 +257,10 @@ export interface ShaftStratumDef {
 }
 
 export interface ShaftConfig {
+  /**
+   * How deep a new shaft may be dug before it needs beams. The shaft itself
+   * opens at the surface; this is the support that comes with it.
+   */
   startingDepth: number;
   depthStep: number;
   batchTickMs: number;

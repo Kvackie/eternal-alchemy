@@ -80,12 +80,10 @@ const CATEGORIES: IngredientCategory[] = ['herb', 'fungus', 'mineral', 'exotic']
 /**
  * How many ingredient tiles one page of the stores holds.
  *
- * A finished larder is nearly four hundred kinds, and a tile carries a picture,
- * a name, a freshness and up to five essence readings — around fifteen elements
- * each. Drawn whole that is 5,800 of the station's 6,800 elements, rebuilt on
- * every press, which is where the hundred-odd milliseconds a redraw costs
- * actually goes. The recipe book, long suspected, is 992: its rows build their
- * bodies only when opened, and always did.
+ * A full larder is 151 kinds, each at up to three freshness stages, and a tile
+ * carries a picture, a name, a freshness and up to five essence readings —
+ * around fifteen elements each. Drawn whole, that is most of what a redraw
+ * costs on every press.
  *
  * Same figure the store room uses, for the same reason.
  */
@@ -138,8 +136,8 @@ let unknownOpen = false;
 /**
  * Below this width the station cannot show three columns at once.
  *
- * Stacked, it was one scroll five screens long — stores, burners, method, pot,
- * book — so choosing a herb and seeing what it did to the blend were a screen
+ * Stacked, it was one scroll several screens long — stores, pot, book — so
+ * choosing a herb and seeing what it did to the blend were a screen
  * apart, which is the exact problem the station was built to solve.
  */
 const SPLIT = '(max-width: 900px)';
@@ -211,8 +209,9 @@ export function renderStation(sim: Simulation): HTMLElement {
    *
    * Brew holds everything a blend is built out of — what is in store and what
    * it would come out as — plus whatever recipes have been starred, so the
-   * ratio you are aiming at is on screen while you pick. The pot and the whole book are the reference half: you go there to
-   * choose what to make, and come back here to make it.
+   * ratio you are aiming at is on screen while you pick. The pot and the whole
+   * book are the reference half: you go there to choose what to make, and come
+   * back here to make it.
    */
   if (split) {
     children.push(viewSwitch());
@@ -367,7 +366,7 @@ function renderStores(sim: Simulation): HTMLElement {
   /*
    * The filters fold away, because they are not what the screen is for.
    *
-   * Three rows of chips — five categories, five essences, three freshnesses —
+   * Three rows of chips — four categories, five essences, three freshnesses —
    * is about a third of a phone's brew half standing permanently between the
    * heading and the first ingredient. Shut, the row says how many are in force,
    * so a list narrowed by a filter you have forgotten is never a mystery.
@@ -763,8 +762,9 @@ function renderBrewingTimer(sim: Simulation): HTMLElement {
 /**
  * Bottling, in a window of its own.
  *
- * It used to unfold inside the middle column, under the pot: option groups, a value line and two buttons appended to the column you were already
- * reading the outcome in — on a phone that is most of a screen of controls
+ * It used to unfold inside the middle column, under the pot: option groups, a
+ * value line and two buttons appended to the column you were already reading
+ * the outcome in — on a phone that is most of a screen of controls
  * arriving unannounced under a cauldron, and the thing it is asking about
  * scrolls off the top while you answer. A finished brew is a decision of its
  * own, so it gets a window, and the column keeps a card that opens it.
@@ -774,7 +774,9 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
   const section = el('section', { class: 'station-block' });
 
   const vessels = availableVessels(sim.world, brew);
-  const seals = availableSeals(sim.world);
+  // The brew and the rank both decide which seals may go on — the same checks
+  // bottling makes, so a seal offered here is one the Bottle button will take.
+  const seals = availableSeals(sim.world, brew, sim.rankIndex);
 
   if (!vessels.find((v) => v.vesselId === vesselId)?.available) {
     vesselId = vessels.find((v) => v.available)?.vesselId ?? vesselId;
@@ -812,8 +814,9 @@ function bottlingBody(sim: Simulation, dismiss: () => void, redraw: () => void):
       optionGroup(
         seals.map((seal) => ({
           label: t(`seal.${seal.sealId}`),
-          detail:
-            getSeal(seal.sealId).cost === 0
+          detail: !seal.available
+            ? t(seal.reasonKey ?? 'workbench.reason.stock')
+            : getSeal(seal.sealId).cost === 0
               ? t('workbench.stock.unlimited')
               : t('workbench.stock', { count: seal.inStock }),
           selected: seal.sealId === sealId,

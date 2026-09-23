@@ -109,18 +109,22 @@ describe('the garden sustains itself', () => {
 
 describe('the cave is generous, not free', () => {
   it('does not carpet the whole grid in a single overnight absence', () => {
-    const sim = new Simulation(createWorld(88));
-    sim.world.spores.dewcap = 5;
-    sim.seedCaveTile(0, 'dewcap');
-
-    sim.advanceBy(8 * HOUR, false);
-    const colonised = sim.cave.tiles.filter((t) => t.speciesId !== null).length;
-    const total = sim.cave.tiles.length;
+    // Across worlds, because each cave spreads its own way: one night is a
+    // handful of chances, and a single seed can land on none of them.
+    const runs = Array.from({ length: 20 }, (_, i) => {
+      const sim = new Simulation(createWorld(88 + i));
+      sim.world.spores.dewcap = 5;
+      sim.seedCaveTile(0, 'dewcap');
+      sim.advanceBy(8 * HOUR, false);
+      return sim.cave.tiles.filter((t) => t.speciesId !== null).length / sim.cave.tiles.length;
+    });
+    const mean = runs.reduce((a, b) => a + b, 0) / runs.length;
+    const oneBed = 1 / caveConfig.startingTiles;
 
     // Leaving it should reward you, not replace the garden. Somewhere under
     // three-quarters of the grid after a night away is the shape we want.
-    expect(colonised).toBeGreaterThan(1);
-    expect(colonised / total).toBeLessThan(0.75);
+    expect(mean).toBeGreaterThan(oneBed);
+    expect(Math.max(...runs)).toBeLessThan(0.75);
   });
 
   it('does fill given a long enough absence', () => {

@@ -380,8 +380,9 @@ function openCodex(deps: SettingsDeps, node: CodexNodeDef): void {
 /**
  * What a node grants, in numbers.
  *
- * The blurb says a steadier hand widens the band; it does not say by how much,
- * and a player deciding whether to spend twelve Mastery is asking exactly that.
+ * The blurb says Green Thumb makes things grow faster; it does not say by how
+ * much, and a player deciding whether to spend twelve Mastery is asking exactly
+ * that.
  * Each line reads "what you have now → what the next level makes it", drawn from
  * the same `effect` object the simulation folds, so it cannot drift from it.
  */

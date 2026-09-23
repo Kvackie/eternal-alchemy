@@ -172,7 +172,6 @@ for (const id of files) {
   if (Object.values(essence).every((v) => v === 0)) essence[p.dominant] = magnitude;
 
   const category = categoryOf(id);
-  const traits = category === 'mineral' ? ['stable'] : tier === 2 ? ['pure'] : [];
 
   added.push({
     id,
@@ -185,16 +184,7 @@ for (const id of files) {
             ? 'exotic'
             : 'herb',
     essence,
-    traits,
-    baseValue: Math.max(3, Math.round(magnitude * (0.5 + tier * 0.45))),
-    glyph:
-      category === 'fungus'
-        ? 'fungus'
-        : category === 'mineral'
-          ? 'mineral'
-          : category === 'crop'
-            ? 'leaf'
-            : 'root',
+    traits: [],
     _source: category,
     _biome: biomeOf(id, p.dominant),
     _tier: tier,

@@ -145,8 +145,8 @@ export function ceilingFor(item: BottledItem, def: CustomerDef, variance = 1): n
  * How full this customer's purse happens to be today.
  *
  * Without it every visit from the same customer offered exactly the same
- * ceiling, so a player who once worked out what a Journeyman pays for a Health
- * Tonic never had to judge again — the mini-game became arithmetic they had
+ * ceiling, so a player who once worked out what a Journeyman pays for a given
+ * potion never had to judge again — the mini-game became arithmetic they had
  * already done. Centred on 1, so the spread adds uncertainty without moving
  * what a customer is worth on average.
  */

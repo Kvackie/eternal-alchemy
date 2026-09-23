@@ -52,7 +52,7 @@ export function createWorld(seed = freshSeed()): World {
     merchantVisits: {},
     acknowledgedRank: 0,
 
-    cave: { tiles: makeCaveTiles(caveConfig.startingTiles), lastTick: 0 },
+    cave: { tiles: makeCaveTiles(caveConfig.startingTiles), lastTick: 0, seed: (seed ^ 0xca7e) >>> 0 },
     spores: {},
 
     shaft: {

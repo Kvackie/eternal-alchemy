@@ -347,3 +347,51 @@ describe('migrating a save from before the ingredient rebuild', () => {
     expect(ids.has(String(world.log[0]!.params.ingredient))).toBe(true);
   });
 });
+
+describe('paying back what the overhaul took away', () => {
+  it('refunds the Lagged cauldron and Deft Hands when their mechanics went', () => {
+    const world = createWorld(1);
+    world.gold = 100;
+    world.mastery = 2;
+    world.equipment.lagged = 1;
+    world.codex.deftHands = 3;
+    const raw = JSON.stringify({ schemaVersion: 13, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+
+    expect(migrated.gold).toBe(100 + 180);
+    // Tiers 1, 2 and 3 at 3 Mastery a tier: 3 + 6 + 9.
+    expect(migrated.mastery).toBe(2 + 18);
+    expect(migrated.codex.deftHands).toBeUndefined();
+  });
+
+  it('refunds the greenhouse, and names its strains by their crop in the Ledger', () => {
+    const world = createWorld(1) as unknown as Record<string, unknown> & ReturnType<typeof createWorld>;
+    world.gold = 0;
+    world.equipment.greenhouse = 1;
+    world.strains = [{ id: 'strain-1', baseCropId: 'sunleaf', generation: 1 }];
+    world.log = [{ id: 1, at: 0, kind: 'planted', params: { crop: 'strain-1' } }];
+    const raw = JSON.stringify({ schemaVersion: 14, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+
+    expect(migrated.gold).toBe(1400);
+    expect(migrated.log[0]!.params.crop).toBe('sunleaf');
+  });
+});
+
+describe('migrating a save from before the loose ends were tied', () => {
+  it('seeds the cave, fills the shallow strata and re-deals packed stalls', () => {
+    const world = createWorld(1);
+    delete (world.cave as { seed?: number }).seed;
+    world.shaft.depth = 20;
+    world.shaft.veins = world.shaft.veins.map((vein) => ({ ...vein, depth: 20 }));
+    world.merchantVisits = { bramm: { dayNumber: 0, bought: {}, picks: ['emberroot'] } };
+    const raw = JSON.stringify({ schemaVersion: 16, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+
+    expect(typeof migrated.cave.seed).toBe('number');
+    for (const depth of [0, 5, 10, 15, 20]) {
+      expect(migrated.shaft.veins.some((vein) => vein.depth === depth), `${depth}m`).toBe(true);
+    }
+    expect(migrated.merchantVisits.bramm!.picks).toBeUndefined();
+  });
+});

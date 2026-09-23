@@ -91,6 +91,17 @@ export function canDeepen(world: World): boolean {
   return world.shaft.depth + shaftConfig.depthStep <= world.shaft.supportedDepth;
 }
 
+/**
+ * Open the shaft down to `depth` without asking for supports, giving every
+ * step on the way its veins — a head start, not a jump past the strata above.
+ */
+export function openTo(world: World, depth: number, rng: Rng): void {
+  while (world.shaft.depth + shaftConfig.depthStep <= depth) {
+    world.shaft.depth += shaftConfig.depthStep;
+    world.shaft.veins.push(...generateVeins(world.rngSeed, world.shaft.depth, rng));
+  }
+}
+
 /** Dig one step down. New veins appear; the old ones stay, regrowing. */
 export function deepen(world: World, rng: Rng): boolean {
   if (!canDeepen(world)) return false;

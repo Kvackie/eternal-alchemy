@@ -149,13 +149,6 @@ function fromPicks(def: MerchantDef, picks: string[]): MerchantStockDef[] {
   return picks.map((id) => byId.get(id)).filter((item) => item !== undefined);
 }
 
-/**
- * Deal a pack.
- *
- * Weighted draw without replacement from everything the player's relationship
- * tier and rank have opened up. Equipment already owned is filtered out before
- * the draw, so a full shelf of upgrades never crowds out the staples.
- */
 /** Seeds, spores and ingredients: what a merchant is known for. */
 const TRADE_KINDS: ReadonlySet<MerchantStockDef['kind']> = new Set(['seed', 'spore', 'ingredient']);
 
@@ -176,6 +169,12 @@ function rotationPicks(def: MerchantDef, dayNumber: number, tier: number): Merch
   return Array.from({ length: def.rotation }, (_, i) => trade[(start + i) % trade.length]!);
 }
 
+/**
+ * Deal a pack: this visit's turn of the trade goods, then staples drawn
+ * without replacement from everything the player's relationship tier and rank
+ * have opened up. Equipment already owned is filtered out before the draw, so a
+ * full set of upgrades never crowds out the staples.
+ */
 function drawPicks(
   world: World,
   def: MerchantDef,

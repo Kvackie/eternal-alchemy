@@ -988,9 +988,8 @@ export class Simulation {
         this.world.seeds[entry.id] = (this.world.seeds[entry.id] ?? 0) + 1;
         break;
       case 'spore':
-        // Without this the cave was stuck on its two starting Dewcap clusters,
-        // which made two of three species unobtainable and left the lantern
-        // with nothing to steer.
+        // Spores come only from merchants and expeditions; a new shop has one
+        // starter species, so without this the cave could never grow the rest.
         this.world.spores[entry.id] = (this.world.spores[entry.id] ?? 0) + 1;
         break;
       case 'ingredient':

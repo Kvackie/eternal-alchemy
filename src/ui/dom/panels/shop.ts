@@ -423,9 +423,9 @@ function openShelfDetails(sim: Simulation, entry: NumberedShelf): void {
 /**
  * Fill this one shelf, from whatever is in the store room.
  *
- * Paged, for the same reason the store room itself is: a finished Codex is
- * very nearly two hundred kinds of potion, and building all of them into a
- * dialog is the cost that grid was paged to avoid — inside a click handler,
+ * Paged, for the same reason the store room itself is: 31 potions in every
+ * grade, vessel and seal is hundreds of kinds of bottle, and building all of
+ * them into a dialog is the cost that grid was paged to avoid — inside a click handler,
  * where it is felt most. Ordered by the same chip the store room is set to, so
  * the page you are shown is the one you were just looking at.
  *
@@ -498,7 +498,7 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
 /**
  * Bottles gathered into stacks, by the same rule the shelf stacks them.
  *
- * Twelve identical Ember Draughts used to be twelve tiles — a wall of the same
+ * Twelve identical bottles used to be twelve tiles — a wall of the same
  * picture, and a grid whose length said how much you had brewed rather than
  * what you had. `sameGoods` is the sim's own test for whether two bottles are
  * interchangeable, so the grid groups by exactly what a shelf slot would merge.
@@ -561,9 +561,9 @@ function stackSortRow(): HTMLElement {
  *
  * A count at the head, a way to order it, and only a screenful drawn at a
  * time. The tiles were already tiles — what made this the slowest thing left
- * in the game was simply how many of them there are: a finished Codex is very
- * nearly two hundred kinds of potion, and two hundred tiles is sixteen hundred
- * elements for the browser to lay out on every single press.
+ * in the game was simply how many of them there are: 31 potions in every
+ * grade, vessel and seal is hundreds of kinds of bottle, and two hundred tiles
+ * is sixteen hundred elements for the browser to lay out on every single press.
  *
  * Paged, not truncated. Sorting decides what reaches the first page, so the
  * page you land on is the one worth looking at, and the rest is two presses

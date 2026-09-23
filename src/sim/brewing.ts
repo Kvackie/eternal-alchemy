@@ -27,7 +27,7 @@ import type { BrewOutcome, EssenceVector, PotencyTierId } from './types';
  * Purity from how far off the ratio a blend sits: 100 on it, 0 at the edge of
  * the recipe's cone.
  */
-export function purityAt(offIdealRad: number, toleranceDeg: number): number {
+function purityAt(offIdealRad: number, toleranceDeg: number): number {
   const edge = (toleranceDeg * Math.PI) / 180;
   return Math.max(0, Math.min(100, 100 * (1 - offIdealRad / edge)));
 }

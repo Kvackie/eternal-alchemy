@@ -8,11 +8,15 @@
 
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
+import { makeCaveTiles } from '@/sim/cave';
+import { makePlots } from '@/sim/garden';
+import { makeShelf } from '@/sim/market';
 import { createWorld } from '@/sim/state';
 import { config, getIngredient, getMerchant, ingredients, merchants, ranks } from '@/sim/config';
 import { isPresent, nextVisit, presentMerchants, tierOf, visitsOn } from '@/sim/merchants';
 import {
   canBuyEquipment,
+  grantEquipment,
   derivedStats,
   rankIdFor,
   rankIndexFor,
@@ -622,5 +626,26 @@ describe('merchants by trade', () => {
       expect(size, def.id).toBeGreaterThanOrEqual(8);
       expect(size, def.id).toBeLessThanOrEqual(10);
     }
+  });
+});
+
+const makePlot = (i: number) => makePlots(i + 1)[i]!;
+
+describe('buying ground', () => {
+  // A save can hold more plots than its equipment accounts for — the
+  // greenhouse's two beds outlived it — and a bed paid for must still appear.
+  it('adds the plot a purchase grants, even past what the equipment counts', () => {
+    const world = createWorld(1);
+    world.plots.push(makePlot(world.plots.length), makePlot(world.plots.length + 1));
+    const before = world.plots.length;
+
+    grantEquipment(
+      world,
+      'plotFive',
+      makePlot,
+      (i) => makeShelf(i + 1)[i]!,
+      (i) => makeCaveTiles(i + 1)[i]!,
+    );
+    expect(world.plots.length).toBe(before + 1);
   });
 });

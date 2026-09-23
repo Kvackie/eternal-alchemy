@@ -269,7 +269,11 @@ const MIGRATIONS: Record<number, Migration> = {
   5: (world) => {
     const seed = world.rngSeed ?? 1;
 
-    world.cave ??= { tiles: makeCaveTiles(caveConfig.startingTiles), lastTick: world.now ?? 0 };
+    world.cave ??= {
+      tiles: makeCaveTiles(caveConfig.startingTiles),
+      lastTick: world.now ?? 0,
+      seed: world.rngSeed ?? 1,
+    };
     world.spores ??= { dewcap: 2 };
 
     world.shaft ??= {
@@ -542,7 +546,9 @@ const MIGRATIONS: Record<number, Migration> = {
    *
    * The Lagged upgrade slowed the heat's drift and Deft Hands widened the band.
    * Neither has anything left to act on, so both are removed from what the
-   * shop owns.
+   * shop owns — and paid back, gold for the one and Mastery for the other, at
+   * what they cost. The prices are written here because the definitions they
+   * came from are gone.
    *
    * Every old recipe id — in the book, on bottles and shelves, in pots, on
    * contracts and in the Ledger — becomes the potion made of the same essences.
@@ -622,7 +628,15 @@ const MIGRATIONS: Record<number, Migration> = {
       if (typeof entry.params.recipe === 'string') entry.params.recipe = renamed(entry.params.recipe);
     }
 
-    if (world.equipment) delete world.equipment.lagged;
+    if (world.equipment?.lagged) {
+      world.gold = (world.gold ?? 0) + 180 * world.equipment.lagged;
+      delete world.equipment.lagged;
+    }
+    const deftHands = world.codex?.deftHands ?? 0;
+    if (deftHands > 0) {
+      // Tier n of a Codex node costs n times its per-tier price; Deft Hands' was 3.
+      world.mastery = (world.mastery ?? 0) + (3 * deftHands * (deftHands + 1)) / 2;
+    }
     if (world.codex) delete world.codex.deftHands;
     return world;
   },
@@ -633,7 +647,8 @@ const MIGRATIONS: Record<number, Migration> = {
    * the form's multiplier was part of it. Bred strains fold back into the crop
    * they came from: their seeds become that crop's seeds, and their harvests
    * and pot contents become the plain ingredient. The greenhouse leaves the
-   * shop, but the two beds it added stay, because plots are never taken away.
+   * shop, paid back at its price, and the two beds it added stay, because
+   * plots are never taken away.
    */
   15: (world) => {
     const loose = world as unknown as Record<string, unknown>;
@@ -669,8 +684,17 @@ const MIGRATIONS: Record<number, Migration> = {
     delete loose.strains;
     delete loose.nextStrainId;
     delete (world.statistics as unknown as Record<string, unknown>).strainsBred;
-    if (world.equipment) delete world.equipment.greenhouse;
+    if (world.equipment?.greenhouse) {
+      world.gold = (world.gold ?? 0) + 1400 * world.equipment.greenhouse;
+      delete world.equipment.greenhouse;
+    }
     world.log = (world.log ?? []).filter((entry) => (entry.kind as string) !== 'strainBred');
+    // Planting and seed lines named a strain by its id; they name the crop now.
+    const baseCrop = new Map(strains.map((strain) => [strain.id, strain.baseCropId]));
+    for (const entry of world.log) {
+      const crop = entry.params.crop;
+      if (typeof crop === 'string' && baseCrop.has(crop)) entry.params.crop = baseCrop.get(crop)!;
+    }
     return world;
   },
 
@@ -728,6 +752,29 @@ const MIGRATIONS: Record<number, Migration> = {
       if (typeof params.crop === 'string') params.crop = crop(params.crop);
       if (typeof params.item === 'string') params.item = crop(ingredient(params.item));
     }
+    return world;
+  },
+
+  /**
+   * v16 → v17: loose ends from the overhaul.
+   *
+   * The cave gets a seed of its own, so each world spreads its own way. A
+   * shaft dug before the strata came every five metres gets veins at every
+   * step it has passed, or the shallow minerals would never surface in it.
+   * And a merchant's packed stall is dropped, so it is dealt again from what
+   * they trade now rather than showing what no longer exists.
+   */
+  17: (world) => {
+    world.cave.seed ??= world.rngSeed ?? 1;
+
+    const step = shaftConfig.depthStep;
+    const dug = new Set((world.shaft?.veins ?? []).map((vein) => vein.depth));
+    for (let depth = 0; depth <= (world.shaft?.depth ?? 0); depth += step) {
+      if (dug.has(depth)) continue;
+      world.shaft.veins.push(...generateVeins(world.rngSeed, depth, new Rng((world.rngSeed ^ depth) >>> 0)));
+    }
+
+    for (const visit of Object.values(world.merchantVisits ?? {})) delete visit.picks;
     return world;
   },
 };

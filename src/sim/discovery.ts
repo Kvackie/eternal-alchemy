@@ -22,7 +22,7 @@ export function discoveredRecipes(world: World) {
   return recipes.filter((recipe) => isDiscovered(world, recipe.id));
 }
 
-export interface DiscoveryResult {
+interface DiscoveryResult {
   /** The recipe was met for the first time. */
   newlyDiscovered: boolean;
 }
@@ -40,8 +40,8 @@ export function learnFrom(world: World, recipeId: string): DiscoveryResult {
   return { newlyDiscovered: !before.discovered };
 }
 
-/** Teach a recipe outright — a merchant's scroll, or a Codex carry-over. */
-export function grantRecipe(world: World, recipeId: string): void {
+/** Teach a recipe outright, as a new shop is taught its first ones. */
+function grantRecipe(world: World, recipeId: string): void {
   world.recipes[recipeId] = { ...knowledgeFor(world, recipeId), discovered: true };
 }
 

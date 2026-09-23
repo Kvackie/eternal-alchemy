@@ -106,8 +106,8 @@ export function renderDebugPanel(deps: DebugDeps): HTMLElement {
      *
      * The existing grants are nudges — 500 gold, 50 renown — which suit testing
      * one transaction. This is for testing the *game*: past the top rank, so
-     * branching out is unlocked, and 600 Mastery, which is a few more than the
-     * whole Codex costs at six tiers apiece.
+     * branching out is unlocked, and 600 Mastery, which is more than the whole
+     * Codex costs at six tiers apiece (504).
      */
     button(
       t('debug.grant.riches'),

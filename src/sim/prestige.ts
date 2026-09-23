@@ -13,9 +13,11 @@
  * Prestige is always optional. The top rank with no reset is a complete game.
  */
 
-import { config, getCodexNode, prestigeConfig, ranks } from './config';
+import { config, getCodexNode, getRecipe, prestigeConfig, ranks, shaftConfig } from './config';
 import { makeCaveTiles } from './cave';
 import { derivedStats } from './progression';
+import { Rng } from './rng';
+import { openTo } from './shaft';
 import { createWorld } from './state';
 import { townById } from './town';
 import type { CodexEffect } from './config';
@@ -146,8 +148,13 @@ export function retire(world: World, townId: string, seed: number): RetirementRe
   next.gold = config.economy.startingGold + bonuses.startingGold;
   next.renown = bonuses.startingRenown;
   next.acknowledgedRank = 0;
-  next.shaft.depth += bonuses.startingDepthBonus + (town.effects.startingDepthBonus ?? 0);
-  next.shaft.supportedDepth = next.shaft.depth;
+  /*
+   * A deeper start is a shaft already dug that far, every seam on the way
+   * included, with the usual free metres of support still ahead of it.
+   */
+  const head = bonuses.startingDepthBonus + (town.effects.startingDepthBonus ?? 0);
+  openTo(next, head, new Rng(seed ^ 0xdee9));
+  next.shaft.supportedDepth = Math.max(next.shaft.supportedDepth, next.shaft.depth + shaftConfig.startingDepth);
 
   /*
    * A town that comes with extra cave beds has to come with the beds themselves.
@@ -161,11 +168,13 @@ export function retire(world: World, townId: string, seed: number): RetirementRe
     next.cave.tiles.push(...makeCaveTiles(1).map((tile) => ({ ...tile, index: next.cave.tiles.length })));
   }
 
-  // Remembered Recipes: carry the most-brewed lines forward, band and all. What
-  // you learned by hand is knowledge, and knowledge is the thing prestige keeps.
+  // Remembered Recipes: carry the most-brewed discoveries forward. What you
+  // learned by hand is knowledge, and knowledge is the thing prestige keeps.
+  // The recipes every shop starts knowing are not counted, or the slots would
+  // go on carrying over what the new shop already has.
   if (bonuses.keptRecipes > 0) {
     const carried = Object.entries(world.recipes)
-      .filter(([, knowledge]) => knowledge.discovered)
+      .filter(([id, knowledge]) => knowledge.discovered && !getRecipe(id).knownFromStart)
       .sort((a, b) => b[1].timesBrewed - a[1].timesBrewed)
       .slice(0, bonuses.keptRecipes);
     for (const [recipeId, knowledge] of carried) {

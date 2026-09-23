@@ -360,7 +360,7 @@ function weightedPick<T extends { weight: number }>(entries: T[], rng: Rng): T |
 export const HEALING_RECIPE = 'aquaTerra';
 
 /**
- * Heal an injured hero with a Restorative rather than leaving them to rest.
+ * Heal an injured hero with the healing potion rather than leaving them to rest.
  *
  * Worth the most favour of anything you can do, because it is the one that
  * costs you something you could have sold.

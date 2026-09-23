@@ -208,8 +208,6 @@ function apply(stats: DerivedStats, effect: EquipmentEffect, count: number): voi
 
 /**
  * Record ownership and grow anything that needs a real array behind it.
- *
- * Plots and shelves are objects, not numbers, so buying one has to create it.
  * Everything else is read through `derivedStats` and needs nothing here.
  */
 export function grantEquipment(
@@ -221,18 +219,24 @@ export function grantEquipment(
 ): void {
   // Throws on an unknown id rather than silently recording a purchase of nothing.
   getEquipment(equipmentId);
+  const before = derivedStats(world);
   world.equipment[equipmentId] = ownedCount(world, equipmentId) + 1;
-
-  // Plots, shelves and cave beds are objects, not numbers — buying one has to
-  // create it. Everything else is read through `derivedStats` and needs nothing.
   const stats = derivedStats(world);
-  while (world.plots.length < stats.plots) {
+
+  /*
+   * Plots, shelves and cave beds are objects, not numbers — buying one has to
+   * create it. By what the purchase adds, not up to a target count: a save can
+   * hold more than its equipment accounts for (the greenhouse's two beds
+   * outlived it), and filling to the count then made the next bed you paid for
+   * appear to be one you already had.
+   */
+  for (let i = before.plots; i < stats.plots; i += 1) {
     world.plots.push(makePlot(world.plots.length));
   }
-  while (world.shelf.length < stats.shelves) {
+  for (let i = before.shelves; i < stats.shelves; i += 1) {
     world.shelf.push(makeShelf(world.shelf.length));
   }
-  while (world.cave.tiles.length < stats.caveTiles) {
+  for (let i = before.caveTiles; i < stats.caveTiles; i += 1) {
     world.cave.tiles.push(makeCaveTile(world.cave.tiles.length));
   }
   world.shaft.supportedDepth = Math.max(world.shaft.supportedDepth, stats.supportedDepth);

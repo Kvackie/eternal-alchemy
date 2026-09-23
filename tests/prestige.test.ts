@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, prestigeConfig, ranks } from '@/sim/config';
+import { config, prestigeConfig, ranks, shaftConfig } from '@/sim/config';
 import { canRetire, codexBonuses, masteryFor } from '@/sim/prestige';
 import { availableVessels } from '@/sim/bottling';
 import { derivedStats } from '@/sim/progression';
@@ -109,7 +109,35 @@ describe('the Long Distillation', () => {
 
     // Cinderhold opens with a deeper shaft; Saltmarsh does not.
     expect(cinder.shaft.depth).toBeGreaterThan(salt.shaft.depth);
-    expect(cinder.shaft.supportedDepth).toBe(cinder.shaft.depth);
+  });
+
+  /*
+   * A head start, not a jump. Either way the new shop can still dig its free
+   * metres, and a deeper start has already met every seam on the way down.
+   */
+  it('opens the shaft ready to dig, in any town', () => {
+    for (const town of ['cinderhold', 'saltmarsh', 'mossvale']) {
+      const next = readyToRetire().retire(town, 7)!.world;
+      expect(next.shaft.supportedDepth - next.shaft.depth, town).toBe(shaftConfig.startingDepth);
+      for (let depth = 0; depth <= next.shaft.depth; depth += shaftConfig.depthStep) {
+        expect(next.shaft.veins.some((vein) => vein.depth === depth), `${town} at ${depth}m`).toBe(true);
+      }
+    }
+  });
+
+  it('remembers discoveries, not the recipes every shop starts with', () => {
+    const sim = readyToRetire();
+    sim.world.codex = { rememberedRecipes: 1 };
+    sim.world.recipes = {
+      ignis: { discovered: true, timesBrewed: 90 },
+      aqua: { discovered: true, timesBrewed: 80 },
+      terra: { discovered: true, timesBrewed: 70 },
+      aquaTerra: { discovered: true, timesBrewed: 5 },
+      ignisAer: { discovered: false, timesBrewed: 0 },
+    };
+    const next = sim.retire('saltmarsh', 7)!.world;
+    expect(next.recipes.aquaTerra?.discovered).toBe(true);
+    expect(next.recipes.ignisAer?.discovered ?? false).toBe(false);
   });
 
   it('carries a hero over with the regard they earned', () => {

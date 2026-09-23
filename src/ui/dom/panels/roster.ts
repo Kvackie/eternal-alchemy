@@ -270,17 +270,17 @@ function renderHeroes(sim: Simulation): HTMLElement {
     }
     const actions: HTMLElement[] = [];
     if (hurt) {
-      const tonic = sim.world.bottled.find((item) => item.recipeId === HEALING_RECIPE);
+      const remedy = sim.world.bottled.find((item) => item.recipeId === HEALING_RECIPE);
       actions.push(
         button(
           t('roster.heal'),
           () => {
-            if (tonic && sim.heal(hero.id, tonic.uid)) {
+            if (remedy && sim.heal(hero.id, remedy.uid)) {
               toast(t('roster.healed', { hero: t(`hero.${hero.id}`) }));
               changed();
             }
           },
-          { small: true, variant: 'ghost', disabled: !tonic },
+          { small: true, variant: 'ghost', disabled: !remedy },
         ),
       );
     } else {
@@ -459,7 +459,7 @@ function renderSupplies(sim: Simulation): HTMLElement {
    * Filtered where the list is built, not by hiding tiles afterwards.
    *
    * A shop late in a run holds a couple of hundred kinds of bottle, and the
-   * question this box answers — "have I got any Ember Draughts" — is about the
+   * question this box answers — "have I got any Umbra potions" — is about the
    * whole rack. The shell puts the caret back after the rebuild each keystroke
    * causes; see `captureFocus`.
    */

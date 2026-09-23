@@ -31,7 +31,7 @@ export function preloadArt(scene: Phaser.Scene): void {
   /*
    * Only what every scene needs, which is a couple of dozen files.
    *
-   * Queuing all of it — 300-odd ingredients and 260 potions — meant Phaser held
+   * Queuing all of it — hundreds of ingredients and potions — meant Phaser held
    * the scene back until the last one arrived, and the world sat empty for over
    * half a minute. The rest is fetched by `ensureTexture` when something is
    * actually about to be drawn, which for a garden of four plots is four files.

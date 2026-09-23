@@ -394,12 +394,6 @@ export interface World {
   merchantRelations: Record<string, number>;
 
   /**
-   * What has been bought from each merchant during their current visit.
-   *
-   * Stock itself isn't stored — it regenerates from a seed derived from
-   * (merchant, day) — so this only has to remember what's gone.
-   */
-  /**
    * What each merchant is carrying this visit, and what has been taken from it.
    *
    * `picks` is the pack, written when the trader arrives and read for as long
@@ -415,7 +409,11 @@ export interface World {
   /** The rank the player has already been told about, so a rank-up fires once. */
   acknowledgedRank: number;
 
-  cave: { tiles: CaveTile[]; lastTick: number };
+  /**
+   * `seed` is fixed when the shop opens, so each world's cave spreads its own
+   * way; the shared stream in `rngSeed` moves on every tick and cannot serve.
+   */
+  cave: { tiles: CaveTile[]; lastTick: number; seed: number };
   /** Spore clusters in stores, by species. */
   spores: Record<string, number>;
 
