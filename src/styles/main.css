@@ -2412,14 +2412,21 @@ input[type='range'] {
   border: 2px solid #5d5a68;
 }
 
+/*
+ * The contents spread across the whole bowl.
+ *
+ * They were held to a box in its middle, three quarters of its width, which
+ * left most of the bowl empty and pushed a big mix out of sight. They take
+ * everything below the rim now, clear of the curve at the bottom.
+ */
 .pot-contents {
+  position: absolute;
+  inset: 16% 5% 10%;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
   justify-content: center;
   gap: 0.25rem;
-  width: 76%;
-  margin-top: 8%;
 }
 
 .pot-unit {
@@ -2430,6 +2437,25 @@ input[type='range'] {
   line-height: 0;
   cursor: pointer;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+}
+
+/*
+ * Big enough to read in a big bowl.
+ *
+ * The icons were drawn at 32px whatever the bowl, so a laptop's pot showed a
+ * tight strip of them across its middle and a lot of empty iron. Where there is
+ * a mouse and room, they grow into the bowl and spread out.
+ */
+@media (pointer: fine) and (min-width: 900.02px) {
+  .pot-contents {
+    gap: 0.5rem 0.625rem;
+  }
+
+  .pot-unit .art-icon,
+  .pot-unit .essence-mark svg {
+    width: 3rem;
+    height: 3rem;
+  }
 }
 
 /* How many of this one are in, when it is more than one. */
@@ -2765,21 +2791,22 @@ input[type='range'] {
    * what to make" leaves only the thing you are not choosing.
    */
   .station[data-view='pot'] .pot-stage {
-    max-height: 34vh;
+    flex: none;
+    height: 40vh;
+    max-height: 40vh;
   }
 
   /*
-   * A phone's bowl is small and its contents are thumb-sized, so they take the
-   * bowl's whole width, and a mix of more different things than it can show
-   * scrolls inside it rather than disappearing under the rim.
+   * A deeper bowl, for thumb-sized contents.
+   *
+   * Nothing above the pot hands it a height on a phone, so it sat at its
+   * minimum and a full great pot of different ingredients had nowhere to go.
+   * Given its own height and a deeper bowl, sixteen of them spread out inside
+   * it at a size a thumb can hit.
    */
-  .pot-contents {
-    width: 92%;
-    gap: 0.125rem;
-    max-height: 78%;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+  .station[data-view='pot'] .pot-vessel {
+    width: 84%;
+    height: 72%;
   }
 }
 
