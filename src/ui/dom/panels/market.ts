@@ -23,7 +23,7 @@ import {
 } from '../components';
 import type { QuantityActionSpec } from '../components';
 import { countdown, formatDuration, has, t } from '@/i18n';
-import { getCrop, getDecor, getEquipment } from '@/sim/config';
+import { getBooster, getCrop, getDecor, getEquipment } from '@/sim/config';
 import { decorAvailability } from '@/sim/decor';
 import { artUrlIf } from '@/ui/art';
 import { showIngredientInfo } from '../ingredientInfo';
@@ -79,6 +79,7 @@ function entryIcon(entry: StockEntry): Node {
   if (entry.kind === 'equipment') {
     return el('span', { class: 'slot-glyph', text: '⚒' });
   }
+  if (entry.kind === 'booster') return el('span', { class: 'slot-glyph', text: '✦' });
   if (entry.kind === 'decor') {
     const url = artUrlIf('decor', entry.id);
     return url
@@ -129,6 +130,8 @@ function entryLabel(entry: StockEntry): string {
       return t(`decor.${entry.id}`);
     case 'board':
       return t(`board.${entry.id}`);
+    case 'booster':
+      return t(`booster.${entry.id}`);
   }
 }
 
@@ -188,6 +191,7 @@ const KIND_ORDER: Array<StockEntry['kind']> = [
   'board',
   'decor',
   'equipment',
+  'booster',
 ];
 
 function renderStock(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
@@ -287,6 +291,9 @@ function blockedReason(sim: Simulation, entry: StockEntry): string | undefined {
   }
   if (entry.kind === 'decor') {
     return decorAvailability(sim.world, getDecor(entry.id)).reasonKey;
+  }
+  if (entry.kind === 'booster' && sim.rankIndex < getBooster(entry.id).requiresRank) {
+    return 'market.reason.rank';
   }
   return undefined;
 }

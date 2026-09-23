@@ -14,6 +14,7 @@ import {
   getCaveSpecies,
   getCrop,
   getDecor,
+  getBooster,
   getEquipment,
   ranks,
   recipes,
@@ -116,6 +117,7 @@ import { Rng } from './rng';
 import { createWorld } from './state';
 import { assessOutcome, brewDurationFor } from './brewing';
 import { bottle, nextUid } from './bottling';
+import { useBooster } from './boosters';
 import type {
   BottledItem,
   BrewOutcome,
@@ -622,6 +624,13 @@ export class Simulation {
     stopWorking(this.world, veinId);
   }
 
+  /** Use a held yield booster on its site. Refused while one is still running there. */
+  useBooster(boosterId: string): boolean {
+    const used = useBooster(this.world, boosterId);
+    if (used) record(this.world, 'boosterUsed', { item: boosterId });
+    return used;
+  }
+
   canDeepenShaft(): boolean {
     return canDeepen(this.world);
   }
@@ -895,6 +904,9 @@ export class Simulation {
       return equipmentAvailability(this.world, getEquipment(entry.id)).reasonKey;
     }
     if (entry.kind === 'decor') return decorAvailability(this.world, getDecor(entry.id)).reasonKey;
+    if (entry.kind === 'booster' && this.rankIndex < getBooster(entry.id).requiresRank) {
+      return 'market.reason.rank';
+    }
     return undefined;
   }
 
@@ -980,6 +992,9 @@ export class Simulation {
         break;
       case 'board':
         this.world.boards[entry.id] = (this.world.boards[entry.id] ?? 0) + 1;
+        break;
+      case 'booster':
+        this.world.boosters[entry.id] = (this.world.boosters[entry.id] ?? 0) + 1;
         break;
     }
   }

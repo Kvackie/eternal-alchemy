@@ -127,6 +127,14 @@
         "tier": 0
       },
       {
+        "kind": "booster",
+        "id": "gardenTonic",
+        "stock": 3,
+        "weight": 0,
+        "tier": 0,
+        "always": true
+      },
+      {
         "kind": "seed",
         "id": "bluepetal",
         "price": 12,
@@ -668,6 +676,14 @@
         "tier": 1
       },
       {
+        "kind": "booster",
+        "id": "caveTonic",
+        "stock": 3,
+        "weight": 0,
+        "tier": 0,
+        "always": true
+      },
+      {
         "kind": "spore",
         "id": "azurecap",
         "price": 32,
@@ -1205,6 +1221,14 @@
         "id": "shelfBoard",
         "weight": 4,
         "tier": 1
+      },
+      {
+        "kind": "booster",
+        "id": "mineTonic",
+        "stock": 3,
+        "weight": 0,
+        "tier": 0,
+        "always": true
       },
       {
         "kind": "ingredient",

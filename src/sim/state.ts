@@ -25,6 +25,7 @@ export function createWorld(seed = freshSeed()): World {
     plots: makePlots(config.garden.startingPlots),
     inventory: [],
     seeds: {},
+    boosters: {},
 
     // One pot to start. More are bought, not upgraded into.
     cauldrons: [makeCauldron('cauldron-1', baseCauldronTier.id)],

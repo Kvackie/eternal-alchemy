@@ -14,6 +14,7 @@ import { codexBonuses } from './prestige';
 import { cropGrowthMultiplier } from './town';
 import type { Rng } from './rng';
 import type { Plot, SoilId, World } from './types';
+import { boostedYield } from './boosters';
 
 export interface HarvestResult {
   plotId: string;
@@ -131,12 +132,15 @@ export function harvest(world: World, plotId: string, rng: Rng): HarvestResult |
   if (!plot?.crop || !isReady(plot, world.now)) return null;
 
   const crop = getCrop(plot.crop.cropId);
-  const count = harvestSize(plot);
+  const base = harvestSize(plot);
+  // A garden booster doubles what is picked; the seeds it gives back are
+  // rolled on the ordinary harvest, so it is not a seed press as well.
+  const count = boostedYield(plot, 'garden', base);
 
   const seedId = crop.id;
   const dropChance = derivedStats(world).seedDropChance;
   let seeds = 0;
-  for (let i = 0; i < count; i += 1) {
+  for (let i = 0; i < base; i += 1) {
     if (rng.chance(dropChance)) seeds += 1;
   }
   if (seeds > 0) world.seeds[seedId] = (world.seeds[seedId] ?? 0) + seeds;

@@ -83,6 +83,11 @@ export function buildWorld(clock: Clock = 'night'): World {
     pot.brewing = null;
   }
 
+  // Boosters held on every site, and one already running in the cave, so the
+  // Grounds shows the bar in both of its states.
+  world.boosters = { gardenTonic: 2, caveTonic: 2, mineTonic: 1 };
+  sim.useBooster('caveTonic');
+
   // A party home and waiting to be greeted, with every kind of find.
   world.pendingClaims.push({
     missionId: 'mission-fixture',

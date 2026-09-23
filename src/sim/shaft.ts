@@ -19,6 +19,7 @@ import { codexBonuses } from './prestige';
 import { oreBatchMultiplier } from './town';
 import type { Rng } from './rng';
 import type { ShaftVein, World } from './types';
+import { boostedYield } from './boosters';
 
 /**
  * Generate the veins present at a depth.
@@ -156,8 +157,11 @@ export function runShaft(world: World, now: number): ShaftBatch[] {
       budget -= 1;
       // At least one, so a poor town slows the shaft rather than stopping it.
       const perBatch = Math.max(1, Math.round((vein.batch + batchBonus) * richness));
-      const count = Math.min(perBatch, vein.remaining);
-      vein.remaining -= count;
+      const taken = Math.min(perBatch, vein.remaining);
+      vein.remaining -= taken;
+      // A mine booster doubles what the batch brings up, not what it takes out
+      // of the vein.
+      const count = boostedYield(vein, 'mine', taken);
 
       // Minerals pass a null harvest stamp; stone does not age.
       addIngredient(world, vein.ingredientId, count, null);

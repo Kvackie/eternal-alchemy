@@ -33,6 +33,8 @@ import { caveConfig, crops, getCrop, getIngredient, shaftConfig } from '@/sim/co
 import { isReady } from '@/sim/garden';
 import { isMature, maturityOf } from '@/sim/cave';
 import { isWorkable, veinsByDepth } from '@/sim/shaft';
+import { boostedCount, boosterFor } from '@/sim/boosters';
+import type { BoostSite } from '@/sim/config';
 import { dominantEssence } from '@/ui/art';
 import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
@@ -136,7 +138,47 @@ function iconFor(ingredientId: string): Node {
 // Garden — you plant
 // ---------------------------------------------------------------------------
 
+/**
+ * A site's booster: how many are held and a way to use one, or how much of the
+ * site a running one still has to double.
+ *
+ * Nothing at all until the shop has bought one, so the first screens of a new
+ * game do not carry a line about a thing it cannot have yet.
+ */
+function boosterBar(sim: Simulation, site: BoostSite): HTMLElement | null {
+  const def = boosterFor(site);
+  const held = sim.world.boosters[def.id] ?? 0;
+  const running = boostedCount(sim.world, site);
+  if (held <= 0 && running <= 0) return null;
+
+  const name = t(`booster.${def.id}`);
+  return el('section', { class: 'booster-bar' }, [
+    el('span', { class: 'booster-glyph', text: '✦' }),
+    el('div', { class: 'booster-text' }, [
+      el('strong', { text: name }),
+      el('span', {
+        text:
+          running > 0
+            ? t(`booster.running.${site}`, { count: running })
+            : t('booster.held', { count: held }),
+      }),
+    ]),
+    button(
+      t('booster.use'),
+      () => {
+        if (!sim.useBooster(def.id)) return;
+        toast(t('booster.used', { item: name }));
+        changed();
+      },
+      { variant: 'gold', small: true, disabled: held <= 0 || running > 0 },
+    ),
+  ]);
+}
+
 function renderGarden(sim: Simulation, body: HTMLElement): void {
+  const boost = boosterBar(sim, 'garden');
+  if (boost) body.append(boost);
+
   const held = crops
     .map((crop) => ({ id: crop.id, count: sim.world.seeds[crop.id] ?? 0, crop }))
     .filter((entry) => entry.count > 0);
@@ -450,6 +492,9 @@ function caveLabel(base: string, tile: CaveTile): string {
 }
 
 function renderCave(sim: Simulation, body: HTMLElement): void {
+  const boost = boosterBar(sim, 'cave');
+  if (boost) body.append(boost);
+
   const clusters = caveConfig.species
     .map((species) => ({ species, count: sim.world.spores[species.id] ?? 0 }))
     .filter((entry) => entry.count > 0)
@@ -648,6 +693,8 @@ export function veinTitle(
 
 function renderShaft(sim: Simulation, body: HTMLElement): void {
   const shaft = sim.shaft;
+  const boost = boosterBar(sim, 'mine');
+  if (boost) body.append(boost);
 
   body.append(
     el('section', { class: 'shaft-head' }, [

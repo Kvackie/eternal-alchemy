@@ -942,6 +942,8 @@ function migrate(world: World, fromVersion: number): World | null {
   current.decorOwned ??= {};
   current.decor ??= emptySpots();
   current.boards ??= {};
+  // Boosters arrived without a version bump: a save from before holds none.
+  current.boosters ??= {};
   // A save from before parties waited to be greeted simply has none waiting.
   current.pendingClaims ??= [];
   // Every pot in a save from before storage existed was, by definition, out.

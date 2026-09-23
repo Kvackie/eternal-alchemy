@@ -18,6 +18,7 @@ import { derivedStats } from './progression';
 import { caveSpreadMultiplier } from './town';
 import { Rng } from './rng';
 import type { CaveTile, World } from './types';
+import { boostedYield } from './boosters';
 
 export function makeCaveTiles(count: number): CaveTile[] {
   return Array.from({ length: count }, (_, index) => ({
@@ -122,7 +123,7 @@ export function harvestTile(world: World, index: number): CaveHarvest | null {
   if (!tile?.speciesId || !isMature(tile, world.now)) return null;
 
   const speciesId = tile.speciesId;
-  const count = caveConfig.yieldPerTile;
+  const count = boostedYield(tile, 'cave', caveConfig.yieldPerTile);
   addIngredient(world, speciesId, count, world.now);
 
   // A tray keeps its species; an untrayed tile clears and is open to spread.

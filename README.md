@@ -125,6 +125,12 @@ of visits. The order of that round comes from the world's seed, so every shop's 
 goods in their own order. The staples beside them — boards, furnishings, equipment — are drawn by the
 day alone, the same in every world.
 
+From Distiller, each trade carries a **yield booster** on every visit — Bramm a Garden tonic (1,200g),
+Vessa a Cave tonic (1,500g), Hesk a Seam charge (1,800g). Used from its Grounds tab, it doubles the
+next harvest of every plot, the next picking of every cave bed, or the next batch from every vein
+(without draining the vein faster). A site takes one at a time. Trade goods come at twice their
+listed count, and half again for every standing tier with the merchant.
+
 Bramm, Vessa and Hesk keep daylight hours. **The Ashwalker trades only at night, and takes no gold** — his
 prices are potions of a minimum grade, and he spends your cheapest qualifying bottles first. The
 rarest exotics wait on a long acquaintance with him, so an expedition stays the cheaper way to them.

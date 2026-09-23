@@ -13,7 +13,7 @@
  */
 
 import { dayStateAt } from './clock';
-import { config, findDecor, findEquipment, getMerchant, merchants } from './config';
+import { config, findBooster, findDecor, findEquipment, getMerchant, merchants } from './config';
 import type { MerchantDef, MerchantStockDef } from './config';
 import { Rng } from './rng';
 import { rankIndexFor } from './progression';
@@ -218,7 +218,7 @@ function drawPicks(
   const rank = rankIndexFor(world.renown);
 
   const pool = def.pool.filter((item) => {
-    if (TRADE_KINDS.has(item.kind)) return false;
+    if (TRADE_KINDS.has(item.kind) || item.always) return false;
     if (item.tier > tier) return false;
     if (item.kind !== 'equipment' && item.kind !== 'decor') return true;
 
@@ -275,7 +275,17 @@ function drawPicks(
     [kinds[i], kinds[j]] = [kinds[j]!, kinds[i]!];
   }
 
-  const chosen: MerchantStockDef[] = [...rotationPicks(world, def, dayNumber, tier)];
+  /*
+   * What is always on the stall: the site boosters, from a rank before they
+   * can be bought, so a shop sees what it is working towards.
+   */
+  const always = def.pool.filter((item) => {
+    if (!item.always || item.tier > tier) return false;
+    const booster = item.kind === 'booster' ? findBooster(item.id) : undefined;
+    return !booster || rank >= booster.requiresRank - 1;
+  });
+
+  const chosen: MerchantStockDef[] = [...rotationPicks(world, def, dayNumber, tier), ...always];
   const picks = chosen.length + Math.min(def.picks, pool.length);
 
   while (chosen.length < picks) {
@@ -347,7 +357,9 @@ function priceEntries(
         ? findEquipment(item.id)?.cost
         : item.kind === 'decor'
           ? findDecor(item.id)?.cost
-          : undefined;
+          : item.kind === 'booster'
+            ? findBooster(item.id)?.cost
+            : undefined;
     // A barter entry has no gold price at all, whatever its catalogue says.
     const base = item.barter ? undefined : (catalogue ?? item.price);
     const afterDiscount = catalogue === undefined ? (base ?? 0) * (1 - discount) : catalogue;

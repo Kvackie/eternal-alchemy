@@ -13,6 +13,7 @@ import rawRecipes from '@/data/recipes.json';
 import rawRanks from '@/data/ranks.json';
 import rawEquipment from '@/data/equipment.json';
 import rawDecor from '@/data/decor.json';
+import rawBoosters from '@/data/boosters.json';
 import rawShelves from '@/data/shelves.json';
 import rawMerchants from '@/data/merchants.json';
 import rawCave from '@/data/cave.json';
@@ -129,6 +130,18 @@ export interface DecorEffect {
   haggleCeilingBonus?: number;
 }
 
+/** Where a booster works: every plot, every cave bed, or every vein. */
+export type BoostSite = 'garden' | 'cave' | 'mine';
+
+/** A consumable that multiplies the next harvest across a whole site. */
+export interface BoosterDef {
+  id: string;
+  site: BoostSite;
+  cost: number;
+  requiresRank: number;
+  yieldMultiplier: number;
+}
+
 export interface DecorDef {
   id: string;
   /** Which of the shop's spots this occupies. One piece per spot. */
@@ -161,7 +174,7 @@ export interface ShelfTierDef {
 }
 
 export interface MerchantStockDef {
-  kind: 'seed' | 'spore' | 'ingredient' | 'equipment' | 'decor' | 'board';
+  kind: 'seed' | 'spore' | 'ingredient' | 'equipment' | 'decor' | 'board' | 'booster';
   id: string;
   /** Gold price. Absent on a barter merchant. */
   price?: number;
@@ -171,6 +184,11 @@ export interface MerchantStockDef {
   tier: number;
   /** Price in bottled potions, for merchants who take no gold. */
   barter?: { potions: number; minGrade: Grade };
+  /**
+   * On every visit rather than drawn: a booster a shop has saved up for should
+   * not depend on the stall's luck.
+   */
+  always?: boolean;
 }
 
 export interface MerchantDef {
@@ -523,6 +541,7 @@ export const ranks = rawRanks as unknown as RankDef[];
 export const equipment = rawEquipment as unknown as EquipmentDef[];
 export const decorConfig = rawDecor as unknown as DecorConfig;
 export const decorPieces = decorConfig.pieces;
+export const boosters = rawBoosters as unknown as BoosterDef[];
 export const shelfTiers = (rawShelves as unknown as { tiers: ShelfTierDef[] }).tiers;
 
 /** The board every shop starts on — the first tier, and the only free one. */
@@ -548,6 +567,7 @@ const cropIndex = index(crops);
 const recipeIndex = index(recipes);
 const equipmentIndex = index(equipment);
 const decorIndex = index(decorPieces);
+const boosterIndex = index(boosters);
 const shelfTierIndex = index(shelfTiers);
 const merchantIndex = index(merchants);
 
@@ -572,6 +592,8 @@ export const getMerchant = (id: string): MerchantDef => require_(merchantIndex, 
 /** Soft lookups, for places where a missing id is a legitimate answer. */
 export const findEquipment = (id: string): EquipmentDef | undefined => equipmentIndex.get(id);
 export const findDecor = (id: string): DecorDef | undefined => decorIndex.get(id);
+export const findBooster = (id: string): BoosterDef | undefined => boosterIndex.get(id);
+export const getBooster = (id: string): BoosterDef => require_(boosterIndex, id, 'booster');
 
 /** Every piece that could go in one spot, cheapest first. */
 export const decorForSpot = (spot: string): DecorDef[] =>

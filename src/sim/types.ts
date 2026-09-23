@@ -36,6 +36,8 @@ export interface Plot {
     plantedAt: number;
     readyAt: number;
   } | null;
+  /** A garden booster is waiting on this plot's next harvest. */
+  boosted?: boolean;
 }
 
 /** The cauldron's contents before distillation. */
@@ -155,6 +157,7 @@ export type LogKind =
   | 'bought'
   | 'bartered'
   | 'installed'
+  | 'boosterUsed'
   | 'furnished'
   | 'cauldronBought'
   | 'rankUp'
@@ -194,6 +197,8 @@ export interface CaveTile {
   lit: boolean;
   /** A substrate tray pins the species so spreading neighbours cannot take it. */
   locked: boolean;
+  /** A cave booster is waiting on this bed's next picking. */
+  boosted?: boolean;
 }
 
 export interface ShaftVein {
@@ -207,6 +212,8 @@ export interface ShaftVein {
   refillsAt: number | null;
   /** When the next batch lands. Null unless this vein is being worked. */
   nextBatchAt: number | null;
+  /** A mine booster is waiting on this vein's next batch. */
+  boosted?: boolean;
 }
 
 export interface Hero {
@@ -334,6 +341,8 @@ export interface World {
   plots: Plot[];
   inventory: IngredientStack[];
   seeds: Record<string, number>;
+  /** Yield boosters held, by booster id. */
+  boosters: Record<string, number>;
 
   /**
    * Every pot the shop owns, each brewing on its own.

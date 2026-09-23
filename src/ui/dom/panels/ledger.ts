@@ -41,7 +41,15 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'haggleLost',
   ],
   craft: ['brewStarted', 'brewReady', 'brewRejected', 'bottled'],
-  garden: ['planted', 'cropDestroyed', 'harvested', 'seedFound', 'caveHarvest', 'oreFound'],
+  garden: [
+    'planted',
+    'cropDestroyed',
+    'harvested',
+    'seedFound',
+    'caveHarvest',
+    'oreFound',
+    'boosterUsed',
+  ],
   expedition: [
     'missionSent',
     'missionReturned',
@@ -195,7 +203,7 @@ function renderEntry(entry: LogEntry): HTMLElement {
   // A bought item could be any kind, so try each namespace and fall back to the id.
   if (typeof params.item === 'string') {
     const id = params.item;
-    for (const namespace of ['equipment', 'decor', 'ingredient', 'crop']) {
+    for (const namespace of ['equipment', 'decor', 'booster', 'ingredient', 'crop']) {
       const key = `${namespace}.${id}`;
       if (has(key)) {
         params.item = t(key);

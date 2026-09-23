@@ -37,6 +37,7 @@ import {
   caveConfig,
   customersConfig,
   shelfTiers,
+  boosters,
 } from '@/sim/config';
 import { angleBetween } from '@/sim/essences';
 import type { EssenceVector } from '@/sim/types';
@@ -214,6 +215,7 @@ describe('the data that only documents itself still has to be true', () => {
       seed: new Set(crops.map((x) => x.id)),
       spore: new Set(caveConfig.species.map((x) => x.id)),
       ingredient: new Set(ingredients.map((x) => x.id)),
+      booster: new Set(boosters.map((x) => x.id)),
     };
     const missing: string[] = [];
     for (const merchant of merchants) {

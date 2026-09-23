@@ -1,0 +1,24 @@
+[
+  {
+    "$comment": "Consumables that double one harvest across a whole site: every plot's next crop, every cave bed's next picking, every vein's next batch. Dear on purpose — they are where a rich late shop puts its gold to get more out of the ground it already has.",
+    "id": "gardenTonic",
+    "site": "garden",
+    "cost": 1200,
+    "requiresRank": 3,
+    "yieldMultiplier": 2
+  },
+  {
+    "id": "caveTonic",
+    "site": "cave",
+    "cost": 1500,
+    "requiresRank": 3,
+    "yieldMultiplier": 2
+  },
+  {
+    "id": "mineTonic",
+    "site": "mine",
+    "cost": 1800,
+    "requiresRank": 3,
+    "yieldMultiplier": 2
+  }
+]
