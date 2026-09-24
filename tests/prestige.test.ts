@@ -10,6 +10,7 @@ import { canRetire, codexBonuses, masteryFor } from '@/sim/prestige';
 import { derivedStats } from '@/sim/progression';
 import { spreadChanceFor } from '@/sim/cave';
 import { footfallAt } from '@/sim/market';
+import { bottle } from './helpers';
 
 describe('mastery', () => {
   it('scales with lifetime renown, so retiring later is worth more', () => {
@@ -267,16 +268,7 @@ describe('the town you retire to changes the run', () => {
           postedAt: 0,
         },
       ];
-      sim.world.bottled.push({
-        uid: 'a',
-        recipeId: 'aquaTerra',
-        grade: 'B',
-        purity: 80,
-        potencyTier: 'common',
-        totalEssence: 57,
-        fairValue: 60,
-        bottledAt: 0,
-      });
+      sim.world.bottled.push(bottle({ uid: 'a', fairValue: 60 }));
       return sim.deliverContract('c1')!.gold;
     };
     expect(payoutIn('highmarch')).toBeGreaterThan(payoutIn('saltmarsh'));

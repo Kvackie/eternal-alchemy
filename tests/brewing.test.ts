@@ -10,6 +10,7 @@ import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { countOf } from '@/sim/inventory';
 import type { EssenceVector } from '@/sim/types';
+import { HOUR } from './helpers';
 
 /** Sits exactly on the Aqua–Terra ratio. */
 const aquaTerra: EssenceVector = { ignis: 0, aqua: 27, terra: 27, aer: 0, umbra: 0 };
@@ -145,7 +146,7 @@ describe('accepting and rejecting', () => {
     const sim = loadedPot();
     sim.acceptBrew();
 
-    sim.markSeen(Date.now() - 6 * 3_600_000);
+    sim.markSeen(Date.now() - 6 * HOUR);
     const summary = sim.resume();
 
     expect(summary.brewReady).toBe(true);

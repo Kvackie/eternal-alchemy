@@ -23,8 +23,8 @@ import { makeShelf } from '@/sim/market';
 import { totalEssence } from '@/sim/essences';
 import { addIngredient } from '@/sim/inventory';
 import type { Essence, Grade, World } from '@/sim/types';
+import { HOUR, bottle } from './helpers';
 
-const HOUR = 3_600_000;
 const PLOTS = 25;
 const SHELVES = 50;
 const POTIONS = 100;
@@ -203,16 +203,13 @@ describe('a shop at scale', () => {
     const sim = bigShop();
     plantEverything(sim);
     for (const slot of sim.world.shelf) {
-      slot.item = {
+      slot.item = bottle({
         uid: `stock-${slot.id}`,
-        recipeId: 'aquaTerra',
-        grade: 'B' as Grade,
         purity: 0.9,
-        potencyTier: 'common',
         totalEssence: 6,
         fairValue: 40,
         bottledAt: sim.now,
-      };
+      });
       slot.quantity = 1;
     }
 

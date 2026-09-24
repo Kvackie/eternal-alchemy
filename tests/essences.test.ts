@@ -12,8 +12,7 @@ import {
 import { assessOutcome } from '@/sim/brewing';
 import { config, getIngredient, getRecipe, recipes } from '@/sim/config';
 import type { CauldronContents, EssenceVector } from '@/sim/types';
-
-const HOUR = 3_600_000;
+import { HOUR } from './helpers';
 
 function contents(...ids: string[]): CauldronContents {
   return { units: ids.map((ingredientId) => ({ ingredientId, harvestedAt: 0 })) };

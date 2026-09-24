@@ -8,26 +8,14 @@ import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config } from '@/sim/config';
-import type { BottledItem, World } from '@/sim/types';
-
-const MINUTE = 60_000;
-const HOUR = 3_600_000;
+import type { World } from '@/sim/types';
+import { HOUR, MINUTE, bottle } from './helpers';
 
 function stockedWorld(seed = 12345): World {
   const world = createWorld(seed);
   world.gold = 0;
-  const item: BottledItem = {
-    uid: 'test-item',
-    recipeId: 'aquaTerra',
-    grade: 'B',
-    purity: 80,
-    potencyTier: 'common',
-    totalEssence: 57,
-    fairValue: 30,
-    bottledAt: 0,
-  };
   const slot = world.shelf[0];
-  if (slot) slot.item = item;
+  if (slot) slot.item = bottle({ uid: 'test-item', fairValue: 30 });
   return world;
 }
 

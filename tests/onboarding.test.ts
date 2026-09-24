@@ -13,8 +13,7 @@ import { describe, expect, it } from 'vitest';
 import { has } from '@/i18n';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-
-const HOUR = 3_600_000;
+import { HOUR } from './helpers';
 
 function ticked(sim: Simulation): string[] {
   return sim.onboarding.steps.filter((step) => step.done).map((step) => step.id);

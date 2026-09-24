@@ -8,8 +8,7 @@ import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config, getCrop } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
-
-const HOUR = 3_600_000;
+import { HOUR } from './helpers';
 
 /** Accept whatever is in the pot and let it finish. */
 function brew(sim: Simulation): void {

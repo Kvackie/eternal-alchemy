@@ -9,8 +9,7 @@ import { recipes } from '@/sim/config';
 import { isDiscovered, knowledgeFor } from '@/sim/discovery';
 import { onboardingSteps, onboardingComplete } from '@/sim/onboarding';
 import { SaveManager, memoryAdapter } from '@/platform/save';
-
-const HOUR = 3_600_000;
+import { HOUR } from './helpers';
 
 /** Load the pot with something that makes the Aqua–Terra potion. */
 function aquaTerraPot(seed = 5): Simulation {

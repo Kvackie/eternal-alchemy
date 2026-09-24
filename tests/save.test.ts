@@ -3,8 +3,7 @@ import { SaveManager, memoryAdapter } from '@/platform/save';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { config } from '@/sim/config';
-
-const HOUR = 3_600_000;
+import { HOUR } from './helpers';
 
 describe('saving', () => {
   it('round-trips a world through storage', () => {

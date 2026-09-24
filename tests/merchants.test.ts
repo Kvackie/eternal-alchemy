@@ -24,9 +24,8 @@ import {
   renownToNextRank,
 } from '@/sim/progression';
 import { getEquipment } from '@/sim/config';
-import type { BottledItem, Grade } from '@/sim/types';
+import { DAY, HOUR, bottle } from './helpers';
 
-const DAY = config.clock.dayLengthMs;
 const BRAMM = getMerchant('bramm');
 const VESSA = getMerchant('vessa');
 const ASHWALKER = getMerchant('ashwalker');
@@ -267,19 +266,6 @@ describe('buying', () => {
 });
 
 describe('bartering with the Ashwalker', () => {
-  function bottle(uid: string, grade: Grade, value: number): BottledItem {
-    return {
-      uid,
-      recipeId: 'aquaTerra',
-      grade,
-      purity: 80,
-      potencyTier: 'common',
-      totalEssence: 57,
-      fairValue: value,
-      bottledAt: 0,
-    };
-  }
-
   function atAshwalker(): Simulation {
     const sim = new Simulation(createWorld(9));
     sim.advanceTo(midnight(3));
@@ -308,7 +294,8 @@ describe('bartering with the Ashwalker', () => {
     const barter = visit.entries[index]!.barter!;
 
     // Fill the shelf with junk one grade below what he will take.
-    for (let i = 0; i < 10; i += 1) sim.world.bottled.push(bottle(`bad-${i}`, 'F', 5));
+    for (let i = 0; i < 10; i += 1)
+      sim.world.bottled.push(bottle({ uid: `bad-${i}`, grade: 'F', fairValue: 5 }));
     expect(sim.buy('ashwalker', index).ok).toBe(false);
     void barter;
   });
@@ -318,10 +305,10 @@ describe('bartering with the Ashwalker', () => {
     const visit = sim.merchants().find((v) => v.merchantId === 'ashwalker')!;
     const index = visit.entries.findIndex((e) => e.barter !== null);
 
-    sim.world.bottled.push(bottle('prize', 'S', 900));
-    sim.world.bottled.push(bottle('cheap-a', 'B', 10));
-    sim.world.bottled.push(bottle('cheap-b', 'B', 12));
-    sim.world.bottled.push(bottle('cheap-c', 'B', 14));
+    sim.world.bottled.push(bottle({ uid: 'prize', grade: 'S', fairValue: 900 }));
+    sim.world.bottled.push(bottle({ uid: 'cheap-a', grade: 'B', fairValue: 10 }));
+    sim.world.bottled.push(bottle({ uid: 'cheap-b', grade: 'B', fairValue: 12 }));
+    sim.world.bottled.push(bottle({ uid: 'cheap-c', grade: 'B', fairValue: 14 }));
 
     expect(sim.buy('ashwalker', index).ok).toBe(true);
 
@@ -742,7 +729,7 @@ describe('what a trader brings, world by world', () => {
     const seen = new Set<string>();
     for (let visit = 0; visit < passes; visit += 1) {
       const day = def.offsetDays + visit * def.cycleDays;
-      while (sim.world.now < midday(day)) sim.advanceBy(3_600_000);
+      while (sim.world.now < midday(day)) sim.advanceBy(HOUR);
       const stall = sim.merchants().find((entry) => entry.merchantId === 'bramm');
       for (const entry of stall?.entries ?? []) seen.add(entry.id);
     }

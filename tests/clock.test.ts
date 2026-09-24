@@ -7,8 +7,7 @@ import {
   phaseProgress,
 } from '@/sim/clock';
 import { config } from '@/sim/config';
-
-const DAY = config.clock.dayLengthMs;
+import { DAY } from './helpers';
 
 describe('the day cycle', () => {
   it('starts at dawn on day zero', () => {

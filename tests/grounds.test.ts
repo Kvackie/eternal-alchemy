@@ -19,8 +19,7 @@ import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { addIngredient, countOf } from '@/sim/inventory';
 import { veinTitle } from '@/ui/dom/panels/grounds';
 import type { ShaftVein } from '@/sim/types';
-
-const HOUR = 3_600_000;
+import { HOUR, MINUTE } from './helpers';
 
 describe('the cave', () => {
   function seeded(): Simulation {
@@ -209,7 +208,7 @@ describe('the shaft', () => {
 
   it('starts the refill when the vein ran dry, however long the catch-up', () => {
     const live = working();
-    for (let i = 0; i < 48 * 60; i += 1) live.advanceBy(60_000);
+    for (let i = 0; i < 48 * 60; i += 1) live.advanceBy(MINUTE);
     const away = working();
     away.advanceBy(48 * HOUR, false);
 
@@ -221,7 +220,7 @@ describe('the shaft', () => {
   it('regrows an exhausted vein rather than leaving dead content', () => {
     const sim = working();
     const vein = sim.shaft.veins[0]!;
-    while (vein.remaining > 0) sim.advanceBy(60_000);
+    while (vein.remaining > 0) sim.advanceBy(MINUTE);
     expect(isWorkable(vein, sim.now)).toBe(false);
 
     sim.advanceBy(shaftConfig.veinRefillMs);

@@ -38,23 +38,8 @@ import { derivedStats, equipmentAvailability, rankIndexFor } from '@/sim/progres
 import { codexBonuses } from '@/sim/prestige';
 import { tierOf } from '@/sim/merchants';
 import { scheduledWalkIns } from '@/sim/haggle';
-import type { BottledItem, Contract, EssenceVector, Grade } from '@/sim/types';
-
-const HOUR = 3_600_000;
-const DAY = config.clock.dayLengthMs;
-
-function bottle(uid: string, grade: Grade, value = 60): BottledItem {
-  return {
-    uid,
-    recipeId: 'aquaTerra',
-    grade,
-    purity: 80,
-    potencyTier: 'common',
-    totalEssence: 57,
-    fairValue: value,
-    bottledAt: 0,
-  };
-}
+import type { Contract, EssenceVector } from '@/sim/types';
+import { DAY, HOUR, MINUTE, bottle } from './helpers';
 
 describe('the garden sustains itself', () => {
   it('returns roughly one seed per planting over a long run', () => {
@@ -186,7 +171,7 @@ describe('the selling channels stay in their lanes', () => {
     for (let hour = 0; hour < hours; hour += 1) {
       for (const slot of sim.world.shelf) {
         if (!slot.item) {
-          slot.item = bottle(`b-${restocked}`, 'B');
+          slot.item = bottle({ uid: `b-${restocked}`, fairValue: 60 });
           slot.priceRatio = 1;
           restocked += 1;
         }
@@ -218,7 +203,7 @@ describe('the selling channels stay in their lanes', () => {
     expect(found).not.toBeNull();
     const { sim, contract } = found!;
 
-    // Use the *real* fair value, not the helper's placeholder — comparing a
+    // Use the *real* fair value, not a placeholder — comparing a
     // contract's payout against a made-up shelf price measures nothing.
     const shelfValue = fairValue({
       recipeId: 'aquaTerra',
@@ -227,7 +212,7 @@ describe('the selling channels stay in their lanes', () => {
     });
 
     for (let i = 0; i < contract.quantity; i += 1) {
-      sim.world.bottled.push(bottle(`c-${i}`, 'C', shelfValue));
+      sim.world.bottled.push(bottle({ uid: `c-${i}`, grade: 'C', fairValue: shelfValue }));
     }
     const result = sim.deliverContract(contract.id)!;
     const perUnit = result.gold / result.delivered;
@@ -242,6 +227,7 @@ describe('the selling channels stay in their lanes', () => {
     // Ceiling after two counters and a hold-firm, versus plain fair value.
     // The schedule directly: walk-ins are paused behind the counter's UI, and
     // the paused door would send nobody and let this pass unmeasured.
+    const fair = 60;
     let sim: Simulation | null = null;
     let walkIn: ReturnType<typeof scheduledWalkIns>[number] | undefined;
     for (let day = 0; day < 40 && !walkIn; day += 1) {
@@ -249,15 +235,15 @@ describe('the selling channels stay in their lanes', () => {
       sim.world.renown = 100000;
       sim.world.bottledKinds['S|5|sovereign'] = true;
       sim.advanceTo(day * DAY + DAY * 0.4);
-      sim.world.bottled.push(bottle('h', 'B'));
+      sim.world.bottled.push(bottle({ uid: 'h', fairValue: fair }));
       walkIn = scheduledWalkIns(sim.world)[0];
     }
     expect(walkIn).toBeDefined();
 
     const session = sim!.beginHaggle(walkIn!.customerId, 'h')!;
     const opening = session.ceiling;
-    expect(opening).toBeGreaterThan(bottle('h', 'B').fairValue);
-    expect(opening).toBeLessThan(bottle('h', 'B').fairValue * 3);
+    expect(opening).toBeGreaterThan(fair);
+    expect(opening).toBeLessThan(fair * 3);
   });
 });
 
@@ -272,7 +258,7 @@ describe('the renown curve', () => {
     for (let hour = 0; hour < 7 * 24; hour += 1) {
       for (const slot of sim.world.shelf) {
         if (!slot.item) {
-          slot.item = bottle(`r-${restocked}`, 'A');
+          slot.item = bottle({ uid: `r-${restocked}`, grade: 'A', fairValue: 60 });
           slot.priceRatio = 0.9;
           restocked += 1;
         }
@@ -716,8 +702,8 @@ describe('nothing sold is inert', () => {
     picked.workVein(picked.shaft.veins[0]!.id);
     // Short window on purpose: a vein holds a fixed amount of ore, so a better
     // pick empties it sooner rather than yielding more. Measure the rate.
-    bare.advanceBy(15 * 60_000);
-    picked.advanceBy(15 * 60_000);
+    bare.advanceBy(15 * MINUTE);
+    picked.advanceBy(15 * MINUTE);
     expect(picked.world.statistics.oreExtracted).toBeGreaterThan(
       bare.world.statistics.oreExtracted,
     );

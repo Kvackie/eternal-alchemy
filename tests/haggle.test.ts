@@ -9,32 +9,21 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, customersConfig, getCustomer, getDecor } from '@/sim/config';
+import { customersConfig, getCustomer, getDecor } from '@/sim/config';
 import { grantDecor } from '@/sim/decor';
 import { WALK_INS_PAUSED, ceilingFor, previewPitch, scheduledWalkIns } from '@/sim/haggle';
-import type { BottledItem, Grade, HaggleStance } from '@/sim/types';
-
-const DAY = config.clock.dayLengthMs;
-
-function bottle(uid: string, recipeId = 'aquaTerra', grade: Grade = 'B'): BottledItem {
-  return {
-    uid,
-    recipeId,
-    grade,
-    purity: 80,
-    potencyTier: 'common',
-    totalEssence: 57,
-    fairValue: 100,
-    bottledAt: 0,
-  };
-}
+import type { HaggleStance } from '@/sim/types';
+import { DAY, bottle } from './helpers';
 
 /** A shop with stock a villager would want, on a day she turns up. */
 function shopWithCustomer(): { sim: Simulation; customerId: string } {
   for (let day = 0; day < 40; day += 1) {
     const sim = new Simulation(createWorld(77));
     sim.advanceTo(day * DAY + DAY * 0.4);
-    sim.world.bottled.push(bottle('a'), bottle('b'));
+    sim.world.bottled.push(
+      bottle({ uid: 'a', fairValue: 100 }),
+      bottle({ uid: 'b', fairValue: 100 }),
+    );
     // The schedule directly: walk-ins are paused behind the counter's UI, and
     // a test that asked the paused door would find nobody and prove nothing.
     const walkIns = scheduledWalkIns(sim.world);
@@ -82,7 +71,7 @@ describe('a haggle', () => {
     // The ceiling varies within the declared spread rather than landing on the
     // nominal figure every time — otherwise a customer's limit is arithmetic
     // the player only has to do once.
-    const nominal = ceilingFor(bottle('a'), def);
+    const nominal = ceilingFor(bottle({ uid: 'a', fairValue: 100 }), def);
     const halfSpread = customersConfig.budgetSpread / 2;
     expect(session.ceiling).toBeGreaterThanOrEqual(Math.round(nominal * (1 - halfSpread)));
     expect(session.ceiling).toBeLessThanOrEqual(Math.round(nominal * (1 + halfSpread)));
@@ -121,7 +110,7 @@ describe('a haggle', () => {
 
   it('refuses an item the customer does not want', () => {
     const { sim, customerId } = shopWithCustomer();
-    sim.world.bottled.push(bottle('unwanted', 'terraUmbra'));
+    sim.world.bottled.push(bottle({ uid: 'unwanted', recipeId: 'terraUmbra', fairValue: 100 }));
     // Villagers want tonics, not philtres.
     const def = getCustomer(customerId);
     if (def.wants.includes('terraUmbra')) return;
@@ -246,7 +235,7 @@ describe('a haggle', () => {
     sim.world.renown = 100000;
     sim.world.bottledKinds['S|5|sovereign'] = true;
     sim.advanceTo(DAY * 0.4);
-    sim.world.bottled.push(bottle('x', night!.wants[0]!));
+    sim.world.bottled.push(bottle({ uid: 'x', recipeId: night!.wants[0]!, fairValue: 100 }));
     expect(sim.walkIns().some((w) => w.customerId === night!.id)).toBe(false);
   });
 });

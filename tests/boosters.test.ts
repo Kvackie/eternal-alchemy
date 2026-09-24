@@ -5,12 +5,10 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import { config, getBooster, ranks, shaftConfig } from '@/sim/config';
+import { getBooster, ranks, shaftConfig } from '@/sim/config';
 import { countOf } from '@/sim/inventory';
 import { boosterBlock, isBoosted } from '@/sim/boosters';
-
-const HOUR = 3_600_000;
-const DAY = config.clock.dayLengthMs;
+import { DAY, HOUR } from './helpers';
 
 function planted(boost: boolean): { sim: Simulation; count: number } {
   const sim = new Simulation(createWorld(4));

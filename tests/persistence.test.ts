@@ -11,8 +11,7 @@ import { rankIndexFor } from '@/sim/progression';
 import { caveConfig, config, crops, ingredients } from '@/sim/config';
 import { fairValue } from '@/sim/market';
 import type { BottledItem, World } from '@/sim/types';
-
-const HOUR = 3_600_000;
+import { HOUR, bottle } from './helpers';
 
 function brewing(seed = 606): Simulation {
   const sim = new Simulation(createWorld(seed));
@@ -539,7 +538,7 @@ describe('migrating a save from before ranks asked for a potion', () => {
     const loose = world as unknown as Record<string, unknown>;
     delete loose.bottledKinds;
     world.bottled = [
-      {
+      bottle({
         uid: 'held',
         recipeId: 'ignisAquaTerraAerUmbra',
         grade: 'S',
@@ -547,8 +546,7 @@ describe('migrating a save from before ranks asked for a potion', () => {
         potencyTier: 'sovereign',
         totalEssence: 400,
         fairValue: 1,
-        bottledAt: 0,
-      },
+      }),
     ];
     const raw = JSON.stringify({ schemaVersion: 21, savedAt: Date.now(), world });
     const migrated = new SaveManager(memoryAdapter()).import(raw)!;

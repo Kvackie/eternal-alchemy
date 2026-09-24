@@ -6,37 +6,14 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import {
-  config,
-  contractsConfig,
-  getHeroDef,
-  getRecipe,
-  heroesConfig,
-  recipes,
-} from '@/sim/config';
+import { contractsConfig, getHeroDef, getRecipe, heroesConfig, recipes } from '@/sim/config';
 import { effectiveLevel, favourBandOf, isInjured, recruitCostOf } from '@/sim/heroes';
 import { contractTerms, generateContract, qualifyingItems } from '@/sim/contracts';
 import { isDiscovered } from '@/sim/discovery';
 import { angleBetween } from '@/sim/essences';
 import { Rng } from '@/sim/rng';
-import { fairValue } from '@/sim/market';
-import type { BottledItem, Contract, Grade } from '@/sim/types';
-
-const HOUR = 3_600_000;
-const DAY = config.clock.dayLengthMs;
-
-function bottle(uid: string, grade: Grade, recipeId = 'aquaTerra'): BottledItem {
-  return {
-    uid,
-    recipeId,
-    grade,
-    purity: 80,
-    potencyTier: 'common',
-    totalEssence: 57,
-    fairValue: fairValue({ recipeId, grade, potencyTier: 'common' }),
-    bottledAt: 0,
-  };
-}
+import type { Contract } from '@/sim/types';
+import { DAY, HOUR, bottle } from './helpers';
 
 function withHero(seed = 5): Simulation {
   const sim = new Simulation(createWorld(seed));
@@ -129,7 +106,9 @@ describe('favour', () => {
   it('pleases only the hero whose favourite was packed', () => {
     const sim = withHero(7);
     sim.world.heroes.push({ ...sim.world.heroes[0]!, id: 'maren' });
-    sim.world.bottled.push(bottle('fav', 'B', getHeroDef('corin').favourite));
+    sim.world.bottled.push(
+      bottle({ uid: 'fav', grade: 'B', recipeId: getHeroDef('corin').favourite }),
+    );
 
     sim.send('emberwaste', ['corin', 'maren'], ['fav']);
     sim.advanceBy(6 * HOUR);
@@ -142,7 +121,7 @@ describe('favour', () => {
   it('rises further when the party was supplied', () => {
     const bare = withHero(7);
     const packed = withHero(7);
-    packed.world.bottled.push(bottle('a', 'B'), bottle('b', 'B'));
+    packed.world.bottled.push(bottle({ uid: 'a', grade: 'B' }), bottle({ uid: 'b', grade: 'B' }));
 
     bare.send('emberwaste', ['corin'], []);
     packed.send('emberwaste', ['corin'], ['a', 'b']);
@@ -181,7 +160,10 @@ describe('favour', () => {
 describe('missions', () => {
   it('improve the odds when supplied with better potions', () => {
     const sim = withHero();
-    sim.world.bottled.push(bottle('poor', 'F'), bottle('great', 'S'));
+    sim.world.bottled.push(
+      bottle({ uid: 'poor', grade: 'F' }),
+      bottle({ uid: 'great', grade: 'S' }),
+    );
 
     const bare = sim.estimate('emberwaste', ['corin'], []);
     const good = sim.estimate('emberwaste', ['corin'], ['great']);
@@ -193,7 +175,7 @@ describe('missions', () => {
 
   it('spend the supplies when the party leaves', () => {
     const sim = withHero();
-    sim.world.bottled.push(bottle('a', 'B'));
+    sim.world.bottled.push(bottle({ uid: 'a', grade: 'B' }));
 
     expect(sim.send('emberwaste', ['corin'], ['a'])).toBe(true);
     expect(sim.world.bottled).toHaveLength(0);
@@ -300,7 +282,7 @@ describe('missions', () => {
   it('can be healed with a tonic instead of waiting it out', () => {
     const sim = withHero();
     sim.world.heroes[0]!.injuredUntil = sim.now + 5 * HOUR;
-    sim.world.bottled.push(bottle('tonic', 'B', 'aquaTerra'));
+    sim.world.bottled.push(bottle({ uid: 'tonic', grade: 'B', recipeId: 'aquaTerra' }));
     const favourBefore = sim.world.heroes[0]!.favour;
 
     expect(sim.heal('corin', 'tonic')).toBe(true);
@@ -312,7 +294,7 @@ describe('missions', () => {
   it('will not heal with the wrong potion', () => {
     const sim = withHero();
     sim.world.heroes[0]!.injuredUntil = sim.now + 5 * HOUR;
-    sim.world.bottled.push(bottle('wrong', 'B', 'ignisTerra'));
+    sim.world.bottled.push(bottle({ uid: 'wrong', grade: 'B', recipeId: 'ignisTerra' }));
     expect(sim.heal('corin', 'wrong')).toBe(false);
   });
 });
@@ -421,9 +403,9 @@ describe('the contract board', () => {
   it('counts only bottles that actually meet the terms', () => {
     const { sim, contract } = withBarrackOrder();
 
-    sim.world.bottled.push(bottle('good', 'B', 'aquaTerra'));
-    sim.world.bottled.push(bottle('lowGrade', 'F', 'aquaTerra'));
-    sim.world.bottled.push(bottle('wrongRecipe', 'S', 'ignisTerra'));
+    sim.world.bottled.push(bottle({ uid: 'good', grade: 'B', recipeId: 'aquaTerra' }));
+    sim.world.bottled.push(bottle({ uid: 'lowGrade', grade: 'F', recipeId: 'aquaTerra' }));
+    sim.world.bottled.push(bottle({ uid: 'wrongRecipe', grade: 'S', recipeId: 'ignisTerra' }));
 
     const qualifying = qualifyingItems(sim.world, contract);
     expect(qualifying.map((i) => i.uid)).toEqual(['good']);
@@ -433,7 +415,7 @@ describe('the contract board', () => {
     const { sim, contract } = withBarrackOrder();
 
     for (let i = 0; i < contract.quantity; i += 1) {
-      sim.world.bottled.push(bottle(`t${i}`, 'B', 'aquaTerra'));
+      sim.world.bottled.push(bottle({ uid: `t${i}`, grade: 'B' }));
     }
 
     const goldBefore = sim.world.gold;
@@ -448,7 +430,7 @@ describe('the contract board', () => {
   it('pays pro rata on a partial delivery, and keeps the contract open', () => {
     const { sim, contract } = withBarrackOrder();
 
-    sim.world.bottled.push(bottle('one', 'B', 'aquaTerra'));
+    sim.world.bottled.push(bottle({ uid: 'one', grade: 'B' }));
     const result = sim.deliverContract(contract.id)!;
 
     expect(result.complete).toBe(false);
@@ -464,9 +446,9 @@ describe('the contract board', () => {
 
     // One more qualifying bottle than the contract wants, so there is a genuine
     // choice about which to spend.
-    sim.world.bottled.push(bottle('prize', 'S', 'aquaTerra'));
+    sim.world.bottled.push(bottle({ uid: 'prize', grade: 'S' }));
     for (let i = 0; i < contract.quantity; i += 1) {
-      sim.world.bottled.push(bottle(`plain-${i}`, 'C', 'aquaTerra'));
+      sim.world.bottled.push(bottle({ uid: `plain-${i}`, grade: 'C' }));
     }
 
     const result = sim.deliverContract(contract.id)!;
@@ -478,13 +460,9 @@ describe('the contract board', () => {
 
   it('spends a plain bottle before a stronger one of the same grade', () => {
     const { sim, contract } = withBarrackOrder();
-    const strong: BottledItem = { ...bottle('strong', 'C'), potencyTier: 'sovereign' };
-    strong.fairValue = fairValue(strong);
-    sim.world.bottled.push(strong);
+    sim.world.bottled.push(bottle({ uid: 'strong', grade: 'C', potencyTier: 'sovereign' }));
     for (let i = 0; i < contract.quantity; i += 1) {
-      const plain: BottledItem = { ...bottle(`plain-${i}`, 'C'), potencyTier: 'minor' };
-      plain.fairValue = fairValue(plain);
-      sim.world.bottled.push(plain);
+      sim.world.bottled.push(bottle({ uid: `plain-${i}`, grade: 'C', potencyTier: 'minor' }));
     }
 
     sim.deliverContract(contract.id);

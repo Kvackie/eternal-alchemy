@@ -10,7 +10,8 @@
 import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
-import type { BottledItem, Grade } from '@/sim/types';
+import type { BottledItem } from '@/sim/types';
+import { bottle } from './helpers';
 
 /** A shop with `shelves` shelves and a pile of bottles in the store room. */
 function shopWith(
@@ -34,16 +35,16 @@ function shopWith(
   let n = 0;
   for (const spec of bottles) {
     for (let i = 0; i < spec.count; i += 1) {
-      sim.world.bottled.push({
-        uid: `b${n++}`,
-        recipeId: spec.recipeId ?? 'aquaTerra',
-        grade: (spec.grade ?? 'C') as Grade,
-        purity: 70,
-        potencyTier: 'common',
-        totalEssence: 16,
-        fairValue: 50,
-        bottledAt: 0,
-      });
+      sim.world.bottled.push(
+        bottle({
+          uid: `b${n++}`,
+          recipeId: spec.recipeId ?? 'aquaTerra',
+          grade: spec.grade ?? 'C',
+          purity: 70,
+          totalEssence: 16,
+          fairValue: 50,
+        }),
+      );
     }
   }
   return sim;

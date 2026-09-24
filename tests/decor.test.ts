@@ -12,7 +12,6 @@ import { createWorld } from '@/sim/state';
 import { SaveManager, memoryAdapter } from '@/platform/save';
 import {
   baseShelfTier,
-  config,
   decorConfig,
   decorPieces,
   equipment,
@@ -24,6 +23,7 @@ import { clearSpot, grantDecor, ownsDecor, placeDecor, placedIn, spotViews } fro
 import { derivedStats } from '@/sim/progression';
 import { appealOf, fitBoard, footfallAt, saleChance } from '@/sim/market';
 import type { World } from '@/sim/types';
+import { DAY, bottle } from './helpers';
 
 describe('the data holds together', () => {
   it('puts every piece in a declared spot', () => {
@@ -138,7 +138,7 @@ describe('décor reaches the things it claims to change', () => {
 
   it('raises footfall by day', () => {
     const world = createWorld(1);
-    const noon = config.clock.dayLengthMs * 0.4;
+    const noon = DAY * 0.4;
     const before = footfallAt(world, noon, true);
 
     grantDecor(world, 'crimsonBanner');
@@ -147,8 +147,8 @@ describe('décor reaches the things it claims to change', () => {
 
   it('raises footfall only after dark for a lantern', () => {
     const world = createWorld(1);
-    const noon = config.clock.dayLengthMs * 0.4;
-    const midnight = config.clock.dayLengthMs * 0.9;
+    const noon = DAY * 0.4;
+    const midnight = DAY * 0.9;
 
     const dayBefore = footfallAt(world, noon, true);
     const nightBefore = footfallAt(world, midnight, true);
@@ -198,7 +198,7 @@ describe('buying décor', () => {
         bought = true;
         break;
       }
-      sim.advanceBy(config.clock.dayLengthMs);
+      sim.advanceBy(DAY);
     }
 
     expect(bought, 'no merchant stocked a furnishing in twelve days').toBe(true);
@@ -214,7 +214,7 @@ describe('buying décor', () => {
         const ids = visit.entries.map((entry) => entry.id);
         expect(ids).not.toContain('mortarAndPestle');
       }
-      sim.advanceBy(config.clock.dayLengthMs);
+      sim.advanceBy(DAY);
     }
   });
 });
@@ -364,17 +364,6 @@ describe('an older save keeps its fittings', () => {
  * up in what actually sells.
  */
 describe('shelf boards', () => {
-  const bottled = () => ({
-    uid: 'x',
-    recipeId: 'aquaTerra',
-    grade: 'C' as const,
-    purity: 80,
-    potencyTier: 'common' as const,
-    totalEssence: 57,
-    fairValue: 60,
-    bottledAt: 0,
-  });
-
   it('starts every shelf on the free salvaged board', () => {
     const world = createWorld(1);
     for (const slot of world.shelf) expect(slot.quality).toBe(baseShelfTier.id);
@@ -423,12 +412,12 @@ describe('shelf boards', () => {
 
   it('sells better off a better board', () => {
     const world = createWorld(1);
-    world.shelf[0]!.item = bottled();
+    world.shelf[0]!.item = bottle({ uid: 'x', grade: 'C', fairValue: 60 });
     world.shelf[0]!.quantity = 1;
-    world.shelf[1]!.item = { ...bottled(), uid: 'y' };
+    world.shelf[1]!.item = bottle({ uid: 'y', grade: 'C', fairValue: 60 });
     world.shelf[1]!.quantity = 1;
 
-    const noon = config.clock.dayLengthMs * 0.4;
+    const noon = DAY * 0.4;
     const before = saleChance(world, world.shelf[0]!, noon, true);
 
     world.boards.lacqueredShelf = 1;
