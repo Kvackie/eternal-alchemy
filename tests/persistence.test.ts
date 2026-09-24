@@ -607,3 +607,24 @@ describe('migrating a save from before the unread-sales queue went', () => {
     expect('lastContractTick' in migrated).toBe(false);
   });
 });
+
+describe('migrating a save from before exotics dropped their stamp', () => {
+  it('folds every batch of an ageless ingredient into one unstamped stack', () => {
+    const world = createWorld(5);
+    world.inventory = [
+      { ingredientId: 'bloodRose', count: 2, harvestedAt: 1_000 },
+      { ingredientId: 'bloodRose', count: 3, harvestedAt: 9_000_000 },
+      { ingredientId: 'bloodRose', count: 1, harvestedAt: null },
+      { ingredientId: 'bilberry', count: 4, harvestedAt: 1_000 },
+      { ingredientId: 'bilberry', count: 5, harvestedAt: 9_000_000 },
+    ];
+    const raw = JSON.stringify({ schemaVersion: 24, savedAt: Date.now(), world });
+    const migrated = new SaveManager(memoryAdapter()).import(raw)!;
+
+    expect(migrated.inventory.filter((s) => s.ingredientId === 'bloodRose')).toEqual([
+      { ingredientId: 'bloodRose', count: 6, harvestedAt: null },
+    ]);
+    // Anything that ages keeps its batches apart: their freshness differs.
+    expect(migrated.inventory.filter((s) => s.ingredientId === 'bilberry')).toHaveLength(2);
+  });
+});

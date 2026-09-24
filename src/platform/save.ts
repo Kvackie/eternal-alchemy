@@ -15,6 +15,7 @@ import {
   caveConfig,
   config,
   findDecor,
+  ingredients,
   ranks,
   recipes,
   shaftConfig,
@@ -965,6 +966,34 @@ const MIGRATIONS: Record<number, Migration> = {
     const loose = world as unknown as Record<string, unknown>;
     delete loose.unreadSales;
     delete loose.lastContractTick;
+    return world;
+  },
+  /**
+   * Exotics lose their harvest stamp, as stone always had.
+   *
+   * Nothing that never ages needs one, and a stamp kept every expedition's
+   * haul in a stack of its own. New batches carry none; this brings the old
+   * ones in line and folds each ageless ingredient into a single stack.
+   */
+  25: (world) => {
+    const ageless = new Set(
+      ingredients
+        .filter((def) => config.freshness.agelessCategories.includes(def.category))
+        .map((def) => def.id),
+    );
+    const merged: World['inventory'] = [];
+    for (const stack of world.inventory ?? []) {
+      if (!ageless.has(stack.ingredientId)) {
+        merged.push(stack);
+        continue;
+      }
+      const into = merged.find(
+        (entry) => entry.ingredientId === stack.ingredientId && entry.harvestedAt === null,
+      );
+      if (into) into.count += stack.count;
+      else merged.push({ ...stack, harvestedAt: null });
+    }
+    world.inventory = merged;
     return world;
   },
 };
