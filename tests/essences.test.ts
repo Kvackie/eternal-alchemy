@@ -4,8 +4,10 @@ import {
   applyFreshness,
   cauldronVector,
   freshnessOf,
+  gradeBands,
   gradeFor,
   potencyTierFor,
+  tierProgress,
   totalEssence,
   zeroVector,
 } from '@/sim/essences';
@@ -268,5 +270,31 @@ describe('identifying a brew from real ingredients', () => {
     // Aqua–Terra potion. Minerals carry mass; herbs do the steering.
     const overshot = assess('bilberry', 'broadleaf', 'chalkNodule');
     expect(overshot?.recipeId).not.toBe('aquaTerra');
+  });
+});
+
+describe('the brewing meter', () => {
+  it('reads its grade ticks from the same table gradeFor does', () => {
+    for (const essences of [1, 2, 3, 4, 5]) {
+      const bands = gradeBands(essences);
+      for (const band of bands) expect(gradeFor(band.from, essences)).toBe(band.grade);
+      // S starts later for a bigger mix, and every band keeps its order.
+      expect(bands[0]!.from).toBe(config.grading.sFromByEssenceCount[essences - 1]);
+      bands.slice(1).forEach((band, i) => expect(band.from).toBeLessThanOrEqual(bands[i]!.from));
+    }
+  });
+
+  it('lights a star for each sixth of a tier, and five just short of the next', () => {
+    const common = config.potency.tiers.find((tier) => tier.id === 'common')!.minEssence;
+    const greater = config.potency.tiers.find((tier) => tier.id === 'greater')!.minEssence;
+    expect(tierProgress(common, 600)).toMatchObject({ tier: 'common', next: 'greater', stars: 0 });
+    expect(tierProgress(greater - 1, 600).stars).toBe(5);
+    expect(tierProgress(greater, 600)).toMatchObject({ tier: 'greater', stars: 0 });
+  });
+
+  it('fills the top tier toward the biggest pot', () => {
+    const top = config.potency.tiers[config.potency.tiers.length - 1]!;
+    const progress = tierProgress(600, 600);
+    expect(progress).toMatchObject({ tier: top.id, next: null, to: 600, fraction: 1, stars: 5 });
   });
 });

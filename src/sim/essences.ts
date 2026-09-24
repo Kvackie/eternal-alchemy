@@ -182,15 +182,63 @@ export function potencyRank(tier: PotencyTierId): number {
  * 0: it is everything below E, however high E has gone.
  */
 export function gradeFor(purity: number, essenceCount = 1): Grade {
+  return gradeBands(essenceCount).find((band) => purity >= band.from)?.grade ?? 'F';
+}
+
+/**
+ * Where each grade starts, for a potion of this many essences, best first.
+ *
+ * The one table `gradeFor` reads, so the brewing meter's ticks are the grades
+ * themselves rather than a drawing of them.
+ */
+export function gradeBands(essenceCount = 1): Array<{ grade: Grade; from: number }> {
   const bands = config.grading.bands;
   const sFromByEssenceCount = config.grading.sFromByEssenceCount;
   const index = Math.min(Math.max(essenceCount, 1), sFromByEssenceCount.length) - 1;
   const shift = sFromByEssenceCount[index]! - bands[0]!.minPurity;
-  for (const band of bands) {
-    const from = band.minPurity > 0 ? Math.min(100, band.minPurity + shift) : 0;
-    if (purity >= from) return band.grade;
-  }
-  return 'F';
+  return bands.map((band) => ({
+    grade: band.grade,
+    from: band.minPurity > 0 ? Math.min(100, band.minPurity + shift) : 0,
+  }));
+}
+
+/** How far a blend is through its potency tier, for the brewing meter. */
+export interface TierProgress {
+  tier: PotencyTierId;
+  /** The tier above, or null at the top. */
+  next: PotencyTierId | null;
+  /** Essence where this tier starts, and where the next one does. */
+  from: number;
+  to: number;
+  /** 0..1 of the way from `from` to `to`. */
+  fraction: number;
+  /** 0 to 5: a star for each sixth of the tier, so five means nearly there. */
+  stars: number;
+}
+
+/**
+ * Stars within a tier, the way Potionomics fills its bar: display only.
+ *
+ * A tier's value does not change inside it, so the stars say how close the
+ * next tier is rather than what this one is worth. The top tier has no tier
+ * above to reach, so it fills toward `ceiling`, the most any pot holds.
+ */
+export function tierProgress(essence: number, ceiling: number): TierProgress {
+  const tiers = config.potency.tiers;
+  const tier = potencyTierFor(essence);
+  const index = tiers.findIndex((entry) => entry.id === tier);
+  const from = tiers[index]!.minEssence;
+  const above = tiers[index + 1];
+  const to = above ? above.minEssence : Math.max(ceiling, from + 1);
+  const fraction = Math.min(1, Math.max(0, (essence - from) / (to - from)));
+  return {
+    tier,
+    next: above?.id ?? null,
+    from,
+    to,
+    fraction,
+    stars: Math.min(5, Math.floor(fraction * 6)),
+  };
 }
 
 /** Grades run S..F, best first: a lower index is a better grade. */

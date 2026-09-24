@@ -872,6 +872,120 @@ button {
   flex: none;
 }
 
+/* ----------------------------------------------------------- brew meter */
+
+/*
+ * How far a brew is from its next tier and grade: two labelled bars.
+ *
+ * The tier bar is six segments with a hairline between them, filling in brass;
+ * the grade bar is one track filling in the grade's own colour, with a tick
+ * where each grade starts.
+ */
+.brew-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  width: 100%;
+}
+
+.meter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meter-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.meter-name {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--brass-bright);
+}
+
+.meter-stars {
+  display: inline-flex;
+  gap: 0.0625rem;
+  color: var(--text-faint);
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.meter-stars .lit {
+  color: var(--brass-bright);
+  text-shadow: 0 0 6px rgb(235 203 130 / 0.45);
+}
+
+.meter-value {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+}
+
+.meter-bar {
+  position: relative;
+  height: 0.625rem;
+  border-radius: 0.3125rem;
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.meter-tier {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  padding: 1px;
+}
+
+.meter-seg {
+  position: relative;
+  background: rgb(255 255 255 / 0.04);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.meter-seg-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(180deg, var(--brass-bright), var(--brass));
+}
+
+/* The pot's rim, where it stops short of the next tier. */
+.meter-rim {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--bad);
+}
+
+.meter-grade-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.meter-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgb(241 231 211 / 0.35);
+}
+
+.meter-note {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
 /* Any element carrying a grade wears that grade's colour — badge or not. */
 [data-grade='S'] {
   color: var(--grade-s);
