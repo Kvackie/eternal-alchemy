@@ -33,14 +33,10 @@ Ids are camelCase and case-sensitive: `galeThistle.png`, not `gale-thistle.png`.
 The most valuable batch: these appear in the garden, the cave, the cauldron, every
 inventory tile and every merchant stall.
 
-There are 151 ingredients — 60 herbs, 30 fungi, 40 minerals and 21 exotics — and all
-but four already have art. The four still on placeholders:
-
-| Herbs | Fungi |
-| --- | --- |
-| `featherfern.png` (Aer) | `gloomcap.png` (Umbra) |
-| `windwort.png` (Aer) | |
-| `gloamroot.png` (Umbra) | |
+There are 151 ingredients — 60 herbs, 30 fungi, 40 minerals and 21 exotics — and every
+one has art. The last four to get it took unused pictures from the same packs, renamed to
+their ids: Featherfern was `shadefern`, Windwort `wispcoil`, Gloamroot `ghostroot` and
+Gloomcap `inkcap`.
 
 The ids, and the essence each one carries, are in `src/data/ingredients.json`; which
 id fills which strength on the scale is decided by `scripts/gen-ingredients.js`.
