@@ -39,10 +39,10 @@ import {
   tabStrip,
 } from '../components';
 import { formatDuration, t } from '@/i18n';
-import { cauldronTiers, getIngredient, getRecipe } from '@/sim/config';
+import { cauldronTiers, getIngredient } from '@/sim/config';
 import { inventoryRows } from '@/sim/inventory';
 import { outcomeProblems } from '@/sim/brewing';
-import { gradeBands, nextFreshnessChangeAt, tierProgress, totalEssence } from '@/sim/essences';
+import { nextFreshnessChangeAt, tierProgress, totalEssence } from '@/sim/essences';
 import { showIngredientInfo } from '../ingredientInfo';
 import { ESSENCES } from '@/sim/types';
 import type {
@@ -779,43 +779,31 @@ function renderOutcome(sim: Simulation, blend: EssenceVector | null): HTMLElemen
 }
 
 /**
- * How far the brew is from its next tier and its next grade.
+ * How far the brew is from its next tier, and what grade it is at now.
  *
- * The tier row fills the way Potionomics fills its bar: six segments between
- * one tier and the next, a star lit for each of the first five, and the sixth
- * is the climb into the tier above. The stars are a reading, not a price — a
- * tier is worth the same all the way through. When the pot cannot hold the
- * next tier, its rim is marked on the bar and the note says so, which is the
- * only way a player learns that the Clay Bowl stops one short of a Common.
- *
- * The grade row is purity against the grade bands for this many essences,
- * with a tick where each grade starts.
+ * Potionomics fills a bar through each tier and lights stars for quality; here
+ * the quality is the grade, so the letter sits where the stars would and the
+ * bar fills toward the tier above. A bigger brew can land at a different grade,
+ * and the letter moves with it as ingredients go in. When the pot cannot hold
+ * the next tier, its rim is marked on the bar and the note says so, which is
+ * the only way a player learns that the Clay Bowl stops one short of a Common.
  */
 function brewMeter(sim: Simulation, outcome: BrewOutcome): HTMLElement {
   const capacity = sim.cauldronCapacity;
   const ceiling = Math.max(...cauldronTiers.map((tier) => tier.capacity));
   const tier = tierProgress(outcome.totalEssence, ceiling);
-  const span = tier.to - tier.from;
 
-  const segments = Array.from({ length: 6 }, (_, i) => {
-    const fill = Math.min(1, Math.max(0, tier.fraction * 6 - i));
-    return el('span', { class: 'meter-seg' }, [
-      el('span', { class: 'meter-seg-fill', style: `width:${Math.round(fill * 100)}%` }),
-    ]);
-  });
-  const bar = el('div', { class: 'meter-bar meter-tier', 'aria-hidden': 'true' }, segments);
+  const bar = el('div', { class: 'tier-bar', 'aria-hidden': 'true' }, [
+    el('span', { class: 'tier-fill', style: `width:${(tier.fraction * 100).toFixed(1)}%` }),
+  ]);
   // The pot's rim, where it falls short of the tier above.
   const potShort = tier.next !== null && capacity < tier.to;
   if (potShort && capacity > tier.from) {
-    bar.append(
-      el('span', {
-        class: 'meter-rim',
-        style: `left:${(((capacity - tier.from) / span) * 100).toFixed(1)}%`,
-      }),
-    );
+    const at = ((capacity - tier.from) / (tier.to - tier.from)) * 100;
+    bar.append(el('span', { class: 'tier-rim', style: `left:${at.toFixed(1)}%` }));
   }
 
-  const tierNote = tier.next
+  const note = tier.next
     ? potShort
       ? t('meter.potTooSmall', { capacity, tier: t(`potency.${tier.next}`), needed: tier.to })
       : t('meter.toTier', {
@@ -824,59 +812,17 @@ function brewMeter(sim: Simulation, outcome: BrewOutcome): HTMLElement {
         })
     : t('meter.topTier');
 
-  const essences = getRecipe(outcome.recipeId).elements.length;
-  const bands = gradeBands(essences);
-  const current = bands.findIndex((band) => band.grade === outcome.grade);
-  const better = current > 0 ? bands[current - 1]! : null;
-  const gradeBar = el('div', { class: 'meter-bar meter-grade', 'aria-hidden': 'true' }, [
-    el('span', {
-      class: 'meter-grade-fill',
-      'data-grade': outcome.grade,
-      style: `width:${Math.min(100, Math.max(0, outcome.purity)).toFixed(1)}%`,
-    }),
-    ...bands
-      .filter((band) => band.from > 0)
-      .map((band) => el('span', { class: 'meter-tick', style: `left:${band.from}%` })),
-  ]);
-  const gradeNote = better
-    ? t('meter.toGrade', {
-        count: Math.max(1, Math.ceil(better.from - outcome.purity)),
-        grade: better.grade,
-      })
-    : t('meter.topGrade');
-
-  const stars = el(
-    'span',
-    { class: 'meter-stars', role: 'img', 'aria-label': t('meter.stars', { count: tier.stars }) },
-    Array.from({ length: 5 }, (_, i) =>
-      el('span', { class: i < tier.stars ? 'lit' : '', text: i < tier.stars ? '★' : '☆' }),
-    ),
-  );
-
   return el('div', { class: 'brew-meter' }, [
-    el('div', { class: 'meter-row' }, [
-      el('div', { class: 'meter-head' }, [
-        el('span', { class: 'meter-name', text: t(`potency.${tier.tier}`) }),
-        stars,
-        el('span', {
-          class: 'meter-value num',
-          text: t('meter.essence', { essence: Math.floor(outcome.totalEssence) }),
-        }),
-      ]),
-      bar,
-      el('span', { class: 'meter-note', text: tierNote }),
+    el('div', { class: 'meter-head' }, [
+      el('span', { class: 'meter-name', text: t(`potency.${tier.tier}`) }),
+      gradeBadge(outcome.grade),
+      el('span', {
+        class: 'meter-value num',
+        text: t('meter.essence', { essence: Math.floor(outcome.totalEssence) }),
+      }),
     ]),
-    el('div', { class: 'meter-row' }, [
-      el('div', { class: 'meter-head' }, [
-        el('span', { class: 'meter-name', text: t('meter.grade', { grade: outcome.grade }) }),
-        el('span', {
-          class: 'meter-value num',
-          text: t('meter.purity', { purity: Math.floor(outcome.purity) }),
-        }),
-      ]),
-      gradeBar,
-      el('span', { class: 'meter-note', text: gradeNote }),
-    ]),
+    bar,
+    el('span', { class: 'meter-note', text: note }),
   ]);
 }
 

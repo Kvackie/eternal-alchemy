@@ -207,12 +207,11 @@ update as you go. Nothing is spent yet.
 **2 · Outcome.** What you would make right now, with its grade and potency. **Accept** spends the
 ingredients and starts the brew timer; **Pour it back** returns every ingredient unchanged.
 
-The outcome carries a **meter**, read the way Potionomics reads its bar. The tier row fills through
-the current potency tier in six segments and lights a star for each of the first five, so five stars
-means the next tier is close; it says how much essence that is, or, when the pot cannot hold the
-next tier, that the pot is too small (the Clay Bowl holds 60 and Common starts at 61). The grade
-row is purity against the grade bands for that many essences, with how far the next letter is.
-The stars are a reading only: a tier is worth the same all the way through.
+The outcome carries a **meter**, after the bar Potionomics fills. It names the potency tier, shows
+the grade the brew is at now where Potionomics puts its stars, and fills a bar toward the next tier
+with how much essence that is. When the pot cannot hold the next tier it marks the pot's rim and
+says so (the Clay Bowl holds 60 and Common starts at 61). A bigger brew can land at a different
+grade, and the letter follows it as ingredients go in.
 
 Then **Bottle it** once the timer finishes: one press, nothing to choose.
 

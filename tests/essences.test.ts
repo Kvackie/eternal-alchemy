@@ -274,7 +274,7 @@ describe('identifying a brew from real ingredients', () => {
 });
 
 describe('the brewing meter', () => {
-  it('reads its grade ticks from the same table gradeFor does', () => {
+  it('reads the grade bands gradeFor reads', () => {
     for (const essences of [1, 2, 3, 4, 5]) {
       const bands = gradeBands(essences);
       for (const band of bands) expect(gradeFor(band.from, essences)).toBe(band.grade);
@@ -284,17 +284,21 @@ describe('the brewing meter', () => {
     }
   });
 
-  it('lights a star for each sixth of a tier, and five just short of the next', () => {
+  it('fills through a tier and starts the next one empty', () => {
     const common = config.potency.tiers.find((tier) => tier.id === 'common')!.minEssence;
     const greater = config.potency.tiers.find((tier) => tier.id === 'greater')!.minEssence;
-    expect(tierProgress(common, 600)).toMatchObject({ tier: 'common', next: 'greater', stars: 0 });
-    expect(tierProgress(greater - 1, 600).stars).toBe(5);
-    expect(tierProgress(greater, 600)).toMatchObject({ tier: 'greater', stars: 0 });
+    expect(tierProgress(common, 600)).toMatchObject({
+      tier: 'common',
+      next: 'greater',
+      fraction: 0,
+    });
+    expect(tierProgress(greater - 1, 600).fraction).toBeGreaterThan(0.95);
+    expect(tierProgress(greater, 600)).toMatchObject({ tier: 'greater', fraction: 0 });
   });
 
   it('fills the top tier toward the biggest pot', () => {
     const top = config.potency.tiers[config.potency.tiers.length - 1]!;
     const progress = tierProgress(600, 600);
-    expect(progress).toMatchObject({ tier: top.id, next: null, to: 600, fraction: 1, stars: 5 });
+    expect(progress).toMatchObject({ tier: top.id, next: null, to: 600, fraction: 1 });
   });
 });

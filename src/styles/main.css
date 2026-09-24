@@ -875,50 +875,28 @@ button {
 /* ----------------------------------------------------------- brew meter */
 
 /*
- * How far a brew is from its next tier and grade: two labelled bars.
- *
- * The tier bar is six segments with a hairline between them, filling in brass;
- * the grade bar is one track filling in the grade's own colour, with a tick
- * where each grade starts.
+ * How far a brew is from its next tier: the tier, the grade it is at now, and
+ * one bar filling in brass toward the tier above.
  */
 .brew-meter {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.3rem;
   width: 100%;
-}
-
-.meter-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 
 .meter-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.5rem;
 }
 
 .meter-name {
   font-family: var(--font-display);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--brass-bright);
-}
-
-.meter-stars {
-  display: inline-flex;
-  gap: 0.0625rem;
-  color: var(--text-faint);
-  font-size: 0.875rem;
-  line-height: 1;
-}
-
-.meter-stars .lit {
-  color: var(--brass-bright);
-  text-shadow: 0 0 6px rgb(235 203 130 / 0.45);
 }
 
 .meter-value {
@@ -927,7 +905,7 @@ button {
   color: var(--text-dim);
 }
 
-.meter-bar {
+.tier-bar {
   position: relative;
   height: 0.625rem;
   border-radius: 0.3125rem;
@@ -936,49 +914,20 @@ button {
   overflow: hidden;
 }
 
-.meter-tier {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 2px;
-  padding: 1px;
-}
-
-.meter-seg {
-  position: relative;
-  background: rgb(255 255 255 / 0.04);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.meter-seg-fill {
+.tier-fill {
   position: absolute;
   inset: 0 auto 0 0;
   background: linear-gradient(180deg, var(--brass-bright), var(--brass));
 }
 
 /* The pot's rim, where it stops short of the next tier. */
-.meter-rim {
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  width: 2px;
-  margin-left: -1px;
-  background: var(--bad);
-}
-
-.meter-grade-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: currentColor;
-  opacity: 0.85;
-}
-
-.meter-tick {
+.tier-rim {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 1px;
-  background: rgb(241 231 211 / 0.35);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--bad);
 }
 
 .meter-note {
