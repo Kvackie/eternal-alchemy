@@ -20,6 +20,7 @@ import {
   liveMeter,
   panelHeader,
   row,
+  slotGlyph,
 } from '../components';
 import { formatGold, t } from '@/i18n';
 import { artUrlIf } from '@/ui/art';
@@ -104,7 +105,7 @@ function potCard(sim: Simulation, pot: Cauldron, stored: boolean): HTMLElement {
   const face = el('button', { class: 'bench-card', type: 'button' }, [
     art
       ? el('img', { class: 'bench-art', src: art, alt: '', loading: 'lazy', decoding: 'async' })
-      : el('span', { class: 'slot-glyph', text: '⚗️' }),
+      : slotGlyph('cauldron'),
     el('span', { class: 'bench-name', text: t(`cauldronTier.${pot.tierId}`) }),
     stored
       ? chip(t('cauldron.buy.capacity', { capacity: tier?.capacity ?? 0 }))
@@ -264,7 +265,7 @@ function renderStorage(sim: Simulation): HTMLElement[] {
                 loading: 'lazy',
                 decoding: 'async',
               })
-            : el('span', { class: 'slot-glyph', text: '⚗️' }),
+            : slotGlyph('cauldron'),
         ]),
         title: t(`cauldronTier.${tier.id}`),
         sub: [

@@ -7,6 +7,7 @@
  */
 
 import { essenceGlyphSvg } from '@/ui/theme';
+import { iconSvg, type IconId } from '@/ui/icons';
 import { artUrlIf, dominantEssence } from '@/ui/art';
 import { getIngredient, getRecipe } from '@/sim/config';
 import { countdown, formatGold, t } from '@/i18n';
@@ -1151,4 +1152,9 @@ export function stat(
   ]);
   if (tone) node.dataset.tone = tone;
   return node;
+}
+
+/** A tile's stand-in picture, for something with no painted art yet. */
+export function slotGlyph(id: IconId): HTMLElement {
+  return el('span', { class: 'slot-glyph', html: iconSvg(id) });
 }

@@ -115,9 +115,10 @@ describe('every data field reaches the game', () => {
      * There is no literal `brewIgnis` anywhere in src to find, and adding one
      * would be worse code written to satisfy a test. Its VALUES are still
      * checked — `surfaceY` and `surfaceW` have to appear in the scene, and they
-     * do.
+     * do. `icons.json` is written by gen-icons from the vendored SVGs, keyed by
+     * author for the Credits page, which walks the map rather than naming them.
      */
-    const GENERATED = new Set(['artManifest.json', 'brewEffects.json']);
+    const GENERATED = new Set(['artManifest.json', 'brewEffects.json', 'icons.json']);
 
     for (const file of readdirSync(DATA_DIR)) {
       if (GENERATED.has(file)) continue;
@@ -385,6 +386,11 @@ describe('the ingredient set', () => {
    */
   it('matches what the ingredient generator derives', () => {
     const report = execFileSync('node', ['scripts/gen-ingredients.js'], { encoding: 'utf8' });
+    expect(report).toContain('Nothing to change.');
+  });
+
+  it('has the icons the vendored sources say it has', () => {
+    const report = execFileSync('node', ['scripts/gen-icons.js'], { encoding: 'utf8' });
     expect(report).toContain('Nothing to change.');
   });
 

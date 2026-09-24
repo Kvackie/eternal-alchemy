@@ -30,6 +30,7 @@ import { presentCast } from '@/sim/merchants';
 import { isMature } from '@/sim/cave';
 import { isWorkable } from '@/sim/shaft';
 import { bus, changed, type ConfirmRequest, type ScreenId } from '@/ui/bus';
+import { iconSvg, type IconId } from '@/ui/icons';
 import { debugEnabled } from '@/platform/debugFlag';
 import type { AwaySummary, Simulation } from '@/sim/sim';
 import type { SaveManager } from '@/platform/save';
@@ -85,15 +86,21 @@ function bothFit(): boolean {
   return window.matchMedia(DESKTOP).matches;
 }
 
-const SCREENS: Array<{ id: ScreenId; icon: string }> = [
-  { id: 'shop', icon: '🏪' },
-  { id: 'board', icon: '📋' },
-  { id: 'market', icon: '🛒' },
-  { id: 'grounds', icon: '🌿' },
-  { id: 'cauldron', icon: '⚗️' },
-  { id: 'roster', icon: '🎖' },
-  { id: 'ledger', icon: '📜' },
-  { id: 'settings', icon: '⚙️' },
+/*
+ * Every screen's icon has the screen's own id, so the list is just the order.
+ *
+ * They were emoji, which each platform draws in its own style and none of them
+ * in this game's; these are one drawn set that takes the theme's colour.
+ */
+const SCREENS: ScreenId[] = [
+  'shop',
+  'board',
+  'market',
+  'grounds',
+  'cauldron',
+  'roster',
+  'ledger',
+  'settings',
 ];
 
 export class Shell {
@@ -449,12 +456,12 @@ export class Shell {
 
     clear(this.hud);
     this.hud.append(
-      hudStat(t('hud.gold'), gold),
-      hudStat(t('hud.renown'), renown),
+      hudStat('gold', t('hud.gold'), gold),
+      hudStat('renown', t('hud.renown'), renown),
       // Always, including at zero. Hiding it until the first branch meant the
       // one currency a player has to save toward was invisible for the whole
       // run in which they are saving toward it.
-      hudStat(t('hud.mastery'), mastery),
+      hudStat('mastery', t('hud.mastery'), mastery),
       el('div', { class: 'hud-clock' }, [
         dot,
         date,
@@ -538,30 +545,30 @@ export class Shell {
     clear(this.nav);
     const { sim } = this.deps;
 
-    for (const entry of SCREENS) {
+    for (const id of SCREENS) {
       const node = el('button', { type: 'button' }, [
-        el('span', { text: entry.icon, 'aria-hidden': 'true' }),
-        el('span', { text: t(`nav.${entry.id}`) }),
+        el('span', { class: 'nav-icon', html: iconSvg(id, 22) }),
+        el('span', { text: t(`nav.${id}`) }),
       ]);
-      node.setAttribute('aria-current', String(entry.id === this.screen));
+      node.setAttribute('aria-current', String(id === this.screen));
 
       // Badges only for things that are genuinely waiting on the player, and
       // that will stop waiting: a bottled brew, and a merchant about to leave.
-      if (entry.id === 'cauldron') {
+      if (id === 'cauldron') {
         // Every pot, not only the one last opened: a brew finished in the second
         // cauldron is waiting just the same.
         const done = sim.world.cauldrons.filter((pot) => pot.pendingBrew).length;
         if (done > 0) node.append(el('span', { class: 'badge', text: String(done) }));
       }
-      if (entry.id === 'market') {
+      if (id === 'market') {
         const here = presentCast(sim.world).length;
         if (here > 0) node.append(el('span', { class: 'badge', text: String(here) }));
       }
-      if (entry.id === 'grounds') {
+      if (id === 'grounds') {
         const ready = sim.readyToHarvest();
         if (ready > 0) node.append(el('span', { class: 'badge', text: String(ready) }));
       }
-      if (entry.id === 'roster') {
+      if (id === 'roster') {
         /*
          * A party home and unclaimed counts too.
          *
@@ -576,7 +583,7 @@ export class Shell {
         if (waiting > 0) node.append(el('span', { class: 'badge', text: String(waiting) }));
       }
 
-      node.addEventListener('click', () => this.setScreen(entry.id));
+      node.addEventListener('click', () => this.setScreen(id));
       this.nav.append(node);
     }
 
@@ -929,8 +936,15 @@ function keepFocus<T extends HTMLElement>(node: T, name: string): T {
 }
 
 /** A label and the node that carries its figure — see `buildHud`. */
-function hudStat(label: string, value: HTMLElement): HTMLElement {
-  return el('dl', { class: 'hud-stat' }, [el('dt', { text: label }), value]);
+/** A currency: its icon, its name (for a reader, and for a wide screen) and its amount. */
+function hudStat(id: IconId, label: string, value: HTMLElement): HTMLElement {
+  return el('dl', { class: `hud-stat hud-${id}` }, [
+    el('dt', {}, [
+      el('span', { class: 'hud-icon', html: iconSvg(id, 18) }),
+      el('span', { class: 'hud-label', text: label }),
+    ]),
+    value,
+  ]);
 }
 
 function readStoredScale(): number {

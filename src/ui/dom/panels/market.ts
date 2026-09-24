@@ -9,17 +9,18 @@
 import {
   chip,
   el,
+  emptyNote,
+  goldText,
   infoActions,
   infoHead,
   infoNote,
-  emptyNote,
-  goldText,
   ingredientIcon,
   liveCountdown,
   modal,
   panelHeader,
   portrait,
   slot,
+  slotGlyph,
   slotGrid,
 } from '../components';
 import type { QuantityActionSpec } from '../components';
@@ -76,20 +77,20 @@ const MARKET_ICON = 34;
 
 function entryIcon(entry: StockEntry): Node {
   if (entry.kind === 'equipment') {
-    return el('span', { class: 'slot-glyph', text: '⚒' });
+    return slotGlyph('equipment');
   }
   if (entry.kind === 'booster') return el('span', { class: 'slot-glyph', text: '✦' });
   if (entry.kind === 'decor') {
     const url = artUrlIf('decor', entry.id);
     return url
       ? el('img', { class: 'art-icon', src: url, alt: '', width: '40', height: '40' })
-      : el('span', { class: 'slot-glyph', text: '🪟' });
+      : slotGlyph('decor');
   }
   if (entry.kind === 'board') {
     const url = artUrlIf('shelf', entry.id);
     return url
       ? el('img', { class: 'art-icon', src: url, alt: '', width: '48', height: '29' })
-      : el('span', { class: 'slot-glyph', text: '🪵' });
+      : slotGlyph('shelf');
   }
 
   // A seed is named for its crop; a spore cluster is named for the mushroom itself.

@@ -18,8 +18,8 @@
 
 import {
   button,
-  chipRow,
   chip,
+  chipRow,
   clear,
   el,
   emptyNote,
@@ -33,6 +33,7 @@ import {
   searchField,
   sectionHead,
   slot,
+  slotGlyph,
   slotGrid,
   tabPanel,
   tabStrip,
@@ -237,7 +238,7 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
   if (!item) {
     return slot({
       id: shelfSlot.id,
-      icon: el('span', { class: 'slot-glyph', text: '🪵' }),
+      icon: slotGlyph('shelf'),
       label: t('shop.shelf.numbered', { number }),
       /*
        * The board it is, and nothing else.
@@ -703,7 +704,7 @@ function renderBoards(sim: Simulation): HTMLElement {
       id: tier.id,
       icon: art
         ? el('img', { class: 'art-icon', src: art, alt: '', width: '34', height: '12' })
-        : el('span', { class: 'slot-glyph', text: '🪵' }),
+        : slotGlyph('shelf'),
       label: t(`board.${tier.id}`),
       count: sim.world.boards[tier.id] ?? 0,
       caption:

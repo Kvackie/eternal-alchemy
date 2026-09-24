@@ -20,13 +20,14 @@ import {
   liveMeter,
   matchesSearch,
   meter,
+  outcomeCard,
   panelHeader,
   portrait,
   potionIcon,
-  searchField,
-  outcomeCard,
   row,
+  searchField,
   slot,
+  slotGlyph,
   slotGrid,
   stat,
 } from '../components';
@@ -356,7 +357,7 @@ function renderDestinations(sim: Simulation): HTMLElement {
     const locked = rank < biome.requiresRank;
     return slot({
       id: biome.id,
-      icon: el('span', { class: 'slot-glyph', text: '🧭' }),
+      icon: slotGlyph('destination'),
       label: t(`biome.${biome.id}`),
       caption: locked ? t('market.reason.rank') : formatDuration(biome.durationMs),
       selected: selectedBiome === biome.id,
@@ -709,7 +710,7 @@ function renderTavern(sim: Simulation): HTMLElement {
   const cards = recruitable.map((def) => {
     const face = portrait('hero', def.id);
     const card = el('button', { class: 'tavern-card', type: 'button' }, [
-      face ?? el('span', { class: 'slot-glyph', text: '🎖' }),
+      face ?? slotGlyph('roster'),
       el('div', { class: 'tavern-card-foot' }, [
         el('span', { class: 'tavern-card-name', text: t(`hero.${def.id}`) }),
         full
