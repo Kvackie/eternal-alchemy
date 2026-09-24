@@ -5255,7 +5255,13 @@ input[type='range'] {
     min-height: var(--tap);
   }
 
-  .view-button {
+  /*
+   * Both floor a thumb's width as well as its height. The debug toggle's
+   * width used to come from its word, which was wide enough in the old face;
+   * in Cinzel "Debug" is 39px.
+   */
+  .view-button,
+  .debug-toggle {
     min-width: var(--tap);
   }
 
