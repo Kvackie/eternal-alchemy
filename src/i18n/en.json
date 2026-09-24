@@ -708,7 +708,6 @@
   "log.contractFailed": "A contract lapsed.",
   "log.haggleWon": "Talked {customer} up to {gold}.",
   "log.haggleLost": "{customer} walked out empty-handed.",
-  "log.retired": "Retired the shop and opened in {town}.",
   "ledger.stats.mastery": "Mastery",
   "ledger.stats.haggles": "Haggles won",
   "quality.bountiful": "bountiful",

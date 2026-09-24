@@ -591,6 +591,7 @@ export const getMerchant = (id: string): MerchantDef => require_(merchantIndex, 
 /** Soft lookups, for places where a missing id is a legitimate answer. */
 export const findEquipment = (id: string): EquipmentDef | undefined => equipmentIndex.get(id);
 export const findDecor = (id: string): DecorDef | undefined => decorIndex.get(id);
+export const findCrop = (id: string): CropDef | undefined => cropIndex.get(id);
 export const findBooster = (id: string): BoosterDef | undefined => boosterIndex.get(id);
 export const getBooster = (id: string): BoosterDef => require_(boosterIndex, id, 'booster');
 

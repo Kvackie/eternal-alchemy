@@ -7,7 +7,7 @@
  * That is what makes the garden safe to leave for a week.
  */
 
-import { config, getCrop } from './config';
+import { config, findCrop, getCrop } from './config';
 import { addIngredient } from './inventory';
 import { derivedStats } from './progression';
 import { codexBonuses } from './prestige';
@@ -47,29 +47,16 @@ export function isReady(plot: Plot, now: number): boolean {
   return plot.crop !== null && now >= plot.crop.readyAt;
 }
 
-/** Seeds are keyed by crop id; one the shop has never held resolves to nothing. */
-function resolveSeed(world: World, seedId: string): { cropId: string; growMs: number } | null {
-  const crop = world.seeds[seedId] !== undefined ? getCrop(seedId) : null;
-  if (!crop) return null;
-  return { cropId: crop.id, growMs: crop.growMs };
-}
-
-export function canPlant(world: World, plotId: string, seedId: string): boolean {
+export function plant(world: World, plotId: string, seedId: string): boolean {
   const plot = plotById(world, plotId);
   if (!plot || plot.crop !== null) return false;
   if ((world.seeds[seedId] ?? 0) <= 0) return false;
-  return resolveSeed(world, seedId) !== null;
-}
-
-export function plant(world: World, plotId: string, seedId: string): boolean {
-  if (!canPlant(world, plotId, seedId)) return false;
-  const plot = plotById(world, plotId);
-  const seed = resolveSeed(world, seedId);
-  if (!plot || !seed) return false;
+  const seed = findCrop(seedId);
+  if (!seed) return false;
 
   world.seeds[seedId] = (world.seeds[seedId] ?? 0) - 1;
   plot.crop = {
-    cropId: seed.cropId,
+    cropId: seed.id,
     plantedAt: world.now,
     // Green Thumb in the Codex shortens everything that grows, and the town's
     // soil decides the rest — Cinderhold's is poor, Saltmarsh's is not.

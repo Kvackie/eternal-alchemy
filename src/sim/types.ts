@@ -173,7 +173,6 @@ export type LogKind =
   | 'contractFailed'
   | 'haggleWon'
   | 'haggleLost'
-  | 'retired'
   | 'recipeFound';
 
 export interface LogEntry {
