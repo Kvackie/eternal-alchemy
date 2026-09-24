@@ -626,8 +626,10 @@ function openCredits(): void {
                 ? [el('div', { class: 'credit-detail', text: credit.detail })]
                 : []),
               el('div', { class: 'credit-links' }, [
-                link(credit.licenceUrl, `${t('credits.licence')}: ${credit.licence}`),
-                link(credit.source, t('credits.source')),
+                credit.licenceUrl
+                  ? link(credit.licenceUrl, `${t('credits.licence')}: ${credit.licence}`)
+                  : el('span', { text: `${t('credits.licence')}: ${credit.licence}` }),
+                ...(credit.source ? [link(credit.source, t('credits.source'))] : []),
               ]),
             ]),
           ),

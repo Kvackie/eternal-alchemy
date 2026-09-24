@@ -14,9 +14,10 @@ export interface Credit {
   work: string;
   by: string;
   licence: string;
-  licenceUrl: string;
-  /** Where it came from. */
-  source: string;
+  /** Where the licence can be read, when there is one place to read it. */
+  licenceUrl?: string;
+  /** Where it came from, when there is one place it came from. */
+  source?: string;
   /** Anything worth adding, such as which pieces were used. */
   detail?: string;
 }
@@ -48,6 +49,26 @@ export function credits(): CreditGroup[] {
           licence: OFL,
           licenceUrl: 'licenses/AlegreyaSans-OFL.txt',
           source: 'https://github.com/huertatipografica/Alegreya-Sans',
+        },
+      ],
+    },
+    {
+      heading: 'credits.art',
+      credits: [
+        {
+          work: 'Fantasy Icons MegaPack',
+          by: 'REXARD',
+          licence: 'Standard Unity Asset Store EULA',
+          licenceUrl: 'https://unity.com/legal/as-terms',
+          source: 'https://assetstore.unity.com/packages/2d/gui/icons/fantasy-icons-megapack-97000',
+          detail:
+            'Most of the painted ingredients, gems and potions, bought through Humble Bundle.',
+        },
+        {
+          work: 'Other painted art',
+          by: 'the artists of other Humble Bundle game-asset packs',
+          licence: 'Each pack’s own licence',
+          source: 'https://www.humblebundle.com',
         },
       ],
     },

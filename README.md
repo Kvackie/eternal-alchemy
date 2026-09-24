@@ -257,10 +257,14 @@ brackets, so nothing about the texture is a shipped image. The palette lives in
 against the surfaces it sits on.
 
 Everything shipped that someone else made is credited in-game under **Settings → Credits**, from
-data in `src/ui/credits.ts`:
+data in `src/ui/credits.ts`. The painted art is mostly REXARD's; which of the other Humble Bundle
+packs each remaining picture came from is not recorded, so those are credited to the packs as a
+whole:
 
 | What | By | Licence |
 | --- | --- | --- |
+| Painted ingredients, gems and potions (most) | REXARD, Fantasy Icons MegaPack, via Humble Bundle | Standard Unity Asset Store EULA |
+| Other painted art | Other Humble Bundle game-asset packs | Each pack's licence |
 | Cinzel | Natanael Gama, The Cinzel Project Authors | SIL OFL 1.1 (`public/licenses/`) |
 | Alegreya Sans | Juan Pablo del Peral, Huerta Tipográfica | SIL OFL 1.1 (`public/licenses/`) |
 | Interface icons | Lorc and Delapouite, game-icons.net | CC BY 3.0 |

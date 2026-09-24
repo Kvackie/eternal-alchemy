@@ -1704,6 +1704,15 @@ input[type='range'] {
   text-underline-offset: 0.2em;
 }
 
+/* A licence with no one page to link to reads the same, as plain text. */
+.credit-links span {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--text-dim);
+  font-size: 0.8125rem;
+}
+
 .credit-links a:hover {
   color: var(--brass-bright);
 }
