@@ -30,6 +30,7 @@ import {
   slotGlyph,
   slotGrid,
   stat,
+  TILE_ICON,
 } from '../components';
 import { showHeroInfo } from '../heroInfo';
 import { findLabel, showMissionReward } from '../missionReward';
@@ -512,7 +513,7 @@ function renderSupplies(sim: Simulation): HTMLElement {
      */
     const tile = slot({
       id: first.uid,
-      icon: potionIcon(first.recipeId),
+      icon: potionIcon(first.recipeId, TILE_ICON),
       label: t(`recipe.${first.recipeId}`),
       caption,
       count: stack.items.length,

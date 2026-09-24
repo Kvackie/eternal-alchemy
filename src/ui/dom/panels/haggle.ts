@@ -22,6 +22,7 @@ import {
   slot,
   slotGrid,
   stat,
+  TILE_ICON,
 } from '../components';
 import { formatGold, t } from '@/i18n';
 import { customersConfig, getCustomer } from '@/sim/config';
@@ -79,7 +80,7 @@ export function renderHaggle(sim: Simulation): HTMLElement {
       const item = sim.world.bottled.find((entry) => entry.uid === uid)!;
       return slot({
         id: uid,
-        icon: potionIcon(item.recipeId),
+        icon: potionIcon(item.recipeId, TILE_ICON),
         label: t(`recipe.${item.recipeId}`),
         caption: [gradeBadge(item.grade), goldText(item.fairValue)],
         onActivate: () => {

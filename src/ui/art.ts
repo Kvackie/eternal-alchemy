@@ -50,9 +50,11 @@ export function hasArt(kind: ArtKind, id: string): boolean {
 /**
  * Relative on purpose: the build sets `base: './'` so the same path resolves
  * from a web root, a subdirectory, and a Capacitor WebView's file:// origin.
+ *
+ * WebP, at twice the size anything is drawn — `scripts/art-build.js` says why.
  */
 export function artUrl(kind: ArtKind, id: string): string {
-  return `art/${kind}/${id}.png`;
+  return `art/${kind}/${id}.webp`;
 }
 
 /** The url, or null when there is no art — callers decide what to draw instead. */

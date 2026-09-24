@@ -4,7 +4,9 @@ Put source art here at **whatever size you have**. A build step normalises it in
 `public/art/` at the exact sizes the game asks for, so nothing here needs resizing by
 hand — that is the point of the folder.
 
-Nothing in `art/` ships. Only the normalised output in `public/art/` is bundled.
+Nothing in `art/` ships. Only the normalised output in `public/art/` is bundled, as WebP
+at twice the size the game draws each picture, so it stays sharp on a 2× or 3× phone
+screen.
 
 ## Naming is the contract
 
@@ -28,7 +30,7 @@ Ids are camelCase and case-sensitive: `galeThistle.png`, not `gale-thistle.png`.
 
 ---
 
-## `ingredients/` — 64 × 64 target
+## `ingredients/` — 128 × 128 target
 
 The most valuable batch: these appear in the garden, the cave, the cauldron, every
 inventory tile and every merchant stall.
@@ -45,7 +47,7 @@ Aqua blue, Terra gold, Aer violet, Umbra grey). Painted art doesn't have to foll
 those colours, but a picture that reads as fiery on an Umbra ingredient will fight
 the rest of the UI, which labels it Umbra everywhere else.
 
-## `potions/`
+## `potions/` — 128 × 192 target
 
 A potion picture is named for the bottle, not the recipe: each of the 31 recipes in
 `src/data/recipes.json` names the picture it uses in its `art` field, so a new bottle
@@ -55,12 +57,12 @@ is wired in by pointing a recipe at it.
 
 | File | Target | Notes |
 | --- | --- | --- |
-| `plot.png` | 128 × 96 | Empty tilled soil. Crops draw on top and scale with growth. |
-| `cauldron.png` | 192 × 192 | Pot only. The liquid surface is a tinted ellipse drawn over it. |
-| `shelf.png` | 256 × 64 | A board. Bottles stand on it; it repeats horizontally. |
-| `bottle.png` | 64 × 96 | **Neutral/greyscale** — tinted at runtime by the potion's blend. |
+| `plot.png` | 384 × 384 | Empty tilled soil. Crops draw on top and scale with growth. |
+| `cauldron.png` | 384 × 384 | Pot only. The liquid surface is a tinted ellipse drawn over it. |
+| `shelf.png` | 512 × 96 | A board. Bottles stand on it; it repeats horizontally. |
+| `bottle.png` | 128 × 192 | **Neutral/greyscale** — tinted at runtime by the potion's blend. |
 
-## `decor/` — 10 furnishings
+## `decor/` — 10 furnishings, 256 × 256 target
 
 Drawn behind the shelves in the shop view. Sizes vary by spot; the normaliser handles
 it, so just keep the piece roughly proportioned to its slot.

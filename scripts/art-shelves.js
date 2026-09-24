@@ -29,10 +29,16 @@ const OUT = 'art/shelves';
  * the surface at y=0 the scene can stand a bottle on `top` and be right, with no
  * magic fraction to keep in sync between the packer and the renderer.
  */
-const W = 256;
-const H = 48;
+const W = 512;
+const H = 96;
 const BOARD_TOP = 0;
-const BOARD_H = 24;
+const BOARD_H = 48;
+
+/*
+ * Every other measurement below is in units of the 256 × 48 board this was first
+ * drawn at, so the shelf keeps its look at whatever size `art-build.js` ships.
+ */
+const U = W / 256;
 
 /** Ordered worst to best, which is also the order they are sold in. */
 const SHELVES = [
@@ -59,17 +65,17 @@ for (const shelf of SHELVES) {
    */
   const behind = Buffer.from(
     `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-       <ellipse cx="${W / 2}" cy="${BOARD_TOP + BOARD_H + 6}" rx="${W * 0.46}" ry="6"
+       <ellipse cx="${W / 2}" cy="${BOARD_TOP + BOARD_H + 6 * U}" rx="${W * 0.46}" ry="${6 * U}"
                 fill="#000" opacity="0.42"/>
-       <rect x="${W * 0.13}" y="${BOARD_TOP + BOARD_H}" width="8" height="16" fill="#2b2116"/>
-       <rect x="${W * 0.85}" y="${BOARD_TOP + BOARD_H}" width="8" height="16" fill="#2b2116"/>
+       <rect x="${W * 0.13}" y="${BOARD_TOP + BOARD_H}" width="${8 * U}" height="${16 * U}" fill="#2b2116"/>
+       <rect x="${W * 0.85}" y="${BOARD_TOP + BOARD_H}" width="${8 * U}" height="${16 * U}" fill="#2b2116"/>
      </svg>`,
   );
 
   const front = Buffer.from(
     `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-       <rect x="0" y="${BOARD_TOP}" width="${W}" height="2" fill="#fff" opacity="0.26"/>
-       <rect x="0" y="${BOARD_TOP + BOARD_H - 4}" width="${W}" height="4" fill="#000" opacity="0.45"/>
+       <rect x="0" y="${BOARD_TOP}" width="${W}" height="${2 * U}" fill="#fff" opacity="0.26"/>
+       <rect x="0" y="${BOARD_TOP + BOARD_H - 4 * U}" width="${W}" height="${4 * U}" fill="#000" opacity="0.45"/>
      </svg>`,
   );
 

@@ -2,38 +2,38 @@
   "$comment": "Anchors within each brew sprite, as fractions of its frame. Each brew is painted as a rounded mass with a rim running round its outside and the bubbling interior within; rimX/rimY is where that rim reaches its LOWEST point — the widest row of the mass — and rimW is how wide it is there. The scene puts rimX/rimY on the bottom of a cauldron's opening and scales rimW to the opening's width, so the liquid meets the pot at its own lip. bottomX/bottomY is the very base of the mass. Measured from the BUILT art by scripts/art-build.js. Generated — do not edit.",
   "anchors": {
     "brewAer": {
-      "rimX": 0.497,
-      "rimY": 0.677,
+      "rimX": 0.499,
+      "rimY": 0.68,
       "rimW": 1,
-      "bottomX": 0.497,
+      "bottomX": 0.499,
       "bottomY": 0.854
     },
     "brewAqua": {
-      "rimX": 0.51,
+      "rimX": 0.513,
       "rimY": 0.677,
-      "rimW": 0.974,
-      "bottomX": 0.482,
+      "rimW": 0.971,
+      "bottomX": 0.486,
       "bottomY": 0.979
     },
     "brewIgnis": {
-      "rimX": 0.487,
-      "rimY": 0.786,
+      "rimX": 0.483,
+      "rimY": 0.802,
       "rimW": 0.969,
-      "bottomX": 0.482,
-      "bottomY": 0.974
+      "bottomX": 0.483,
+      "bottomY": 0.971
     },
     "brewTerra": {
-      "rimX": 0.487,
-      "rimY": 0.599,
-      "rimW": 0.969,
-      "bottomX": 0.487,
-      "bottomY": 0.938
+      "rimX": 0.492,
+      "rimY": 0.581,
+      "rimW": 0.966,
+      "bottomX": 0.49,
+      "bottomY": 0.94
     },
     "brewUmbra": {
       "rimX": 0.495,
-      "rimY": 0.536,
-      "rimW": 0.964,
-      "bottomX": 0.5,
+      "rimY": 0.542,
+      "rimW": 0.966,
+      "bottomX": 0.501,
       "bottomY": 0.818
     }
   }

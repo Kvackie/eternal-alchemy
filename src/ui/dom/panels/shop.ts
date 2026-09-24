@@ -37,6 +37,7 @@ import {
   slotGrid,
   tabPanel,
   tabStrip,
+  TILE_ICON,
 } from '../components';
 import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance } from '@/sim/market';
@@ -258,7 +259,7 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
 
   return slot({
     id: shelfSlot.id,
-    icon: potionIcon(item.recipeId),
+    icon: potionIcon(item.recipeId, TILE_ICON),
     label: t(`recipe.${item.recipeId}`),
     count: shelfSlot.quantity > 1 ? shelfSlot.quantity : undefined,
     caption: [gradeBadge(item.grade), goldText(asking)],
@@ -460,7 +461,7 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
             shown.map(({ item, count }) =>
               slot({
                 id: item.uid,
-                icon: potionIcon(item.recipeId),
+                icon: potionIcon(item.recipeId, TILE_ICON),
                 label: t(`recipe.${item.recipeId}`),
                 count,
                 caption: [gradeBadge(item.grade), goldText(item.fairValue)],
@@ -656,7 +657,7 @@ function renderInventory(sim: Simulation): HTMLElement {
 function stackTile(sim: Simulation, { item, count, room }: Stack): HTMLElement {
   return slot({
     id: item.uid,
-    icon: potionIcon(item.recipeId),
+    icon: potionIcon(item.recipeId, TILE_ICON),
     label: t(`recipe.${item.recipeId}`),
     count,
     caption: [gradeBadge(item.grade), goldText(item.fairValue)],

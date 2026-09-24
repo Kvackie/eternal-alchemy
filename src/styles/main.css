@@ -1539,11 +1539,15 @@ input[type='range'] {
   opacity: 0.4;
 }
 
+/*
+ * Big enough to recognise a painted picture by, not just to see there is one:
+ * at 28px an ingredient was a coloured smudge beside its own name.
+ */
 .slot-icon {
   display: grid;
   place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
 }
 
 .slot-label {

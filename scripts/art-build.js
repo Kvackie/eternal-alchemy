@@ -26,18 +26,34 @@ const UPRIGHT = existsSync('art/upright.json')
   ? (JSON.parse(readFileSync('art/upright.json', 'utf8')).rotate ?? {})
   : {};
 
-/** Target box per kind, and how much of it to leave as breathing room. */
+/*
+ * Target box per kind, and how much of it to leave as breathing room.
+ *
+ * Twice the size anything is drawn at, give or take. An ingredient shows at up
+ * to 44 CSS pixels, which a 3x phone paints with 132 device pixels — so a 64px
+ * sprite was being stretched to twice its size on every phone and read as soft.
+ * The page never draws at a sprite's own size: every picture is placed in a
+ * box set by CSS or `setDisplaySize`, so a bigger file is sharper and nothing
+ * else.
+ */
 const KINDS = {
-  ingredient: { from: 'art/ingredients', w: 64, h: 64, margin: 0.06 },
-  decor: { from: 'art/decor', w: 128, h: 128, margin: 0.04 },
-  potion: { from: 'art/potions', w: 64, h: 96, margin: 0.06 },
-  scene: { from: 'art/scene', w: 192, h: 192, margin: 0 },
+  ingredient: { from: 'art/ingredients', w: 128, h: 128, margin: 0.06 },
+  decor: { from: 'art/decor', w: 256, h: 256, margin: 0.04 },
+  potion: { from: 'art/potions', w: 128, h: 192, margin: 0.06 },
+  scene: { from: 'art/scene', w: 384, h: 384, margin: 0 },
   // Boards are wide and shallow, and composed by art-shelves.js rather than
   // dropped in raw — so they are already the right shape and want no trimming.
-  shelf: { from: 'art/shelves', w: 256, h: 48, margin: 0, keepFrame: true },
+  shelf: { from: 'art/shelves', w: 512, h: 96, margin: 0, keepFrame: true },
 };
 
-/** Portraits keep their own aspect and are not trimmed — a face is the frame. */
+/*
+ * Portraits keep their own aspect and are not trimmed — a face is the frame.
+ *
+ * Not doubled with the rest. A face is drawn 56 to about 110 CSS pixels wide
+ * (a tavern card on a phone is the widest), which this covers at 2x and falls a
+ * little short of at 3x; doubling would roughly add another megabyte and a half
+ * to the heaviest folder there is, for faces that are seldom looked at closely.
+ */
 const PORTRAITS = {
   merchant: { from: 'art/portraits/merchants', w: 256, h: 320 },
   hero: { from: 'art/portraits/heroes', w: 256, h: 320 },
@@ -54,10 +70,25 @@ const PORTRAITS = {
  * suits them.
  */
 const SCENE_WIDE = {
-  namePlank: 320,
+  namePlank: 640,
 };
 
 const OUT = 'public/art';
+
+/*
+ * WebP rather than PNG.
+ *
+ * At twice the resolution PNG would have doubled the folder again; lossy WebP
+ * holds painted art at a fraction of the bytes, and `alphaQuality: 100` keeps
+ * the alpha channel lossless so trimmed edges stay as clean as the PNG's were.
+ * `smartSubsample` keeps colour from bleeding across thin outlines — a bottle's
+ * rim, a fern's edge — for a few percent more bytes. Every browser the game
+ * supports, and the Android WebView, decodes it.
+ */
+const EXT = 'webp';
+const encode = (pipeline) =>
+  pipeline.webp({ quality: 88, alphaQuality: 100, smartSubsample: true });
+
 const manifest = {};
 
 /*
@@ -96,18 +127,20 @@ function sourcesFor(kind, from) {
  * from a slow leak into most of the folder.
  *
  * The ordering is not incidental. Windows matches filenames without regard to
- * case, so writing `emberstone.png` over an existing `emberStone.png` updates
+ * case, so writing `emberstone.webp` over an existing `emberStone.webp` updates
  * the file but leaves the OLD name on it — after which a clean-up pass looking
- * for `emberstone.png` finds nothing by that name and deletes the sprite it
+ * for `emberstone.webp` finds nothing by that name and deletes the sprite it
  * just built. Clearing first sidesteps that, and has the side benefit of
  * correcting the case of any file that drifted: a name only Windows considers
  * a match is a 404 on a case-sensitive host.
  */
 function prune(outDir, ids) {
   if (!existsSync(outDir)) return 0;
-  const keep = new Set(ids.map((id) => `${id}.png`));
+  const keep = new Set(ids.map((id) => `${id}.${EXT}`));
   let gone = 0;
-  for (const file of readdirSync(outDir).filter((f) => /\.png$/i.test(f))) {
+  // PNGs included: the sprites shipped as PNG before, and a leftover one is
+  // exactly the dead weight this pass exists to clear.
+  for (const file of readdirSync(outDir).filter((f) => /\.(png|webp)$/i.test(f))) {
     if (keep.has(file)) continue;
     rmSync(path.join(outDir, file));
     gone += 1;
@@ -147,31 +180,28 @@ for (const [kind, spec] of Object.entries(KINDS)) {
     if (kind === 'scene' && SCENE_WIDE[id]) {
       // Trimmed so the slice insets below are measured against the board and
       // not against whatever empty canvas the file was saved with.
-      await pipeline
-        .trim({ threshold: 10 })
-        .resize({ width: SCENE_WIDE[id] })
-        .png({ compressionLevel: 9 })
-        .toFile(path.join(outDir, `${id}.png`));
+      await encode(pipeline.trim({ threshold: 10 }).resize({ width: SCENE_WIDE[id] })).toFile(
+        path.join(outDir, `${id}.${EXT}`),
+      );
     } else if (spec.keepFrame) {
       // Already composed at the right shape; trimming would eat the shadow and
       // re-centre the board away from its brackets.
-      await pipeline
-        .resize(spec.w, spec.h, { fit: 'fill' })
-        .png({ compressionLevel: 9 })
-        .toFile(path.join(outDir, `${id}.png`));
+      await encode(pipeline.resize(spec.w, spec.h, { fit: 'fill' })).toFile(
+        path.join(outDir, `${id}.${EXT}`),
+      );
     } else {
       const inner = Math.round(Math.min(spec.w, spec.h) * (1 - spec.margin * 2));
-      await pipeline
-        // Trim the transparent border first, so framing comes from the art
-        // rather than from however much empty canvas the pack left.
-        .trim({ threshold: 10 })
-        .resize(inner, inner, { fit: 'inside', withoutEnlargement: false })
-        .resize(spec.w, spec.h, {
-          fit: 'contain',
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
-        .png({ compressionLevel: 9 })
-        .toFile(path.join(outDir, `${id}.png`));
+      await encode(
+        pipeline
+          // Trim the transparent border first, so framing comes from the art
+          // rather than from however much empty canvas the pack left.
+          .trim({ threshold: 10 })
+          .resize(inner, inner, { fit: 'inside', withoutEnlargement: false })
+          .resize(spec.w, spec.h, {
+            fit: 'contain',
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+          }),
+      ).toFile(path.join(outDir, `${id}.${EXT}`));
     }
   }
   manifest[kind] = [...ids].sort();
@@ -194,10 +224,9 @@ for (const [kind, spec] of Object.entries(PORTRAITS)) {
 
   for (const file of sources) {
     const id = file.replace(/\.png$/i, '');
-    await sharp(path.join(spec.from, file))
-      .resize(spec.w, spec.h, { fit: 'cover', position: 'top' })
-      .png({ compressionLevel: 9 })
-      .toFile(path.join(outDir, `${id}.png`));
+    await encode(
+      sharp(path.join(spec.from, file)).resize(spec.w, spec.h, { fit: 'cover', position: 'top' }),
+    ).toFile(path.join(outDir, `${id}.${EXT}`));
   }
   manifest[kind] = [...ids].sort();
   console.log(
@@ -214,7 +243,7 @@ for (const [kind, spec] of Object.entries(PORTRAITS)) {
  * opening, so the brew rises out of the pot from where it actually rests.
  *
  * Measured here, on the built sprite, rather than on the source: normalising
- * into the 192-square moves every number, and an anchor measured against the
+ * into the 384-square moves every number, and an anchor measured against the
  * wrong frame is worse than no anchor at all.
  */
 async function measureBrews() {
@@ -222,7 +251,7 @@ async function measureBrews() {
   if (!existsSync(dir)) return;
   const anchors = {};
 
-  for (const file of readdirSync(dir).filter((f) => /^brew.*\.png$/i.test(f))) {
+  for (const file of readdirSync(dir).filter((f) => /^brew.*\.webp$/i.test(f))) {
     const { data, info } = await sharp(path.join(dir, file))
       .ensureAlpha()
       .raw()
@@ -295,7 +324,7 @@ async function measureBrews() {
      * would only be able to disagree with it.
      */
     const round = (n) => Math.round(n * 1000) / 1000;
-    anchors[file.replace(/\.png$/i, '')] = {
+    anchors[file.replace(/\.webp$/i, '')] = {
       rimX: round((bestFirst + bestLast) / 2 / info.width),
       rimY: round(bestY / info.height),
       rimW: round(bestW / info.width),

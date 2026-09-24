@@ -33,6 +33,15 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 }
 
 /**
+ * The picture size for an ordinary grid tile.
+ *
+ * The icons below draw at `size + 6` pixels, so this fills a 36px `.slot-icon`
+ * with the same few pixels to spare that the Market's roomy tiles leave round
+ * theirs — and a glyph drawn instead scales with it.
+ */
+export const TILE_ICON = 26;
+
+/**
  * An ingredient's picture, or its essence glyph if it hasn't got one.
  *
  * Six panels drew this same badge by hand, which meant wiring painted art would

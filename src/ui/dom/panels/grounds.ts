@@ -30,6 +30,7 @@ import {
   tabPanel,
   tabStrip,
   VALUE_MARK,
+  TILE_ICON,
 } from '../components';
 import { formatDuration, t } from '@/i18n';
 import { showIngredientInfo } from '../ingredientInfo';
@@ -194,7 +195,7 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
 
     return slot({
       id,
-      icon: ingredientIcon(crop.yields),
+      icon: ingredientIcon(crop.yields, TILE_ICON),
       label,
       count,
       /*
@@ -527,7 +528,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
     .map(({ species, count }) =>
       slot({
         id: species.id,
-        icon: ingredientIcon(species.id),
+        icon: ingredientIcon(species.id, TILE_ICON),
         label: t(`ingredient.${species.id}`),
         count,
         caption: t(`cave.light.${species.light}`),

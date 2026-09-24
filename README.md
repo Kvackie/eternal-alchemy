@@ -329,7 +329,7 @@ https://kvackie.github.io/eternal-alchemy/
 ```
 
 That subpath is why `vite.config.ts` sets `base: './'` and why `ui/art.ts` returns relative paths
-like `art/potion/x.png`: every reference resolves against the document, so the same build works at a
+like `art/potion/x.webp`: every reference resolves against the document, so the same build works at a
 repo subpath, at a domain root, and inside the Capacitor WebView without a rebuild.
 
 Two things follow from the save living in `localStorage`. It is **per-browser and per-origin** — the

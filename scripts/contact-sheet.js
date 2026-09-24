@@ -21,7 +21,7 @@ const LABEL = 22;
 const PAD = 6;
 
 const files = readdirSync(dir)
-  .filter((f) => /\.png$/i.test(f))
+  .filter((f) => /\.(png|webp)$/i.test(f))
   .filter((f) => (filter ? filter.test(f) : true))
   .sort();
 
@@ -51,7 +51,7 @@ for (let i = 0; i < files.length; i += 1) {
 
   composites.push({ input: buf, left: x, top: y });
 
-  const label = escape(files[i].replace(/\.png$/i, ''));
+  const label = escape(files[i].replace(/\.(png|webp)$/i, ''));
   const svg = Buffer.from(
     `<svg width="${cellW}" height="${LABEL}" xmlns="http://www.w3.org/2000/svg">
        <text x="${cellW / 2}" y="15" font-family="monospace" font-size="12"
