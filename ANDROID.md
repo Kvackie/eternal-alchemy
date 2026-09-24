@@ -39,6 +39,16 @@ Gradle with JDK 21, and attaches `app-debug.apk` to the run as an artifact calle
 the phone. It only ever runs when started by hand. The workflow is
 `.github/workflows/android.yml`.
 
+## The icon and the splash
+
+The launcher icon and the splash screen are the golden flask from the potion art on the game's
+plum-black ground. Because `android/` is generated, they are painted into it rather than committed:
+`npm run android:assets` (`scripts/android-assets.js`) redraws every launcher icon and splash image
+the template ships, at each one's own size, sets the adaptive icon's background colour, and makes
+Android 12's system splash use the same ground so a launch never opens on white. The workflow runs it
+after `cap add`; on your own machine, run it once after `npx cap add android`. `cap sync` leaves
+these files alone, so it does not need running again.
+
 ## Building on your own machine
 
 ```
@@ -96,6 +106,5 @@ awaited once at boot so the first read sees real data rather than an empty store
 - **No APK has been run on a device yet.** The workflow builds one: its first run, on 24 September
   2026, went green end to end in about two minutes and attached a debug APK. Nobody has installed
   that APK on a phone yet.
-- No app icon or splash image — Capacitor's defaults are in place. Those come with the art pass.
 - No release signing. A debug APK is correct for private sideloading; a release build would need a
   keystore.

@@ -16,6 +16,7 @@
     "test:ui": "vite-node scripts/ui-check.ts",
     "android:sync": "npm run build && cap sync android",
     "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug",
+    "android:assets": "node scripts/android-assets.js",
     "android:open": "cap open android",
     "android:run": "npm run android:sync && cap run android"
   },
