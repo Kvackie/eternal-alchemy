@@ -1,8 +1,36 @@
 import { defineConfig } from 'vitest/config';
+import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
+
+/*
+ * What this build is, stamped in at build time and shown in the HUD.
+ *
+ * The version is package.json's, bumped by hand when it means something. The
+ * commit and the date change on every deploy by themselves, so two builds that
+ * share a version can still be told apart. On GitHub the commit comes from the
+ * runner; locally from git, and a checkout without git says "dev".
+ */
+function buildInfo(): { version: string; commit: string; date: string } {
+  const { version } = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string };
+  let commit = process.env.GITHUB_SHA?.slice(0, 7) ?? '';
+  if (!commit) {
+    try {
+      commit = execSync('git rev-parse --short=7 HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+        .toString()
+        .trim();
+    } catch {
+      commit = 'dev';
+    }
+  }
+  return { version, commit, date: new Date().toISOString() };
+}
 
 export default defineConfig({
   base: './',
+  define: {
+    __BUILD__: JSON.stringify(buildInfo()),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

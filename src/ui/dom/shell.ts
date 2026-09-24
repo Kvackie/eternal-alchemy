@@ -41,6 +41,7 @@ import { debugEnabled } from '@/platform/debugFlag';
 import type { AwaySummary, Simulation } from '@/sim/sim';
 import type { SaveManager } from '@/platform/save';
 import type { World } from '@/sim/types';
+import { versionLabel } from '@/ui/build';
 
 export interface ShellDeps {
   sim: Simulation;
@@ -480,13 +481,17 @@ export class Shell {
       // one currency a player has to save toward was invisible for the whole
       // run in which they are saving toward it.
       hudStat('mastery', t('hud.mastery'), mastery),
-      el('div', { class: 'hud-clock' }, [
-        dot,
-        date,
-        // The same middot the date already uses, so the countdown joins the line
-        // rather than floating off the end of it as a separate readout.
-        el('span', { class: 'hud-sep', text: '·', 'aria-hidden': 'true' }),
-        countdown,
+      el('div', { class: 'hud-end' }, [
+        el('div', { class: 'hud-clock' }, [
+          dot,
+          date,
+          // The same middot the date already uses, so the countdown joins the line
+          // rather than floating off the end of it as a separate readout.
+          el('span', { class: 'hud-sep', text: '·', 'aria-hidden': 'true' }),
+          countdown,
+        ]),
+        // Under the clock on every screen, so any screenshot says which build.
+        el('div', { class: 'hud-version', text: versionLabel() }),
       ]),
     );
 

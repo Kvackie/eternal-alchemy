@@ -332,6 +332,10 @@ That subpath is why `vite.config.ts` sets `base: './'` and why `ui/art.ts` retur
 like `art/potion/x.webp`: every reference resolves against the document, so the same build works at a
 repo subpath, at a domain root, and inside the Capacitor WebView without a rebuild.
 
+Every build says which it is, in small print under the HUD clock: `v0.1.0 · 2c5149f · 24 Sep 2026`.
+The version is `package.json`'s and changes only when someone bumps it; the commit and the build date
+are stamped in by `vite.config.ts`, so every deploy is distinguishable even between bumps.
+
 Two things follow from the save living in `localStorage`. It is **per-browser and per-origin** — the
 Pages save and a local `npm run dev` save are different games, and a browser that clears site data
 clears the shop. And the site is public: anyone with the link plays their own copy, starting from

@@ -507,6 +507,7 @@
   "hud.renown": "Renown",
   "hud.mastery": "Mastery",
   "hud.day": "Day {day}",
+  "hud.version": "v{version} · {commit} · {date}",
   "phase.dawn": "Dawn",
   "phase.day": "Day",
   "phase.dusk": "Dusk",

@@ -345,8 +345,28 @@ button {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-.hud-clock {
+/* The clock, with the build under it, held to the right of the bar. */
+.hud-end {
   margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.0625rem;
+}
+
+/*
+ * Which build is running: there on every screen, and quiet enough that
+ * nobody reads it unless they are looking for it.
+ */
+.hud-version {
+  font-size: 0.625rem;
+  line-height: 1.2;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hud-clock {
   display: flex;
   align-items: center;
   /* Tight, because the middot is now doing the separating. */
