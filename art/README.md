@@ -22,8 +22,8 @@ Ids are camelCase and case-sensitive: `galeThistle.png`, not `gale-thistle.png`.
   cannot invent edges that were cropped off.
 - **At least 2× the target size** in the tables below, so the downscale stays sharp.
   Bigger is fine; oversized files cost nothing but disk here.
-- Dark-friendly. The game's ground is `#0F1412` and the palette is muted greens and
-  ambers — see `src/ui/theme.ts`. Very dark art disappears; the placeholder décor
+- Dark-friendly. The game's ground is `#120D18` (plum-black) and the palette is brass,
+  parchment and verdigris — see `src/ui/theme.ts`. Very dark art disappears; the placeholder décor
   taught us that the hard way.
 
 ---

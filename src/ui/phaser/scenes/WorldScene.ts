@@ -86,7 +86,6 @@ export class WorldScene extends Phaser.Scene {
   private panelBox = '';
   private content!: Phaser.GameObjects.Container;
   private lighting!: Phaser.GameObjects.Rectangle;
-  private sky!: Phaser.GameObjects.Rectangle;
 
   constructor() {
     super(WorldScene.KEY);
@@ -105,7 +104,6 @@ export class WorldScene extends Phaser.Scene {
     // sprite the loader brought in keeps its painted art.
     generatePlaceholders(this);
 
-    this.sky = this.add.rectangle(0, 0, 10, 10, palette.bgPage).setOrigin(0);
     this.content = this.add.container(0, 0);
     this.lighting = this.add
       .rectangle(0, 0, 10, 10, 0xffffff, 0)
@@ -388,7 +386,6 @@ export class WorldScene extends Phaser.Scene {
     if (layoutChanged) this.drawn = '';
 
     const { width, height } = this.scale.gameSize;
-    this.sky.setSize(width, height);
     this.lighting.setSize(width, height);
 
     /*

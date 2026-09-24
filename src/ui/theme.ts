@@ -12,19 +12,20 @@
 import type { Essence } from '@/sim/types';
 
 export const palette = {
-  bgPage: 0x0f1412,
-  bgPanel: 0x161d1a,
-  bgRaised: 0x1e2723,
-  bgInset: 0x0b0f0e,
-  text: 0xe2e7e0,
-  textDim: 0xb4bfb8,
-  textFaint: 0x87938c,
-  border: 0x2b3632,
-  good: 0x5cb3a0,
-  goodText: 0x8fd4c3,
-  goodWash: 0x15302a,
-  warn: 0xd9a441,
-  warnWash: 0x302614,
+  bgPage: 0x120d18,
+  bgPanel: 0x1b1422,
+  bgRaised: 0x251c2d,
+  bgInset: 0x0d0911,
+  text: 0xf1e7d3,
+  textDim: 0xcdbfa5,
+  textFaint: 0x9e917e,
+  border: 0x45352a,
+  brass: 0xd4ae5c,
+  good: 0x5fb89a,
+  goodText: 0x94d8c0,
+  goodWash: 0x173029,
+  warn: 0xe0ac48,
+  warnWash: 0x33261a,
 } as const;
 
 export const essenceColors: Record<Essence, number> = {
@@ -92,14 +93,4 @@ export const phaseTint: Record<string, { color: number; alpha: number }> = {
   day: { color: 0xffffff, alpha: 0 },
   dusk: { color: 0xd4703c, alpha: 0.2 },
   night: { color: 0x2a3f6b, alpha: 0.42 },
-};
-
-export const gradeColor: Record<string, number> = {
-  S: 0xd9a441,
-  A: 0x8fd4c3,
-  B: 0x5cb3a0,
-  C: 0xb4bfb8,
-  D: 0x87938c,
-  E: 0x87938c,
-  F: 0xee7250,
 };

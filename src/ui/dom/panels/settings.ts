@@ -27,6 +27,8 @@ import type { SaveManager } from '@/platform/save';
 import type { Simulation } from '@/sim/sim';
 import type { World } from '@/sim/types';
 import { bus, changed, confirm, toast } from '@/ui/bus';
+import { credits } from '@/ui/credits';
+import { iconSvg } from '@/ui/icons';
 
 export interface SettingsDeps {
   sim: Simulation;
@@ -141,6 +143,16 @@ export function renderSettings(deps: SettingsDeps): HTMLElement {
     ]),
   );
 
+  body.append(
+    el('section', { class: 'setting' }, [
+      el('span', { class: 'field-label', text: t('settings.credits') }),
+      el('span', { class: 'field-note', text: t('settings.credits.hint') }),
+      el('div', { class: 'row-actions left' }, [
+        button(t('settings.credits.action'), openCredits, { variant: 'quiet', small: true }),
+      ]),
+    ]),
+  );
+
   // Nothing to see behind it, so it sits in the middle rather than docked right.
   return el('div', { class: 'panel panel-roomy settings-panel' }, [
     panelHeader(t('settings.title')),
@@ -201,7 +213,7 @@ function renderCodex(deps: SettingsDeps): HTMLElement {
               t('prestige.earns', { count: VALUE_MARK }),
               el('span', { class: 'mastery num' }, [
                 // Placeholder until the medal art lands.
-                el('span', { class: 'mastery-mark', text: '🎖', 'aria-hidden': 'true' }),
+                el('span', { class: 'mastery-mark', html: iconSvg('mastery', 14) }),
                 formatNumber(sim.masteryOnRetire()),
               ]),
             ),
@@ -274,7 +286,7 @@ function codexCard(deps: SettingsDeps, node: CodexNodeDef): HTMLElement {
     maxed
       ? el('span', { class: 'codex-cost is-maxed', text: t('codex.maxed') })
       : el('span', { class: 'codex-cost mastery' }, [
-          el('span', { class: 'mastery-mark', text: '🎖', 'aria-hidden': 'true' }),
+          el('span', { class: 'mastery-mark', html: iconSvg('mastery', 14) }),
           formatNumber(codexCost(node.id, tier)),
         ]),
   ]);
@@ -351,7 +363,7 @@ function openCodex(deps: SettingsDeps, node: CodexNodeDef): void {
             el('p', { class: 'codex-price' }, [
               el('span', { class: 'field-label', text: t('codex.costLabel') }),
               el('span', { class: 'mastery' }, [
-                el('span', { class: 'mastery-mark', text: '🎖', 'aria-hidden': 'true' }),
+                el('span', { class: 'mastery-mark', html: iconSvg('mastery', 14) }),
                 t('codex.cost', { cost }),
               ]),
             ]),
@@ -585,4 +597,45 @@ function importSave(onLoaded: (text: string) => void): void {
     void file.text().then(onLoaded);
   });
   input.click();
+}
+
+/**
+ * The Credits page: every typeface, icon set and engine the game ships, who
+ * made it, and the licence it is used under — the attribution those licences
+ * ask for, somewhere a player can actually find it.
+ */
+function openCredits(): void {
+  const link = (href: string, text: string) =>
+    el('a', { href, text, target: '_blank', rel: 'noopener noreferrer' });
+
+  modal({
+    className: 'credits-dialog',
+    content: (dismiss) => [
+      el('h2', { text: t('credits.title') }),
+      el('p', { text: t('credits.intro') }),
+      ...credits().map((group) =>
+        el('section', { class: 'credits-group' }, [
+          el('span', { class: 'field-label', text: t(group.heading) }),
+          ...group.credits.map((credit) =>
+            el('div', { class: 'credit' }, [
+              el('div', { class: 'credit-work' }, [
+                el('strong', { text: credit.work }),
+                el('span', { text: t('credits.by', { name: credit.by }) }),
+              ]),
+              ...(credit.detail
+                ? [el('div', { class: 'credit-detail', text: credit.detail })]
+                : []),
+              el('div', { class: 'credit-links' }, [
+                link(credit.licenceUrl, `${t('credits.licence')}: ${credit.licence}`),
+                link(credit.source, t('credits.source')),
+              ]),
+            ]),
+          ),
+        ]),
+      ),
+      el('div', { class: 'dialog-actions' }, [
+        button(t('common.close'), dismiss, { variant: 'quiet' }),
+      ]),
+    ],
+  });
 }

@@ -8,7 +8,6 @@
 
 import Phaser from 'phaser';
 import { WorldScene } from './scenes/WorldScene';
-import { palette } from '@/ui/theme';
 import type { ScreenId } from '@/ui/bus';
 import type { Simulation } from '@/sim/sim';
 
@@ -29,7 +28,9 @@ export function createGame(parent: HTMLElement, sim: Simulation): GameHandle {
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
-    backgroundColor: palette.bgPage,
+    // See-through, so the page's own ground — its lamp glow and grain — is the
+    // backdrop the scene is drawn on, the same one every panel sits on.
+    transparent: true,
     scale: {
       mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.NO_CENTER,

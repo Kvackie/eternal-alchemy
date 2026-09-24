@@ -241,6 +241,30 @@ stamped with that essence's glyph, bottles tinted by the potion's blend, plots a
 Composition and silhouette are final; only the rendering isn't. In M4 this becomes a build step
 writing an atlas, and nothing else changes.
 
+## Look, and credits
+
+An apothecary after dark: plum-black surfaces, parchment text and brass fittings, set in
+**Cinzel** (headings, labels, buttons, the nav) and **Alegreya Sans** (everything read). The
+surfaces carry a grain drawn by the browser from SVG noise, and framed panels have brass corner
+brackets, so nothing about the texture is a shipped image. The palette lives in
+`src/styles/main.css` and `src/ui/theme.ts`, and every text colour keeps at least 5:1 contrast
+against the surfaces it sits on.
+
+Everything shipped that someone else made is credited in-game under **Settings → Credits**, from
+data in `src/ui/credits.ts`:
+
+| What | By | Licence |
+| --- | --- | --- |
+| Cinzel | Natanael Gama, The Cinzel Project Authors | SIL OFL 1.1 (`public/licenses/`) |
+| Alegreya Sans | Juan Pablo del Peral, Huerta Tipográfica | SIL OFL 1.1 (`public/licenses/`) |
+| Interface icons | Lorc and Delapouite, game-icons.net | CC BY 3.0 |
+| Phaser | Richard Davey, Phaser Studio Inc. | MIT |
+
+The fonts are subset to Latin and bundled as woff2 from `src/assets/fonts/`. The icons are
+vendored as SVG in `art/icons/` with the set's licence; `node scripts/gen-icons.js --write`
+turns them into `src/data/icons.json`, and a test fails if the two disagree. An icon by a new
+author needs that author added to the script, which is what puts them on the Credits page.
+
 ## Commitments held from day one
 
 **Colour is never the only signal.** Each of the five essences has a glyph — triangle, droplet,
