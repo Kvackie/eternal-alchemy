@@ -2,19 +2,19 @@
   "appId": "com.eternalalchemy.shop",
   "appName": "Eternal Alchemy",
   "webDir": "dist",
-  "backgroundColor": "#0f1412",
+  "backgroundColor": "#120d18",
   "android": {
-    "backgroundColor": "#0f1412",
+    "backgroundColor": "#120d18",
     "allowMixedContent": false
   },
   "ios": {
-    "backgroundColor": "#0f1412",
+    "backgroundColor": "#120d18",
     "contentInset": "always",
     "limitsNavigationsToAppBoundDomains": true
   },
   "plugins": {
     "SplashScreen": {
-      "backgroundColor": "#0f1412",
+      "backgroundColor": "#120d18",
       "launchAutoHide": true,
       "launchShowDuration": 400
     }

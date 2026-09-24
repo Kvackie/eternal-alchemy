@@ -1,0 +1,54 @@
+name: Android APK
+
+# Run by hand from the Actions tab ("Run workflow"). Builds a debug APK for
+# sideloading and attaches it to the run as an artifact; nothing is signed or
+# published. See ANDROID.md.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Capacitor 8's Gradle build wants JDK 21; the runner's default is older.
+      # The Android SDK itself is already installed on ubuntu-latest.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+
+      # The same gate as a deploy: an APK of a build whose tests fail is not
+      # worth installing.
+      - run: npm test
+
+      - run: npm run build
+
+      # The native project is generated, not committed, so every run makes a
+      # fresh one and copies the web bundle into it.
+      - run: npx cap add android
+      - run: npx cap sync android
+
+      - run: ./gradlew assembleDebug
+        working-directory: android
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eternal-alchemy-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

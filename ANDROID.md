@@ -19,7 +19,7 @@ Neither is on this machine, which is why no APK has been built or tested here:
 
 1. **JDK 21** — Temurin is the usual choice: <https://adoptium.net>
 2. **Android SDK** — either Android Studio (easiest), or the command-line tools plus
-   `platform-tools` and `platforms;android-35`.
+   `platform-tools` and `platforms;android-36`.
 
 Then set the environment variables:
 
@@ -30,7 +30,16 @@ setx ANDROID_HOME "$env:LOCALAPPDATA\Android\Sdk"
 
 Open a fresh terminal afterwards so they take effect.
 
-## Building
+## Building without installing anything: the workflow
+
+GitHub builds the APK for you. In the repository's **Actions** tab, pick **Android APK** and press
+**Run workflow**. It runs the tests, builds the web bundle, generates the native project, runs
+Gradle with JDK 21, and attaches `app-debug.apk` to the run as an artifact called
+`eternal-alchemy-debug-apk`. Download it from the run's summary page, unzip it and copy the APK to
+the phone. It only ever runs when started by hand. The workflow is
+`.github/workflows/android.yml`.
+
+## Building on your own machine
 
 ```
 npm run android:apk
@@ -84,8 +93,8 @@ awaited once at boot so the first read sees real data rather than an empty store
 
 ## Not done
 
-- **No APK has been compiled or run on a device.** Everything above is configuration; the toolchain
-  to verify it is not installed here.
+- **No APK has been run on a device yet.** The workflow above is the first place one is compiled;
+  `cap add` and `cap sync` are known to work, and the Gradle step runs for the first time there.
 - No app icon or splash image — Capacitor's defaults are in place. Those come with the art pass.
 - No release signing. A debug APK is correct for private sideloading; a release build would need a
   keystore.
