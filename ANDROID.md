@@ -15,7 +15,7 @@ For private use — sideloaded, not through the Play Store. No signing key, no s
 
 ## What you need installed
 
-Neither is on this machine, which is why no APK has been built or tested here:
+Only for building locally. The workflow below needs neither, since GitHub's runner has both:
 
 1. **JDK 21** — Temurin is the usual choice: <https://adoptium.net>
 2. **Android SDK** — either Android Studio (easiest), or the command-line tools plus
@@ -93,8 +93,9 @@ awaited once at boot so the first read sees real data rather than an empty store
 
 ## Not done
 
-- **No APK has been run on a device yet.** The workflow above is the first place one is compiled;
-  `cap add` and `cap sync` are known to work, and the Gradle step runs for the first time there.
+- **No APK has been run on a device yet.** The workflow builds one: its first run, on 24 September
+  2026, went green end to end in about two minutes and attached a debug APK. Nobody has installed
+  that APK on a phone yet.
 - No app icon or splash image — Capacitor's defaults are in place. Those come with the art pass.
 - No release signing. A debug APK is correct for private sideloading; a release build would need a
   keystore.
