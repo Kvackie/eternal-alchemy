@@ -3,19 +3,21 @@
  *
  * The sheet arrives as five brews on a painted CHECKERBOARD — the pattern
  * artists use to mean "transparent" in a format that cannot hold transparency.
- * `art-dekey.js` reads both checker tones now too, but it keys one picture per
- * file: this is five on one sheet, which have to be found and cut apart first,
- * and each brew's rim read off the art — so the keying lives here as well
- * rather than as a second pass over files that do not exist yet.
+ * The keying is the same as `art-dekey.js` uses, shared from `art-key.js`: the
+ * background test is "close to EITHER checker tone", and the flood runs from the
+ * borders inward, which is what protects the pale highlights inside the flames
+ * and foam from being punched out.
  *
- * The background test is "close to EITHER checker tone", and the flood runs
- * from the borders inward, which is what protects the pale highlights inside
- * the flames and foam from being punched out.
+ * What is particular to this script is everything around that: the checker
+ * tones are read once for the whole sheet, the five brews are found and cut
+ * apart, each is keyed within its own region, and then each brew's rim — read
+ * off the art — is recut into a pool.
  *
  *   node scripts/art-effects.js [--apply]
  */
 import { existsSync } from 'node:fs';
 import sharp from 'sharp';
+import { floodKey, readTones, toneDistance } from './art-key.js';
 
 const APPLY = process.argv.includes('--apply');
 const SOURCE = 'art/scene/cauldronEffects.jpg';
@@ -68,8 +70,6 @@ const TOL = 30;
 /** Beyond this is definitely subject; between the two, alpha ramps. */
 const SOFT = 62;
 
-const dist = (r, g, b, c) => Math.max(Math.abs(r - c[0]), Math.abs(g - c[1]), Math.abs(b - c[2]));
-
 /**
  * Runs of "there is paint here" along one axis, with the gutters between them.
  *
@@ -115,34 +115,19 @@ const { width, height, channels } = info;
 const at = (x, y) => (y * width + x) * channels;
 
 /*
- * The two checker tones, read from the corner.
- *
- * Sampled rather than assumed: the sheet is a JPEG, so its "white" is not 255
- * and the grey is whatever the exporter chose.
+ * The two checker tones, read from just inside the corner and along the row
+ * there: a second tone is anything more than 8 off the first.
  */
-const light = [data[at(1, 1)], data[at(1, 1) + 1], data[at(1, 1) + 2]];
-let dark = light;
-for (let step = 2; step < 120; step += 1) {
-  const p = at(step, 1);
-  if (dist(data[p], data[p + 1], data[p + 2], light) > 8) {
-    dark = [data[p], data[p + 1], data[p + 2]];
-    break;
-  }
-}
+const tones = readTones(data, width, channels, { x: 1, y: 1, span: 120, minGap: 8 });
+const [light, dark = light] = tones;
 console.log(`checker: rgb(${light}) and rgb(${dark})`);
-
-const offBackground = (p) =>
-  Math.min(
-    dist(data[p], data[p + 1], data[p + 2], light),
-    dist(data[p], data[p + 1], data[p + 2], dark),
-  );
 
 // Paint mask for segmentation. A firmer threshold than the alpha ramp uses, so
 // JPEG noise in the checker does not read as a painting.
 const paint = new Uint8Array(width * height);
 for (let y = 0; y < height; y += 1) {
   for (let x = 0; x < width; x += 1) {
-    if (offBackground(at(x, y)) > SOFT) paint[y * width + x] = 1;
+    if (toneDistance(data, at(x, y), tones) > SOFT) paint[y * width + x] = 1;
   }
 }
 
@@ -180,46 +165,8 @@ for (const [index, box] of boxes.entries()) {
   const region = await sharp(SOURCE).extract(box).ensureAlpha().raw().toBuffer();
   const w = box.width;
   const h = box.height;
-  const rAt = (x, y) => (y * w + x) * 4;
-  const rOff = (p) =>
-    Math.min(
-      dist(region[p], region[p + 1], region[p + 2], light),
-      dist(region[p], region[p + 1], region[p + 2], dark),
-    );
-
-  const seen = new Uint8Array(w * h);
-  const queue = [];
-  const push = (x, y) => {
-    if (x < 0 || y < 0 || x >= w || y >= h) return;
-    const i = y * w + x;
-    if (seen[i]) return;
-    if (rOff(rAt(x, y)) > SOFT) return;
-    seen[i] = 1;
-    queue.push(x, y);
-  };
-  for (let x = 0; x < w; x += 1) {
-    push(x, 0);
-    push(x, h - 1);
-  }
-  for (let y = 0; y < h; y += 1) {
-    push(0, y);
-    push(w - 1, y);
-  }
-
-  let cleared = 0;
-  while (queue.length) {
-    const y = queue.pop();
-    const x = queue.pop();
-    const p = rAt(x, y);
-    const d = rOff(p);
-    // Ramp rather than cut, so the soft edges of smoke keep their falloff.
-    region[p + 3] = d <= TOL ? 0 : Math.round(((d - TOL) / (SOFT - TOL)) * 255);
-    if (region[p + 3] < 8) cleared += 1;
-    push(x + 1, y);
-    push(x - 1, y);
-    push(x, y + 1);
-    push(x, y - 1);
-  }
+  // Ramp rather than cut, so the soft edges of smoke keep their falloff.
+  const cleared = floodKey(region, w, h, 4, tones, { tol: TOL, soft: SOFT, clearBelow: 8 });
 
   console.log(
     `  ${cell.id.padEnd(11)} at ${String(box.left).padStart(4)},${String(box.top).padStart(4)} ` +
