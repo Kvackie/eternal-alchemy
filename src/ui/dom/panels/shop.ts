@@ -43,6 +43,7 @@ import { saleChance } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
 import { artUrlIf } from '@/ui/art';
 import { showPotionInfo } from '../potionInfo';
+import { captureFocus, restoreFocus } from '../scroll';
 
 import type { BottledItem, ShelfSlot } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
@@ -450,6 +451,8 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
       const body = el('div');
 
       const draw = (): void => {
+        // Paging redraws the dialog's body under the pager that asked for it.
+        const focus = captureFocus(body);
         clear(body);
         const shown = stacks.slice((page - 1) * STACK_PAGE, page * STACK_PAGE);
         body.append(
@@ -483,6 +486,7 @@ function openStackPicker(sim: Simulation, shelfSlot: ShelfSlot): void {
             }),
           );
         }
+        restoreFocus(body, focus);
       };
 
       draw();

@@ -11,7 +11,13 @@
  */
 
 import { button, clear, el, focusFirstControl } from './components';
-import { captureFocus, captureScroll, restoreFocus, restoreScroll } from './scroll';
+import {
+  captureFocus,
+  captureScroll,
+  restoreFocus,
+  restoreScroll,
+  type FocusMemory,
+} from './scroll';
 import { groundsHasScene, renderGrounds } from './panels/grounds';
 import { renderCauldron } from './panels/cauldron';
 import { closeStation, isStationOpen } from './panels/station';
@@ -136,8 +142,17 @@ export class Shell {
   /** The world as it was when the screen was last drawn — see `worldShape`. */
   private drawnShape = '';
 
-  /** Where the caret was before the confirm dialog took it. */
-  private confirmReturn: HTMLElement | null = null;
+  /**
+   * Where the caret was before the confirm dialog took it.
+   *
+   * The node, and what it was: asking rebuilds the panels, which replaces the
+   * control that asked, so by the time the question is answered the node is
+   * usually gone and its replacement has to be found by identity.
+   */
+  private confirmReturn: { node: HTMLElement; memory: FocusMemory | null } | null = null;
+
+  /** Which screen's panel is in `#panels` now — see `renderPanels`. */
+  private panelScreen: ScreenId | null = null;
 
   /*
    * The parts of the open panel that move on their own.
@@ -223,8 +238,11 @@ export class Shell {
           break;
         case 'confirm':
           if (!this.confirming) {
+            const node = document.activeElement;
             this.confirmReturn =
-              document.activeElement instanceof HTMLElement ? document.activeElement : null;
+              node instanceof HTMLElement && node !== document.body
+                ? { node, memory: captureFocus(document.body) }
+                : null;
           }
           this.confirming = event.request;
           this.renderPanels();
@@ -542,6 +560,9 @@ export class Shell {
      * includes the ones `tick` asks for when the world changes on its own.
      */
     const scrolls = captureScroll(this.nav);
+    // Pressing a screen's button is what rebuilds the nav, so without this the
+    // button that was just pressed is gone and the caret with it.
+    const focus = captureFocus(this.nav);
     clear(this.nav);
     const { sim } = this.deps;
 
@@ -551,6 +572,8 @@ export class Shell {
         el('span', { text: t(`nav.${id}`) }),
       ]);
       node.setAttribute('aria-current', String(id === this.screen));
+      // Its text carries a badge count, which is no part of which button it is.
+      node.dataset.focusKey = `nav-${id}`;
 
       // Badges only for things that are genuinely waiting on the player, and
       // that will stop waiting: a bottled brew, and a merchant about to leave.
@@ -588,6 +611,7 @@ export class Shell {
     }
 
     restoreScroll(this.nav, scrolls);
+    restoreFocus(this.nav, focus);
   }
 
   // -- Panels ---------------------------------------------------------------
@@ -606,7 +630,13 @@ export class Shell {
      * later keeps its place without anything here being told about it.
      */
     const scrolls = captureScroll(this.panels);
-    const focus = captureFocus(this.panels);
+    /*
+     * The caret, put back on the control that stands where the pressed one
+     * stood — see `captureFocus`. Not across a change of screen: nothing on
+     * the new one is the old one's equivalent, however alike two labels are.
+     */
+    const focus = this.panelScreen === this.screen ? captureFocus(this.panels) : null;
+    this.panelScreen = this.screen;
 
     clear(this.panels);
 
@@ -684,7 +714,7 @@ export class Shell {
     restoreFocus(this.panels, focus);
     // A question just asked takes the caret, on its safe answer; one already
     // open keeps whichever button it was on, which `restoreFocus` put back.
-    if (asking && !focus?.name.startsWith('confirm-')) focusFirstControl(asking);
+    if (asking && !focus?.name?.startsWith('confirm-')) focusFirstControl(asking);
 
     // Whatever moves on this screen, found now rather than every frame.
     this.collectLiveNodes();
@@ -813,8 +843,11 @@ export class Shell {
   private closeConfirm(): void {
     this.confirming = null;
     this.renderPanels();
-    if (this.confirmReturn?.isConnected) this.confirmReturn.focus({ preventScroll: true });
+    const back = this.confirmReturn;
     this.confirmReturn = null;
+    if (!back) return;
+    if (back.node.isConnected) back.node.focus({ preventScroll: true });
+    else restoreFocus(document.body, back.memory);
   }
 
   /**
@@ -887,6 +920,8 @@ export class Shell {
         ? t('world.viewScreen', { screen: place })
         : t('world.manageScreen', { screen: place }),
     });
+    // Its label flips with every press; it is still the same button.
+    peek.dataset.focusKey = 'view-peek';
     /*
      * No `aria-pressed`.
      *
@@ -915,6 +950,7 @@ export class Shell {
       type: 'button',
       text: this.debugOpen ? t('debug.close') : t('debug.title'),
     });
+    node.dataset.focusKey = 'debug-toggle';
     node.addEventListener('click', () => {
       this.debugOpen = !this.debugOpen;
       this.renderPanels();

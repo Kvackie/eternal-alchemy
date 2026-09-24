@@ -11,6 +11,7 @@ import { iconSvg, type IconId } from '@/ui/icons';
 import { artUrlIf, dominantEssence } from '@/ui/art';
 import { getIngredient, getRecipe } from '@/sim/config';
 import { countdown, formatGold, t } from '@/i18n';
+import { captureFocus, restoreFocus } from './scroll';
 import type { Essence, Grade } from '@/sim/types';
 
 export function el<K extends keyof HTMLElementTagNameMap>(
@@ -111,6 +112,12 @@ export function button(
     title?: string;
     /** A picture before the label, for a button that stands for a thing. */
     icon?: Node;
+    /**
+     * What the shell knows this button by across a rebuild, for one whose
+     * label changes when it is pressed — see `captureFocus`. Without it the
+     * label is the name, which is right for nearly every button.
+     */
+    key?: string;
   } = {},
 ): HTMLButtonElement {
   const classes = ['btn'];
@@ -124,6 +131,7 @@ export function button(
   ]);
   if (opts.disabled) node.disabled = true;
   if (opts.title) node.title = opts.title;
+  if (opts.key) node.dataset.focusKey = opts.key;
   node.addEventListener('click', (event) => {
     event.stopPropagation();
     onClick();
@@ -245,6 +253,14 @@ export interface RowOptions {
   onClick?: () => void;
   /** Anything else the family needs, e.g. `{ working: 'true' }`. */
   data?: Record<string, string>;
+  /**
+   * Who this row is, for a row whose title changes as it is used.
+   *
+   * The shell puts the caret back on the same control in the same row after a
+   * rebuild, and knows the row by its title unless told otherwise — see
+   * `captureFocus`.
+   */
+  key?: string;
 }
 
 export function row(options: RowOptions): HTMLElement {
@@ -271,6 +287,7 @@ export function row(options: RowOptions): HTMLElement {
   ]);
 
   if (options.selected) node.dataset.selected = 'true';
+  if (options.key) node.dataset.focusScope = options.key;
   for (const [key, value] of Object.entries(options.data ?? {})) node.dataset[key] = value;
 
   if (options.onClick) {
@@ -474,6 +491,9 @@ export function collapsible(spec: CollapsibleSpec): HTMLElement {
     ...(spec.note ? [el('span', { class: 'field-note', text: spec.note })] : []),
   ]);
   head.setAttribute('aria-expanded', String(spec.open));
+  // Its note is often a count, which a press can change; the section around it
+  // is already named by its title, which is what the shell finds it by.
+  head.dataset.focusKey = 'fold';
   head.addEventListener('click', spec.onToggle);
   head.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -554,6 +574,7 @@ export function pager(spec: {
       variant: 'quiet',
       small: true,
       disabled: spec.page <= 1,
+      key: 'page-prev',
     }),
     el('span', {
       class: 'pager-label num',
@@ -563,6 +584,7 @@ export function pager(spec: {
       variant: 'quiet',
       small: true,
       disabled: spec.page >= spec.pageCount,
+      key: 'page-next',
     }),
   ]);
 }
@@ -584,6 +606,7 @@ export function chipRow<T extends string>(spec: {
     spec.options.map(({ id, label }) => {
       const node = el('button', { class: 'sort-chip', type: 'button', text: label });
       node.setAttribute('aria-pressed', String(spec.current === id));
+      node.dataset.focusKey = `chip-${id}`;
       node.addEventListener('click', () => spec.onPick(id));
       return node;
     }),
@@ -685,6 +708,9 @@ export function slot(spec: SlotSpec): HTMLElement {
   }
 
   const node = el('button', { class: 'slot', type: 'button' }, children);
+  // Known by what it holds rather than by its caption, which carries a price
+  // and a count that a press can change — see `captureFocus`.
+  node.dataset.focusKey = `slot-${spec.id}`;
   if (spec.tone && spec.tone !== 'default') node.dataset.tone = spec.tone;
   if (spec.selected) node.dataset.selected = 'true';
   if (spec.disabled) node.disabled = true;
@@ -769,13 +795,21 @@ export function modal(spec: ModalSpec): () => void {
    * `<body>` when it closes sends them back to the top of the document.
    */
   const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  /*
+   * And what it was, in case it is not there any more.
+   *
+   * The panel behind is rebuilt whenever the world changes, and it does not
+   * wait for a dialog to close: a sale while this is open replaces the tile
+   * that opened it. Focusing the detached one does nothing, so the new one is
+   * found by the same identity the shell uses across a rebuild.
+   */
+  const remembered = previous && previous !== document.body ? captureFocus(document.body) : null;
 
   const dismiss = () => {
     overlay.remove();
     document.removeEventListener('keydown', onKey);
-    // Only if it is still there: the panel behind may have been rebuilt while
-    // this was open, and focusing a detached node does nothing useful.
     if (previous?.isConnected) previous.focus({ preventScroll: true });
+    else restoreFocus(document.body, remembered);
     spec.onClose?.();
   };
 
@@ -971,6 +1005,7 @@ function quantityAction(spec: QuantityActionSpec): HTMLElement {
     text: t('quantity.max'),
   });
   most.addEventListener('click', () => set(spec.max));
+  const upward = [plus, plusTen, most];
 
   const go = button(spec.label, () => spec.run(quantity), {
     variant: 'gold',
@@ -984,12 +1019,27 @@ function quantityAction(spec: QuantityActionSpec): HTMLElement {
 
   /** Everything but the field itself — see `draw`. */
   function refresh(): void {
+    const focused = document.activeElement;
     minus.disabled = quantity <= 1;
     minusTen.disabled = quantity <= 1;
     plus.disabled = quantity >= spec.max;
     plusTen.disabled = quantity >= spec.max;
     most.disabled = quantity >= spec.max;
     total.textContent = spec.unitPrice === undefined ? '' : formatGold(spec.unitPrice * quantity);
+
+    /*
+     * A step that has just run out hands the caret across.
+     *
+     * Pressing + up to the limit disables +, and a disabled button drops the
+     * focus on `<body>` — so the next press went nowhere, and the dialog's own
+     * Escape was the only key left that did anything. The step the other way
+     * is the one that can still be pressed, and never the field: Enter there
+     * buys, and Enter is the key that was just being pressed.
+     */
+    if (focused instanceof HTMLButtonElement && focused.disabled && focused.isConnected) {
+      const across = upward.includes(focused) ? minus : plus;
+      if (!across.disabled && across.isConnected) across.focus({ preventScroll: true });
+    }
   }
 
   function draw(): void {

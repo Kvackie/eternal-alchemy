@@ -302,6 +302,8 @@ function renderHeroes(sim: Simulation): HTMLElement {
         variant: selected ? 'amber' : 'ghost',
         disabled: partyFull,
         title: partyFull ? t('roster.partyFull', { count: heroesConfig.partySize }) : undefined,
+        // Take along turns into Leave behind; the caret stays on it either way.
+        key: 'hero-pick',
       });
       pick.classList.add('hero-pick');
       pick.setAttribute('aria-pressed', String(selected));
