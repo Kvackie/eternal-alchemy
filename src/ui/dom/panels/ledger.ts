@@ -37,6 +37,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'sold',
     'stocked',
     'bought',
+    'soldIngredient',
     'bartered',
     'contractDelivered',
     'contractPosted',
@@ -248,6 +249,7 @@ function renderEntry(entry: LogEntry): HTMLElement {
   if (typeof params.quality === 'string') params.quality = t(`quality.${params.quality}`);
   if (typeof params.customer === 'string') params.customer = t(`customer.${params.customer}`);
   if (typeof params.town === 'string') params.town = t(`town.${params.town}`);
+  if (typeof params.merchant === 'string') params.merchant = t(`merchant.${params.merchant}`);
   if (typeof params.tier === 'string') params.tier = t(`cauldronTier.${params.tier}`);
   // Substituted as a marker, then cut back out below so the coin is gold-coloured
   // without the sentence leaving `en.json`. See `splitOnValue`.

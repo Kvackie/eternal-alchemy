@@ -22,15 +22,17 @@ import {
   slot,
   slotGlyph,
   slotGrid,
+  tabPanel,
+  tabStrip,
 } from '../components';
 import type { QuantityActionSpec } from '../components';
-import { has, t } from '@/i18n';
+import { formatGold, has, t } from '@/i18n';
 import { getCrop, getDecor } from '@/sim/config';
 import { gradeAtLeast } from '@/sim/essences';
 import { artUrlIf } from '@/ui/art';
 import { showIngredientInfo } from '../ingredientInfo';
 import { goodsNotes } from '../goods';
-import type { MerchantVisit, StockEntry } from '@/sim/merchants';
+import type { MerchantVisit, SellOffer, StockEntry } from '@/sim/merchants';
 import type { Simulation } from '@/sim/sim';
 import { changed, toast } from '@/ui/bus';
 
@@ -159,7 +161,110 @@ function renderVisit(sim: Simulation, visit: MerchantVisit): HTMLElement {
     ]),
   ]);
 
-  return el('section', { class: 'merchant' }, [header, ...renderStock(sim, visit)]);
+  // A trader paid in potions pays in nothing, so only a gold trader has a
+  // second side to the counter.
+  if (visit.currency !== 'gold') {
+    return el('section', { class: 'merchant' }, [header, ...renderStock(sim, visit)]);
+  }
+
+  const side = sides.get(visit.merchantId) ?? 'buy';
+  const name = `market-${visit.merchantId}`;
+  const tabs = tabStrip({
+    name,
+    className: 'merchant-tabs',
+    current: side,
+    tabs: [
+      { id: 'buy', label: t('market.tab.buy') },
+      { id: 'sell', label: t('market.tab.sell') },
+    ],
+    onSelect: (id) => {
+      sides.set(visit.merchantId, id as Side);
+      changed();
+    },
+  });
+
+  const panel = tabPanel(
+    name,
+    side,
+    side === 'sell' ? renderSellable(sim, visit) : renderStock(sim, visit),
+  );
+  panel.classList.add('merchant-side');
+
+  return el('section', { class: 'merchant' }, [header, tabs, panel]);
+}
+
+type Side = 'buy' | 'sell';
+
+/**
+ * Which side of each trader's counter is showing.
+ *
+ * Kept here rather than in the world: it is where the player is looking, not
+ * something that happened, and the panel is rebuilt on every change.
+ */
+const sides = new Map<string, Side>();
+
+/**
+ * What this trader would take off your hands, and for how much each.
+ *
+ * Only what is held and only what they deal in — the sim decides both, so the
+ * tile cannot promise a price the sale would not pay.
+ */
+function renderSellable(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
+  const merchant = t(`merchant.${visit.merchantId}`);
+  const offers = sim.sellOffers(visit.merchantId);
+  if (offers.length === 0) return [emptyNote(t('market.sell.none', { merchant }))];
+
+  const tiles = offers
+    .map((offer) => ({ offer, label: t(`ingredient.${offer.ingredientId}`) }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .map(({ offer, label }) =>
+      slot({
+        id: `${visit.merchantId}:sell:${offer.ingredientId}`,
+        icon: ingredientIcon(offer.ingredientId, MARKET_ICON),
+        label,
+        caption: [goldText(offer.price)],
+        count: offer.held,
+        title: label,
+        onActivate: () => openSale(sim, visit.merchantId, offer),
+      }),
+    );
+
+  const grid = slotGrid(tiles);
+  grid.classList.add('roomy');
+  return [
+    el('div', { class: 'stock-group merchant-sell' }, [
+      el('p', { class: 'field-note', text: t('market.sell.intro', { merchant }) }),
+      grid,
+    ]),
+  ];
+}
+
+/** The ingredient panel, with a till that pays out rather than in. */
+function openSale(sim: Simulation, merchantId: string, offer: SellOffer): void {
+  showIngredientInfo(sim, offer.ingredientId, {
+    action: {
+      label: t('market.sell'),
+      max: offer.held,
+      unitPrice: offer.price,
+      run: (quantity) => sellMany(sim, merchantId, offer.ingredientId, quantity),
+    },
+  });
+}
+
+function sellMany(sim: Simulation, merchantId: string, ingredientId: string, quantity: number) {
+  const { sold, gold, reasonKey } = sim.sellIngredient(merchantId, ingredientId, quantity);
+  if (sold === 0) {
+    if (reasonKey) toast(t(reasonKey));
+    return;
+  }
+  toast(
+    t('market.sold', {
+      count: sold,
+      item: t(`ingredient.${ingredientId}`),
+      gold: formatGold(gold),
+    }),
+  );
+  changed();
 }
 
 /**

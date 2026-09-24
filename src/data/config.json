@@ -207,7 +207,9 @@
       "F": 0
     },
     "relationshipPerGold": 1,
-    "relationshipPerPotion": 1
+    "relationshipPerPotion": 1,
+    "$sellComment": "A gold merchant buys back what it trades in - its ingredients, and the herbs and fungi its seeds and spores grow - at its listed price for that ingredient (or for its seed or spore) under the town's price level, divided by this and rounded down, never below 1g. Freshness does not change it, and selling earns no standing.",
+    "ingredientSellDivisor": 3
   },
   "save": {
     "slots": 3,

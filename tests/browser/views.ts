@@ -14,10 +14,13 @@
 
 import type { Page } from 'playwright-core';
 import type { ScreenId } from '@/ui/bus';
+import type { Clock } from './fixture';
 
 export interface View {
   screen: ScreenId;
   name: string;
+  /** The fixture's clock to open it at; night unless it says otherwise. */
+  clock?: Clock;
   /** Press whatever gets there; false if something on the way was missing. */
   open: (page: Page, touch: boolean) => Promise<boolean>;
 }
@@ -68,6 +71,22 @@ export const VIEWS: View[] = [
     screen: 'market',
     name: 'goods',
     open: async (page) => (await press(page, '.slot')) && dialogOpen(page),
+  },
+  // Only a day trader buys, so the other side of the counter is a daylight view.
+  {
+    screen: 'market',
+    name: 'sell',
+    clock: 'day',
+    open: (page) => press(page, '[role=tab]', /^Sell$/),
+  },
+  {
+    screen: 'market',
+    name: 'sell dialog',
+    clock: 'day',
+    open: async (page) =>
+      (await press(page, '[role=tab]', /^Sell$/)) &&
+      (await press(page, '.merchant-sell .slot')) &&
+      dialogOpen(page),
   },
 
   // -- Grounds

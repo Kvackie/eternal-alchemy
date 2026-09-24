@@ -13,7 +13,15 @@
  */
 
 import { dayStateAt } from './clock';
-import { config, findBooster, findDecor, findEquipment, getMerchant, merchants } from './config';
+import {
+  config,
+  findBooster,
+  findCrop,
+  findDecor,
+  findEquipment,
+  getMerchant,
+  merchants,
+} from './config';
 import type { MerchantDef, MerchantStockDef } from './config';
 import { hashKey, Rng } from './rng';
 import { rankOf } from './progression';
@@ -501,4 +509,78 @@ export function markBought(world: World, merchantId: string, entryId: string): v
 
 export function addRelationship(world: World, merchantId: string, amount: number): void {
   world.merchantRelations[merchantId] = relationshipOf(world, merchantId) + amount;
+}
+
+/*
+ * -- Selling to a merchant ---------------------------------------------------
+ *
+ * A trader who takes gold also buys back what they trade in: the ingredients on
+ * their stall, and the herb or mushroom that grows from a seed or spore on it.
+ * So Bramm takes herbs, Vessa fungi and the upper quarry's minerals, and Hesk
+ * the lower quarry's. The Ashwalker takes no gold and so pays none; nobody
+ * who does carries an exotic, so nobody buys one.
+ *
+ * The rule reads the whole pool rather than this visit's pack, and ignores
+ * standing tiers: what a trader deals in is a fact about the trader, not about
+ * which handful of goods they happened to bring today.
+ */
+
+/**
+ * The listed price a merchant puts on an ingredient, or on what grows it.
+ *
+ * A seed is matched by the crop it yields and a spore by its species, which
+ * shares the mushroom's id. Undefined when the merchant does not deal in it,
+ * or deals in it for potions.
+ */
+function listedPriceFor(def: MerchantDef, ingredientId: string): number | undefined {
+  if (def.currency !== 'gold') return undefined;
+  for (const item of def.pool) {
+    if (item.barter || item.price === undefined) continue;
+    const grows =
+      (item.kind === 'ingredient' && item.id === ingredientId) ||
+      (item.kind === 'spore' && item.id === ingredientId) ||
+      (item.kind === 'seed' && findCrop(item.id)?.yields === ingredientId);
+    if (grows) return item.price;
+  }
+  return undefined;
+}
+
+/**
+ * What a merchant pays for one unit of an ingredient, or null if they do not
+ * buy it.
+ *
+ * A fixed fraction of what they would charge a stranger for it here — the
+ * listed price under the town's price level, before any standing discount,
+ * since being a regular should not make what you bring worth less. Freshness
+ * does not enter into it. Rounded down, never below a coin.
+ */
+export function sellPriceFor(world: World, def: MerchantDef, ingredientId: string): number | null {
+  const listed = listedPriceFor(def, ingredientId);
+  if (listed === undefined) return null;
+  const charged = Math.max(1, Math.round(listed * merchantPriceMultiplier(world)));
+  return Math.max(1, Math.floor(charged / config.economy.ingredientSellDivisor));
+}
+
+export interface SellOffer {
+  ingredientId: string;
+  /** Units held, every freshness stage together. */
+  held: number;
+  /** Gold per unit. */
+  price: number;
+}
+
+/** What this merchant would buy from the store room right now, by name. */
+export function sellOffers(world: World, def: MerchantDef): SellOffer[] {
+  const held = new Map<string, number>();
+  for (const stack of world.inventory) {
+    if (stack.count <= 0) continue;
+    held.set(stack.ingredientId, (held.get(stack.ingredientId) ?? 0) + stack.count);
+  }
+
+  const offers: SellOffer[] = [];
+  for (const [ingredientId, count] of held) {
+    const price = sellPriceFor(world, def, ingredientId);
+    if (price !== null) offers.push({ ingredientId, held: count, price });
+  }
+  return offers.sort((a, b) => a.ingredientId.localeCompare(b.ingredientId));
 }

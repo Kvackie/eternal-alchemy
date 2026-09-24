@@ -113,31 +113,38 @@ try {
    * not inherit that.
    */
   const views = VIEWS.filter((view) => !onlyScreen || view.screen === onlyScreen);
+  /*
+   * One page per clock a view asks for. Most want the fixture's night; a
+   * day trader's dialogs only exist while a day trader is in town.
+   */
+  const clocks = [...new Set(views.map((view) => view.clock ?? 'night'))];
   for (const size of sizes) {
-    const { page, errors, close } = await open(browser, size);
-    const touch = SIZES[size].mobile;
+    for (const clock of clocks) {
+      const { page, errors, close } = await open(browser, size, clock);
+      const touch = SIZES[size].mobile;
 
-    for (const view of views) {
-      const label = `${view.screen}: ${view.name}`;
-      await page.reload({ waitUntil: 'networkidle' });
-      await page.waitForTimeout(600);
-      await dismiss(page);
-      await goTo(page, view.screen);
+      for (const view of views.filter((entry) => (entry.clock ?? 'night') === clock)) {
+        const label = `${view.screen}: ${view.name}`;
+        await page.reload({ waitUntil: 'networkidle' });
+        await page.waitForTimeout(600);
+        await dismiss(page);
+        await goTo(page, view.screen);
 
-      const reached = await view.open(page, touch).catch(() => false);
-      if (!reached) {
-        problems.push({ screen: label, size, check: 'view', detail: 'could not open it' });
-      } else {
-        await page.waitForTimeout(300);
-        await measure(page, label, size, touch);
+        const reached = await view.open(page, touch).catch(() => false);
+        if (!reached) {
+          problems.push({ screen: label, size, check: 'view', detail: 'could not open it' });
+        } else {
+          await page.waitForTimeout(300);
+          await measure(page, label, size, touch);
+        }
+        await closeDialogs(page);
+        report(label, size);
       }
-      await closeDialogs(page);
-      report(label, size);
-    }
 
-    for (const error of errors)
-      problems.push({ screen: 'views', size, check: 'console', detail: error });
-    await close();
+      for (const error of errors)
+        problems.push({ screen: 'views', size, check: 'console', detail: error });
+      await close();
+    }
   }
 
   /*

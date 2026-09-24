@@ -526,6 +526,8 @@ export interface GameConfig {
     relationshipPerGold: number;
     /** Relationship a barter merchant gains per potion handed over. */
     relationshipPerPotion: number;
+    /** A merchant buys an ingredient back at its price divided by this, rounded down. */
+    ingredientSellDivisor: number;
   };
   save: { slots: number; autosaveDebounceMs: number; schemaVersion: number };
 }

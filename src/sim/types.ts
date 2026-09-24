@@ -154,6 +154,7 @@ export type LogKind =
   | 'sold'
   | 'stocked'
   | 'bought'
+  | 'soldIngredient'
   | 'bartered'
   | 'installed'
   | 'boosterUsed'

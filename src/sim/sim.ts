@@ -16,6 +16,7 @@ import {
   getDecor,
   getBooster,
   getEquipment,
+  getMerchant,
   ranks,
   recipes,
   type RecipeDef,
@@ -44,7 +45,7 @@ import {
 import type { Cauldron } from './types';
 import { dayStateAt } from './clock';
 import { destroyCrop, harvest, harvestAllReady, makePlot, plant, readyCount } from './garden';
-import { addIngredient, returnUnit, takeUnit } from './inventory';
+import { addIngredient, countOf, returnUnit, takeUnit } from './inventory';
 import { record } from './log';
 import {
   fairValue,
@@ -59,11 +60,15 @@ import {
 } from './market';
 import {
   addRelationship,
+  isPresent,
   markBought,
   packArrivals,
   presentMerchants,
+  sellOffers,
+  sellPriceFor,
   upcomingMerchants,
   type MerchantVisit,
+  type SellOffer,
   type StockEntry,
 } from './merchants';
 import {
@@ -955,6 +960,60 @@ export class Simulation {
     addRelationship(this.world, 'ashwalker', barter.potions * config.economy.relationshipPerPotion);
     record(this.world, 'bartered', { count: barter.potions });
     return { ok: true };
+  }
+
+  /**
+   * What a merchant who is here would pay for one unit of an ingredient, or
+   * null if they are not here or do not buy it. See `sellPriceFor`.
+   */
+  sellPrice(merchantId: string, ingredientId: string): number | null {
+    const def = getMerchant(merchantId);
+    if (!isPresent(def, this.world.now)) return null;
+    return sellPriceFor(this.world, def, ingredientId);
+  }
+
+  /** The ingredients held that a merchant who is here would buy, with their price. */
+  sellOffers(merchantId: string): SellOffer[] {
+    const def = getMerchant(merchantId);
+    if (!isPresent(def, this.world.now)) return [];
+    return sellOffers(this.world, def);
+  }
+
+  /**
+   * Sell up to `count` units of an ingredient to a merchant who is here.
+   *
+   * Oldest units go first, across every freshness stage — the price does not
+   * care how fresh a unit is, and the stale ones are the ones worth least in
+   * the pot. Asking for more than is held sells what is held. Selling earns no
+   * standing: standing is what a trader gives a customer, and this is the shop
+   * being the supplier.
+   */
+  sellIngredient(
+    merchantId: string,
+    ingredientId: string,
+    count: number,
+  ): { sold: number; gold: number; reasonKey?: string } {
+    const def = getMerchant(merchantId);
+    if (!isPresent(def, this.world.now)) {
+      return { sold: 0, gold: 0, reasonKey: 'market.error.gone' };
+    }
+    const price = sellPriceFor(this.world, def, ingredientId);
+    if (price === null) return { sold: 0, gold: 0, reasonKey: 'market.sell.error.notWanted' };
+
+    const wanted = Number.isFinite(count) ? Math.floor(count) : 0;
+    const selling = Math.min(Math.max(0, wanted), countOf(this.world, ingredientId));
+    if (selling <= 0) return { sold: 0, gold: 0, reasonKey: 'market.sell.error.none' };
+
+    for (let i = 0; i < selling; i += 1) takeUnit(this.world, ingredientId);
+    const gold = price * selling;
+    this.world.gold += gold;
+    record(this.world, 'soldIngredient', {
+      ingredient: ingredientId,
+      merchant: merchantId,
+      count: selling,
+      gold,
+    });
+    return { sold: selling, gold };
   }
 
   /** Put a bought entry where it belongs. */
