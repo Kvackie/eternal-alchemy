@@ -457,15 +457,20 @@ function buyMany(
   quantity: number,
   label: string,
 ): void {
-  const { bought, reasonKey } = sim.buyQuantity(merchantId, index, quantity);
+  const { bought, reasonKey, stored } = sim.buyQuantity(merchantId, index, quantity);
   if (bought === 0) {
     if (reasonKey) toast(t(reasonKey));
     return;
   }
+  // A furnishing bought for a spot something else stands in waits in the
+  // Shop's furnishings; saying "Bought" alone would leave the player looking
+  // for it on the wall.
   toast(
-    bought === 1
-      ? t('market.bought', { item: label })
-      : t('market.boughtMany', { count: bought, item: label }),
+    stored
+      ? t('market.boughtStored', { item: label })
+      : bought === 1
+        ? t('market.bought', { item: label })
+        : t('market.boughtMany', { count: bought, item: label }),
   );
   changed();
 }

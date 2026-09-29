@@ -459,6 +459,7 @@
   "market.sporeOf": "{species} spores",
   "shop.stacked": "{count} in the slot",
   "market.bought": "Bought {item}",
+  "market.boughtStored": "Bought {item} — it waits in the Shop’s furnishings for its spot.",
   "market.reason.rank": "Needs a higher rank",
   "market.reason.requires": "Needs an earlier upgrade first",
   "market.error.gone": "They have packed up and gone",
