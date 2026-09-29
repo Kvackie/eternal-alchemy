@@ -62,37 +62,43 @@ is wired in by pointing a recipe at it.
 | `shelf.png` | 512 × 96 | A board. Bottles stand on it; it repeats horizontally. |
 | `bottle.png` | 128 × 192 | **Neutral/greyscale** — tinted at runtime by the potion's blend. |
 
-## `decor/` — 10 furnishings, 256 × 256 target
+## `decor/` — 18 furnishings, 256 × 256 target
 
-Drawn behind the shelves in the shop view. Sizes vary by spot; the normaliser handles
-it, so just keep the piece roughly proportioned to its slot.
+Drawn in the Shop's furnishing picker, and behind the shelves once the shop view returns.
+Sizes vary by spot; the normaliser handles it, so just keep the piece roughly proportioned
+to its slot. The ids are `src/data/decor.json`'s:
 
 | Spot | Files |
 | --- | --- |
-| wall | `paintedSign.png`, `gildedSign.png` |
-| window | `displayCase.png`, `lanternDisplay.png` |
-| counter | `polishedCounter.png`, `alchemistsBench.png` |
-| nook | `curioCabinet.png`, `incenseBurner.png` |
-| floor | `wovenRug.png`, `mosaicFloor.png` |
+| wall | `verdantBanner.png`, `crimsonBanner.png`, `tealBanner.png`, `azureBanner.png`, `roseBanner.png`, `violetBanner.png`, `goldBanner.png` |
+| window | `pottedFern.png`, `sproutingUrn.png` |
+| counter | `mortarAndPestle.png`, `hourglass.png`, `goldGoblet.png` |
+| nook | `cutDiamond.png`, `boneChalice.png`, `skullChalice.png` |
+| floor | `coinSacks.png`, `lockedChest.png`, `coinStack.png` |
 
-## `portraits/` — later, and the biggest ask
+## `portraits/` — 256 × 320 target, one face each
 
-Not needed to make the game look finished, and by far the largest volume, so this is
-last.
+Faces keep their own aspect and are not trimmed: the picture is scaled to cover the box
+from the top, so a bust framed with the head near the top of the file lands right. One
+folder per kind, and the kinds are separate — the hero and the customer both called
+`maren` are different people with different files.
 
-- Merchants: `bramm.png`, `vessa.png`, `hesk.png`, `ashwalker.png`
-- Heroes: `ilse.png`, `corin.png`, `maren.png`, `tobrin.png`
-- Customers: three stance poses each (`<id>-sceptical.png`, `-haughty.png`,
-  `-impatient.png`) — the haggle reads the stance off the portrait, so these are the
-  only portraits that carry information rather than flavour.
+- `merchants/`: `bramm.png`, `vessa.png`, `hesk.png`, `ashwalker.png`
+- `heroes/`: one per id in `src/data/heroes.json`, all forty-five
+- `customers/`: `maren.png`, `hollis.png`, `sisterAvel.png`, `lordVallis.png`,
+  `theQuietMan.png` — one portrait each. The haggle shows the customer's stance as a
+  label and a line beside the face, not as a pose, so a customer needs no more art
+  than a merchant does.
+
+Merchant and customer faces are built only for ids the data names, so a spare pack
+portrait left beside them stays in `art/` and never reaches `public/`; the heroes'
+folder is built in full.
 
 ---
 
-## Suggested order
+## Where it stands
 
-1. **`ingredients/`** — four files left, each changes every screen it appears on.
-2. **`scene/`** — four files, and the world view stops being flat shapes.
-3. **`decor/`** — ten files, and furnishing the shop becomes worth doing.
-4. **`portraits/`** — volume work, safe to leave until the rest is settled.
-
-One ingredient dropped in on its own is enough to check the pipeline end to end.
+Every ingredient, potion, furnishing, board, scene piece and face the data names has
+art. A new id is wired in by dropping a file with its name into the right folder and
+running `node scripts/art-build.js`; one file on its own is enough to check the pipeline
+end to end.

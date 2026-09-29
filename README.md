@@ -10,7 +10,8 @@ including while the app is closed.
 spreads on its own; a mining shaft that depletes and deepens; heroes who take your own potions on
 expeditions; and a contract board.
 
-**M3 — depth.** Face-to-face haggling; ranks V–X; and the Long Distillation with its Mastery Codex.
+**M3 — depth.** Face-to-face haggling at the Counter; ranks V–X; and the Long Distillation with its
+Mastery Codex.
 (The greenhouse, bottle forms, and a range of eight vessels and seven seals shipped here too, and
 were all taken out again: bottling is one press now.)
 
@@ -47,19 +48,22 @@ src/
   i18n/       Every user-facing string, keyed. No literals in game code.
   ui/
     phaser/   The world: garden, pot, shelves, day/night lighting.
-    dom/      The panels: eight screens of lists, forms and prices, plus the
+    dom/      The panels: nine screens of lists, forms and prices, plus the
               brewing station and the overlays a tile opens.
   platform/   Save adapters (localStorage now, Capacitor Preferences on mobile).
   debug/      The time panel. Dev builds, or switched on in Settings.
 ```
 
-Eight screens: **Shop** (shelves and bottled inventory) · **Board** (contracts) · **Market**
-(merchants) · **Grounds** (garden, cave and shaft as sub-tabs) · **Cauldron** (all alchemy) ·
-**Roster** (heroes and missions) · **Ledger** (statistics and a paginated event log) · **Settings**.
+Nine screens: **Shop** (shelves, furnishings and bottled inventory) · **Counter** (walk-in
+customers and the haggle) · **Board** (contracts) · **Market** (merchants) · **Grounds** (garden,
+cave and shaft as sub-tabs) · **Cauldron** (all alchemy) · **Roster** (heroes and missions) ·
+**Ledger** (statistics and a paginated event log) · **Settings**.
 
-Two of them draw a world behind the panel and can be panned and zoomed: **Shop** and **Grounds**.
-The rest are documents. The Market was among them until it wasn't: it had no art of its own and
-borrowed the Shop's, which drew your own shelves behind another trader's stock — one picture
+One of them draws a world behind the panel and can be panned and zoomed: **Grounds**. The rest
+are documents. The Shop drew one too, until a painted wall of fifty shelves rebuilt on every press
+proved too much for the screen where the presses happen; it is expected back once it can be drawn
+from the shelf grid instead. The Market was among them until it wasn't: it had no art of its own
+and borrowed the Shop's, which drew your own shelves behind another trader's stock — one picture
 claiming to be two places.
 
 ## What a tap on a tile means
@@ -296,6 +300,12 @@ save from an older schema is migrated rather than dropped.
 
 ## Haggling
 
+Named customers come to the **Counter** by day — one of them only after dark — on days the world's
+seed decides, and ask for bottles you own: on the shelves or in the store room, it makes no
+difference to them. A sale at the counter takes the bottle from wherever it stood, and a shelf it
+leaves is empty. A bottle that sells off the shelf while you are still talking ends the haggle
+with nothing changing hands. Three furnishings raise what a haggler will go to.
+
 Rock-paper-scissors against a stance the customer telegraphs. Each pitch family counters exactly one
 stance and backfires against exactly one other, and the backfires are thematic rather than arbitrary
 — lecturing a noble, flattering someone in a hurry, offering a freebie to a sceptic. You can reason
@@ -306,8 +316,9 @@ one button. Every button shows how it will land *before* you press it. **Hold fi
 triangle: it converts accumulated interest straight into price, worthless early and decisive once two
 counters have landed.
 
-Patience hitting zero ends the haggle at the customer's last standing offer, and a refused price
-costs you the visit, never the stock.
+Patience hitting zero ends the haggle as a sale at the customer's last standing offer — their
+ceiling as it stands, and never under the shelf price — and a refused price costs you the visit,
+never the stock. A haggle is only lost when you let the customer go or name a price they refuse.
 
 ## Prestige — the Long Distillation
 
@@ -364,7 +375,7 @@ npm run android:sync   # build, then copy dist/ into the native project
 
 `ANDROID.md` has the toolchain, the APK path and what is still untested.
 
-Checked across all eight screens on both layouts, at 85, 100 and 150% text, on a 412x883 viewport:
+Checked across all nine screens on both layouts, at 85, 100 and 150% text, on a 412x883 viewport:
 **no horizontal page scroll, and no text clipped or broken mid-word.** Both are swept by measurement
 rather than by eye — every leaf element's longest word against the box it has — so a regression shows
 up as a number.
@@ -376,14 +387,19 @@ filter chips on a touch pointer. `.btn.small`, the secondary action inside a row
 is itself the 44px target, so it is an extra rather than the only way in. A sweep at 100% text counts
 22 controls under 44px in one dimension, all of them from those three classes.
 
-Below the 960px breakpoint the screens that draw no scene — Market, Roster, Board, Settings — are
-full-stage pages rather than bottom sheets, and they are the only scroller on the page: a section
-that scrolls inside a panel that scrolls inside a phone is a section that takes the flick and gives
-nothing back. The two that *do* draw one — Shop and Grounds — take turns instead, because 412x883 is
-not enough for a shop and the managing of it at once. The toggle in the view controls
-names the screen rather than the mechanism (**View Shop** / **Manage Shop**), and each half gets the
-whole stage: managing hides the scene entirely, and the zoom and recentre buttons go with it. Nothing
-is lost by hiding it — nothing in the world is clickable, so the scene is a picture.
+Below the 960px breakpoint the screens that draw no scene — Shop, Counter, Market, Roster, Board,
+Settings — are full-stage pages rather than bottom sheets, and they are the only scroller on the
+page: a section that scrolls inside a panel that scrolls inside a phone is a section that takes the
+flick and gives nothing back. The one that *does* draw one — Grounds — takes turns instead, because
+412x883 is not enough for the grounds and the managing of them at once. The toggle in the view
+controls names the screen rather than the mechanism (**View Grounds** / **Manage Grounds**), and
+each half gets the whole stage: managing hides the scene entirely, and the zoom and recentre buttons
+go with it. Nothing is lost by hiding it — nothing in the world is clickable, so the scene is a
+picture.
+
+The nav holds all nine tabs on a 360px phone without scrolling: each column is as wide as its own
+label and the slack is shared out, and the label's size follows the viewport rather than the text
+setting, so the row fits at 150% text as it does at 100%. Every tab keeps its 44px height.
 
 Above the breakpoint the toggle is hidden: the panel and the scene already fit side by side.
 
