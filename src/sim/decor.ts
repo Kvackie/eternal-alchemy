@@ -66,11 +66,17 @@ export function decorAvailability(
  * Placed straight away if its spot is free. Buying a rug and then having to go
  * and put the rug down is a chore, not a decision — the decision only exists
  * once two pieces want the same spot, and that is when we leave it alone.
+ *
+ * Says whether it went out, because the two cases read differently to the
+ * player: a piece that is standing in the shop, and one waiting in the Shop's
+ * furnishings for them to make room.
  */
-export function grantDecor(world: World, decorId: string): void {
+export function grantDecor(world: World, decorId: string): boolean {
   const def = getDecor(decorId);
   world.decorOwned[decorId] = (world.decorOwned[decorId] ?? 0) + 1;
-  if (!world.decor[def.spot]) world.decor[def.spot] = decorId;
+  if (world.decor[def.spot]) return false;
+  world.decor[def.spot] = decorId;
+  return true;
 }
 
 /** Put an owned piece out, displacing whatever shared its spot. */
@@ -111,10 +117,4 @@ export function emptySpots(): Record<string, string | null> {
   const spots: Record<string, string | null> = {};
   for (const spot of decorSpots) spots[spot] = null;
   return spots;
-}
-
-/** Whether every effect a piece has is on haggling, which only walk-ins use. */
-export function onlyForTheCounter(def: DecorDef): boolean {
-  const effects = Object.keys(def.effect);
-  return effects.length > 0 && effects.every((key) => key === 'haggleCeilingBonus');
 }

@@ -37,7 +37,7 @@ import { isMature, spreadChanceFor } from '@/sim/cave';
 import { derivedStats, equipmentAvailability, rankIndexFor } from '@/sim/progression';
 import { codexBonuses } from '@/sim/prestige';
 import { tierOf } from '@/sim/merchants';
-import { scheduledWalkIns } from '@/sim/haggle';
+import { walkInsToday } from '@/sim/haggle';
 import type { Contract, EssenceVector } from '@/sim/types';
 import { DAY, HOUR, MINUTE, bottle } from './helpers';
 
@@ -225,18 +225,16 @@ describe('the selling channels stay in their lanes', () => {
 
   it('pays best of all through a haggle played well', () => {
     // Ceiling after two counters and a hold-firm, versus plain fair value.
-    // The schedule directly: walk-ins are paused behind the counter's UI, and
-    // the paused door would send nobody and let this pass unmeasured.
     const fair = 60;
     let sim: Simulation | null = null;
-    let walkIn: ReturnType<typeof scheduledWalkIns>[number] | undefined;
+    let walkIn: ReturnType<typeof walkInsToday>[number] | undefined;
     for (let day = 0; day < 40 && !walkIn; day += 1) {
       sim = new Simulation(createWorld(77));
       sim.world.renown = 100000;
       sim.world.bottledKinds['S|5|sovereign'] = true;
       sim.advanceTo(day * DAY + DAY * 0.4);
       sim.world.bottled.push(bottle({ uid: 'h', fairValue: fair }));
-      walkIn = scheduledWalkIns(sim.world)[0];
+      walkIn = walkInsToday(sim.world)[0];
     }
     expect(walkIn).toBeDefined();
 

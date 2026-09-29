@@ -45,6 +45,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'contractAbandoned',
     'haggleWon',
     'haggleLost',
+    'haggleSettled',
   ],
   craft: ['brewStarted', 'brewReady', 'brewRejected', 'bottled', 'recipeFound'],
   garden: [
@@ -64,7 +65,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'heroRecruited',
     'heroDismissed',
   ],
-  shop: ['installed', 'furnished', 'cauldronBought', 'rankUp'],
+  shop: ['installed', 'furnished', 'decorStored', 'cauldronBought', 'rankUp'],
 };
 
 let page = 1;

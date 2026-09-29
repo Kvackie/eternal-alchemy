@@ -204,6 +204,17 @@ describe('buying décor', () => {
     expect(bought, 'no merchant stocked a furnishing in twelve days').toBe(true);
   });
 
+  it('keeps a second piece for the same spot in the collection, and says so', () => {
+    const sim = new Simulation(createWorld(4));
+    // The wall already has a banner on it.
+    expect(grantDecor(sim.world, 'verdantBanner')).toBe(true);
+    expect(grantDecor(sim.world, 'crimsonBanner')).toBe(false);
+
+    // Both owned, the first still out: nothing is put over the player's choice.
+    expect(ownsDecor(sim.world, 'crimsonBanner')).toBe(true);
+    expect(placedIn(sim.world, 'wall')?.id).toBe('verdantBanner');
+  });
+
   it('stops offering a piece once it is owned', () => {
     const sim = new Simulation(createWorld(4));
     sim.world.gold = 5000;
@@ -216,6 +227,40 @@ describe('buying décor', () => {
       }
       sim.advanceBy(DAY);
     }
+  });
+});
+
+describe('furnishing by hand', () => {
+  it('places, swaps and takes down through the simulation', () => {
+    const sim = new Simulation(createWorld(4));
+    grantDecor(sim.world, 'verdantBanner');
+    grantDecor(sim.world, 'crimsonBanner');
+    expect(placedIn(sim.world, 'wall')?.id).toBe('verdantBanner');
+
+    // The swap the picker is for: the second banner goes up, the first is
+    // still owned and can come back.
+    expect(sim.place('crimsonBanner')).toBe(true);
+    expect(placedIn(sim.world, 'wall')?.id).toBe('crimsonBanner');
+    expect(ownsDecor(sim.world, 'verdantBanner')).toBe(true);
+    expect(sim.world.log.at(-1)?.kind).toBe('furnished');
+
+    expect(sim.place('verdantBanner')).toBe(true);
+    expect(placedIn(sim.world, 'wall')?.id).toBe('verdantBanner');
+
+    // Taking it down empties the spot; the piece stays in the collection.
+    expect(sim.clearSpot('wall')).toBe(true);
+    expect(placedIn(sim.world, 'wall')).toBeNull();
+    expect(ownsDecor(sim.world, 'verdantBanner')).toBe(true);
+    expect(sim.clearSpot('wall')).toBe(false);
+
+    // A piece never bought cannot be put out, and the effect follows the floor.
+    expect(sim.place('goldBanner')).toBe(false);
+    expect(derivedStats(sim.world).footfallBonus).toBe(0);
+    sim.place('crimsonBanner');
+    expect(derivedStats(sim.world).footfallBonus).toBeCloseTo(
+      getDecor('crimsonBanner').effect.footfallBonus ?? 0,
+      5,
+    );
   });
 });
 

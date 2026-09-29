@@ -11,8 +11,14 @@
  * just been beaten in — so you are reading a moving target and can never mash
  * one button.
  *
- * Patience hitting zero ends the haggle at the customer's last standing offer.
- * You never walk away with nothing; the worst outcome is a shelf-price sale.
+ * Patience hitting zero ends the haggle as a sale at the customer's last
+ * standing offer: their ceiling as it stands, and never under the potion's
+ * shelf price. You never walk away with nothing; the worst outcome is a
+ * shelf-price sale. A haggle is only lost when you let the customer go, name a
+ * price they refuse, or the bottle has already sold off the shelf.
+ *
+ * A customer wants what the shop owns, wherever it stands: the store room and
+ * the shelves alike. A bottle sold at the counter leaves whichever it was in.
  */
 
 import { config, customersConfig, getCustomer, getRecipe } from './config';
@@ -51,24 +57,58 @@ function shiftStance(current: HaggleStance, def: CustomerDef, rng: Rng): HaggleS
   return others[0] ?? current;
 }
 
+// ---------------------------------------------------------------------------
+// What the shop owns
+// ---------------------------------------------------------------------------
+
+/** A bottle and where it stands: on a shelf, or in the store room when null. */
+export interface OwnedBottle {
+  item: BottledItem;
+  shelfId: string | null;
+}
+
 /**
- * Nobody comes to the counter while there is no counter.
+ * Every bottle the shop owns, store room first and then the shelves in order.
  *
- * The haggle is a whole system — stances, pitches, patience, a session that
- * lives in the save — and the screen it was played on has been taken off the
- * Shop while customers move to a scene of their own. Left running it would put
- * a customer in a shop with no way to serve them, and a half-finished haggle
- * into every save made in the meantime.
- *
- * Paused rather than deleted, because none of it is wrong — it is early. One
- * line to bring back, and `clearStrandedHaggle` below tidies the sessions this
- * pause would otherwise abandon.
+ * A walk-in used to look only at the store room, which made the shelves — the
+ * one place a bottle is actually on display — invisible to the one customer
+ * who walked in and asked for it.
  */
-export const WALK_INS_PAUSED = true;
+export function ownedBottles(world: World): OwnedBottle[] {
+  const owned: OwnedBottle[] = world.bottled.map((item) => ({ item, shelfId: null }));
+  for (const slot of world.shelf) {
+    if (slot.item) owned.push({ item: slot.item, shelfId: slot.id });
+  }
+  return owned;
+}
+
+export function findOwnedBottle(world: World, uid: string): OwnedBottle | null {
+  const stored = world.bottled.find((item) => item.uid === uid);
+  if (stored) return { item: stored, shelfId: null };
+  const slot = world.shelf.find((entry) => entry.item?.uid === uid);
+  return slot?.item ? { item: slot.item, shelfId: slot.id } : null;
+}
+
+/** Take a bottle out of wherever it stands; a shelf it leaves is emptied. */
+function takeBottle(world: World, uid: string): BottledItem | null {
+  const index = world.bottled.findIndex((item) => item.uid === uid);
+  if (index >= 0) return world.bottled.splice(index, 1)[0] ?? null;
+
+  const slot = world.shelf.find((entry) => entry.item?.uid === uid);
+  if (!slot?.item) return null;
+  const item = slot.item;
+  slot.item = null;
+  slot.quantity = 0;
+  return item;
+}
+
+// ---------------------------------------------------------------------------
+// Who is in
+// ---------------------------------------------------------------------------
 
 export interface WalkIn {
   customerId: string;
-  /** Bottled items in storage this customer would actually buy. */
+  /** Bottles the shop owns, on a shelf or in the store room, this customer would buy. */
   wantedUids: string[];
 }
 
@@ -77,26 +117,19 @@ export interface WalkIn {
  *
  * Derived from the day counter like everything else, so a customer cannot be
  * missed by closing the app — and a reload brings the same person back.
+ *
+ * The roster keeps daylight hours: dawn, day and dusk. The one who would rather
+ * not be seen comes after dark instead, and only then.
  */
 export function walkInsToday(world: World): WalkIn[] {
-  return WALK_INS_PAUSED ? [] : scheduledWalkIns(world);
-}
-
-/**
- * Who the day would bring, pause or no pause.
- *
- * Separate from the door being shut, so the haggle's own tests keep exercising
- * the schedule rather than passing because nobody turns up. A paused system
- * whose tests quietly stop testing anything is how a system comes back broken.
- */
-export function scheduledWalkIns(world: World): WalkIn[] {
   const day = dayStateAt(world.now);
   const rank = rankOf(world);
   const night = day.phase === 'night';
+  const owned = ownedBottles(world);
 
   return customersConfig.roster
     .filter((def) => rank >= def.requiresRank)
-    .filter((def) => (def.nightOnly ? night : true))
+    .filter((def) => (def.nightOnly ? night : !night))
     .filter((def) => {
       // Fixed per day, so who is in town is a fact about the day rather than
       // something that reshuffles on every re-render.
@@ -105,7 +138,7 @@ export function scheduledWalkIns(world: World): WalkIn[] {
     })
     .map((def) => ({
       customerId: def.id,
-      wantedUids: world.bottled.filter((item) => buys(def, item.recipeId)).map((item) => item.uid),
+      wantedUids: owned.filter(({ item }) => buys(def, item.recipeId)).map(({ item }) => item.uid),
     }))
     .filter((walkIn) => walkIn.wantedUids.length > 0);
 }
@@ -148,8 +181,8 @@ export function beginHaggle(
   itemUid: string,
 ): HaggleSession | null {
   const def = getCustomer(customerId);
-  const item = world.bottled.find((entry) => entry.uid === itemUid);
-  if (!item || !buys(def, item.recipeId)) return null;
+  const owned = findOwnedBottle(world, itemUid);
+  if (!owned || !buys(def, owned.item.recipeId)) return null;
   if (world.haggle) return null;
 
   const day = dayStateAt(world.now);
@@ -162,7 +195,7 @@ export function beginHaggle(
   // opening ceiling — pitching then moves it by proportion, so the bonus
   // carries through every round without being counted twice.
   const bonus = 1 + derivedStats(world).haggleCeilingBonus;
-  const ceiling = Math.round(ceilingFor(item, def, budgetVariance(rng)) * bonus);
+  const ceiling = Math.round(ceilingFor(owned.item, def, budgetVariance(rng)) * bonus);
 
   const session: HaggleSession = {
     customerId,
@@ -198,7 +231,21 @@ export function previewPitch(stance: HaggleStance, actionId: string): PitchResul
   return 'neutral';
 }
 
-export function pitch(world: World, actionId: string): PitchResult | null {
+export interface HaggleClose {
+  sold: boolean;
+  gold: number;
+  askedFor: number;
+  /** Their patience ran out and they took it at their own last offer. */
+  patienceOut: boolean;
+}
+
+/** One pitch, and the sale it ended in when it used up the last of their patience. */
+export interface PitchStep {
+  result: PitchResult;
+  settled: HaggleClose | null;
+}
+
+export function pitch(world: World, actionId: string): PitchStep | null {
   const session = world.haggle;
   if (!session || session.finished) return null;
 
@@ -226,49 +273,69 @@ export function pitch(world: World, actionId: string): PitchResult | null {
   session.roundsLeft -= 1;
   session.lastResult = result;
 
-  if (session.patience <= 0 || session.roundsLeft <= 0) session.finished = true;
-  return result;
+  // Out of patience, they stop listening and buy at their last standing offer.
+  if (session.patience <= 0) return { result, settled: settleAtOffer(world) };
+
+  if (session.roundsLeft <= 0) session.finished = true;
+  return { result, settled: null };
 }
 
-export interface HaggleClose {
-  sold: boolean;
-  gold: number;
-  askedFor: number;
+/** The books, for a bottle sold at the counter however the price was reached. */
+function sell(world: World, item: BottledItem, gold: number): void {
+  world.gold += gold;
+  world.statistics.itemsSold += 1;
+  world.statistics.goldEarned += gold;
+  world.statistics.hagglesWon += 1;
+  world.renown +=
+    config.economy.renownPerSale + (config.economy.renownPerGradeBonus[item.grade] ?? 0);
+}
+
+/**
+ * The sale patience runs out into.
+ *
+ * At the customer's ceiling as it stands after the last pitch — which backfires
+ * may have talked down — but never under the shelf price, because a customer
+ * who would pay less than the shelf would have bought from the shelf. Only the
+ * bottle having gone in the meantime makes this a loss.
+ */
+function settleAtOffer(world: World): HaggleClose {
+  const session = world.haggle!;
+  const item = takeBottle(world, session.itemUid);
+  world.haggle = null;
+  if (!item) return { sold: false, gold: 0, askedFor: 0, patienceOut: true };
+
+  const gold = Math.max(session.ceiling, item.fairValue);
+  sell(world, item, gold);
+  return { sold: true, gold, askedFor: gold, patienceOut: true };
 }
 
 /**
  * Name a price and close.
  *
  * At or under the ceiling it sells. Over it, the customer declines — but the
- * item stays yours, so a failed haggle costs a walk-in, never stock.
+ * item stays yours, so a failed haggle costs a walk-in, never stock. A bottle
+ * that has gone since the haggle began (sold off the shelf while you talked)
+ * closes the same way as a refusal: nothing changes hands.
  */
 export function close(world: World, askingPrice: number): HaggleClose | null {
   const session = world.haggle;
   if (!session) return null;
 
-  const index = world.bottled.findIndex((entry) => entry.uid === session.itemUid);
-  if (index < 0) {
+  const asked = Math.max(1, Math.round(askingPrice));
+  const owned = findOwnedBottle(world, session.itemUid);
+  if (!owned) {
     world.haggle = null;
-    return { sold: false, gold: 0, askedFor: askingPrice };
+    return { sold: false, gold: 0, askedFor: asked, patienceOut: false };
   }
 
-  const asked = Math.max(1, Math.round(askingPrice));
   const sold = asked <= session.ceiling;
-
   if (sold) {
-    const [item] = world.bottled.splice(index, 1);
-    world.gold += asked;
-    world.statistics.itemsSold += 1;
-    world.statistics.goldEarned += asked;
-    world.statistics.hagglesWon += 1;
-    if (item) {
-      world.renown +=
-        config.economy.renownPerSale + (config.economy.renownPerGradeBonus[item.grade] ?? 0);
-    }
+    const item = takeBottle(world, session.itemUid);
+    if (item) sell(world, item, asked);
   }
 
   world.haggle = null;
-  return { sold, gold: sold ? asked : 0, askedFor: asked };
+  return { sold, gold: sold ? asked : 0, askedFor: asked, patienceOut: false };
 }
 
 export function abandonHaggle(world: World): void {
@@ -279,18 +346,19 @@ export function abandonHaggle(world: World): void {
 export function suggestedAsk(world: World): number {
   const session = world.haggle;
   if (!session) return 0;
-  const item = world.bottled.find((entry) => entry.uid === session.itemUid);
-  return Math.round(item?.fairValue ?? session.baseCeiling);
+  const owned = findOwnedBottle(world, session.itemUid);
+  return Math.round(owned?.item.fairValue ?? session.baseCeiling);
 }
 
 /**
  * Drop a haggle nothing can finish.
  *
- * A session saved before the counter came off the Shop would sit in the world
- * for ever: the customer is mid-negotiation, the bottle is spoken for, and
- * there is no screen on which to answer them. Called once when a world is
- * loaded, and a no-op the moment walk-ins are running again.
+ * A session lives in the save so a customer is still at the counter after a
+ * reload. The one thing that can leave it unfinishable is its bottle being
+ * gone — sold off the shelf, or removed with the data it came from — and a
+ * haggle over nothing would stand at the counter for ever. Called once when a
+ * world is loaded.
  */
-export function clearStrandedHaggle(world: World): void {
-  if (WALK_INS_PAUSED) world.haggle = null;
+export function dropStaleHaggle(world: World): void {
+  if (world.haggle && !findOwnedBottle(world, world.haggle.itemUid)) world.haggle = null;
 }

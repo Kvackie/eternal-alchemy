@@ -822,7 +822,10 @@ describe('ranks that ask for a potion', () => {
 });
 
 describe('pieces that only work at the counter', () => {
-  it('are not sold while walk-ins are paused', () => {
+  it('are sold like any other furnishing, now that customers come to it', () => {
+    // These were held back from the stalls while walk-ins were paused, since a
+    // chalice that only raises a haggler's ceiling did nothing in a shop nobody
+    // haggled in. The counter is open, so they are in the draw again.
     const counterOnly = ['boneChalice', 'lockedChest', 'skullChalice'];
     const world = createWorld(6);
     world.renown = 100_000;
@@ -838,12 +841,10 @@ describe('pieces that only work at the counter', () => {
         for (const visit of sim.merchants()) {
           for (const entry of visit.entries) {
             if (entry.kind === 'decor') decorSeen.add(entry.id);
-            expect(counterOnly).not.toContain(entry.id);
           }
         }
       }
     }
-    // The same stalls do deal décor, so the draw was really looked at.
-    expect(decorSeen.size).toBeGreaterThan(4);
+    for (const id of counterOnly) expect(decorSeen, `${id} never came to a stall`).toContain(id);
   });
 });

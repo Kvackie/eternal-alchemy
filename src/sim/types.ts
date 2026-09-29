@@ -175,6 +175,8 @@ export type LogKind =
   | 'contractAbandoned'
   | 'haggleWon'
   | 'haggleLost'
+  | 'haggleSettled'
+  | 'decorStored'
   | 'recipeFound';
 
 export interface LogEntry {

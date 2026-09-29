@@ -10,8 +10,10 @@ import { describe, expect, it } from 'vitest';
 import { Simulation } from '@/sim/sim';
 import { createWorld } from '@/sim/state';
 import { customersConfig, getCustomer, getDecor } from '@/sim/config';
+import { nextPhaseStart } from '@/sim/clock';
 import { grantDecor } from '@/sim/decor';
-import { WALK_INS_PAUSED, ceilingFor, previewPitch, scheduledWalkIns } from '@/sim/haggle';
+import { ceilingFor, previewPitch, walkInsToday } from '@/sim/haggle';
+import { stockShelf } from '@/sim/market';
 import type { HaggleStance } from '@/sim/types';
 import { DAY, bottle } from './helpers';
 
@@ -24,12 +26,15 @@ function shopWithCustomer(): { sim: Simulation; customerId: string } {
       bottle({ uid: 'a', fairValue: 100 }),
       bottle({ uid: 'b', fairValue: 100 }),
     );
-    // The schedule directly: walk-ins are paused behind the counter's UI, and
-    // a test that asked the paused door would find nobody and prove nothing.
-    const walkIns = scheduledWalkIns(sim.world);
+    const walkIns = sim.walkIns();
     if (walkIns.length > 0) return { sim, customerId: walkIns[0]!.customerId };
   }
   throw new Error('no customer turned up in 40 days');
+}
+
+/** The pitch that backfires against the stance they are holding right now. */
+function backfireFor(sim: Simulation): string {
+  return customersConfig.actions.find((x) => x.backfiresAgainst === sim.haggle!.stance)!.id;
 }
 
 describe('the pitch triangle', () => {
@@ -59,6 +64,59 @@ describe('the pitch triangle', () => {
     // Sweetening beats impatience and reads as desperation to a sceptic.
     expect(previewPitch('impatient', 'sweeten')).toBe('counter');
     expect(previewPitch('sceptical', 'sweeten')).toBe('backfire');
+  });
+});
+
+describe('who comes to the counter', () => {
+  it('comes by day, on the days the seed decides, and the same days on a reload', () => {
+    const days: number[] = [];
+    for (let day = 0; day < 40; day += 1) {
+      const sim = new Simulation(createWorld(77));
+      sim.advanceTo(day * DAY + DAY * 0.4);
+      sim.world.bottled.push(bottle({ uid: 'a', fairValue: 100 }));
+      const today = walkInsToday(sim.world);
+      if (today.length > 0) days.push(day);
+
+      // A fact about the day, not about the render: asked twice, the same
+      // people are in.
+      expect(walkInsToday(sim.world)).toEqual(today);
+    }
+    // Some days and not others, or the visit chance is decoration.
+    expect(days.length).toBeGreaterThan(3);
+    expect(days.length).toBeLessThan(40);
+  });
+
+  it('keeps the daylight roster out after dark', () => {
+    for (let day = 0; day < 40; day += 1) {
+      const sim = new Simulation(createWorld(77));
+      sim.advanceTo(nextPhaseStart(day * DAY, 'night') + 1000);
+      sim.world.bottled.push(bottle({ uid: 'a', fairValue: 100 }));
+      for (const walkIn of walkInsToday(sim.world)) {
+        expect(getCustomer(walkIn.customerId).nightOnly).toBe(true);
+      }
+    }
+  });
+
+  it('only sends the night customer after dark', () => {
+    const night = customersConfig.roster.find((c) => c.nightOnly);
+    expect(night).toBeDefined();
+
+    const sim = new Simulation(createWorld(5));
+    sim.world.renown = 100000;
+    sim.world.bottledKinds['S|5|sovereign'] = true;
+    sim.advanceTo(DAY * 0.4);
+    sim.world.bottled.push(bottle({ uid: 'x', recipeId: night!.wants[0]!, fairValue: 100 }));
+    expect(sim.walkIns().some((w) => w.customerId === night!.id)).toBe(false);
+  });
+
+  it('asks for a bottle standing on a shelf as readily as one in the store room', () => {
+    const { sim, customerId } = shopWithCustomer();
+    expect(stockShelf(sim.world, sim.world.shelf[0]!.id, 'a')).toBe(true);
+    expect(sim.world.bottled.some((item) => item.uid === 'a')).toBe(false);
+
+    const walkIn = sim.walkIns().find((w) => w.customerId === customerId)!;
+    expect(walkIn.wantedUids).toContain('a');
+    expect(walkIn.wantedUids).toContain('b');
   });
 });
 
@@ -150,9 +208,14 @@ describe('a haggle', () => {
     const { sim, customerId } = shopWithCustomer();
     sim.beginHaggle(customerId, 'a');
 
+    // Neutral pitches only: the ones that would use up their patience first
+    // end the haggle another way, tested below.
     for (let i = 0; i < customersConfig.rounds; i += 1) {
       expect(sim.haggle!.finished).toBe(false);
-      sim.pitch('demonstrate');
+      const neutral = customersConfig.actions.find(
+        (x) => x.counters !== sim.haggle!.stance && x.backfiresAgainst !== sim.haggle!.stance,
+      )!;
+      sim.pitch(neutral.id);
     }
     expect(sim.haggle!.finished).toBe(true);
   });
@@ -180,20 +243,108 @@ describe('a haggle', () => {
     const result = sim.closeHaggle(ceiling)!;
 
     expect(result.sold).toBe(true);
+    expect(result.patienceOut).toBe(false);
     expect(sim.world.gold).toBe(goldBefore + ceiling);
     expect(sim.world.bottled.some((i) => i.uid === 'a')).toBe(false);
     expect(sim.world.statistics.hagglesWon).toBe(1);
+    expect(sim.world.log.at(-1)?.kind).toBe('haggleWon');
   });
 
   it('keeps the item when the ask is refused — a failed haggle costs a visit, not stock', () => {
     const { sim, customerId } = shopWithCustomer();
     const session = sim.beginHaggle(customerId, 'a')!;
+    const goldBefore = sim.world.gold;
 
     const result = sim.closeHaggle(session.ceiling + 1000)!;
 
     expect(result.sold).toBe(false);
     expect(sim.world.bottled.some((i) => i.uid === 'a')).toBe(true);
-    expect(sim.world.gold).toBe(sim.world.gold);
+    expect(sim.world.gold).toBe(goldBefore);
+    expect(sim.world.statistics.hagglesWon).toBe(0);
+    expect(sim.world.log.at(-1)?.kind).toBe('haggleLost');
+  });
+
+  it('sells a shelved bottle off the shelf, leaving the shelf empty', () => {
+    const { sim, customerId } = shopWithCustomer();
+    const slot = sim.world.shelf[0]!;
+    stockShelf(sim.world, slot.id, 'a');
+
+    const session = sim.beginHaggle(customerId, 'a')!;
+    const goldBefore = sim.world.gold;
+    expect(sim.closeHaggle(session.ceiling)!.sold).toBe(true);
+
+    expect(sim.world.gold).toBe(goldBefore + session.ceiling);
+    expect(slot.item).toBeNull();
+    expect(slot.quantity).toBe(0);
+    expect(sim.world.bottled.some((i) => i.uid === 'a')).toBe(false);
+  });
+
+  it('closes as a loss when the bottle sold off the shelf while they talked', () => {
+    const { sim, customerId } = shopWithCustomer();
+    const slot = sim.world.shelf[0]!;
+    stockShelf(sim.world, slot.id, 'a');
+    const session = sim.beginHaggle(customerId, 'a')!;
+
+    // The passive trade got there first.
+    slot.item = null;
+    slot.quantity = 0;
+    const goldBefore = sim.world.gold;
+
+    const result = sim.closeHaggle(session.ceiling)!;
+    expect(result.sold).toBe(false);
+    expect(sim.world.gold).toBe(goldBefore);
+    expect(sim.haggle).toBeNull();
+    expect(sim.world.log.at(-1)?.kind).toBe('haggleLost');
+  });
+
+  it('ends as a sale at their last standing offer when their patience runs out', () => {
+    const { sim, customerId } = shopWithCustomer();
+    sim.beginHaggle(customerId, 'a');
+    const goldBefore = sim.world.gold;
+    const fair = 100;
+
+    // Say the wrong thing until they stop listening.
+    let settled = null;
+    let expected = 0;
+    for (let i = 0; i < 10 && !settled; i += 1) {
+      const before = sim.haggle!.ceiling;
+      const after = Math.max(
+        1,
+        Math.round(before * (1 + customersConfig.outcomes.backfire.ceiling)),
+      );
+      expected = Math.max(after, fair);
+      settled = sim.pitch(backfireFor(sim))!.settled;
+    }
+
+    expect(settled).not.toBeNull();
+    expect(settled!.sold).toBe(true);
+    expect(settled!.patienceOut).toBe(true);
+    // Their ceiling as the last pitch left it, but never under the shelf price.
+    expect(settled!.gold).toBe(expected);
+    expect(settled!.gold).toBeGreaterThanOrEqual(fair);
+    expect(sim.world.gold).toBe(goldBefore + settled!.gold);
+
+    // A sale, in every book that counts one.
+    expect(sim.haggle).toBeNull();
+    expect(sim.world.bottled.some((i) => i.uid === 'a')).toBe(false);
+    expect(sim.world.statistics.hagglesWon).toBe(1);
+    expect(sim.world.statistics.itemsSold).toBe(1);
+    expect(sim.world.log.at(-1)?.kind).toBe('haggleSettled');
+    expect(sim.walkIns().some((w) => w.customerId === customerId)).toBe(false);
+  });
+
+  it('never sells under the shelf price when patience runs out', () => {
+    // Three backfires take a ceiling well under where it started; the floor is
+    // what stops a walk-in being a way to lose money on a bottle.
+    const { sim, customerId } = shopWithCustomer();
+    sim.beginHaggle(customerId, 'a');
+    sim.haggle!.ceiling = 5;
+
+    let settled = null;
+    for (let i = 0; i < 10 && !settled; i += 1) settled = sim.pitch(backfireFor(sim))!.settled;
+
+    expect(settled!.sold).toBe(true);
+    expect(settled!.gold).toBe(100);
   });
 
   it('does not bring the same customer straight back after they are served', () => {
@@ -210,32 +361,36 @@ describe('a haggle', () => {
     sim.pitch('demonstrate');
 
     // Through a save and back: nothing about a haggle lives outside the world,
-    // which is what lets one survive a reload once the counter is back.
+    // which is what lets one survive a reload.
     const reloaded = JSON.parse(JSON.stringify(sim.world)) as typeof sim.world;
     expect(reloaded.haggle).toEqual(sim.haggle);
   });
 
-  it('drops a stranded negotiation while the counter is out of the build', () => {
+  it('survives a reload with the customer still at the counter', () => {
+    const { sim, customerId } = shopWithCustomer();
+    const session = sim.beginHaggle(customerId, 'a')!;
+    sim.pitch('demonstrate');
+    const ceiling = sim.haggle!.ceiling;
+
+    const clone = new Simulation(JSON.parse(JSON.stringify(sim.world)));
+    expect(clone.haggle).toEqual(sim.haggle);
+    expect(clone.haggle!.customerId).toBe(session.customerId);
+
+    // And it can be finished from where it was left.
+    const result = clone.closeHaggle(ceiling)!;
+    expect(result.sold).toBe(true);
+    expect(clone.world.bottled.some((i) => i.uid === 'a')).toBe(false);
+  });
+
+  it('is dropped on load when its bottle no longer exists', () => {
     const { sim, customerId } = shopWithCustomer();
     sim.beginHaggle(customerId, 'a');
     expect(sim.haggle).not.toBeNull();
 
-    // There is no screen to answer a customer on, so loading a save that still
-    // holds one lets them go rather than freezing a bottle for ever.
-    const clone = new Simulation(JSON.parse(JSON.stringify(sim.world)));
-    expect(WALK_INS_PAUSED).toBe(true);
-    expect(clone.haggle).toBeNull();
-  });
-
-  it('only sends the night customer after dark', () => {
-    const night = customersConfig.roster.find((c) => c.nightOnly);
-    expect(night).toBeDefined();
-
-    const sim = new Simulation(createWorld(5));
-    sim.world.renown = 100000;
-    sim.world.bottledKinds['S|5|sovereign'] = true;
-    sim.advanceTo(DAY * 0.4);
-    sim.world.bottled.push(bottle({ uid: 'x', recipeId: night!.wants[0]!, fairValue: 100 }));
-    expect(sim.walkIns().some((w) => w.customerId === night!.id)).toBe(false);
+    // The bottle is gone — sold off the shelf, or taken out of the data — so a
+    // haggle over it could never be finished, and a loaded save lets it go.
+    const saved = JSON.parse(JSON.stringify(sim.world)) as typeof sim.world;
+    saved.bottled = saved.bottled.filter((item) => item.uid !== 'a');
+    expect(new Simulation(saved).haggle).toBeNull();
   });
 });

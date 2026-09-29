@@ -104,12 +104,13 @@ import { abandon, deliver, runContracts } from './contracts';
 import {
   abandonHaggle,
   beginHaggle,
-  clearStrandedHaggle,
   close,
+  dropStaleHaggle,
   pitch,
   previewPitch,
   suggestedAsk,
   walkInsToday,
+  type HaggleClose,
 } from './haggle';
 import { buyCodex, canRetire, masteryFor, retire } from './prestige';
 import { discoveredRecipes, isDiscovered, learnFrom } from './discovery';
@@ -146,9 +147,9 @@ export class Simulation {
   constructor(world: World = createWorld()) {
     this.world = world;
     this.rng = new Rng(world.rngSeed);
-    // A save made while the counter existed can carry a negotiation there is
-    // now no screen to finish. See `clearStrandedHaggle`.
-    clearStrandedHaggle(world);
+    // A save can carry a haggle over a bottle that has since gone — sold off
+    // the shelf under the customer's nose. See `dropStaleHaggle`.
+    dropStaleHaggle(world);
   }
 
   get now(): number {
@@ -733,8 +734,15 @@ export class Simulation {
     return beginHaggle(this.world, customerId, itemUid);
   }
 
+  /**
+   * One pitch. When it uses up the last of their patience the haggle is over
+   * and the bottle sold at their last offer, which `settled` carries.
+   */
   pitch(actionId: string) {
-    return pitch(this.world, actionId);
+    const customerId = this.world.haggle?.customerId;
+    const step = pitch(this.world, actionId);
+    if (step?.settled && customerId) this.haggleClosed(customerId, step.settled);
+    return step;
   }
 
   /** What an action would do against the current stance, for the button labels. */
@@ -745,15 +753,16 @@ export class Simulation {
   closeHaggle(askingPrice: number) {
     const customerId = this.world.haggle?.customerId;
     const result = close(this.world, askingPrice);
-    if (result && customerId) {
-      this.markServed(customerId);
-      record(this.world, result.sold ? 'haggleWon' : 'haggleLost', {
-        customer: customerId,
-        gold: result.gold,
-      });
-      this.noticeRankUp();
-    }
+    if (result && customerId) this.haggleClosed(customerId, result);
     return result;
+  }
+
+  /** The books and the log, however the haggle ended. */
+  private haggleClosed(customerId: string, result: HaggleClose): void {
+    this.markServed(customerId);
+    const kind = !result.sold ? 'haggleLost' : result.patienceOut ? 'haggleSettled' : 'haggleWon';
+    record(this.world, kind, { customer: customerId, gold: result.gold });
+    this.noticeRankUp();
   }
 
   abandonHaggle(): void {
@@ -1035,8 +1044,12 @@ export class Simulation {
         record(this.world, 'installed', { item: entry.id });
         break;
       case 'decor':
-        grantDecor(this.world, entry.id);
-        record(this.world, 'furnished', { item: entry.id });
+        // A piece bought for a spot something else already stands in is not
+        // put out over it; it waits in the Shop's furnishings for the player to
+        // swap, and the log says so rather than claiming it went out.
+        record(this.world, grantDecor(this.world, entry.id) ? 'furnished' : 'decorStored', {
+          item: entry.id,
+        });
         break;
       case 'board':
         this.world.boards[entry.id] = (this.world.boards[entry.id] ?? 0) + 1;
