@@ -193,6 +193,10 @@ equal measure. The five single-essence potions are known at the start. The other
 only as a hint — no name, no ratio — until a pot comes out as one. Accepting it is what puts it in
 the book.
 
+Each recipe has a name of its own — Hearthfire Draught for Ignis alone, Scaldmist Tincture for fire
+and water, Daybreak Elixir for everything but Umbra, Quintessence for all five — and a bottle from
+the pack chosen to suit it, named in its `art` field. The names live in `en.json` under `recipe.*`.
+
 Only **accepting** teaches. Rejecting stays free precisely so experimenting is free, and a rejected
 pot that leaked the answer would make the free option strictly better than committing to one.
 

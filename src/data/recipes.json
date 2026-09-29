@@ -6,7 +6,7 @@
     ],
     "baseValue": 12,
     "knownFromStart": true,
-    "art": "scaldPhiltre"
+    "art": "emberMinor"
   },
   {
     "id": "aqua",
@@ -24,7 +24,7 @@
     ],
     "baseValue": 12,
     "knownFromStart": true,
-    "art": "chalkDraught"
+    "art": "loamGreater"
   },
   {
     "id": "aer",
@@ -72,7 +72,7 @@
     ],
     "baseValue": 20,
     "knownFromStart": false,
-    "art": "cinderskyTincture"
+    "art": "pyrezephyrTincture"
   },
   {
     "id": "ignisUmbra",
@@ -82,7 +82,7 @@
     ],
     "baseValue": 20,
     "knownFromStart": false,
-    "art": "cinderveilBomb"
+    "art": "embertideExtract"
   },
   {
     "id": "aquaTerra",
@@ -92,7 +92,7 @@
     ],
     "baseValue": 20,
     "knownFromStart": false,
-    "art": "brineflintTincture"
+    "art": "loamtideTincture"
   },
   {
     "id": "aquaAer",
@@ -112,7 +112,7 @@
     ],
     "baseValue": 20,
     "knownFromStart": false,
-    "art": "mireveilExtract"
+    "art": "tideLoamShadeMinor"
   },
   {
     "id": "terraAer",
@@ -122,7 +122,7 @@
     ],
     "baseValue": 20,
     "knownFromStart": false,
-    "art": "featherstoneDraught"
+    "art": "loamGaleShadeMinor"
   },
   {
     "id": "terraUmbra",
@@ -164,7 +164,7 @@
     ],
     "baseValue": 30,
     "knownFromStart": false,
-    "art": "coalbrineDraught"
+    "art": "stormfireFlask"
   },
   {
     "id": "ignisAquaUmbra",
@@ -208,7 +208,7 @@
     ],
     "baseValue": 30,
     "knownFromStart": false,
-    "art": "coalcloudExtract"
+    "art": "wraithwindVial"
   },
   {
     "id": "aquaTerraAer",
@@ -241,7 +241,7 @@
     ],
     "baseValue": 30,
     "knownFromStart": false,
-    "art": "dewskyPhiltre"
+    "art": "tideGaleShadeGrand"
   },
   {
     "id": "terraAerUmbra",
@@ -264,7 +264,7 @@
     ],
     "baseValue": 42,
     "knownFromStart": false,
-    "art": "embertideExtract"
+    "art": "emberLoamGreater"
   },
   {
     "id": "ignisAquaTerraUmbra",
@@ -276,7 +276,7 @@
     ],
     "baseValue": 42,
     "knownFromStart": false,
-    "art": "coalbrineTincture"
+    "art": "emberShadeCommon"
   },
   {
     "id": "ignisAquaAerUmbra",
@@ -288,7 +288,7 @@
     ],
     "baseValue": 42,
     "knownFromStart": false,
-    "art": "cinderdewPhiltre"
+    "art": "emberTideShadeCommon"
   },
   {
     "id": "ignisTerraAerUmbra",
@@ -325,6 +325,6 @@
     ],
     "baseValue": 56,
     "knownFromStart": false,
-    "art": "murk"
+    "art": "embertideElixir"
   }
 ]
