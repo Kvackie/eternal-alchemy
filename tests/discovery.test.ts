@@ -81,7 +81,7 @@ describe('the opening checklist', () => {
     expect(onboardingSteps(sim.world).find((s) => s.id === 'harvest')!.done).toBe(true);
   });
 
-  it('completes and hides itself once a full loop has been closed', () => {
+  it('completes once a full loop has been closed, and stays up to say so until closed', () => {
     const sim = new Simulation(createWorld(1));
     sim.world.statistics.cropsHarvested = 3;
     sim.world.statistics.brewsStarted = 1;
@@ -89,6 +89,11 @@ describe('the opening checklist', () => {
     sim.world.plots[0]!.crop = null;
 
     expect(onboardingComplete(sim.world)).toBe(true);
+    expect(sim.onboarding.complete).toBe(true);
+    expect(sim.onboarding.current).toBeNull();
+    expect(sim.onboarding.visible).toBe(true);
+
+    sim.dismissOnboarding();
     expect(sim.onboarding.visible).toBe(false);
   });
 

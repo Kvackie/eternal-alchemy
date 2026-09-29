@@ -286,6 +286,12 @@ button {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  /*
+   * It is a `dl`, and a `dl` comes with a 1em margin above and below that
+   * nothing here ever asked for. At 150% text that was 22px each way on a
+   * row 34px tall — most of a 154px HUD on a phone was this margin.
+   */
+  margin: 0;
 }
 
 .hud-stat dt {
@@ -373,6 +379,9 @@ button {
   gap: 0.3rem;
   font-size: 0.75rem;
   color: var(--text-dim);
+  /* One line: the bar wraps the clock under the figures before the clock
+     wraps within itself. */
+  white-space: nowrap;
 }
 
 .phase-dot {
@@ -2422,17 +2431,40 @@ input[type='range'] {
   background: var(--bg-panel);
 }
 
+/*
+ * The name takes what is left and gives way first.
+ *
+ * At 150% text on a 360px phone the bar has the back button, the count and
+ * the debug toggle's room to hold before the name, and "Clay Bowl" broke into
+ * two lines and "0 / 60" into three. The name is the one thing here that can
+ * be cut short and still read.
+ */
 .station-title {
   font-weight: 600;
   font-size: 0.9375rem;
+  flex: 1 1 auto;
+  /* Never nothing: a bar with the name squeezed out reads as a bar for no pot. */
+  min-width: 3.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Clear of the debug toggle, which floats in the same corner in dev builds. */
 .station-capacity {
+  flex: none;
   margin-left: auto;
-  margin-right: 5rem;
   color: var(--text-faint);
   font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+/*
+ * Clear of the debug toggle, which floats in the same corner — only where it
+ * is showing, and only by its own width: at 150% text on a 360px phone the
+ * 5rem it used to keep was a third of the bar.
+ */
+#panels:has(> .debug-toggle) .station-capacity {
+  margin-right: 3.5rem;
 }
 
 /*
@@ -3190,9 +3222,16 @@ input[type='range'] {
    * list off the bottom — which on the half of the screen whose job is "choose
    * what to make" leaves only the thing you are not choosing.
    */
+  /*
+   * And it is capped in rem as well as in height, because 40vh of a phone is
+   * 350px for one picture: the recipe list began under the checklist's pill,
+   * off the first screen. At this size the bowl still holds three across and
+   * three rows of thumb-sized contents inside its rim, and the book starts a
+   * hundred and thirty pixels sooner.
+   */
   .station[data-view='pot'] .pot-stage {
     flex: none;
-    height: 40vh;
+    height: min(14rem, 40vh);
     max-height: 40vh;
   }
 
@@ -3200,13 +3239,13 @@ input[type='range'] {
    * A deeper bowl, for thumb-sized contents.
    *
    * Nothing above the pot hands it a height on a phone, so it sat at its
-   * minimum and a full great pot of different ingredients had nowhere to go.
-   * Given its own height and a deeper bowl, sixteen of them spread out inside
-   * it at a size a thumb can hit.
+   * minimum and a full pot of different ingredients had nowhere to go. As
+   * deep as it is wide, the capped stage above still holds three rows of
+   * three at a size a thumb can hit, with no dead air over the rim.
    */
   .station[data-view='pot'] .pot-vessel {
     width: 84%;
-    height: 72%;
+    height: 84%;
   }
 }
 
@@ -3742,6 +3781,26 @@ input[type='range'] {
 .checklist-count {
   font-size: 0.75rem;
   color: var(--good-text);
+}
+
+/*
+ * The last state: the loop is closed, and the pill says so once.
+ *
+ * A `div` rather than the button, since the Close inside it is a button of its
+ * own and there is nothing left to open. Side by side, so the pill stays one
+ * row tall on a phone.
+ */
+.checklist-pill.checklist-done {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: default;
+}
+
+.checklist-done .checklist-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
 }
 
 /*
@@ -5249,14 +5308,13 @@ input[type='range'] {
    * picture worth having on a very wide monitor.
    */
   /*
-   * A panel is the height of the stage, not the height of what is in it.
+   * A docked panel is the height of the stage, not the height of what is in it.
    *
-   * It used to be `max-height`, so a card sized to its content: a twelve-shelf
-   * Shop was a 257px band across the top of a 1080px window with everything
-   * below it bare ground. The body takes the spare room and scrolls when there
-   * is more than fits, which is the same behaviour a full page already has
-   * below the breakpoint — so the two sizes now differ in where the panel sits
-   * rather than in how it is shaped.
+   * It used to be `max-height`, so a card sized to its content, and beside a
+   * picture that left a short card floating over the top of a tall stage. The
+   * body takes the spare room and scrolls when there is more than fits, which
+   * is the same behaviour a full page already has below the breakpoint. The
+   * roomy panels below go the other way — see there for why.
    */
   .panel {
     margin: 0.875rem 0.875rem 0.875rem auto;
@@ -5302,9 +5360,33 @@ input[type='range'] {
    * see `.panel-head p` and the Settings rows below — rather than by squeezing
    * the whole page to fit the widest sentence on it.
    */
+  /*
+   * And only as tall as what is in it.
+   *
+   * Full height was tried here too, and a screen with six things on it — a
+   * board of four contracts, a counter with two customers — became a framed,
+   * bracketed card with three quarters of nothing inside the frame. Without a
+   * picture beside it there is no reason to hold the stage's height, so the
+   * card ends where its rows end and the ground below it is just the ground.
+   * The cap keeps a long screen — Settings, a full market — scrolling inside
+   * the card as before.
+   */
   .panel-roomy {
     margin-inline: auto;
     max-width: none;
+    height: auto;
+    max-height: calc(100% - 1.75rem);
+  }
+
+  /*
+   * Given the width, spend it on the tile rather than on the column count.
+   *
+   * At the default floor a 1280px window laid a shop's twelve shelves out as
+   * fourteen 80px columns, each name broken over two lines, in one row across
+   * the top. The market's grid has its own wider floor already.
+   */
+  .panel-roomy .slot-grid:not(.roomy) {
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
   }
 
   /* A sentence still wants a sentence's width, whatever the panel is doing. */
@@ -5543,6 +5625,31 @@ input[type='range'] {
   .hud-clock {
     font-size: 0.6875rem;
     gap: 0.25rem;
+  }
+}
+
+/*
+ * And at large text on a phone, the frame gives up its small print.
+ *
+ * At 150% the figures alone fill a 412px row, so the clock has to wrap under
+ * them; that is two rows, and two rows is the floor. The build stamp under the
+ * clock is the one line left that nobody needs while playing — it is there for
+ * a screenshot, and a screenshot at 100% still carries it. The nav's icons are
+ * a third bigger at this size, so its padding gives a little back too.
+ */
+@media (max-width: 599px) {
+  .hud {
+    row-gap: 0.25rem;
+  }
+
+  :root[data-text-scale='large'] .hud-version {
+    display: none;
+  }
+
+  :root[data-text-scale='large'] .nav button {
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    gap: 0;
   }
 }
 

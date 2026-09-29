@@ -17,21 +17,36 @@
 import { button, el, modal } from '../components';
 import { t } from '@/i18n';
 import type { Simulation } from '@/sim/sim';
-import { bus, changed, type ScreenId } from '@/ui/bus';
+import { bus, changed, toast, type ScreenId } from '@/ui/bus';
 
 /** Open, so a rebuild of the panels does not raise a second one. */
 let openPopup: (() => void) | null = null;
 
+/**
+ * Whether the list was finished the last time it was drawn.
+ *
+ * The toast marks the moment the seventh step ticks, which is a change between
+ * two draws rather than a state of the world — a save loaded with the loop
+ * already closed shows the finished pill, and should not be congratulated on
+ * it again. Unknown until the first draw, so that draw sets it and says nothing.
+ */
+let drawnComplete: boolean | null = null;
+
 export function renderOnboarding(sim: Simulation): HTMLElement | null {
-  const { visible, steps, current } = sim.onboarding;
+  const { visible, complete, steps, current } = sim.onboarding;
   if (!visible) {
-    // The last step ticking while the list is up must close it, or the popup
-    // outlives the thing it was describing.
+    // Dismissing while the list is up must close it, or the popup outlives the
+    // thing it was describing.
     openPopup?.();
+    drawnComplete = null;
     return null;
   }
 
+  if (drawnComplete === false && complete) toast(t('onboarding.finished'));
+  drawnComplete = complete;
+
   const done = steps.filter((step) => step.done).length;
+  if (complete) return renderFinished(sim, done);
 
   const pill = el('button', { class: 'checklist-pill', type: 'button' }, [
     el('span', { class: 'checklist-head' }, [
@@ -48,6 +63,32 @@ export function renderOnboarding(sim: Simulation): HTMLElement | null {
   pill.setAttribute('aria-haspopup', 'dialog');
   pill.setAttribute('aria-label', t('onboarding.open', { done, total: steps.length }));
   pill.addEventListener('click', () => openOnboarding(sim));
+  return pill;
+}
+
+/**
+ * The closing beat: the loop is closed, and the pill says so until it is closed.
+ *
+ * Not a button any more — there is nothing left to point at — but the one
+ * control it holds is the same dismissal the popup's "Don't show this again"
+ * performs, so it is gone from this save for good and not just from this
+ * screen.
+ */
+function renderFinished(sim: Simulation, done: number): HTMLElement {
+  const pill = el('div', { class: 'checklist-pill checklist-done', role: 'status' }, [
+    el('span', { class: 'checklist-head' }, [
+      el('span', { class: 'checklist-title', text: t('onboarding.done') }),
+      el('span', {
+        class: 'checklist-count num',
+        text: t('onboarding.progress', { done, total: done }),
+      }),
+    ]),
+    button(t('onboarding.close'), () => {
+      openPopup?.();
+      sim.dismissOnboarding();
+      changed();
+    }),
+  ]);
   return pill;
 }
 

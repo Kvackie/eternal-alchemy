@@ -252,6 +252,15 @@ function renderStorage(sim: Simulation): HTMLElement[] {
      * while every other list in the game drew a card. It is a card now.
      */
     const art = artUrlIf('scene', tier.id);
+    /*
+     * Said when you already have one.
+     *
+     * Every tier stays on offer whatever you own — the cap is on pots, not on
+     * kinds, and two Iron Pots is a fair way to spend it — but a list that
+     * offered the Black Kettle on the bench in the same breath as the ones
+     * you lack read as a list that had not noticed.
+     */
+    const owned = sim.world.cauldrons.filter((pot) => pot.tierId === tier.id).length;
     body.push(
       row({
         variant: 'pot-offer',
@@ -271,6 +280,7 @@ function renderStorage(sim: Simulation): HTMLElement[] {
         sub: [
           chip(t('cauldron.buy.capacity', { capacity: tier.capacity })),
           chip(t('cauldron.buy.slots', { count: tier.maxIngredients })),
+          ...(owned > 0 ? [chip(t('cauldron.buy.owned', { count: owned }), 'good')] : []),
         ],
         actions: [
           button(

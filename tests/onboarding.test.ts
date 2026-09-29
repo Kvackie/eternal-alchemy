@@ -57,7 +57,9 @@ describe('the opening checklist', () => {
     sim.advanceBy(HOUR * 24);
     expect(sim.world.statistics.itemsSold).toBeGreaterThan(0);
     expect(ticked(sim)).toHaveLength(7);
-    expect(sim.onboarding.visible).toBe(false);
+    // Finished, and still showing — the ending is a state the player closes.
+    expect(sim.onboarding.complete).toBe(true);
+    expect(sim.onboarding.visible).toBe(true);
   });
 
   it('points at the first thing still undone', () => {

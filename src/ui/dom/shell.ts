@@ -202,7 +202,7 @@ export class Shell {
     root.append(this.nav);
 
     this.uiScale = readStoredScale();
-    document.documentElement.style.setProperty('--ui-scale', String(this.uiScale));
+    applyUiScale(this.uiScale);
 
     /*
      * Redraw when the window crosses the breakpoint.
@@ -769,7 +769,7 @@ export class Shell {
 
   private setUiScale(scale: number): void {
     this.uiScale = scale;
-    document.documentElement.style.setProperty('--ui-scale', String(scale));
+    applyUiScale(scale);
     try {
       localStorage.setItem('eternal-alchemy/ui-scale', String(scale));
     } catch {
@@ -999,6 +999,22 @@ function hudStat(id: IconId, label: string, value: HTMLElement): HTMLElement {
     ]),
     value,
   ]);
+}
+
+/**
+ * The text scale, as the stylesheet reads it.
+ *
+ * The number drives every rem. The word beside it is for the one thing a
+ * stylesheet cannot ask a custom property: whether the scale is past a
+ * threshold — a media query cannot see `--ui-scale`, and a style query can
+ * only match it exactly. "Large" is the two steps at which a phone's chrome
+ * starts giving lines back to the page (see `.hud-version`).
+ */
+function applyUiScale(scale: number): void {
+  const root = document.documentElement;
+  root.style.setProperty('--ui-scale', String(scale));
+  if (scale >= 1.3) root.dataset.textScale = 'large';
+  else delete root.dataset.textScale;
 }
 
 function readStoredScale(): number {

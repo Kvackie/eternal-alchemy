@@ -7,8 +7,8 @@
  *
  * Every step is checked by observing the world, not by intercepting an action —
  * so a player who does things out of order, or already did them before opening
- * the list, is never told to do something they have done. It dismisses itself
- * once the loop is closed, and can be dismissed early.
+ * the list, is never told to do something they have done. Once the loop is
+ * closed it says so and waits to be closed; it can be dismissed early.
  */
 
 import { isReady } from './garden';
@@ -80,20 +80,27 @@ export function onboardingComplete(world: World): boolean {
 }
 
 /**
- * What the checklist shows: whether it is up, every step, and the first one
- * still outstanding — the step it should be pointing at.
+ * What the checklist shows: whether it is up, every step, the first one still
+ * outstanding — the step it should be pointing at — and whether it is done.
  *
- * One pass over the steps for all three, since each step's predicate walks the
+ * Done is not gone. The last step is "wait for someone to buy it", which ticks
+ * while the player is elsewhere, and a list that vanished the moment it did
+ * ended the first session without a word. So the list stays up, saying it is
+ * finished, until it is closed — and closing it is the same dismissal as
+ * closing it early, so a save never shows the ending twice.
+ *
+ * One pass over the steps for all of it, since each step's predicate walks the
  * plots and the shelves and the getter behind it is read on every render.
  */
 export function onboardingView(world: World): {
   visible: boolean;
+  complete: boolean;
   steps: OnboardingStep[];
   current: OnboardingStep | null;
 } {
   const steps = onboardingSteps(world);
   const current = steps.find((step) => !step.done) ?? null;
-  return { visible: !world.onboardingDismissed && current !== null, steps, current };
+  return { visible: !world.onboardingDismissed, complete: current === null, steps, current };
 }
 
 export function dismissOnboarding(world: World): void {
