@@ -31,7 +31,8 @@ export function dominantEssence(vector: EssenceVector): Essence {
   return best;
 }
 
-export type ArtKind = 'ingredient' | 'decor' | 'potion' | 'scene' | 'shelf' | 'merchant' | 'hero';
+export type ArtKind =
+  'ingredient' | 'decor' | 'potion' | 'scene' | 'shelf' | 'merchant' | 'hero' | 'customer';
 
 const sets: Record<ArtKind, Set<string>> = {
   ingredient: new Set(manifest.ingredient ?? []),
@@ -41,6 +42,7 @@ const sets: Record<ArtKind, Set<string>> = {
   shelf: new Set(manifest.shelf ?? []),
   merchant: new Set(manifest.merchant ?? []),
   hero: new Set(manifest.hero ?? []),
+  customer: new Set(manifest.customer ?? []),
 };
 
 export function hasArt(kind: ArtKind, id: string): boolean {

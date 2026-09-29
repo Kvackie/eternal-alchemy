@@ -57,6 +57,7 @@ const KINDS = {
 const PORTRAITS = {
   merchant: { from: 'art/portraits/merchants', w: 256, h: 320 },
   hero: { from: 'art/portraits/heroes', w: 256, h: 320 },
+  customer: { from: 'art/portraits/customers', w: 256, h: 320 },
 };
 
 /*
@@ -108,6 +109,7 @@ const USED = {
   ]),
   potion: new Set(data('recipes.json').map((recipe) => recipe.art ?? recipe.id)),
   merchant: new Set(data('merchants.json').map((merchant) => merchant.id)),
+  customer: new Set(data('customers.json').roster.map((customer) => customer.id)),
 };
 
 /** The source files of a kind that the game will use. */

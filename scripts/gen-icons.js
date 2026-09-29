@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 /** What each interface slot shows, as `<author>--<name>` in art/icons/. */
 const ICONS = {
   shop: 'delapouite--shop',
+  counter: 'delapouite--shaking-hands',
   board: 'delapouite--wanted-reward',
   market: 'lorc--swap-bag',
   grounds: 'lorc--sprout',

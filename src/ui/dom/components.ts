@@ -99,7 +99,7 @@ export function potionIcon(recipeId: string, size = 18): HTMLElement {
  * Returns null rather than a placeholder: a missing face is better left out than
  * filled with a grey square, and every caller already lays out fine without one.
  */
-export function portrait(kind: 'merchant' | 'hero', id: string): HTMLElement | null {
+export function portrait(kind: 'merchant' | 'hero' | 'customer', id: string): HTMLElement | null {
   const url = artUrlIf(kind, id);
   if (!url) return null;
   return el('img', {
