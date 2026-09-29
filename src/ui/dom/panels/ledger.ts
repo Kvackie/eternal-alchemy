@@ -42,6 +42,7 @@ const FILTERS: Record<Filter, LogKind[] | undefined> = {
     'contractDelivered',
     'contractPosted',
     'contractFailed',
+    'contractAbandoned',
     'haggleWon',
     'haggleLost',
   ],

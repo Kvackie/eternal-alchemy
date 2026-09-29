@@ -129,7 +129,7 @@ function buildHeroInfo(
         { disabled: full || poor },
       ),
     );
-    if (full) reasons.push(t('roster.full'));
+    if (full) reasons.push(t('roster.noSlots'));
     else if (poor) reasons.push(t('heroInfo.tooPoor'));
   }
   const body = el('div', { class: 'hero-info' }, [

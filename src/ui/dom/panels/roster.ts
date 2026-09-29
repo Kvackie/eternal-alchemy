@@ -269,6 +269,10 @@ function renderHeroes(sim: Simulation): HTMLElement {
           (best, item) => (best === undefined || item.fairValue < best.fairValue ? item : best),
           undefined,
         );
+      // The button greys out without one, and nothing else on the screen
+      // said which potion it was waiting for.
+      const needs = t('roster.heal.needs', { recipe: t(`recipe.${HEALING_RECIPE}`) });
+      if (!remedy) actions.push(el('span', { class: 'field-note', text: needs }));
       actions.push(
         button(
           t('roster.heal'),
@@ -278,7 +282,7 @@ function renderHeroes(sim: Simulation): HTMLElement {
               changed();
             }
           },
-          { small: true, variant: 'ghost', disabled: !remedy },
+          { small: true, variant: 'ghost', disabled: !remedy, title: remedy ? undefined : needs },
         ),
       );
     } else {
@@ -396,10 +400,27 @@ function renderDestinations(sim: Simulation): HTMLElement {
         ? sim.estimate(chosen.id, selectedHeroes, selectedSupplies).rareFind
         : chosen.baseRareFind;
 
-    const finds = [
+    /*
+     * One line per find, however many tables it is in.
+     *
+     * The loot draws and the rare-find roll are independent, and the same
+     * ingredient can sit in both — the Emberwaste listed Blood Rose twice, at
+     * 14% and at 3%, as if they were two things. What the player wants is the
+     * chance the party comes back holding one at all, which for independent
+     * rolls is one minus the chance every roll misses.
+     */
+    const merged = new Map<string, { kind?: FindKind; ingredientId: string; chance: number }>();
+    for (const entry of [
       ...odds(chosen.loot, (share) => 1 - (1 - share) ** LOOT_DRAWS),
       ...odds(chosen.rare, (share) => share * rareChance),
-    ]
+    ]) {
+      // A seed and the herb it grows are different finds with one picture.
+      const key = `${entry.kind ?? 'ingredient'}:${entry.ingredientId}`;
+      const seen = merged.get(key);
+      if (seen) seen.chance = 1 - (1 - seen.chance) * (1 - entry.chance);
+      else merged.set(key, { ...entry });
+    }
+    const finds = [...merged.values()]
       .sort((a, b) => b.chance - a.chance)
       .slice(0, FINDS_SHOWN)
       .map((entry) => {
@@ -592,14 +613,15 @@ function renderSendButton(sim: Simulation): HTMLElement {
   const section = el('section', { class: 'send' });
 
   /*
-   * Nothing said until there is something to say.
+   * One line while there is nothing to estimate.
    *
-   * The hint that stood here — "Choose who goes and where" — restated the two
-   * sections directly above it, in a box that exists to report odds. An empty
-   * readout is quieter and just as clear: the Send button is already disabled,
-   * which is the same information without a sentence.
+   * The readout was empty until a place and a party were picked, which left a
+   * greyed Send with no word on what it was waiting for — and on a phone the
+   * two sections it waits on are a screen above it.
    */
-  if (ready) {
+  if (!ready) {
+    section.append(el('p', { class: 'field-note send-hint', text: t('roster.send.hint') }));
+  } else {
     const estimate = sim.estimate(selectedBiome!, selectedHeroes, selectedSupplies);
     section.append(
       outcomeCard({
@@ -712,15 +734,23 @@ function renderTavern(sim: Simulation): HTMLElement {
    */
   const cards = recruitable.map((def) => {
     const face = portrait('hero', def.id);
+    const cost = recruitCostOf(def.id);
     const card = el('button', { class: 'tavern-card', type: 'button' }, [
       face ?? slotGlyph('roster'),
       el('div', { class: 'tavern-card-foot' }, [
         el('span', { class: 'tavern-card-name', text: t(`hero.${def.id}`) }),
         full
-          ? el('span', { class: 'tavern-card-price', text: t('roster.full') })
-          : goldText(recruitCostOf(def.id), 'tavern-card-price'),
+          ? el('span', { class: 'tavern-card-price', text: t('roster.noSlots') })
+          : goldText(cost, 'tavern-card-price'),
       ]),
+      // The two facts the sort and the filter go by, on the card they sort.
+      el('span', {
+        class: 'tavern-card-meta',
+        text: `${t('roster.level', { level: def.baseLevel })} · ${t(`biome.${def.affinity}`)}`,
+      }),
     ]);
+    // Still a door: a hero you cannot afford yet is one worth reading about.
+    if (!full && sim.world.gold < cost) card.dataset.poor = 'true';
     card.addEventListener('click', () => showHeroInfo(sim, def.id, null));
     return card;
   });

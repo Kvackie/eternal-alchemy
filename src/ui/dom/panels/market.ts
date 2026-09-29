@@ -16,9 +16,11 @@ import {
   infoNote,
   ingredientIcon,
   liveCountdown,
+  matchesSearch,
   modal,
   panelHeader,
   portrait,
+  searchField,
   slot,
   slotGlyph,
   slotGrid,
@@ -81,7 +83,7 @@ function entryIcon(entry: StockEntry): Node {
   if (entry.kind === 'equipment') {
     return slotGlyph('equipment');
   }
-  if (entry.kind === 'booster') return el('span', { class: 'slot-glyph', text: '✦' });
+  if (entry.kind === 'booster') return slotGlyph('booster');
   if (entry.kind === 'decor') {
     const url = artUrlIf('decor', entry.id);
     return url
@@ -203,6 +205,9 @@ type Side = 'buy' | 'sell';
  */
 const sides = new Map<string, Side>();
 
+/** What the sell tab is narrowed to. One box for every trader; the list is what differs. */
+let sellQuery = '';
+
 /**
  * What this trader would take off your hands, and for how much each.
  *
@@ -214,8 +219,12 @@ function renderSellable(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
   const offers = sim.sellOffers(visit.merchantId);
   if (offers.length === 0) return [emptyNote(t('market.sell.none', { merchant }))];
 
+  // Narrowed by name, the way the store room is. The shell puts the caret
+  // back after the rebuild every keystroke causes; see `captureFocus`.
+  const query = sellQuery.trim();
   const tiles = offers
     .map((offer) => ({ offer, label: t(`ingredient.${offer.ingredientId}`) }))
+    .filter(({ label }) => !query || matchesSearch(query, label))
     .sort((a, b) => a.label.localeCompare(b.label))
     .map(({ offer, label }) =>
       slot({
@@ -229,11 +238,20 @@ function renderSellable(sim: Simulation, visit: MerchantVisit): HTMLElement[] {
       }),
     );
 
-  const grid = slotGrid(tiles);
+  const grid = slotGrid(tiles, query ? t('common.search.none') : undefined);
   grid.classList.add('roomy');
   return [
     el('div', { class: 'stock-group merchant-sell' }, [
       el('p', { class: 'field-note', text: t('market.sell.intro', { merchant }) }),
+      searchField({
+        name: 'market-sell',
+        value: sellQuery,
+        placeholder: t('market.sell.search'),
+        onInput: (next) => {
+          sellQuery = next;
+          changed();
+        },
+      }),
       grid,
     ]),
   ];

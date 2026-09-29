@@ -703,10 +703,11 @@ export class Shell {
      * which takes a number only the layout knows. Read once per render, and
      * only while the checklist is up.
      */
-    if (checklist) {
-      this.panels.style.setProperty('--checklist-h', `${checklist.offsetHeight}px`);
-    } else {
-      this.panels.style.removeProperty('--checklist-h');
+    // On the toasts as well: they are the panels' sibling, and step over the
+    // pill on a phone the way the view controls do.
+    for (const node of [this.panels, this.toasts]) {
+      if (checklist) node.style.setProperty('--checklist-h', `${checklist.offsetHeight}px`);
+      else node.style.removeProperty('--checklist-h');
     }
 
     if (this.away) this.panels.append(this.buildAwayDialog(this.away));

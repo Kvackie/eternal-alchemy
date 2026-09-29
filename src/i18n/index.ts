@@ -135,16 +135,27 @@ export function countdown(at: number, now: number): string {
   return formatDuration(at - now);
 }
 
-/** Long form for the away summary: "3 days, 4 hours". */
+/**
+ * Long form for the away summary: "3 days, 4 hours".
+ *
+ * The one place a duration is read as a sentence rather than glanced at on a
+ * timer, so it gets words. The units come from `Intl` — "day" and "days" in
+ * whatever the locale calls them — and the list from `Intl` too, so a locale
+ * that separates with something other than a comma gets its own.
+ */
 export function formatLongDuration(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));
   const days = Math.floor(total / 86400);
   const hours = Math.floor((total % 86400) / 3600);
   const minutes = Math.floor((total % 3600) / 60);
 
+  const unit = (value: number, name: 'day' | 'hour' | 'minute') =>
+    numberFormat({ style: 'unit', unit: name, unitDisplay: 'long' }).format(value);
+
   const parts: string[] = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (parts.length < 2 && minutes > 0) parts.push(`${minutes}m`);
-  return parts.length > 0 ? parts.join(' ') : '0m';
+  if (days > 0) parts.push(unit(days, 'day'));
+  if (hours > 0) parts.push(unit(hours, 'hour'));
+  if (parts.length < 2 && minutes > 0) parts.push(unit(minutes, 'minute'));
+  if (parts.length === 0) parts.push(unit(0, 'minute'));
+  return new Intl.ListFormat(current, { style: 'long', type: 'unit' }).format(parts);
 }

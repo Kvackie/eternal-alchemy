@@ -225,7 +225,16 @@ export function showIngredientInfo(
        * and everything else gets one drawn at its own rate.
        */
       ...(agingRateFor(ingredientId) <= 0
-        ? [infoNote(t('ingredientInfo.stable'))]
+        ? [
+            // Exotics never age either, and the mineral line was read on them.
+            infoNote(
+              t(
+                def.category === 'mineral'
+                  ? 'ingredientInfo.stable.mineral'
+                  : 'ingredientInfo.stable',
+              ),
+            ),
+          ]
         : [
             el('div', { class: 'freshness-block' }, [
               infoNote(t('ingredientInfo.ages')),

@@ -172,6 +172,7 @@ export type LogKind =
   | 'contractPosted'
   | 'contractDelivered'
   | 'contractFailed'
+  | 'contractAbandoned'
   | 'haggleWon'
   | 'haggleLost'
   | 'recipeFound';

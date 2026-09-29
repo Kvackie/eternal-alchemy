@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { t } from '@/i18n';
+import { formatLongDuration, t } from '@/i18n';
 
 describe('plural forms', () => {
   it('picks the singular for one and the plural for the rest', () => {
@@ -40,5 +40,28 @@ describe('plural forms', () => {
 
   it('still shows a missing key as itself', () => {
     expect(t('nothing.here.at.all', { count: 2 })).toBe('nothing.here.at.all');
+  });
+
+  it('counts the party out in words', () => {
+    expect(t('log.missionSent', { count: 1, biome: 'Emberwaste' })).toBe(
+      'Sent one hero to the Emberwaste.',
+    );
+    expect(t('log.missionSent', { count: 3, biome: 'Mirefen' })).toBe(
+      'Sent 3 heroes to the Mirefen.',
+    );
+  });
+});
+
+describe('the away summary', () => {
+  const HOUR = 3_600_000;
+
+  it("says how long in words, not in the timers' letters", () => {
+    expect(formatLongDuration(3 * 24 * HOUR + 4 * HOUR)).toBe('3 days, 4 hours');
+    expect(formatLongDuration(1 * 24 * HOUR)).toBe('1 day');
+    expect(formatLongDuration(HOUR + 5 * 60_000)).toBe('1 hour, 5 minutes');
+  });
+
+  it('never says nothing at all', () => {
+    expect(formatLongDuration(0)).toBe('0 minutes');
   });
 });

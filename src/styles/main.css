@@ -1139,8 +1139,13 @@ button {
 }
 
 .tool-glyph {
-  font-size: 1.25rem;
+  display: inline-flex;
   line-height: 1;
+}
+
+.tool-glyph svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 /* Three tools, three equal cells — the hint lives under the strip. */
@@ -1412,6 +1417,26 @@ input[type='range'] {
 .field-note {
   font-size: 0.6875rem;
   color: var(--text-faint);
+}
+
+/*
+ * A hint in two versions, one per kind of pointer — see `pointerHint`.
+ *
+ * The plain one is the default, so a device with no pointer at all is told
+ * to tap rather than to drag.
+ */
+.hint-fine {
+  display: none;
+}
+
+@media (pointer: fine) {
+  .hint-touch {
+    display: none;
+  }
+
+  .hint-fine {
+    display: inline;
+  }
 }
 
 /* -------------------------------------------------------------- slot grid */
@@ -1890,6 +1915,14 @@ input[type='range'] {
   flex-wrap: wrap;
 }
 
+/* The two ends of the slider, under the track they belong to. */
+.price-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+}
+
 .price-gold {
   font-size: 1rem;
   font-weight: 700;
@@ -2090,6 +2123,16 @@ input[type='range'] {
 }
 
 /*
+ * Only the hero row runs across. The mission and contract cards stack, and in
+ * a column the 9rem basis above became a height: a "Back from the road" card
+ * was 220px tall with its bottom 140px empty.
+ */
+.mission > .row-main,
+.contract > .row-main {
+  flex-basis: auto;
+}
+
+/*
  * Picked, and obviously so.
  *
  * A 1px border and a 2px rule were the whole of it, which on a phone held at
@@ -2141,9 +2184,11 @@ input[type='range'] {
  */
 .collapsible-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.375rem;
   width: 100%;
+  /* It is pressed, so it is as tall as anything else that is pressed. */
+  min-height: var(--tap);
   padding: 0.125rem 0;
   background: none;
   border: 0;
@@ -3844,6 +3889,11 @@ input[type='range'] {
   padding-top: 0.25rem;
 }
 
+.send-hint {
+  margin: 0;
+  text-align: center;
+}
+
 .send-action .btn {
   min-width: 13rem;
   min-height: 3.25rem;
@@ -4051,6 +4101,32 @@ input[type='range'] {
 
 .tavern-card-price:not(.gold) {
   color: var(--text-faint);
+}
+
+/* One line under the name, and only one: the dialog has the rest. */
+.tavern-card-meta {
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*
+ * Out of reach, and said so.
+ *
+ * The face fades but the price does not: the number is the one thing on the
+ * card that says why, in the colour every shortfall wears. The card still
+ * opens, because a hero you cannot afford yet is one worth reading about.
+ */
+.tavern-card[data-poor='true'] .portrait-hero,
+.tavern-card[data-poor='true'] .tavern-card-name,
+.tavern-card[data-poor='true'] .tavern-card-meta {
+  opacity: 0.5;
+}
+
+.tavern-card[data-poor='true'] .tavern-card-price {
+  color: var(--bad);
 }
 
 /* --------------------------------------------------------- hero dialog */
@@ -4595,9 +4671,17 @@ input[type='range'] {
 
 /* ------------------------------------------------------------------ toast */
 
+/*
+ * At the foot of the stage, not the head.
+ *
+ * Centred under the HUD they landed on whatever the panel starts with — its
+ * title, the station bar, the Debug button — on every screen. The foot has
+ * the pill and the view controls in its corners, and the middle is free; the
+ * nav is outside the stage, so this is above it by construction.
+ */
 .toasts {
   position: absolute;
-  top: 0.625rem;
+  bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -4623,7 +4707,7 @@ input[type='range'] {
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(-0.375rem);
+    transform: translateY(0.375rem);
   }
 }
 
@@ -4743,8 +4827,13 @@ input[type='range'] {
 }
 
 .booster-glyph {
-  font-size: 1.25rem;
+  display: inline-flex;
   color: var(--warn);
+}
+
+.booster-glyph svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .booster-text {
@@ -4909,6 +4998,19 @@ input[type='range'] {
   }
 
   /*
+   * And clears the checklist.
+   *
+   * The pill floats over the bottom corner, and a footer stuck to the bottom
+   * edge is under it — the one screen where the padding the pill claims at the
+   * foot of every list did nothing, because a sticky footer sits on the
+   * scrollport's edge whatever the padding under it. The footer grows by the
+   * pill's height instead, so the button rides above it on its own background.
+   */
+  #panels[data-checklist='true'] .panel-roomy .send {
+    padding-bottom: calc(0.5rem + var(--checklist-h, 0px));
+  }
+
+  /*
    * The zoom controls step above the checklist rather than under it.
    *
    * Both want the bottom of the stage, and 412px has no room for a 368px card
@@ -4916,6 +5018,18 @@ input[type='range'] {
    */
   #panels[data-checklist='true'] .view-controls {
     bottom: calc(1.5rem + var(--checklist-h, 0px));
+  }
+
+  /*
+   * Toasts step above both.
+   *
+   * A pill that is nearly the width of the phone and a row of view buttons
+   * leave no free middle at the foot, so the toasts stack over them instead —
+   * a thumb's height, and the pill's own when it is up. The height is read
+   * from the toasts themselves, which the shell sets alongside the panels'.
+   */
+  .toasts {
+    bottom: calc(1.5rem + var(--tap) + var(--checklist-h, 0px));
   }
 
   /*

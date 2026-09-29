@@ -42,7 +42,8 @@ import { formatDuration, t } from '@/i18n';
 import { cauldronTiers, getIngredient } from '@/sim/config';
 import { inventoryRows } from '@/sim/inventory';
 import { outcomeProblems } from '@/sim/brewing';
-import { nextFreshnessChangeAt, tierProgress, totalEssence } from '@/sim/essences';
+import { isDiscovered } from '@/sim/discovery';
+import { agingRateFor, nextFreshnessChangeAt, tierProgress, totalEssence } from '@/sim/essences';
 import { showIngredientInfo } from '../ingredientInfo';
 import { ESSENCES } from '@/sim/types';
 import type {
@@ -286,7 +287,10 @@ function renderPinned(sim: Simulation, blend: EssenceVector | null): HTMLElement
    * ingredients. The invitation is still there; it is just a sentence.
    */
   if (rows.length === 0) {
-    return el('p', { class: 'field-note station-pinned-hint', text: t('station.pinnedHint') });
+    return el('section', { class: 'station-block station-pinned' }, [
+      el('span', { class: 'field-label', text: t('station.pinnedHere') }),
+      el('p', { class: 'field-note station-pinned-hint', text: t('station.pinnedHint') }),
+    ]);
   }
 
   return el('section', { class: 'station-block station-pinned' }, [
@@ -507,8 +511,11 @@ function ingredientCard(
   const profile = getIngredient(entry.ingredientId).essence;
 
   // At the ingredient's own rate: a fungus ages twice as fast as a herb, and
-  // stone and exotics not at all, so they get no clock.
-  let caption = t(`freshness.${entry.freshness}`);
+  // stone and exotics not at all, so they get no clock — and no stage either,
+  // since "Fresh" on a thing that is never anything else is a promise it will
+  // dry.
+  const ages = agingRateFor(entry.ingredientId) > 0;
+  let caption = ages ? t(`freshness.${entry.freshness}`) : '';
   const turns = nextFreshnessChangeAt(entry.ingredientId, entry.harvestedAt, sim.now);
   if (turns !== null) caption = `${caption} · ${formatDuration(turns - sim.now)}`;
 
@@ -744,10 +751,14 @@ function renderOutcome(sim: Simulation, blend: EssenceVector | null): HTMLElemen
   }
 
   section.append(
+    // No grade badge and no tier chip: the meter under the name carries both,
+    // and the head repeated them a line above. And no name until the recipe
+    // is in the book: the verdict named what the pot would make before it was
+    // accepted, which handed over the one thing accepting is meant to teach.
     outcomeCard({
-      badge: gradeBadge(outcome.grade),
-      name: t(`recipe.${outcome.recipeId}`),
-      chips: [chip(t(`potency.${outcome.potencyTier}`))],
+      name: isDiscovered(sim.world, outcome.recipeId)
+        ? t(`recipe.${outcome.recipeId}`)
+        : t('station.unknown.name'),
       body: [brewMeter(sim, outcome)],
     }),
   );

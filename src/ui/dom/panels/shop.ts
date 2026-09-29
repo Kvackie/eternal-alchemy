@@ -274,6 +274,10 @@ function shelfTile(sim: Simulation, entry: NumberedShelf): HTMLElement {
   });
 }
 
+/** The slider's reach, as a share of fair value. Steps of five. */
+const PRICE_MIN = 0.4;
+const PRICE_MAX = 2;
+
 /**
  * The asking price, without rebuilding the shop under the thumb.
  *
@@ -290,8 +294,8 @@ function priceSlider(
 ): HTMLElement {
   const slider = el('input', {
     type: 'range',
-    min: '40',
-    max: '200',
+    min: String(PRICE_MIN * 100),
+    max: String(PRICE_MAX * 100),
     step: '5',
     value: String(Math.round(shelfSlot.priceRatio * 100)),
     'aria-label': t('shop.price', { percent: formatPercent(shelfSlot.priceRatio) }),
@@ -317,7 +321,21 @@ function priceSlider(
   // is nothing being held.
   slider.addEventListener('change', () => changed());
 
-  return slider;
+  /*
+   * Named, and with its ends marked.
+   *
+   * A bare track under a price says nothing about which way is dearer or how
+   * far it goes; the percentages at either end are the range it actually
+   * covers, read from the same numbers the input is built on.
+   */
+  return el('div', { class: 'field price-field' }, [
+    el('span', { class: 'field-label', text: t('shop.priceLabel') }),
+    slider,
+    el('div', { class: 'price-marks', 'aria-hidden': 'true' }, [
+      el('span', { class: 'num', text: formatPercent(PRICE_MIN) }),
+      el('span', { class: 'num', text: formatPercent(PRICE_MAX) }),
+    ]),
+  ]);
 }
 
 /**

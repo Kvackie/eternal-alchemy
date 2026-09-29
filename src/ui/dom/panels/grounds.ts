@@ -21,6 +21,7 @@ import {
   meter,
   modal,
   panelHeader,
+  pointerHint,
   row,
   sectionHead,
   slot,
@@ -48,6 +49,7 @@ import { isWorkable, veinsByDepth } from '@/sim/shaft';
 import { boostedCount, boosterBlock, boosterFor } from '@/sim/boosters';
 import type { BoostSite } from '@/sim/config';
 import { dominantEssence } from '@/ui/art';
+import { iconSvg } from '@/ui/icons';
 import type { CaveTile, Plot, ShaftVein } from '@/sim/types';
 import type { Simulation } from '@/sim/sim';
 import { changed, confirm, toast } from '@/ui/bus';
@@ -159,7 +161,7 @@ function boosterBar(sim: Simulation, site: BoostSite): HTMLElement | null {
   // Holding one with nothing to put it on is worth saying why, not just greying.
   const idle = running <= 0 && blocked?.startsWith('booster.idle.') ? blocked : null;
   return el('section', { class: 'booster-bar' }, [
-    el('span', { class: 'booster-glyph', text: '✦' }),
+    el('span', { class: 'booster-glyph', html: iconSvg('booster') }),
     el('div', { class: 'booster-text' }, [
       el('strong', { text: name }),
       el('span', {
@@ -262,7 +264,7 @@ function renderGarden(sim: Simulation, body: HTMLElement): void {
   const plots = el('section', { class: 'plots' }, [
     sectionHead(
       t('garden.plots'),
-      t('garden.plots.hint'),
+      pointerHint(t('garden.plots.hint'), t('garden.plots.hint.drag')),
       ready > 0
         ? button(
             t('garden.action.harvestAll', { count: ready }),
@@ -569,13 +571,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
          * read as tools — they read as tabs. The picture is what says "this is
          * the thing in your hand".
          */
-        (
-          [
-            ['seed', '\u{1F344}'],
-            ['lantern', '\u{1F3EE}'],
-            ['tray', '\u{1F9FA}'],
-          ] as const
-        ).map(([id, glyph]) => {
+        (['seed', 'lantern', 'tray'] as const).map((id) => {
           /*
            * The strip is three short cells; the hint has a line of its own.
            *
@@ -586,7 +582,7 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
            */
           const chosen = caveTool === id;
           const node = el('button', { class: 'option option-tool', type: 'button' }, [
-            el('span', { class: 'tool-glyph', text: glyph }),
+            el('span', { class: 'tool-glyph', html: iconSvg(id) }),
             el('span', { text: t(`cave.tool.${id}`) }),
           ]);
           node.setAttribute('aria-pressed', String(chosen));
@@ -660,8 +656,11 @@ function renderCave(sim: Simulation, body: HTMLElement): void {
       } else if (mature) {
         const result = sim.harvestCaveTile(tile.index);
         if (result) toast(harvestToast([result], result.count, 0));
-      } else if (!tile.speciesId && selectedSpecies) {
-        if (!sim.seedCaveTile(tile.index, selectedSpecies)) toast(t('cave.noCluster'));
+      } else if (!tile.speciesId) {
+        // A press with nothing in hand did nothing at all, which reads as a
+        // bed that cannot be sown rather than as a step skipped.
+        if (!selectedSpecies) toast(t('cave.chooseCluster'));
+        else if (!sim.seedCaveTile(tile.index, selectedSpecies)) toast(t('cave.noCluster'));
       }
       changed();
     });
@@ -722,6 +721,28 @@ export function veinTitle(
   const nth = (ordinal.get(vein.ingredientId) ?? 0) + 1;
   ordinal.set(vein.ingredientId, nth);
   return t('shaft.seam', { name, nth });
+}
+
+/**
+ * A seam's title as the list draws it, found by id.
+ *
+ * The numbering in `veinTitle` is per stratum and handed out in list order, so
+ * naming one seam means walking its stratum up to it the way the list does.
+ */
+function seamName(sim: Simulation, veinId: string): string {
+  for (const group of veinsByDepth(sim.world)) {
+    if (!group.veins.some((vein) => vein.id === veinId)) continue;
+    const seen = new Map<string, number>();
+    for (const vein of group.veins) {
+      seen.set(vein.ingredientId, (seen.get(vein.ingredientId) ?? 0) + 1);
+    }
+    const ordinal = new Map<string, number>();
+    for (const vein of group.veins) {
+      const title = veinTitle(vein, seen, ordinal);
+      if (vein.id === veinId) return title;
+    }
+  }
+  return veinId;
 }
 
 function renderShaft(sim: Simulation, body: HTMLElement): void {
@@ -820,7 +841,17 @@ function renderShaft(sim: Simulation, body: HTMLElement): void {
             : button(
                 t('shaft.work'),
                 () => {
-                  if (sim.workVein(vein.id)) changed();
+                  /*
+                   * With every crew busy, starting here silently stopped the
+                   * seam they were on — a row that went quiet with nothing to
+                   * say why. The seam that goes idle is named before the press
+                   * takes it.
+                   */
+                  const before = [...shaft.workingVeinIds];
+                  if (!sim.workVein(vein.id)) return;
+                  const left = before.find((id) => !shaft.workingVeinIds.includes(id));
+                  if (left) toast(t('shaft.crewMoved', { seam: seamName(sim, left) }));
+                  changed();
                 },
                 { small: true, disabled: !workable },
               ),

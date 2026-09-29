@@ -27,7 +27,8 @@ setLocale('en');
 const saves = new SaveManager(createStorage(config.save.slots));
 await storageReady();
 
-let sim = new Simulation(saves.load() ?? createWorld());
+const loaded = saves.load();
+let sim = new Simulation(loaded ?? createWorld());
 
 // Catch up before anything renders, so the first frame shows the true state.
 const awaySummary = sim.resume();
@@ -60,15 +61,20 @@ const shell = new Shell({
 shell.mount(root, stage);
 
 /*
- * Open on the ledger.
+ * Open on the ledger — unless there is nothing in it yet.
  *
  * This used to resume wherever the player left off — the cauldron if any pot
  * still held something, the garden otherwise. The ledger is the better opening
  * because it answers "what happened while I was gone" before asking anything of
  * the player, which is the question you actually arrive with; the pots are one
  * tap away and their state is on the nav badge either way.
+ *
+ * A brand-new shop has no "while you were gone", so it opens where its first
+ * step is: the garden, which is what the checklist asks for first. Whether a
+ * save loaded is the signal, because it is the one thing that cannot be
+ * mistaken for a game that has simply done little.
  */
-shell.setScreen('ledger');
+shell.setScreen(loaded ? 'ledger' : 'grounds');
 
 shell.showAway(awaySummary);
 

@@ -499,5 +499,7 @@ describe('the contract board', () => {
 
     expect(sim.abandonContract(contract.id)).toBe(true);
     expect(sim.world.statistics.contractsFailed).toBe(1);
+    // Walking away is not the same as running out of time, and the log says which.
+    expect(sim.world.log.at(-1)?.kind).toBe('contractAbandoned');
   });
 });

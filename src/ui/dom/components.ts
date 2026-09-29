@@ -542,13 +542,30 @@ export function panelHeader(title: string, subtitle?: string): HTMLElement {
  */
 export function sectionHead(
   label: string,
-  note?: string,
+  note?: string | HTMLElement,
   ...actions: Array<HTMLElement | null | undefined>
 ): HTMLElement {
   return el('div', { class: 'stores-head' }, [
     el('span', { class: 'field-label', text: label }),
-    ...(note ? [el('span', { class: 'field-note', text: note })] : []),
+    ...(note
+      ? [typeof note === 'string' ? el('span', { class: 'field-note', text: note }) : note]
+      : []),
     ...actions.filter((node): node is HTMLElement => node != null),
+  ]);
+}
+
+/**
+ * A hint with a longer form for a mouse.
+ *
+ * "Or drag a seed onto one" is an instruction a thumb cannot follow, so the
+ * drag half is only shown where there is a fine pointer to drag with. Two
+ * whole sentences rather than a sentence and a suffix, so each can be
+ * translated as one; the stylesheet picks which is shown.
+ */
+export function pointerHint(touch: string, fine: string): HTMLElement {
+  return el('span', { class: 'field-note' }, [
+    el('span', { class: 'hint-touch', text: touch }),
+    el('span', { class: 'hint-fine', text: fine }),
   ]);
 }
 

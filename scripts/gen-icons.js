@@ -36,6 +36,11 @@ const ICONS = {
   destination: 'lorc--treasure-map',
   equipment: 'lorc--anvil',
   decor: 'delapouite--candles',
+  // The cave's three tools, and the booster every site can run.
+  seed: 'lorc--mushroom',
+  lantern: 'lorc--lantern-flame',
+  tray: 'delapouite--basket',
+  booster: 'delapouite--sparkles',
 };
 
 /** How each author asks to be credited, from the set's licence file. */

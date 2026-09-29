@@ -711,7 +711,7 @@ export class Simulation {
 
   abandonContract(contractId: string): boolean {
     const ok = abandon(this.world, contractId);
-    if (ok) record(this.world, 'contractFailed', { contract: contractId });
+    if (ok) record(this.world, 'contractAbandoned', { contract: contractId });
     return ok;
   }
 
