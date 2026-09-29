@@ -94,6 +94,11 @@ Merchant and customer faces are built only for ids the data names, so a spare pa
 portrait left beside them stays in `art/` and never reaches `public/`; the heroes'
 folder is built in full.
 
+The customers are built twice: once at the portrait size for the panel's rows, and
+once more at 512 × 640 into `public/art/bust/`, for the Counter's scene — where the
+customer stands at the counter as the largest thing on the canvas, and a face built
+for a list row went soft. Same source files, no extra drop needed.
+
 ---
 
 ## Where it stands

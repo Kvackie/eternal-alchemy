@@ -58,6 +58,16 @@ const PORTRAITS = {
   merchant: { from: 'art/portraits/merchants', w: 256, h: 320 },
   hero: { from: 'art/portraits/heroes', w: 256, h: 320 },
   customer: { from: 'art/portraits/customers', w: 256, h: 320 },
+  /*
+   * The same five faces again at twice the size, for the Counter's scene.
+   *
+   * There a customer stands at the counter as the biggest thing on the canvas
+   * — up to about 300 CSS pixels tall, which a 2x phone paints with 600 — and
+   * the 320px face built for a list row went soft at that size. Five files,
+   * so the doubling the other portraits were spared costs a few hundred
+   * kilobytes rather than a megabyte and a half.
+   */
+  bust: { from: 'art/portraits/customers', w: 512, h: 640 },
 };
 
 /*
@@ -110,6 +120,7 @@ const USED = {
   potion: new Set(data('recipes.json').map((recipe) => recipe.art ?? recipe.id)),
   merchant: new Set(data('merchants.json').map((merchant) => merchant.id)),
   customer: new Set(data('customers.json').roster.map((customer) => customer.id)),
+  bust: new Set(data('customers.json').roster.map((customer) => customer.id)),
 };
 
 /** The source files of a kind that the game will use. */

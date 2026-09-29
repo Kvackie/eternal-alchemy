@@ -32,7 +32,16 @@ export function dominantEssence(vector: EssenceVector): Essence {
 }
 
 export type ArtKind =
-  'ingredient' | 'decor' | 'potion' | 'scene' | 'shelf' | 'merchant' | 'hero' | 'customer';
+  | 'ingredient'
+  | 'decor'
+  | 'potion'
+  | 'scene'
+  | 'shelf'
+  | 'merchant'
+  | 'hero'
+  | 'customer'
+  /** The customers again at twice the size, for the counter scene — see `scripts/art-build.js`. */
+  | 'bust';
 
 const sets: Record<ArtKind, Set<string>> = {
   ingredient: new Set(manifest.ingredient ?? []),
@@ -43,6 +52,7 @@ const sets: Record<ArtKind, Set<string>> = {
   merchant: new Set(manifest.merchant ?? []),
   hero: new Set(manifest.hero ?? []),
   customer: new Set(manifest.customer ?? []),
+  bust: new Set(manifest.bust ?? []),
 };
 
 export function hasArt(kind: ArtKind, id: string): boolean {
