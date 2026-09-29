@@ -1192,10 +1192,9 @@
   "shop.decor": "Furnishings",
   "shop.decor.hint": "Five spots. Tap a spot to choose what stands in it.",
   "shop.decor.pick": "What stands in the {spot}?",
-  "shop.decor.change": "Change",
+  "shop.decor.owned": "{count} in the collection",
   "shop.decor.takeDown": "Take down",
   "shop.decor.placed": "{item} is out.",
   "shop.decor.cleared": "{item} taken down.",
-  "shop.decor.out": "Out now",
-  "shop.decor.ready": "In the collection"
+  "shop.decor.out": "Out now"
 }

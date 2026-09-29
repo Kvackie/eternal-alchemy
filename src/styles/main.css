@@ -4257,6 +4257,17 @@ input[type='range'] {
   gap: 0.5rem;
 }
 
+/* A spot's row shows the piece standing in it, at a size a picture is worth. */
+.row.spot > .row-icon {
+  width: auto;
+}
+
+.decor-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 /* --------------------------------------------------------------- market */
 
 .merchant,

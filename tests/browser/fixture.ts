@@ -11,6 +11,7 @@
 
 import { config, heroesConfig, ingredients, recipes } from '@/sim/config';
 import { makeCauldron } from '@/sim/cauldrons';
+import { grantDecor } from '@/sim/decor';
 import { generateContract } from '@/sim/contracts';
 import { addIngredient } from '@/sim/inventory';
 import { makeShelf } from '@/sim/market';
@@ -82,6 +83,12 @@ export function buildWorld(clock: Clock = 'night'): World {
   if (pot.brewing) {
     pot.pendingBrew = pot.brewing.outcome;
     pot.brewing = null;
+  }
+
+  // Furnishings in every state the picker draws: two for one spot (one out,
+  // one waiting for the swap), a piece standing alone, and spots left bare.
+  for (const id of ['verdantBanner', 'crimsonBanner', 'pottedFern', 'boneChalice']) {
+    grantDecor(world, id);
   }
 
   // Boosters held on every site, and one already running in the cave, so the

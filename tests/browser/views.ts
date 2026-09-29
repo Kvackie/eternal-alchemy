@@ -63,6 +63,11 @@ export const VIEWS: View[] = [
       (await press(page, '.slot')) &&
       dialogOpen(page),
   },
+  {
+    screen: 'shop',
+    name: 'furnishings',
+    open: async (page) => (await press(page, '.row.spot')) && dialogOpen(page),
+  },
 
   // -- Counter
   // Customers keep daylight hours, so every view here is a daytime one; the

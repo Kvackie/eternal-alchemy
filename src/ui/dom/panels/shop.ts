@@ -7,13 +7,11 @@
  * ones be on" — and stacking both into a single scroll meant every act of
  * either began with a hunt for the right section.
  *
- * The floor is shelves. The store is what you own and have not put out:
- * bottles, and the boards you could fit.
+ * The floor is shelves and the five furnished spots. The store is what you own
+ * and have not put out: bottles, and the boards you could fit.
  *
- * Furnishings and the counter are both out of the build for now — customers are
- * moving to a scene of their own, and the furnishing picker belongs with the
- * painted shop it decorates. Neither is deleted; the sim keeps running both, so
- * a piece bought from a merchant is still owned when the picker comes back.
+ * The counter is not here: customers have a screen of their own, since someone
+ * waiting to be served is the opposite of the trade this screen is about.
  */
 
 import {
@@ -43,6 +41,7 @@ import { formatGold, formatPercent, t } from '@/i18n';
 import { saleChance } from '@/sim/market';
 import { getShelfTier, shelfTiers } from '@/sim/config';
 import { artUrlIf } from '@/ui/art';
+import { renderDecor } from './furnishings';
 import { showPotionInfo } from '../potionInfo';
 import { captureFocus, restoreFocus } from '../scroll';
 
@@ -107,7 +106,9 @@ export function renderShop(sim: Simulation): HTMLElement {
     tabPanel(
       'shop',
       tab,
-      tab === 'floor' ? [renderShelves(sim)] : [renderInventory(sim), renderBoards(sim)],
+      tab === 'floor'
+        ? [renderShelves(sim), renderDecor(sim)]
+        : [renderInventory(sim), renderBoards(sim)],
     ),
   );
 
