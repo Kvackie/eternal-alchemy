@@ -3612,6 +3612,11 @@ input[type='range'] {
   flex-wrap: wrap;
 }
 
+/* Two characters of label make a 30px button; a finger needs the full square. */
+.stepper .btn {
+  min-width: var(--tap);
+}
+
 .stepper-value {
   flex: 1;
   min-width: 4rem;
