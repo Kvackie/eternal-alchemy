@@ -14,7 +14,22 @@ export type GameEvent =
   | { type: 'confirm'; request: ConfirmRequest }
   /** The debug switch in Settings moved. */
   | { type: 'debug'; enabled: boolean }
-  | { type: 'toast'; message: string };
+  | { type: 'toast'; message: string }
+  /**
+   * The price the player is asking in the open haggle.
+   *
+   * The ask is the panel's own state — a stepper, not a fact about the world —
+   * so the scene drawing a price tag on the counter cannot read it from the
+   * simulation. The panel says it here whenever it draws the session, and the
+   * scene keeps the last figure it heard.
+   */
+  | { type: 'haggle:ask'; ask: number }
+  /**
+   * A haggle ended, and how. The simulation drops the session in the same
+   * step, so by the time the scene next looks there is nobody at the counter
+   * to say whether they left with a bottle or without one.
+   */
+  | { type: 'haggle:closed'; customerId: string; sold: boolean };
 
 /**
  * A question the shell asks before something is undone.

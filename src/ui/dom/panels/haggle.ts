@@ -31,7 +31,7 @@ import { findOwnedBottle } from '@/sim/haggle';
 import type { HaggleClose } from '@/sim/haggle';
 
 import type { Simulation } from '@/sim/sim';
-import { changed, toast } from '@/ui/bus';
+import { bus, changed, toast } from '@/ui/bus';
 
 let chosenCustomer: string | null = null;
 let ask = 0;
@@ -161,6 +161,10 @@ function renderSession(sim: Simulation): HTMLElement {
   const def = getCustomer(session.customerId);
   const item = findOwnedBottle(sim.world, session.itemUid)?.item;
   if (ask <= 0) ask = sim.suggestedAsk();
+  // For the price tag on the counter, which the scene draws and the stepper
+  // moves. Every render rather than every press: the scene may not have
+  // existed to hear the first one, and one number a render costs nothing.
+  bus.emit({ type: 'haggle:ask', ask });
 
   const section = el('section', { class: 'haggle' });
   const face = portrait('customer', session.customerId);
@@ -236,6 +240,7 @@ function renderSession(sim: Simulation): HTMLElement {
                   ? t('haggle.patienceOut', { gold: formatGold(step.settled.gold) })
                   : t('haggle.patienceOut.gone'),
               );
+              bus.emit({ type: 'haggle:closed', customerId, sold: step.settled.sold });
               resetHaggle();
             }
             changed();
@@ -292,18 +297,22 @@ function renderSession(sim: Simulation): HTMLElement {
       button(
         t('haggle.walkAway'),
         () => {
+          const customerId = session.customerId;
           sim.abandonHaggle();
+          bus.emit({ type: 'haggle:closed', customerId, sold: false });
           resetHaggle();
           changed();
         },
         { variant: 'quiet', small: true },
       ),
       button(t('haggle.offer'), () => {
+        const customerId = session.customerId;
         const result = sim.closeHaggle(ask);
         if (!result) return;
         toast(
           result.sold ? t('haggle.sold', { gold: formatGold(result.gold) }) : t('haggle.refused'),
         );
+        bus.emit({ type: 'haggle:closed', customerId, sold: result.sold });
         resetHaggle();
         changed();
       }),
