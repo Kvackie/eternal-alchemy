@@ -481,31 +481,33 @@ button {
 /* -------------------------------------------------------------------- nav */
 
 /*
- * Eight destinations do not fit a phone at a comfortable tap size, so the bar
- * scrolls rather than squeezing every label into four characters. Each item
- * keeps its full 44px target; the row simply runs off the edge.
+ * Nine destinations, all on screen at once.
+ *
+ * The bar used to scroll sideways when the columns ran out of phone, which hid
+ * the last two tabs behind a gesture nothing announced. Equal ninths cannot
+ * hold "Grounds" beside "Alchemy" on a 360px phone at any size worth reading,
+ * but the nine labels together can: each column is as wide as its own word,
+ * and the slack is shared out evenly. The label's size follows the viewport
+ * rather than the text setting, so a 360px phone at 150% text gets the same
+ * nine legible tabs as one at 100% — the icon carries the meaning at any size,
+ * and each item keeps its full 44px tap height.
  */
 .nav {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(3.75rem, 1fr);
+  display: flex;
   background: linear-gradient(180deg, var(--bg-panel), var(--bg-inset));
   border-top: 1px solid var(--brass-dim);
   padding-bottom: env(safe-area-inset-bottom, 0);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.nav::-webkit-scrollbar {
-  display: none;
+  overflow: hidden;
 }
 
 .nav button {
   position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
   background: none;
   border: 0;
   border-top: 2px solid transparent;
-  padding: 0.5rem 0.25rem;
+  padding: 0.5rem 0.0625rem;
   min-height: var(--tap);
   display: flex;
   flex-direction: column;
@@ -513,10 +515,18 @@ button {
   gap: 0.125rem;
   color: var(--text-faint);
   font-family: var(--font-display);
-  font-size: 0.625rem;
+  font-size: min(0.625rem, 2.4vw);
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
+}
+
+/* Room for the tracking the labels were designed with, once the columns have it. */
+@media (min-width: 600px) {
+  .nav button {
+    letter-spacing: 0.06em;
+    padding: 0.5rem 0.25rem;
+  }
 }
 
 .nav-icon {
@@ -544,7 +554,8 @@ button {
 .nav .badge {
   position: absolute;
   top: 0.25rem;
-  right: 0.5rem;
+  /* Into the corner on a phone, where a column is little wider than its word. */
+  right: 0.125rem;
   font-family: var(--font-body);
   background: var(--warn);
   color: var(--bg-page);
@@ -556,6 +567,12 @@ button {
   display: grid;
   place-items: center;
   padding: 0 0.2rem;
+}
+
+@media (min-width: 600px) {
+  .nav .badge {
+    right: 0.5rem;
+  }
 }
 
 /* ------------------------------------------------------------------ cards */
@@ -3603,6 +3620,66 @@ input[type='range'] {
   font-weight: 700;
 }
 
+/* -------------------------------------------------------------- counter */
+
+/* A customer's face, the same size as a trader's in the market. */
+.portrait-customer {
+  width: 56px;
+  height: 70px;
+}
+
+/* A walk-in's face is a portrait, not a 28px glyph, so its cell sizes to it. */
+.walkin > .row-icon {
+  width: auto;
+}
+
+/* In the negotiation the face is the biggest thing on the card, as a hero's is. */
+.haggle-head .portrait-customer {
+  width: 68px;
+  height: 85px;
+}
+
+.haggle-who {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+/*
+ * How the last haggle ended when the customer ended it.
+ *
+ * A patience-out sale closes the session in the same press that caused it,
+ * so the card that would have shown the price is gone before it can be read.
+ * This stands in its place at the top of the counter until dismissed.
+ */
+.haggle-outcome {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--good);
+  border-radius: var(--radius);
+}
+
+.haggle-outcome[data-sold='false'] {
+  border-color: var(--border);
+}
+
+.haggle-outcome-head {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.haggle-outcome-line {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-dim);
+}
+
 /* ------------------------------------------------------------ checklist */
 
 /*
@@ -5119,9 +5196,7 @@ input[type='range'] {
 
   .nav {
     grid-area: nav;
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-    grid-auto-rows: min-content;
+    flex-direction: column;
     border-top: 0;
     border-right: 1px solid var(--brass-dim);
     background: linear-gradient(90deg, var(--bg-inset), var(--bg-panel));
@@ -5132,6 +5207,7 @@ input[type='range'] {
   }
 
   .nav button {
+    flex: none;
     border-top: 0;
     border-left: 2px solid transparent;
   }

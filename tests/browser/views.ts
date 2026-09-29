@@ -42,6 +42,11 @@ async function station(page: Page, pot: RegExp): Promise<boolean> {
   return press(page, '.bench-card', pot);
 }
 
+/** Open a haggle with the first customer waiting, over the first thing they want. */
+async function session(page: Page): Promise<boolean> {
+  return (await press(page, '.row.walkin')) && press(page, '.walkins .slot');
+}
+
 export const VIEWS: View[] = [
   // -- Shop
   { screen: 'shop', name: 'inventory', open: (page) => press(page, '[role=tab]', /Inventory/) },
@@ -57,6 +62,38 @@ export const VIEWS: View[] = [
       (await press(page, '[role=tab]', /Inventory/)) &&
       (await press(page, '.slot')) &&
       dialogOpen(page),
+  },
+
+  // -- Counter
+  // Customers keep daylight hours, so every view here is a daytime one; the
+  // night landing is the empty counter, which the screen pass measures.
+  {
+    screen: 'counter',
+    name: 'customer',
+    clock: 'day',
+    open: async (page) =>
+      (await press(page, '.row.walkin')) && (await page.locator('.walkins .slot').count()) > 0,
+  },
+  {
+    screen: 'counter',
+    name: 'session',
+    clock: 'day',
+    open: async (page) => (await session(page)) && (await page.locator('.haggle').count()) > 0,
+  },
+  {
+    screen: 'counter',
+    name: 'patience out',
+    clock: 'day',
+    open: async (page) => {
+      if (!(await session(page))) return false;
+      // Saying the wrong thing three times uses up anyone's patience, and a
+      // backfire never moves the stance, so the same button is wrong each time.
+      for (let i = 0; i < 3; i += 1) {
+        if ((await page.locator('.haggle-outcome').count()) > 0) break;
+        if (!(await press(page, '.pitch[data-result="backfire"]'))) return false;
+      }
+      return (await page.locator('.haggle-outcome').count()) > 0;
+    },
   },
 
   // -- Board

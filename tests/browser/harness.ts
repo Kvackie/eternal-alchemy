@@ -21,6 +21,7 @@ import type { ScreenId } from '@/ui/bus';
 
 export const SCREENS: ScreenId[] = [
   'shop',
+  'counter',
   'board',
   'market',
   'grounds',
@@ -181,6 +182,7 @@ export async function dismiss(page: Page): Promise<void> {
 
 const NAV: Record<ScreenId, RegExp> = {
   shop: /Shop/,
+  counter: /Counter/,
   board: /Board/,
   market: /Market/,
   grounds: /Grounds/,

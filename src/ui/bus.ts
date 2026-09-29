@@ -43,7 +43,15 @@ export interface ConfirmRequest {
 import type { AwaySummary } from '@/sim/sim';
 
 export type ScreenId =
-  'shop' | 'board' | 'market' | 'grounds' | 'cauldron' | 'roster' | 'ledger' | 'settings';
+  | 'shop'
+  | 'counter'
+  | 'board'
+  | 'market'
+  | 'grounds'
+  | 'cauldron'
+  | 'roster'
+  | 'ledger'
+  | 'settings';
 
 type Handler = (event: GameEvent) => void;
 

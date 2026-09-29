@@ -22,6 +22,7 @@ import { groundsHasScene, renderGrounds } from './panels/grounds';
 import { renderCauldron } from './panels/cauldron';
 import { closeStation, isStationOpen } from './panels/station';
 import { renderShop } from './panels/shop';
+import { renderCounter } from './panels/counter';
 import { renderMarket } from './panels/market';
 import { renderBoard } from './panels/board';
 import { renderRoster, resetRosterSelection } from './panels/roster';
@@ -101,6 +102,7 @@ function bothFit(): boolean {
  */
 const SCREENS: ScreenId[] = [
   'shop',
+  'counter',
   'board',
   'market',
   'grounds',
@@ -439,6 +441,9 @@ export class Shell {
       presentCast(world)
         .map((visit) => `${visit.merchantId}@${visit.leavesAt}`)
         .join(','),
+      // Who is at the counter is a fact about the day and its phase: the
+      // daylight roster leaves at dusk and the night trade arrives after it.
+      `${sim.day.dayNumber}:${sim.day.phase}`,
     ].join('|');
   }
 
@@ -592,6 +597,11 @@ export class Shell {
         const here = presentCast(sim.world).length;
         if (here > 0) node.append(el('span', { class: 'badge', text: String(here) }));
       }
+      if (id === 'counter') {
+        // Customers waiting to be served, or the one already being talked to.
+        const waiting = sim.haggle ? 1 : sim.walkIns().length;
+        if (waiting > 0) node.append(el('span', { class: 'badge', text: String(waiting) }));
+      }
       if (id === 'grounds') {
         const ready = sim.readyToHarvest();
         if (ready > 0) node.append(el('span', { class: 'badge', text: String(ready) }));
@@ -735,6 +745,8 @@ export class Shell {
         return renderCauldron(sim);
       case 'shop':
         return renderShop(sim);
+      case 'counter':
+        return renderCounter(sim);
       case 'board':
         return renderBoard(sim);
       case 'market':
