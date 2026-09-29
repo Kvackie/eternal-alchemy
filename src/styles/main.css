@@ -5479,6 +5479,19 @@ input[type='range'] {
     grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
   }
 
+  /*
+   * One face, not two.
+   *
+   * With the counter drawn beside the panel the customer is already the
+   * biggest thing on the stage, and the same face at the head of the haggle
+   * card was the same picture twice, a hand's width apart. Only while the
+   * picture is actually showing: managing hides it, and below the breakpoint
+   * the panel is the whole stage, so the card keeps its face there.
+   */
+  #panels[data-scene='true'][data-view='split'] .counter .haggle-head > .portrait-customer {
+    display: none;
+  }
+
   /* Given room, a full-stage page still reads better bounded and centred. */
   .panel-full {
     margin-inline: auto;

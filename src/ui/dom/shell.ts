@@ -61,6 +61,10 @@ export interface ShellDeps {
 /**
  * Screens that draw a world behind the panel, and so can be panned and zoomed.
  *
+ * The Counter is the second: the shop's counter with whoever is standing at it
+ * and the bottle they are haggling over. Every control stays in the panel; the
+ * picture only shows what the panel is about.
+ *
  * The Cauldron left this set when brewing moved into its own station: the bench
  * is a list of pots you own and the station covers the stage, so a painted row
  * of cauldrons behind both was a picture nothing ever looked at.
@@ -76,7 +80,7 @@ export interface ShellDeps {
  * whole thing inside the click handler. It returns when it can be drawn from
  * the shelf grid instead of rebuilt each time.
  */
-const SCENE_SCREENS = new Set<ScreenId>(['grounds']);
+const SCENE_SCREENS = new Set<ScreenId>(['grounds', 'counter']);
 
 type StageView = 'split' | 'manage' | 'scene';
 

@@ -85,6 +85,21 @@ export const VIEWS: View[] = [
     clock: 'day',
     open: async (page) => (await session(page)) && (await page.locator('.haggle').count()) > 0,
   },
+  /*
+   * The scene, in a haggle: the toggle hands the stage to the picture on a
+   * phone and to the panel on a desktop. The sweep reads the DOM, so what it
+   * can measure here is the controls left floating over the canvas, not the
+   * drawing itself.
+   */
+  {
+    screen: 'counter',
+    name: 'scene toggle',
+    clock: 'day',
+    open: async (page) =>
+      (await session(page)) &&
+      (await press(page, '.view-peek')) &&
+      (await page.locator('#panels[data-scene="true"]').count()) > 0,
+  },
   {
     screen: 'counter',
     name: 'patience out',

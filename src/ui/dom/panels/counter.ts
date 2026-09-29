@@ -17,7 +17,9 @@ export function renderCounter(sim: Simulation): HTMLElement {
   const body = el('div', { class: 'panel-body counter' });
   body.append(renderHaggle(sim) ?? emptyState(t('counter.empty'), t('counter.empty.hint')));
 
-  return el('div', { class: 'panel panel-roomy' }, [
+  // Docked, not roomy: the counter itself is drawn on the canvas beside this,
+  // with whoever is standing at it — see `CounterView`.
+  return el('div', { class: 'panel' }, [
     panelHeader(t('counter.title'), t('counter.subtitle')),
     body,
   ]);

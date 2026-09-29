@@ -59,10 +59,12 @@ customers and the haggle) · **Board** (contracts) · **Market** (merchants) · 
 cave and shaft as sub-tabs) · **Cauldron** (all alchemy) · **Roster** (heroes and missions) ·
 **Ledger** (statistics and a paginated event log) · **Settings**.
 
-One of them draws a world behind the panel and can be panned and zoomed: **Grounds**. The rest
-are documents. The Shop drew one too, until a painted wall of fifty shelves rebuilt on every press
-proved too much for the screen where the presses happen; it is expected back once it can be drawn
-from the shelf grid instead. The Market was among them until it wasn't: it had no art of its own
+Two of them draw a world behind the panel and can be panned and zoomed: **Grounds**, and the
+**Counter** — the shop's counter with the customer standing at it, the bottle between you and a
+speech bubble giving their stance, while every control stays in the panel. The rest are documents.
+The Shop drew one too, until a painted wall of fifty shelves rebuilt on every press proved too much
+for the screen where the presses happen; it is expected back once it can be drawn from the shelf
+grid instead. The Market was among them until it wasn't: it had no art of its own
 and borrowed the Shop's, which drew your own shelves behind another trader's stock — one picture
 claiming to be two places.
 
@@ -387,15 +389,17 @@ filter chips on a touch pointer. `.btn.small`, the secondary action inside a row
 is itself the 44px target, so it is an extra rather than the only way in. A sweep at 100% text counts
 22 controls under 44px in one dimension, all of them from those three classes.
 
-Below the 960px breakpoint the screens that draw no scene — Shop, Counter, Market, Roster, Board,
+Below the 960px breakpoint the screens that draw no scene — Shop, Market, Roster, Board,
 Settings — are full-stage pages rather than bottom sheets, and they are the only scroller on the
 page: a section that scrolls inside a panel that scrolls inside a phone is a section that takes the
-flick and gives nothing back. The one that *does* draw one — Grounds — takes turns instead, because
-412x883 is not enough for the grounds and the managing of them at once. The toggle in the view
-controls names the screen rather than the mechanism (**View Grounds** / **Manage Grounds**), and
-each half gets the whole stage: managing hides the scene entirely, and the zoom and recentre buttons
-go with it. Nothing is lost by hiding it — nothing in the world is clickable, so the scene is a
-picture.
+flick and gives nothing back. The two that *do* draw one — Grounds and the Counter — take turns
+instead, because 412x883 is not enough for the grounds and the managing of them at once. The toggle
+in the view controls names the screen rather than the mechanism (**View Grounds** / **Manage
+Grounds**, **View Counter** / **Manage Counter**), and each half gets the whole stage: managing
+hides the scene entirely, and the zoom and recentre buttons go with it. Nothing is lost by hiding it
+— nothing in the world is clickable, so the scene is a picture. The Counter's panel keeps its own
+portrait of the customer while it has the stage to itself, and drops it where the drawn one stands
+beside it.
 
 The nav holds all nine tabs on a 360px phone without scrolling: each column is as wide as its own
 label and the slack is shared out, and the label's size follows the viewport rather than the text

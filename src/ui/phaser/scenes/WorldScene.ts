@@ -1,10 +1,13 @@
 /**
  * The world view behind the panels.
  *
- * One scene, drawing the garden behind the Grounds panel and nothing behind any
- * other (see `DRAWN_SCREENS`). It stays a general world scene rather than a
- * garden scene because the day/night lighting, the placeholder atlas and the
- * resize handling are what the next screen to be drawn will need too.
+ * One scene, drawing the garden behind the Grounds panel, the counter behind
+ * the Counter panel, and nothing behind any other (see `DRAWN_SCREENS`). It
+ * stays a general world scene rather than a garden scene because the day/night
+ * lighting, the placeholder atlas, the panel-shaped content area and the resize
+ * handling are what every drawn screen needs — which is why the counter is a
+ * composition inside it (`CounterView`) rather than a second scene with a
+ * second copy of all four.
  *
  * Lighting is a tint overlay over a single painted layer — the entire day/night
  * art budget.
@@ -12,6 +15,7 @@
 
 import Phaser from 'phaser';
 import { ensureTexture, generatePlaceholders, preloadArt } from '../placeholders';
+import { CounterView } from './counterView';
 import { artUrlIf, hasArt } from '@/ui/art';
 import { palette, phaseTint } from '@/ui/theme';
 import { dayStateAt, phaseProgress } from '@/sim/clock';
@@ -58,9 +62,11 @@ import type { Simulation } from '@/sim/sim';
 /**
  * The screens with something behind the panel.
  *
- * One, for now. The Cauldron left when brewing moved into its own station, and
- * the Market never had a scene of its own — it borrowed the Shop's, so standing
- * in the market drew your own shelves behind another trader's stock.
+ * The Grounds, and the Counter — where the customer stands, with the bottle
+ * on the counter between you. The Cauldron left when brewing moved into its
+ * own station, and the Market never had a scene of its own — it borrowed the
+ * Shop's, so standing in the market drew your own shelves behind another
+ * trader's stock.
  *
  * The Shop left last and is expected back. A painted wall of fifty shelves was
  * rebuilt from nothing, text objects and all, on every press — and the Shop is
@@ -71,7 +77,7 @@ import type { Simulation } from '@/sim/sim';
  * before it measures: measuring means asking the panel where it is, and the
  * panel has just been rebuilt.
  */
-const DRAWN_SCREENS = new Set<ScreenId>(['grounds']);
+const DRAWN_SCREENS = new Set<ScreenId>(['grounds', 'counter']);
 
 export class WorldScene extends Phaser.Scene {
   static readonly KEY = 'world';
@@ -86,6 +92,9 @@ export class WorldScene extends Phaser.Scene {
   private panelBox = '';
   private content!: Phaser.GameObjects.Container;
   private lighting!: Phaser.GameObjects.Rectangle;
+
+  /** The counter's composition — see `counterView.ts`. */
+  private counter!: CounterView;
 
   constructor() {
     super(WorldScene.KEY);
@@ -109,6 +118,26 @@ export class WorldScene extends Phaser.Scene {
       .rectangle(0, 0, 10, 10, 0xffffff, 0)
       .setOrigin(0)
       .setBlendMode(Phaser.BlendModes.MULTIPLY);
+
+    this.counter = new CounterView(
+      {
+        scene: this,
+        content: this.content,
+        wantTexture: (key, url) => this.wantTexture(key, url),
+        redraw: () => this.redraw(true),
+      },
+      this.sim,
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.counter.dispose());
+
+    /*
+     * The counter draws words — a stance's line, a price — in the page's own
+     * faces, and a text drawn before those have loaded keeps the fallback face
+     * for good. One redraw when they land; nothing if they were already here.
+     */
+    if (typeof document !== 'undefined' && document.fonts) {
+      void document.fonts.ready.then(() => this.redraw(true));
+    }
 
     // A resize changes the layout without changing the world, and `redraw`
     // compares against the world — so the record of what was drawn is thrown
@@ -335,6 +364,7 @@ export class WorldScene extends Phaser.Scene {
         if (plot.crop) ingredientIds.push(plot.crop.cropId);
       }
     }
+    if (screen === 'counter') this.counter.prefetch();
     for (const id of new Set(ingredientIds)) {
       this.wantTexture(`ingredient:${id}`, artUrlIf('ingredient', id));
     }
@@ -444,7 +474,20 @@ export class WorldScene extends Phaser.Scene {
      * The light is not part of this. It moves continuously and costs two
      * property writes on one rectangle, so it is applied below on every call.
      */
-    const signature = this.gardenSignature();
+    /*
+     * Not while an outcome is playing on the counter.
+     *
+     * The bottle sliding across and the coins dropping are the objects of the
+     * last draw, tweened; rebuilding the picture from a world that already
+     * has nobody at the counter would destroy them mid-flight. The view asks
+     * for a redraw itself when the beat is over.
+     */
+    if (this.screen === 'counter' && this.counter.busy()) {
+      this.applyLighting();
+      return;
+    }
+
+    const signature = this.signatureFor();
     if (signature === this.drawn) {
       this.applyLighting();
       return;
@@ -452,7 +495,8 @@ export class WorldScene extends Phaser.Scene {
 
     this.drawn = signature;
     this.content.removeAll(true);
-    this.drawGarden(this.contentArea());
+    if (this.screen === 'counter') this.counter.draw(this.contentArea());
+    else this.drawGarden(this.contentArea());
 
     /*
      * Re-check the pan against what was just drawn.
@@ -469,6 +513,15 @@ export class WorldScene extends Phaser.Scene {
      */
     this.applyView();
     this.applyLighting();
+  }
+
+  /** What the drawn screen looks like now — the garden's or the counter's own. */
+  private signatureFor(): string {
+    if (this.screen === 'counter') {
+      const { width, height } = this.scale.gameSize;
+      return this.counter.signature(width, height);
+    }
+    return this.gardenSignature();
   }
 
   /**

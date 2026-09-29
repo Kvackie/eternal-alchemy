@@ -1189,6 +1189,8 @@
   "counter.empty": "Nobody at the counter",
   "counter.empty.hint": "Customers come by day — the Quiet Man after dark — asking for bottles you own, on the shelves or in the store room.",
   "counter.onShelf": "Shelf {number}",
+  "counter.scene.sign": "Apothecary",
+  "counter.scene.waiting": "Waiting…",
   "haggle.patienceOut": "Patience ran out — they took it for {gold}.",
   "haggle.patienceOut.gone": "Patience ran out, but the bottle had already sold off the shelf.",
   "haggle.outcome.dismiss": "Back to the counter",
